@@ -1,0 +1,77 @@
+# 
+# $Id$
+#
+# The Harbour Project
+# GNU MAKE file for Borland C/C++ 3.1
+
+include $(TOP)$(ROOT)config/$(HB_ARCHITECTURE)/global.cf
+
+OBJ_EXT = .obj
+EXE_EXT = .exe
+LIB_PREF =
+LIB_EXT = .lib
+
+$(HB_ARCHITECTURE)_$(HB_COMPILER)_GRANDP = $(subst /,\\,$(GRANDP))
+_HB_INC_COMPILE = $(subst /,\\,$(HB_INC_COMPILE))
+_HL = $(notdir $(HB_LIB_COMPILE))
+ifeq ($(_HL),)
+#there is an ending slash
+_HB_LIB_COMPILE = $(subst /,\\,$(HB_LIB_COMPILE))
+else
+_HB_LIB_COMPILE = $(subst /,\\,$(HB_LIB_COMPILE)/)
+endif
+
+CC = bcc
+CC_IN = -c
+CC_OUT = -o
+CPPFLAGS = -I$($(HB_ARCHITECTURE)_$(HB_COMPILER)_GRANDP) -I$(_HB_INC_COMPILE) -DHARBOUR_USE_DOS_GTAPI
+CFLAGS = -O2 -mh
+
+#Note: The empty line below HAVE TO exist!
+define link_file
+echo $(file) >> __link__.tmp
+
+endef
+
+
+define link_exe_file
+echo $(LDFLAGS) -e$@ > __link__.tmp
+$(foreach file, $^, $(link_file))
+$(foreach file, $(LINKLIBS), $(link_file))
+-$(LD) @__link__.tmp
+endef
+
+LD = bcc
+LDFLAGS = -O2 -mh
+ifeq ($(HB_LIB_COMPILE),)
+LINKLIBS = $(foreach lib, $(LIBS), $(TOP)$(ROOT)source/$(lib)/$(ARCH)/$(lib)$(LIB_EXT))
+ifeq ($(findstring rdd,$(LIBS)),rdd)
+LINKLIBS += $(foreach lib, $(HB_DB_DRIVERS), $(TOP)$(ROOT)source/rdd/$(lib)/$(ARCH)/$(lib)$(LIB_EXT))
+endif
+else
+LINKLIBS = $(foreach lib, $(LIBS), $(lib)$(LIB_EXT))
+ifeq ($(findstring rdd,$(LIBS)),rdd)
+LINKLIBS += $(foreach lib, $(HB_DB_DRIVERS), $(lib)$(LIB_EXT))
+endif
+endif
+LD_RULE = $(link_exe_file)
+
+#Note: The empty line below HAVE TO exist!
+define lib_object
+echo -+$(file) &>> __lib__.tmp
+
+endef
+
+define create_library
+echo $@ &> __lib__.tmp
+$(foreach file, $^, $(lib_object))
+echo ,, >> __lib__.tmp
+$(AR) @__lib__.tmp
+del __lib__.tmp
+endef
+
+AR = tlib
+ARFLAGS =
+AR_RULE = $(create_library)
+
+include $(TOP)$(ROOT)config/rules.cf

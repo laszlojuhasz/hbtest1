@@ -1,0 +1,88 @@
+#
+# $Id:
+#
+
+INTRODUCTION
+============
+This file explains what is and how to use the #pragma directive
+with Harbour.
+
+
+WHAT IS
+=======
+The #pragma is a directive used inside the source code in many compilers
+to change the behaviour of the compiler at compile time.
+
+
+USAGE
+=====
+Currently the #pragma directive can be used in two ways: the switch mode
+and the command mode.
+
+The syntax is:  #pragma <Expression>[=On/Off] or
+                #pragma -CompilerFlag[+|-]
+
+You can use both modes mixed in the same module and upper/lower case
+without worry.
+
+To enable or disable a command or a switch you simply do:
+
+  * Command mode                      Switch mode
+  --------------------------------------------------------------
+  * #pragma <CommandName>=On/Off      #pragma /<SwitchName>+/-
+
+   Example: #pragma AddDebugInfo=Off  /* Suppress debug info */
+            #pragma /B+               /* Add debug info from here */
+
+
+IMPLEMENTATION
+==============
+
+This is the list of the supported commands and switches:
+
+  * Command                           Switch
+  -----------------------------------------------
+  * AUTOMEMVARS         =<On/Off>     /A<+/->
+  * DEBUGINFO           =<On/Off>     /B<+/->
+  * ENABLEWARNINGS      =<On/Off>     /W<+/->
+  * EXITSEVERITY        =<nLevel>     /E<nLevel>
+  * FORCEMEMVARS        =<On/Off>     /V<+/->
+  * LINEINFO            =<On/Off>     /L<+/->
+  * NOSTARTPROC         =<On/Off>     /N<+/->
+  * PREPROCESSING       =<On/Off>     /P<+/->
+  * WARNINGLEVEL        =<nLevel>     /W<nLevel>
+  * SHORTCUTTING        =<On/Off>     /Z<+/->
+
+  The switches have the same behaviour as the corresponding compiler ones
+  and the commands are sinonyms for the switches.
+  
+  * TRACEPRAGMAS
+  This command shows pragma activity at compile time when enabled.
+
+  NOTE: You can use the abbreviated commands mode by typing only the
+        first eight chars.
+
+
+NOTES
+=====
+This directive is not supported in the standalone version of the Harbour
+preprocessor.
+
+
+EXAMPLES
+========
+
+#pragma NoStartProc=Off
+/* #pragma /N- */
+
+function Test()
+return nil
+
+This is the same as calling Harbour with the -n switch in the command line,
+but with the great benefit that if you forgot to pass the switch if will be
+used anyway because it is included inside the source.
+
+===========
+Dec 1, 1999
+Regards,
+Jose Lalin <dezac@corevia.com>
