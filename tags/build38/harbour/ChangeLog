@@ -1,0 +1,725 @@
+/*
+ * $Id$
+ */
+
+/* Use this format for the entry headers:
+   YYYY-MM-DD HH:MM UTC[-|+]hhmm Your Full Name <your_email@address>
+   For example:
+   2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
+*/
+  * source/rtl/filehb.c
+    ! OS/2 IBM C++ fix.
+
+2002-01-14 15:05 UTC-0500 Paul Tucker <ptucker@sympatico.ca>
+  * source\common\hbffind.c
+    * Added missed Attribute check (thanks Victor)
+
+2002-01-14 14:30 UTC-0500 Paul Tucker <ptucker@sympatico.ca>
+  * source\rtl\direct.c
+    * updated notes and TODO's
+
+2002-01-14 10:40 UTC-0500 Paul Tucker <ptucker@sympatico.ca>
+  * source\common\hbffind.c
+  * source\rtl\direct.c
+    * modified for correct operation under NT
+    * including addition of extended file attributes
+
+2002-01-12 19:00 UTC+0500 Phil Barnett <philb@the-oasis.net>
+  * tagged cvs with build38 and lifted cvs freeze
+
+2002-01-12 14:20 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rdd/dbfntx/dbfntx1.c
+    ! bug fixed, reported by Ramon F. Jaquez
+
+2002-01-11 08:10 GMT-3 Luiz Rafael Culik <culik@sl.conex.net>
+  * source/rdd/dbf1.c
+    ! Fixed problem with numeric field.
+      From Horacio Roldán <harbour_ar@yahoo.com.ar>
+
+2002-01-10 22:10 GMT-3 Luiz Rafael Culik <culik@sl.conex.net>
+  * source/common/hbffind.c
+    * Now works properly on linux
+  * utils/hbmake/hbmake.prg
+    utils/hbmake/hbmutils.prg
+    * Some fixes for linux
+  * source/rtl/listbox.prg
+    * Some formatting
+
+2002-01-10 14:30 UTC-0500 David G. Holm <dholm@jsd-llc.com>
+  * source/rtl/spfiles.c
+    ! Fix to remove spurious ISCHAR(1) tests from C routines.
+      From Horacio Roldán <harbour_ar@yahoo.com.ar>
+
+2002-01-10 17:20 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/pp/pptable.c
+    + SET OPTIMIZE ON/OFF/expression  command added
+
+2002-01-09 11:00 UTC+0100 Ignacio Ortiz <ignacio@ozs.com>
+  * source/rtl/tget.prg
+    * Picture "@Z" fixed
+
+2002-01-09 17:30 UTC-0500 David G. Holm <dholm@jsd-llc.com>
+  * include/hbsetup.h
+  * source/rtl/console.c
+    + Added HB_EOL_CRLF to allow the EOL string to be forced to CRLF.
+      Defaults to commented out, so that the EOL string that is used
+      will be detected based on platform considerations. To force CRLF,
+      just include -DHB_EOL_CRLF in the C_USR environment variable and
+      rebuild Harbour.
+
+2002-01-08 17:10 UTC-0500 David G. Holm <dholm@jsd-llc.com>
+  * source/rtl/isprint.c
+    ! Added a missing __RSXNT__ guard on an HB_OS_WIN_32 check.
+
+2002-01-08 09:52 UTC+0100 Patrick Mast <email@patrickmast.com>
+   * source/compiler/genc.c
+   * source/compiler/genjava.c
+   * source/compiler/genobj32.c
+   * source/compiler/hbusage.c
+   * source/common/hbver.c
+     * changed decimal build nr in "Alpha build .."
+
+2002-01-08 12:31 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   * source/rdd/dbfcdx/dbfcdx1.c
+     ! remove spurious type casts
+
+2002-01-07 19:40 UTC-0300 Luiz Rafael Culik <culik@sl.conex.net>
+   * source/common/hbffind.c
+     * Minor fix to Win32 branch
+   * include/hbapifs.h
+     * Added HB_FA_NORMAL
+
+2002-01-07 17:30 UTC-0300 Luiz Rafael Culik <culik@sl.conex.net>
+   * source/rtl/direct.c
+     * Now Directory finds files with out attribute set.
+       This fix the problem reported by Jorge Manson With the Adir function
+
+2002-01-07 09:20 UTC-0300 Luiz Rafael Culik <culik@sl.conex.net>
+   * source/rtl/isprint.c
+     * Fixed an small typo
+
+2002-01-07 00:45 UTC-0300 Luiz Rafael Culik <culik@sl.conex.net>
+   * source/lang/msgpt.c
+     * Translated the new error message to Portuguese
+   * include/hbapifs.h
+     source/common/hbffind.c
+     * Now it find files with out attributes set
+
+2002-01-06 14:30 UTC+0100 Antonio Linares <alinares@fivetech.com>
+
+   * source/vm/fm.c
+     * Checking of allocating zero bytes for hb_xalloc(), hb_xgrab()
+       and hb_xrealloc(), no matter how HB_FM_STATISTICS state may be
+
+   * include/error.ch
+   * source/lang/*.c
+     + Added one new internal error: HB_EI_XALLOCNULLSIZE
+       NOTE to translators or language file maintainers:
+       The new string should be translated to the proper
+       languages from English.
+
+2002-01-06 19:40 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   * source/compiler/genc.c
+     * change definition of INIT/EXIT PROCEDURE from HB_FUNC_STATIC()
+     to HB_FUNC_INIT()/HB_FUNC_EXIT() to avoid ambiguity
+   * include/hbdefs.h
+     * added back definitions of HB_FUNC_INIT() and HB_FUNC_EXIT()
+
+2002-01-06 09:55 UTC-0300 Luiz Rafael Culik <culik@sl.conex.net>
+   * source/rtl/isprint.c
+     * Fixed an small typo
+   * utils/hbmake/hbmake.prg
+     * Updated the date
+
+2002-01-06 09:05 UTC-0300 Luiz Rafael Culik <culik@sl.conex.net>
+   * source/lang/msgpt.c
+     * translated the two new error to Portuguese
+   * source/rtl/isprint.c
+     * Change IsPrinter() logic for Win32;If no Printer is passed, it check the
+       default instaled printer.If an Printer name is passed, the name should match
+       the one listed on the Printer folders
+
+2002-01-06 10:00 UTC+0100 Viktor Szakats <viktor.szakats@syenar.hu>
+
+   * source/vm/fm.c
+     + Added checking of ulSize == 0, only when
+       HB_FM_STATISTICS is _ON_
+
+   * include/error.ch
+   * include/hbapilng.h
+   * source/lang/*.c
+     + Added two new internal errors.
+       NOTE to translators or language file maintainers:
+       The two new strings should be translated to the proper
+       languages from English.
+     * Updated copyright headers to the new one in some language
+       files, where I either hold copyright, or the holder is unknown.
+
+   * source/rtl/isprint.c
+     ! Made more multiplatform by passing the complete printer
+       name to the fsOpen() function.
+     * Platform specific uiPort moved to DOS branch.
+     + Added support for PRN under DOS.
+     + Added a C callable interface hb_printerIsReady() (not
+       yet prototyped in the central headers).
+     + Win32 version reworked so that it checks for the printer
+       name passed to the function. This also made the program
+       simpler.
+
+   * source/rtl/descend.c
+   * source/rtl/transfrm.c
+     * Small changes in last fix.
+
+   - source/lang/msgnl.c
+     - Old style language removed.
+
+2002-01-05 16:20 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   * source/rtl/transform.c
+     ! Transform("","@" ) -> memory allocation error, fixed by adding 1 byte
+       to hb_xgrab()
+   * source/rtl/descend.c
+     ! Descend("" ) -> memory allocation error, fixed by adding 1 byte to
+       hb_xgrab()
+
+2002-01-03 23:26 UTC+0100 Viktor Szakats <viktor.szakats@syenar.hu>
+
+   * source/rtl/filesys.c
+     ! Fix to previous change.
+
+   * source/compiler/harbour.y
+   * source/macro/macro.y
+     ! Removed the explicit declaration of __yy_memcpy(), since
+       it made BCC551 fail with Bison 1.30, even even with the
+       supplied harbour.simple file, which makes Bison 1.30 blow.
+       Now we again have the usual warning, but at least it
+       compiles under every Bison/.simple combinations again.
+
+2002-01-03 23:11 UTC+0100 Viktor Szakats <viktor.szakats@syenar.hu>
+
+   * include/hbapifs.h
+   * source/rtl/filesys.c
+     - Removed two wrapper functions to hb_fsSetDevMode
+       which were there to maintain supposed compatibility
+       with _tdevraw, but that turned to be unneeded.
+
+   * include/hbundoc.api
+     ! Fixed _tdevraw
+
+   * source/rtl/filesys.c
+     ! Re-disabled native Win32 file handling system.
+     ! hb_fsCommit() fixed Win32 branch, and put it
+       in the right place multiplatform #define-wise.
+
+   * source/rtl/profiler.prg
+     * Formatting change.
+
+   * source/vm/memvars.c
+     ! Fixed warnings in __MVEXIST()
+
+2002-01-03 17:00 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   * source/vm/fm.c
+     ! restore original copy as it caused memory leak in Windows OS
+       as reported by Sid 'Saylor'. Now hb_xgrab() problem when running
+       hbtest.exe which compiled with -DHB_FMSTATISTICS_OFF ( harbour.exe
+       and libraries were also compiled with the same switch ) remains
+       open :(
+
+2002-01-03 00:40 UTC-0300 Luiz Rafael Culik <culik@sl.conex.net>
+   * include/hbfsapi.h
+     * under Win32 FHANDLE is typedef to long
+   * source/rtl/filesys.c
+     * Replaced all X__WIN32__ with __WIN32__
+     * hb_fscommit() now used true Win32 Api calls
+     * No more file limit on Win32
+
+2002-01-02 09:40 UTC+0200 Chen Kedem <niki@actcom.co.il>
+
+   * doc/dirstruc.txt
+     + Add description for newly added directories
+
+2002-01-02 10:03 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   * source/compiler/cmdcheck.c
+     ! harbour did not obey "set clippercmd=/n" -> fixed ( my fault, sorry )
+
+2002-01-02 09:06 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   * source\vm\fm.c
+     * function hb_xalloc() - Prevention for same symptom as noted on hb_xgrab():
+       (see ChangeLog : 2002-01-01 11:15 UTC+0700 Andi Jahja <harbour@cbn.net.id> )
+       modify memory allocation by adding extra bytes to be allocated
+       in line with byte alignment.
+   * include/hbcomp.h
+     + BOOL hb_comp_bNoStartUp, public variable for generating C-source with for
+       no_startup option. TRUE = no_startup. FALSE = with_startup
+     - remove definition of HB_COMPGENC_NO_STARTUP
+   * source/compiler/cmdcheck.c
+     - remove /gc3 switch
+     ! add additional arguments to switch /n :
+       /n or /n0 = no implicit proc but with startup proc
+       /n1 = no implicit proc and no startup proc
+       /n- = generates implicit procedure
+       Note: Previously, Harbour did not create (implicit )starting procedure
+             when we did not supply /n, fixed. Now compiling prg without /n
+             creates (implicit) starting procedure.
+   * source/compiler/genc.c
+     ! Change routine for embedding HB_FS_FIRST to generated C-codes
+       to conform with the new startup generation routines
+   * source/compiler/harbour.c
+     + BOOL hb_comp_bNoStartUp = FALSE, initialization for option to create
+       C-source with startup.
+   * source/compiler/hbusage.c
+     + description of /n switch
+     - remove description of /gc3
+
+2002-01-01 12:30 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   * source/compiler/hbusage.c
+     * bump Copyright year to 2002
+
+2002-01-01 11:15 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   * source/vm/fm.c
+     Memory allocation error was transparently noticed when running
+     hbtest.exe with -DHB_FM_STATISTICS_OFF, fixed.
+     * function hb_xgrab()
+       fix memory allocation on function hb_xgrab() by adding extra bytes
+       to be allocated in line with byte alignment.
+
+2001-12-31 13:22 UTC+0100 Viktor Szakats <viktor.szakats@syenar.hu>
+
+   * source/compiler/genc.c
+   * include/hbdefs.h
+     * Cleaned up the INIT/EXIT code generation
+     ! Fixed function header generation for INLINE C.
+     % Optimized a bit of code related to the generation of
+       INLINE C declarations.
+
+   * include/hbtypes.h
+     ! Fixed CVS header and self guard.
+
+2001-12-31 18:00 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   * source/vm/maindllp.c
+     ! commented unused iReturn variables
+     ! BOOL WINAPI HB_EXPORT => BOOL HB_EXPORT WINAPI
+   * include/hbapi.h
+     ! extern * HB_EXPORT => extern HB_EXPORT *
+
+2001-12-30 14:35 UTC-0300 Luiz Rafael Culik <culik@sl.conex.net>
+   * source/vm/maindllp.c
+     * Added FM api functions hb_xyy()
+     % added somes cast to quite Borland
+   * include/hbtypes.h
+     * Added declaration for FM api functons
+   * source/vm/fm.c
+     include/hbapi.h
+     * FM api  functions marked as exported
+
+2001-12-30 13:47 UTC+0100 Patrick Mast <email@patrickmast.com>
+   * contrib/apollo/apollo.c
+     + Added function sx_GetDateJulian()
+     + Added function sx_GetVariant()
+     + Added function sx_SetCentury()
+     + Added function sx_SetDateFormat()
+     + Added function sx_GetLogical()
+     * modified function sx_Replace()
+   Note: Replace a logical value with sx_Replace() does not work yet.
+   * contrib/apollo/test/apollo.prg
+     * Added added functions in the test application.
+     * enhanced code
+     * Added and changed defines
+
+2001-12-30 18:00 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   * utils/hbmake/hbmake.prg
+     * replace filedate() => hbmake_filedate()
+     * replace filetime() => hbmake_filetime()
+
+2001-12-30 16:45 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   * source/vm/dynlibhb.c
+     - remove function hb_StartApp() and related _hInstance
+   * source/vm/hvm.c
+     - remove reference to hb_StartApp()
+   * source/compiler/hbusage.c
+     + add documentation of -gc3 switch
+
+2001-12-30 08:00 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   * source/compiler/cmdcheck.c
+     + switch -gc3 => produce modiule with NO_START_UP
+
+   * source/vm/genc.c
+     + switch -gc3 now produce NO_START_UP codes.
+
+   * source/vm/hvm.c
+     - commented the use of hb_StartApp()
+
+   * include/hbcomp.h
+     + definition of HB_COMPGENC_NO_STARTUP
+
+2001-12-28 22:53 UTC+0100 Patrick Mast <email@patrickmast.com>
+   * contrib/apollo
+     + Added function sx_GoBottom()
+     + Added function sx_Go()
+     + Added function sx_Seek()
+     + Added function sx_SetSoftSeek()
+     + Added function sx_RLock()
+     + Added function sx_Reindex()
+     + Added function sx_RecCount()
+     + Added function sx_SetMemoBlockSize()
+     + Added function sx_CreateNew()
+     + Added function sx_CreateField()
+     + Added function sx_CreateExec()
+   * contrib/apollo/test
+     * Added added functions in the test application.
+
+2001-12-30 04:40 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   * include/hbapi.h
+     * declaration of exported functions in source/vm/extend.c and
+       source/vm/arrays.c synchronized ( MSVC requirement )
+
+2001-12-29 19:00 UTC-0300 Luiz Rafael Culik <culik@sl.conex.net>
+   * source/vm/maindllp.c
+     * All extended function api implemented and started the array api
+   + include/hbtypes.h
+     * Header file for maindllp.c. Contain the typedef needed by maindllp.c
+   * contrib/hbzlib/zipcomp.cpp
+     * fixed an small error
+   * utils/hbmake/hbmake.prg
+     * some enhecements to select library code
+   * source/vm/extend.c
+     source/vm/arrays.c
+     * All functions marked as exported
+
+2001-12-28 20:39 UTC+0100 Patrick Mast <email@patrickmast.com>
+   * contrib/apollo
+     + Added function sx_AppendBlank()
+     + Added function sx_Close()
+     + Added function sx_Commit()
+     + Added function sx_CreateField()
+     + Added function sx_Eof()
+     + Added function sx_GetString()
+       #ifndef HB_OS_WIN_32 to 
+     + Added function sx_IndexTag()
+     + Added function sx_RecNo()
+       IMPORTANT: For those who get duplicate defines when compiling 
+       Win32 code, the #define HB_OS_WIN_32_USED should be defined 
+     + Added function sx_Use()
+      
+   * contrib/apollo/test
+     * Added functions in a test application.
+
+2001-12-29 20:35 UTC+0100 Viktor Szakats <viktor.szakats@syenar.hu>
+
+   * include/extend.api
+     ! Same fix applied to extend.api.
+
+2001-12-29 19:44 UTC+0100 Viktor Szakats <viktor.szakats@syenar.hu>
+
+   * include/clipdefs.h
+     ! Changed
+       #ifndef HB_OS_WIN_32 to
+       #ifdef !(defined(HB_OS_WIN_32) && defined(HB_OS_WIN_32_USED))
+       Because the previous method was breaking legacy code.
+       IMPORTANT: For those who get duplicate defines when compiling
+       Win32 code, the #define HB_OS_WIN_32_USED should be defined
+       somewhere before including clipdefs.h.
+
+2001-12-28 18:54 UTC+0100 Patrick Mast <email@patrickmast.com>
+   * contrib/apollo
+     + added readme.txt
+   * contrib/apollo/test
+     + bld.bat
+     + bld_b32.bat
+     * updated apollo.prg
+
+2001-12-28 13:28 UTC+0100 Patrick Mast <email@patrickmast.com>
+   + contrib/apollo
+     * Started Apollo SDE60.DLL connection for accessing
+       SIXNSX database files
+       Note: This is only the start.
+
+2001-12-29 05:10 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   Export declaration to meet MSVC syntax ( also work with BCC )
+
+   * include/hbapi.h
+     * declaration of hb_parc() synchronized with that in extend.c
+   * source/vm/extend.c
+     * char * HB_EXPORT => char HB_EXPORT *
+   * source/vm/maindll.c
+     * BOOL WINAPI HB_EXPORT => BOOL HB_EXPORT WINAPI
+     * LONG PASCAL HB_EXPORT => LONG HB_EXPORT PASCAL
+   * source/vm/maindllh.c
+     * BOOL WINAPI HB_EXPORT => BOOL HB_EXPORT WINAPI
+   * source/vm/maindllp.c
+     * BOOL WINAPI HB_EXPORT => BOOL HB_EXPORT WINAPI
+
+2001-12-28 18:36 UTC+0100 Antonio Linares <alinares@fivetech.com>
+   * source/vm/extend.c
+     + New function hb_extIsArray() added
+       function to be called from pcode DLLs to detect if the extend system
+       is going to use an array item
+
+   * source/vm/maindllp.c
+     + extend system for pcode DLLs implementation started
+
+2001-12-28 23:30 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   * hrbdll.bc
+   * hrbdll.vc
+     * Change maindll.* to maindllh.*
+
+2001-12-28 12:30 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   * source/vm/hvm.c
+     ! MSVC cannot find start procedure => hb_StartApp() now only
+       applied to Borland C++
+
+2001-12-28 05:15 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   * utils/hbmake/hbmutils.prg
+     ! function renaming: filedate() => hbmake_filedate()
+     ! function renaming: filetime() => hbmake_filetime()
+   * utils/hbmake/ft_funcs.prg
+     ! function renaming: filebase() => hbmake_filebase()
+   * utils/hbmake/ffile1.prg
+     ! function renaming: filebase() => hbmake_filebase()
+
+2001-12-28 05:15 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   * utils/hbmake/hbmake.prg
+     ! enhancement in parameter passing
+
+2001-12-27 13:25 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+   * source/rdd/dbf1.c
+   * source/rdd/dbfntx/dbfntx1.c
+   * source/rdd/dbfcdx/dbfcdx1.c
+     * Calls of hb_fsOpen() and hb_fsCreate() replaced by hb_spOpen() and
+       hb_spCreate() to allow SET PATH and SET DEFAULT settings
+
+2001-12-26 22:20 GMT-3 Luiz Rafael Culik <culik@sl.conex.net>
+  * utils/hbmake/hbmake.prg
+    utils/hbmake/hbmutils.prg
+    * Added code that allows the user select the 3rd party libraries they want
+  * source/compiler/gencobj.c
+    * Fixed an problem on the extension of object file(Borland and MSVC user .obj/Gcc uses .o)
+
+2001-12-26 16:20 UTC-0500 David G. Holm <dholm@jsd-llc.com>
+  * config/bsd/gcc.cf
+  * config/dos/bcc16.cf
+  * config/dos/djgpp.cf
+  * config/dos/rsx32.cf
+  * config/dos/watcom.cf
+  * config/linux/gcc.cf
+  * config/os2/gcc.cf
+  * config/os2/icc.cf
+  * config/w32/bcc32.cf
+  * config/w32/gcc.cf
+  * config/w32/mingw32.cf
+  * config/w32/msvc.cf
+  * config/w32/rsxnt.cf
+    * Fix for the contrib library renames that broke the GNU Make
+      System's usage of CONTRIBS= for some contrib libraries.
+      Note: If a contrib lib directory name includes the lib prefix,
+            then you have to include it (e.g. CONTRIBS=libmisc), but
+            the actual library name listed in the library's Makefile
+            must not (e.g., LIBNAME=misc).
+
+  * contrib/libmisc/Makefile
+  + contrib/libmisc/tests/Makefile
+  + contrib/libmisc/tests/readfile.prg
+  * tests/Makefile
+  - tests/readfile.prg
+    * Moved tests/readfile.prg to contrib/libmisc/tests/readfile.prg
+      (hence the need to fix the GNU Make System).
+
+  * source/vm/dynlibhb.c
+    ! Only include extern declaration from _hInstance if using Borland.
+
+2001-12-26 09:08 UTC+0000 Dave Pearson <davep@davep.org>
+   * source/vm/Makefile
+     * Added dynlibhb.c.
+   * include/hbvmpub.h
+     * Added final EOL.
+
+2001-12-26 04:30 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   makefile for creating harbour.dll with BCC & MsVC
+
+   This is an initial template subject to further modification to make
+   it more flexible for any environment. Tweak might have to be done on
+   some files for:
+
+     . function rename-ing since some files bear public functions with
+       the same name. Example : filebase() in samples/environ.c,
+       utils/hbdoc/ffile1.prg and contrib/htmllib/ofile.prg
+
+     . phisically extract public functions to a separate file since they
+       are written in the body of the main function but required by other
+       functions. Example: WRITE_ERROR in utils/hbdoc/hbdoc.prg which is
+       required by utils/hbdoc/genasc.prg. Consequently, I have locally
+       created docfunc.prg which contains WRITE_ERROR(), StripFiles() and
+       StripNgControls() extracted from utils/hbdoc/hbdoc.prg.
+
+   + hrbdll.bc
+
+   + hrbdll.vc
+
+   * include/hbdefs.h
+     ! Add argument to HB_EXPORT definition so that public functions will
+       be exported upon explicit request only. Examples:
+        BCC  : makefile.bc => C_USR = __EXPORT__
+        MsVC : makefile.vc =>    --ditto--
+
+2001-12-25 14:40 UTC-0300 Luiz Rafael Culik <culik@sl.conex.net>
+   * contrib/libct/Makefile
+    * Removed the Lib prefix from library name
+   * contrib/libmisc/Makefile
+    * Removed the Lib prefix from library name
+   * contrib/libgt/Makefile.bc
+     contrib/libgt/Makefile.vc
+     contrib/libgt/Make_vc.bat
+     contrib/libgt/Make_b32.bat
+    * Added the Lib prefix from library name
+    + contrib/htmllib/*.prg
+      contrib/htmllib/*.ch
+      contrib/htmllib/Makefile.bc
+      contrib/htmllib/Makefile
+      * Sources and neccessary files to build htmllib-harbour cgi library
+
+2001-12-25 11:45 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   + source/compiler/harbour.simple
+     add a derivative copy of bison.simple v 1.28 which will be used as
+     the standard bison skeleton output parser for the purpose of Harbour
+     project in order to have a uniform parser code. Developers are expected
+     to use this code and make revision to harbour.y if so required.
+
+2001-12-24 21:35 UTC-0300 Luiz Rafael Culik <culik@sl.conex.net>
+   * utils/hbmake/hbmake.prg
+     * Some minor fixes to both edit mode
+
+2001-12-23 10:18 UTC+0100 Viktor Szakats <viktor.szakats@syenar.hu>
+
+   * source/rtl/filesys.c
+     ! Fixed all return value checking for the Win32 API
+       calls.
+
+   * include/hbapi.h
+   * include/hbundoc.api
+     * Some compatibility #defines moved to its place.
+
+2001-12-22 11:30 UTC+0100 Antonio Linares <alinares@fivetech.com>
+   * source/vm/dynlibhb.c
+     + New function hb_StartApp() added
+
+   * source/vm/hvm.c
+     * Function hb_StartApp() used from hb_vmProcessSymbols()
+
+2001-12-22 07:50 UTC-0300 Luiz Rafael Culik <culik@sl.conex.net>
+   * utils/hbmake/hbmake.prg
+     * Some alingment of the text on edit mode.
+   * utils/hbmake/hbmutils.prg
+     * Getsourcefiles() function speed optimized(thanks Victor)
+
+2001-12-22 03:30 UTC+0700 Andi Jahja <harbour@cbn.net.id>
+   * source/rtl/filesys.c
+     * add required C casts
+   * include/hbinit.h
+     * inconsistent hb_vmProcessSymbols() declaration corrected
+
+2001-12-21 17:58 UTC+0100 Viktor Szakats <viktor.szakats@syenar.hu>
+
+   * source/rtl/filesys.c
+   * source/rtl/philes.c
+   * include/hbapifs.h
+     ! Fixed hb_fsRename() and hb_fsDelete() to return BOOL
+       instead of platform specific error codes.
+     ! All low-level functions returning BOOL now check
+       for valid API call return value inside the platform
+       spcific branches.
+     ! hb_fsLock() fixed to not return TRUE when the mode
+       parameter was invalid.
+
+2001-12-21 16:31 UTC+0100 Viktor Szakats <viktor.szakats@syenar.hu>
+
+   + source/rtl/filehb.c
+   * source/rtl/direct.c
+   * source/rtl/Makefile
+   * makefile.bc
+   * makefile.vc
+     * Some fixes for FILE().
+
+2001-12-21 16:08 UTC+0100 Viktor Szakats <viktor.szakats@syenar.hu>
+
+   + source/rtl/file.c
+   + source/rtl/direct.c
+   * source/rtl/Makefile
+   * makefile.bc
+   * makefile.vc
+     + New implementation of the DIRECTORY() function, faster
+       smaller, much more clean version.
+       Please test this as extensively as possible, with special
+       regards to attribute filtering.
+     + New implementation of FILE() function, now it
+       supports wildcards just like CA-Cl*pper.
+     ; They are noth using the new multiplatform File Find API.
+       Note that it may require some work/testing on some platforms.
+
+   * source/rtl/filesys.c
+   * source/rtl/philes.c
+     - Removed old FILE() and hb_fsFile().
+
+   * source/common/hbffind.c
+     ! Fixed date handling. The null terminating char was
+       missing.
+
+2001-12-21 14:37 UTC+0100 Viktor Szakats <viktor.szakats@syenar.hu>
+
+   * source/common/hbffind.c
+     ! Some fixes.
+
+   * source/rtl/filesys.c
+     ! Fixed write and read operations returning -1
+       on bad file handle and access erros from either
+       low and Harbour level functions.
+     * Cleaned up the new Win32 API branches.
+
+2001-12-21 12:54 UTC+0100 Antonio Linares <alinares@fivetech.com>
+
+   * source/pp/pragma.c
+   * contrib/dot/pp_harb.ch
+   * tests/inline_c.prg
+     * STOPDUMP renamed as ENDDUMP (with Ron permission)
+
+2001-12-21 08:40 UTC-0300 Luiz Rafael Culik <culik@sl.conex.net>
+   * utils/hbmake/hbmake.prg
+    * small fix
+
+2001-12-21 07:50 UTC-0300 Luiz Rafael Culik <culik@sl.conex.net>
+  * source/rtl/filesys.c
+    * hb_fsmkdir,hb_fsChdir,hb_fsRmdir,hb_fsDelete,hb_fsRename,hb_fsCurdirBuff()
+      now use Win32 API calls
+   * utils/hbmake/hbmake.prg
+     ! Disabled profile
+   * utils/hbmake/hbmutils.prg
+     * An small clean up
+   * ChangeLog
+     * Renamed to ChangeLog.012 and started an new one
+2006-02-15 13:50 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/vm/hvm.c
+    ! fixed memory leak I introduced changing Ryszard modifications
+
+      need such functionality yet
+  + harbour/ChangeLog.015
+  * harbour/source/vm/debug.c
+
+  * harbour/harbour.spec
+  * harbour/bin/hb-func.sh
+    * some modification in xhb* scripts building - adding passing
+      predefined compiler and linker switches
+  * harbour/source/vm/hvm.c
+    * minor code cleanup
+
+2006-09-03 18:55 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbapicls.h
+  * harbour/source/vm/classes.c
+  * harbour/source/vm/hvm.c
+  * harbour/tests/overload.prg
+    + added support for overloading [] in assignment operation
+
+2006-09-03 16:30 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/ChangeLog
+  + harbour/ChangeLog.016
+    * new ChangeLog file created
+  * harbour/include/hbver.h
+    * updated version number to 0.47.0
+  * tagged CVS as build47
