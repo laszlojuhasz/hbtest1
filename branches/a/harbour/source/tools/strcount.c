@@ -1,4 +1,8 @@
 /*
+ * $Id$
+ */
+
+/*
  * GT CLIPPER STANDARD HEADER
  *
  * File......: strcount.c
@@ -11,15 +15,6 @@
  *
  * This is an original work by Andy Leighton and is placed in the
  * public domain.
- *
- * Modification history:
- * ---------------------
- *
- * $Log$
- * Revision 1.1  1999/06/02 06:49:39  ajahja
- * Adding GT Library
- *
- *
  */
 
 /*
@@ -54,20 +49,19 @@
  *  $END$
  */
 
-#include <extend.h>
+#include "extend.h"
 
-HARBOUR
-gt_strcount()
+HARBOUR HB_GT_STRCOUNT( void )
 {
   char *s1, *s2;
   int count, p1, p2, l1, l2;
   int match = 1;
 
   if (ISCHAR(1) && ISCHAR(2)) {
-    s1  = _parc(1);
-    s2  = _parc(2);
-    l1  = _parclen(1);
-    l2  = _parclen(2);
+    s1  = hb_parc(1);
+    s2  = hb_parc(2);
+    l1  = hb_parclen(1);
+    l2  = hb_parclen(2);
 
     /* loop through s2 matching passed character (s1) with
        each character of s1 */
@@ -83,8 +77,8 @@ gt_strcount()
         count++;
     }
 
-    _retni(count);                  // return result
+    hb_retni(count);                  /* return result */
   } else {
-    _retni(-1);                     // parameter mismatch - error -1
+    hb_retni(-1);                     /* parameter mismatch - error -1 */
   }
 }

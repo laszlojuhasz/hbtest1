@@ -1,4 +1,8 @@
 /*
+ * $Id$
+ */
+
+/*
  * GT CLIPPER STANDARD HEADER
  *
  * File......: strleft.c
@@ -11,15 +15,6 @@
  *
  * This is an original work by Andy Leighton and is placed in the
  * public domain.
- *
- * Modification history:
- * ---------------------
- *
- * $Log$
- * Revision 1.1  1999/06/02 06:49:40  ajahja
- * Adding GT Library
- *
- *
  */
 
 /*
@@ -54,11 +49,10 @@
  */
 
 
-#include <extend.h>
+#include "extend.h"
 
 
-HARBOUR
-GT_StrLeft()
+HARBOUR HB_GT_STRLEFT( void )
 {
   char *string;
   char *cset;
@@ -66,10 +60,10 @@ GT_StrLeft()
   int p1, p2;
 
   if (ISCHAR(1) && ISCHAR(2)) {
-    string = _parc(1);
-    cset   = _parc(2);
-    l1     = _parclen(1);
-    l2     = _parclen(2);
+    string = hb_parc(1);
+    cset   = hb_parc(2);
+    l1     = hb_parclen(1);
+    l2     = hb_parclen(2);
     p1     = p2 = 0;
 
     for (p1 = 0; p1 < l1; p1++) {
@@ -79,10 +73,10 @@ GT_StrLeft()
       if (p2 == l2)
          break;
     }
-    _retni(p1);
+    hb_retni(p1);
 
   } else {
-    _retni(-1);               // parameter mismatch - error NullStr
+    hb_retni(-1);               /* parameter mismatch - error NullStr */
   }
 }
 

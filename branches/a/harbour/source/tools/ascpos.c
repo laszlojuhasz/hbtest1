@@ -1,4 +1,8 @@
 /*
+ * $Id$
+ */
+
+/*
  * GT CLIPPER STANDARD HEADER
  *
  * File......: ascpos.c
@@ -11,15 +15,6 @@
  *
  * This is an original work by Andy Leighton and is placed in the
  * public domain.
- *
- * Modification history:
- * ---------------------
- *
- * $Log$
- * Revision 1.1  1999/06/02 06:21:33  ajahja
- * Adding GT Library
- *
- *
  */
 
 /*
@@ -50,31 +45,29 @@
  *      same name.  I changed the behaviour because some of the strings
  *      I process contain embedded NULs.
  *  $EXAMPLES$
- *       ? gt_ascpos("the cat sat on the mat", 3)
- *                                   // prints e
+ *       ? gt_ascpos("the cat sat on the mat", 3) // prints e
  *  $END$
  */
 
-#include <extend.h>
+#include "extend.h"
 
-HARBOUR
-gt_ascpos()
+HARBOUR HB_GT_ASCPOS( void )
 {
   char *s;
   int  p;
 
   if (ISCHAR(1) && ISNUM(2)) {
-    s = _parc(1);
-    p = _parni(2);
-    p--;                            // decrement p to adjust for c strings
-                                    // starting at position 0
+    s = hb_parc(1);
+    p = hb_parni(2);
+    p--;                            /* decrement p to adjust for c strings */
+                                    /* starting at position 0 */
 
-    if (p > _parclen(1))            // oh oh p > length of passed string
-      _retni(-2);                   // error -2
+    if (p > hb_parclen(1))            /* oh oh p > length of passed string */
+      hb_retni(-2);                   /* error -2 */
     else
-      _retni((int) s[p]);           // return ascii code of appropriate
-                                    // character in string
+      hb_retni((int) s[p]);           /* return ascii code of appropriate */
+                                    /* character in string */
   } else {
-    _retni(-1);                     // parameter mismatch - error -1
+    hb_retni(-1);                     /* parameter mismatch - error -1 */
   }
 }

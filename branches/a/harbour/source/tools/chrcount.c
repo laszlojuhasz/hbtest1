@@ -1,4 +1,8 @@
 /*
+ * $Id$
+ */
+
+/*
  * GT CLIPPER STANDARD HEADER
  *
  * File......: chrcount.c
@@ -11,15 +15,6 @@
  *
  * This is an original work by Andy Leighton and is placed in the
  * public domain.
- *
- * Modification history:
- * ---------------------
- *
- * $Log$
- * Revision 1.1  1999/06/02 06:49:38  ajahja
- * Adding GT Library
- *
- *
  */
 
 /*
@@ -50,28 +45,26 @@
  *  $END$
  */
 
-#include <extend.h>
+#include "extend.h"
 
-HARBOUR
-
-gt_chrcount()
+HARBOUR HB_GT_CHRCOUNT( void )
 {
   char *s1, *s2;
   int count, pos2, len;
 
   if (ISCHAR(1) && ISCHAR(2)) {
-    s1  = _parc(1);
-    s2  = _parc(2);
-    len = _parclen(2);
+    s1  = hb_parc(1);
+    s2  = hb_parc(2);
+    len = hb_parclen(2);
 
     /* loop through s2 matching passed character (s1) with
        each character of s1 */
     for (count = 0, pos2 = 1; pos2 <= len; s2++, pos2++)
-      if (*s1 == *s2)               // character matches s1
-        count++;                    // increment counter
+      if (*s1 == *s2)               /* character matches s1 */
+        count++;                    /* increment counter */
 
-    _retni(count);                  // return result
+    hb_retni(count);                  /* return result */
   } else {
-    _retni(-1);                     // parameter mismatch - error -1
+    hb_retni(-1);                     /* parameter mismatch - error -1 */
   }
 }

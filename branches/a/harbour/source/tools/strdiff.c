@@ -1,4 +1,8 @@
 /*
+ * $Id$
+ */
+
+/*
  * GT CLIPPER STANDARD HEADER
  *
  * File......: strdiff.c
@@ -11,15 +15,6 @@
  *
  * This is an original work by Andy Leighton and is placed in the
  * public domain.
- *
- * Modification history:
- * ---------------------
- *
- * $Log$
- * Revision 1.1  1999/06/02 06:49:39  ajahja
- * Adding GT Library
- *
- *
  */
 
 /*
@@ -53,18 +48,17 @@
  *  $END$
  */
 
-#include <extend.h>
+#include "extend.h"
 
-HARBOUR
-GT_strdiff()
+HARBOUR HB_GT_STRDIFF( void )
 {
   char *s1, *s2;
   int pos, len;
 
   if (ISCHAR(1) && ISCHAR(2)) {
-    s1  = _parc(1);
-    s2  = _parc(2);
-    len = _parclen(2);
+    s1  = hb_parc(1);
+    s2  = hb_parc(2);
+    len = hb_parclen(2);
 
     /*
        loop through comparing both strings
@@ -76,11 +70,11 @@ GT_strdiff()
     for (pos = 1; (pos <= len) && (*s1 == *s2); s2++, s1++)
       pos++;
 
-    if (pos > len)                  // strings match exactly!!!
-      _retc((char *) NULL);
+    if (pos > len)                  /* strings match exactly!!! */
+      hb_retc((char *) NULL);
     else
-      _retc(s2);
+      hb_retc(s2);
   } else {
-    _ret();                         // parameter mismatch - error return NIL
+    hb_ret();                         /* parameter mismatch - error return NIL */
   }
 }

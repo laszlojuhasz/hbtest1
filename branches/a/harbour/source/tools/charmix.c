@@ -1,4 +1,8 @@
 /*
+ * $Id$
+ */
+
+/*
  * GT CLIPPER STANDARD HEADER
  *
  * File......: charmix.c
@@ -11,15 +15,6 @@
  *
  * This is an original work by Andy Leighton and is placed in the
  * public domain.
- *
- * Modification history:
- * ---------------------
- *
- * $Log$
- * Revision 1.1  1999/06/02 06:49:38  ajahja
- * Adding GT Library
- *
- *
  */
 
 /*
@@ -53,38 +48,37 @@
  *  $END$
  */
 
-#include <extend.h>
+#include "extend.h"
 
-HARBOUR
-gt_charMix()
+HARBOUR HB_GT_CHARMIX( void )
 {
   char *s1, *s2, *s3;
-  int l1, l2, i, pos;
+  int l1, l2, i, pos3;
 
   if (ISCHAR(1) && ISCHAR(2)) {
-    s1  = _parc(1);
-    s2  = _parc(2);
-    l1  = _parclen(1);
-    l2  = _parclen(2);
-    pos = 0;
+    s1  = hb_parc(1);
+    s2  = hb_parc(2);
+    l1  = hb_parclen(1);
+    l2  = hb_parclen(2);
+    pos3 = 0;
 
-    s3  = _xgrab(l1 + l2);              // grab us some mem to work with
+    s3  = (char*)hb_xgrab(l1 + l2 + 1);   /* grab us some mem to work with */
 
     for (i = 0; i < l1; i++) {
-      s3[pos++] = s1[i];
+      s3[pos3++] = s1[i];
 
       if (i < l2)
-        s3[pos++] = s2[i];
+        s3[pos3++] = s2[i];
     }
 
     if (l2 > l1)
       for (; i < l2; i++)
-        s3[pos++] = s2[i];
+        s3[pos3++] = s2[i];
 
-    s3[pos] = '\0';
-    _retc(s3);
-    _xfree(s3);                     // free alloc'ed mem
+    s3[pos3] = '\0';
+    hb_retclen(s3, l1 + l2);
+    hb_xfree(s3);                     /* free alloc'ed mem */
   } else {
-    _retc((char *) NULL);           // parameter mismatch - error NullStr
+    hb_retc((char *) NULL);           /* parameter mismatch - error NullStr */
   }
 }

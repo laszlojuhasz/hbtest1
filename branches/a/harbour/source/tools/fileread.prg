@@ -1,37 +1,45 @@
-/* $Id$
+/* 
+ * $Id$
+ */
 
-   Harbour Project source code
+/*
+ * Harbour Project source code:
+ * A class that reads a file one line at a time
+ *
+ * Copyright 1999 David G. Holm <dholm@jsd-llc.com>
+ * www - http://www.harbour-project.org
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version, with one exception:
+ *
+ * The exception is that if you link the Harbour Runtime Library (HRL)
+ * and/or the Harbour Virtual Machine (HVM) with other files to produce
+ * an executable, this does not by itself cause the resulting executable
+ * to be covered by the GNU General Public License. Your use of that
+ * executable is in no way restricted on account of linking the HRL
+ * and/or HVM code into it.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA (or visit
+ * their web site at http://www.gnu.org/).
+ *
+ */
 
-   A class that reads a file one line at a time
-
-   Copyright 1999 David G. Holm <dholm@jsd-llc.com>
-   www - http://www.harbour-project.org
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version, with one exception:
-
-   The exception is that if you link the Harbour Runtime Library (HRL)
-   and/or the Harbour Virtual Machine (HVM) with other files to produce
-   an executable, this does not by itself cause the resulting executable
-   to be covered by the GNU General Public License. Your use of that
-   executable is in no way restricted on account of linking the HRL
-   and/or HVM code into it.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA (or visit
-   their web site at http://www.gnu.org/).
-
-   V 1.1    David G. Holm               Committed to CVS.
-   V 1.0    David G. Holm               Initial version.
-*/
+/*
+ * ChangeLog:
+ *
+ * V 1.1    David G. Holm               Committed to CVS.
+ * V 1.0    David G. Holm               Initial version.
+ *
+ */
 
 #include "fileio.ch"
 
@@ -117,33 +125,33 @@
  */
 
 FUNCTION TFileRead()
-STATIC oClass
+STATIC s_oClass
 
-   IF oClass == NIL
-      oClass := TClass():New( "TFile" )  // New class
-      oClass:AddClassData( "cFile" )     // The filename
-      oClass:AddClassData( "nHan" )      // The open file handle
-      oClass:AddClassData( "lEOF" )      // The end of file reached flag
-      oClass:AddClassData( "nError" )    // The current file error code
-      oClass:AddClassData( "nLastOp" )   // The last operation done (for error messages)
-      oClass:AddClassData( "cBuffer" )   // The readahead buffer
-      oClass:AddClassData( "nReadSize" ) // How much to add to the readahead buffer on
+   IF s_oClass == NIL
+      s_oClass := TClass():New( "TFile" )  // New class
+      s_oClass:AddClassData( "cFile" )     // The filename
+      s_oClass:AddClassData( "nHan" )      // The open file handle
+      s_oClass:AddClassData( "lEOF" )      // The end of file reached flag
+      s_oClass:AddClassData( "nError" )    // The current file error code
+      s_oClass:AddClassData( "nLastOp" )   // The last operation done (for error messages)
+      s_oClass:AddClassData( "cBuffer" )   // The readahead buffer
+      s_oClass:AddClassData( "nReadSize" ) // How much to add to the readahead buffer on
                                          // each read from the file
 
-      oClass:AddMethod( "New",        @f_new() )       // Create a new class instance
-      oClass:AddMethod( "Open",       @f_open() )      // Open the file for reading
-      oClass:AddMethod( "Close",      @f_close() )     // Close the file when done
-      oClass:AddMethod( "ReadLine",   @f_read() )      // Read a line from the file
-      oClass:AddMethod( "Name",       @f_name() )      // Retunrs the file name
-      oClass:AddMethod( "IsOpen",     @f_is_open() )   // Returns .T. if file is open
-      oClass:AddMethod( "MoreToRead", @f_more() )      // Returns .T. if more to be read
-      oClass:AddMethod( "Error",      @f_error() )     // Returns .T. if error occurred
-      oClass:AddMethod( "ErrorNo",    @f_error_no() )  // Returns current error code
-      oClass:AddMethod( "ErrorMsg",   @f_error_msg() ) // Returns formatted error message
-      oClass:Create()
+      s_oClass:AddMethod( "New",        @f_new() )       // Create a new class instance
+      s_oClass:AddMethod( "Open",       @f_open() )      // Open the file for reading
+      s_oClass:AddMethod( "Close",      @f_close() )     // Close the file when done
+      s_oClass:AddMethod( "ReadLine",   @f_read() )      // Read a line from the file
+      s_oClass:AddMethod( "Name",       @f_name() )      // Retunrs the file name
+      s_oClass:AddMethod( "IsOpen",     @f_is_open() )   // Returns .T. if file is open
+      s_oClass:AddMethod( "MoreToRead", @f_more() )      // Returns .T. if more to be read
+      s_oClass:AddMethod( "Error",      @f_error() )     // Returns .T. if error occurred
+      s_oClass:AddMethod( "ErrorNo",    @f_error_no() )  // Returns current error code
+      s_oClass:AddMethod( "ErrorMsg",   @f_error_msg() ) // Returns formatted error message
+      s_oClass:Create()
    END IF
 
-RETURN oClass:Instance()
+RETURN s_oClass:Instance()
 
 STATIC FUNCTION f_new( cFile, nSize )
 LOCAL oSelf := Qself()
@@ -315,7 +323,7 @@ LOCAL oSelf := Qself()
 RETURN oSelf:nError
 
 STATIC FUNCTION f_error_msg( cText )
-STATIC cAction := {"on", "creating object for", "opening", "reading from", "closing"}
+STATIC s_cAction := {"on", "creating object for", "opening", "reading from", "closing"}
 LOCAL oSelf := Qself()
 LOCAL cMessage, nTemp
    // Has an error been recorded?
@@ -329,6 +337,6 @@ LOCAL cMessage, nTemp
       ELSE
          nTemp := oSelf:nLastOp + 1
       END IF
-      cMessage := IF( EMPTY( cText ), "", cText ) + "Error " + ALLTRIM( STR( oSelf:nError ) ) + " " + cAction[ nTemp ] + " " + oSelf:cFile
+      cMessage := IF( EMPTY( cText ), "", cText ) + "Error " + ALLTRIM( STR( oSelf:nError ) ) + " " + s_cAction[ nTemp ] + " " + oSelf:cFile
    END IF
 RETURN cMessage

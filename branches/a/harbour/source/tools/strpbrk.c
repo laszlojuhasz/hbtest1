@@ -1,4 +1,8 @@
 /*
+ * $Id$
+ */
+
+/*
  * GT CLIPPER STANDARD HEADER
  *
  * File......: strpbrk.c
@@ -11,15 +15,6 @@
  *
  * This is an original work by Andy Leighton and is placed in the
  * public domain.
- *
- * Modification history:
- * ---------------------
- *
- * $Log$
- * Revision 1.1  1999/06/02 06:49:40  ajahja
- * Adding GT Library
- *
- *
  */
 
 /*
@@ -50,11 +45,10 @@
  */
 
 
-#include <extend.h>
+#include "extend.h"
 
 
-HARBOUR
-GT_strpbrk()
+HARBOUR HB_GT_STRPBRK( void )
 {
   char *string;
   char *cset;
@@ -62,26 +56,26 @@ GT_strpbrk()
   int p1, p2;
 
   if (ISCHAR(1) && ISCHAR(2)) {
-    string = _parc(1);
-    cset   = _parc(2);
-    l1     = _parclen(1);
-    l2     = _parclen(2);
+    string = hb_parc(1);
+    cset   = hb_parc(2);
+    l1     = hb_parclen(1);
+    l2     = hb_parclen(2);
     p1     = p2 = 0;
 
     do {
       for (p2 = 0; (p2 < l2) && (cset[p2] != string[p1]); ++p2)
          ;
       if (p2 < l2) {
-         _retc(string + p1);
+         hb_retc(string + p1);
          break;
       }
     } while (p1++ < l1);
 
     if (p2 >= l2)
-      _retc((char *) NULL);
+      hb_retc((char *) NULL);
 
   } else {
-    _retc((char *) NULL);               // parameter mismatch - error NullStr
+    hb_retc((char *) NULL);               /* parameter mismatch - error NullStr */
   }
 }
 

@@ -1,32 +1,14 @@
-#include <extend.h>
-#include <dos.h>
-#include  <dir.h>
-#include  <stdio.h>
-#include  <stdlib.h>
-#include  <string.h>
-#include  <bios.h>
-#include  <ctype.h>
-
-#define TRUE 1
-#define FALSE 0
-
-
-HARBOUR renfile()
-{
-int ok;
-        PITEM arg1 = _param(1,IT_STRING);
-        PITEM arg2 = _param(2,IT_STRING);
-        if( arg1 && arg2)
-{
-ok=rename(_parc(1),_parc(2));
-if(!ok)
-_retl(TRUE);
-else
-_retl(FALSE);
-}
-}
 /*
+ * $Id$
+ */
 
+#include "extend.h"
+
+#ifdef DOS
+#include <dos.h>
+#include <dir.h>
+#include <bios.h>
+#endif
 
 /*  $DOC$
  *  $FUNCNAME$
@@ -34,36 +16,39 @@ _retl(FALSE);
  *  $CATEGORY$
  *     DOS
  *  $ONELINER$
- *     
+ *     Change the Current Directory
  *  $SYNTAX$
  *     CD(<NDIR>)
  *  $ARGUMENTS$
- *    <NDIR> DIR TO BE CHANGED
+ *     <NDIR> DIR TO BE CHANGED
  *  $RETURNS$
- *    .T. IF SUCEFUL
- *    .F. IF NOT
- *    
+ *     .T. IF SUCEFUL
+ *     .F. IF NOT
+ *
  *  $DESCRIPTION$
- *    CHANGE THE CURRENT DIRECTORY
+ *     CHANGE THE CURRENT DIRECTORY
  *  $EXAMPLES$
- *  IF CD("OLA")
- *      RETURN(.T.)
- *  ELSE
- *      RETURN(.F.)
- *  ENDIF
- *  
+ *     IF CD("OLA")
+ *        RETURN(.T.)
+ *     ELSE
+ *        RETURN(.F.)
+ *     ENDIF
+ *
  *  $SEEALSO$
- *     
+ *      MD() RD()
  *  $INCLUDE$
- * extend.h dos.h dir.h bios.h internal.h
+ *     extend.h dos.h dir.h bios.h
  *  $END$
  */
 
-/*
-
-
-
-
+HARBOUR HB_CD( void )
+{
+#ifdef __DOS__
+   hb_retni( ISCHAR( 1 ) ? chdir( hb_parc( 1 ) ) : 0 );
+#else
+   hb_retni( 0 );
+#endif
+}
 
 /*  $DOC$
  *  $FUNCNAME$
@@ -71,7 +56,7 @@ _retl(FALSE);
  *  $CATEGORY$
  *     DOS
  *  $ONELINER$
- *     
+ *     Creates a Directory
  *  $SYNTAX$
  *     MD(<NDIR>)
  *  $ARGUMENTS$
@@ -79,7 +64,7 @@ _retl(FALSE);
  *  $RETURNS$
  *    .T. IF SUCEFUL
  *    .F. IF NOT
- *    
+ *
  *  $DESCRIPTION$
  *    CREATE A  DIRECTORY
  *  $EXAMPLES$
@@ -88,22 +73,30 @@ _retl(FALSE);
  *  ELSE
  *      RETURN(.F.)
  *  ENDIF
- *  
+ *
  *  $SEEALSO$
- *     
+ *     CD() MD()
  *  $INCLUDE$
- * extend.h dos.h dir.h bios.h internal.h
+ *     extend.h dos.h dir.h bios.h
  *  $END$
  */
 
-/*
+HARBOUR HB_MD(void)
+{
+#ifdef __DOS__
+   hb_retni( ISCHAR( 1 ) ? mkdir( hb_parc( 1 ) ) : 0 );
+#else
+   hb_retni( 0 );
+#endif
+}
+
 /*  $DOC$
  *  $FUNCNAME$
  *     RD()
  *  $CATEGORY$
  *     DOS
  *  $ONELINER$
- *     
+ *     Remove a Directory
  *  $SYNTAX$
  *     RD(<NDIR>)
  *  $ARGUMENTS$
@@ -111,7 +104,7 @@ _retl(FALSE);
  *  $RETURNS$
  *    .T. IF SUCEFUL
  *    .F. IF NOT
- *    
+ *
  *  $DESCRIPTION$
  *    REMOVE A  DIRECTORY
  *  $EXAMPLES$
@@ -120,118 +113,70 @@ _retl(FALSE);
  *  ELSE
  *      RETURN(.F.)
  *  ENDIF
- *  
+ *
  *  $SEEALSO$
- *     
+ *     CD() MD()
  *  $INCLUDE$
- * extend.h dos.h dir.h bios.h internal.h
- *  $END$
- */
-HARBOUR CD(void)
-
-{
-        PITEM MEUDIR = _param(1,IT_STRING);
-        if(MEUDIR)
-{
-_retni(chdir(_parc(1)));
-}
-}
-
-HARBOUR MD(void)
-{
-
-        PITEM MEUDIR = _param(1,IT_STRING);
-        if(MEUDIR)
-{
-
-_retni(mkdir(_parc(1)));
-}
-}
-
-HARBOUR RD(void)
-{
-        PITEM MEUDIR = _param(1,IT_STRING);
-        if(MEUDIR)
-{
-
-_retni(chdir(_parc(1)));
-}
-}
-
-/*  $DOC$
- *  $FUNCNAME$
- *     FILE()
- *  $CATEGORY$
- *     DOS
- *  $ONELINER$
- *     
- *  $SYNTAX$
- *     RD(<NDIR>)
- *  $ARGUMENTS$
- *    <NDIR> FILE TO BE CHECKED
- *  $RETURNS$
- *    .T. IF SUCEFUL
- *    .F. IF NOT
- *    
- *  $DESCRIPTION$
- *    VERIFY IF A FILE EXISTS
- *  $EXAMPLES$
- *  IF FILE("OLA.PRG")
- *      RETURN(.T.)
- *  ELSE
- *      RETURN(.F.)
- *  ENDIF
- *  
- *  $SEEALSO$
- *     
- *  $INCLUDE$
- * extend.h dos.h dir.h bios.h internal.h
+ *     extend.h dos.h dir.h bios.h
  *  $END$
  */
 
-HARBOUR file(void)
+HARBOUR HB_RD( void )
 {
-        PITEM arg1 = _param(1,IT_STRING);
-char *arquivos;
-int achou;
-struct ffblk arquivo;
-if (arg1)             {
-arquivos=_parc(1);
-achou=findfirst(arquivos,&arquivo,FA_ARCH);
-if (achou)
- {
-_retl(TRUE);
+#ifdef __DOS__
+   hb_retni( ISCHAR( 1 ) ? rmdir( hb_parc( 1 ) ) : 0 );
+#else
+   hb_retni( 0 );
+#endif
 }
-   else
-   {              
-_retl(FALSE);
-}
-}
-}
-HARBOUR DISKUSED(void)
-{
-long bytsfree,bytsfull;
-struct diskfree_t disk;
-_dos_getdiskfree(0,&disk);
-bytsfree = (long) disk.avail_clusters * (long) disk.sectors_per_cluster * (long ) disk.bytes_per_sector;
-bytsfull = (long) disk.total_clusters * (long) disk.sectors_per_cluster * (long ) disk.bytes_per_sector;
-_retnl(bytsfull-bytsfree);
-}
-HARBOUR DISKFREE(void)
-{
-long bytsfree;
-struct diskfree_t disk;
-_dos_getdiskfree(0,&disk);
-bytsfree = (long) disk.avail_clusters * (long) disk.sectors_per_cluster * (long ) disk.bytes_per_sector;
 
-_retnl(bytsfree);
-}
-HARBOUR DISKFULL(void)
+HARBOUR HB_DISKUSED( void )
 {
-long bytsfull;
-struct diskfree_t disk;
-_dos_getdiskfree(0,&disk);
+#ifdef DOS
+   struct diskfree_t disk;
+   long bytsfree, bytsfull;
 
-bytsfull = (long) disk.total_clusters * (long) disk.sectors_per_cluster * (long ) disk.bytes_per_sector;
-_retnl(bytsfull);
+   _dos_getdiskfree( 0, &disk );
+
+   bytsfree = ( long ) disk.avail_clusters *
+              ( long ) disk.sectors_per_cluster *
+              ( long ) disk.bytes_per_sector;
+   bytsfull = ( long ) disk.total_clusters *
+              ( long ) disk.sectors_per_cluster *
+              ( long ) disk.bytes_per_sector;
+
+   hb_retnl( bytsfull - bytsfree );
+#else
+   hb_retnl( 0 );
+#endif
+}
+
+HARBOUR HB_DISKFREE( void )
+{
+#ifdef DOS
+   struct diskfree_t disk;
+
+   _dos_getdiskfree( 0, &disk );
+
+   hb_retnl( ( long ) disk.avail_clusters *
+             ( long ) disk.sectors_per_cluster *
+             ( long ) disk.bytes_per_sector );
+#else
+   hb_retnl( 0 );
+#endif
+}
+
+HARBOUR HB_DISKFULL( void )
+{
+#ifdef DOS
+   struct diskfree_t disk;
+
+   _dos_getdiskfree( 0, &disk );
+
+   hb_retnl( ( long ) disk.total_clusters *
+             ( long ) disk.sectors_per_cluster *
+             ( long ) disk.bytes_per_sector );
+#else
+   hb_retnl( 0 );
+#endif
 }

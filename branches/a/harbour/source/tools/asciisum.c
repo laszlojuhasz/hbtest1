@@ -1,4 +1,8 @@
 /*
+ * $Id$
+ */
+
+/*
  * GT CLIPPER STANDARD HEADER
  *
  * File......: asciisum.c
@@ -11,15 +15,6 @@
  *
  * This is an original work by Andy Leighton and is placed in the
  * public domain.
- *
- * Modification history:
- * ---------------------
- *
- * $Log$
- * Revision 1.1  1999/06/02 06:49:38  ajahja
- * Adding GT Library
- *
- *
  */
 
 /*
@@ -43,21 +38,20 @@
  *  $END$
  */
 
-#include <extend.h>
+#include "extend.h"
 
-HARBOUR
-GT_asciisum()
+HARBOUR HB_GT_ASCIISUM( void )
 {
 	char *str;
    int  len, i;
 	long ascSum = 0;
 
-	str = _parc(1);
-   len = _parclen(1);
+	str = hb_parc(1);
+   len = hb_parclen(1);
 
    for (i = 0; i <= len; i++,str++) {
       ascSum += *str;
 	}
 
-   _retnl(ascSum);
+   hb_retnl(ascSum);
 }

@@ -1,4 +1,8 @@
 /*
+ * $Id$
+ */
+
+/*
  * GT CLIPPER STANDARD HEADER
  *
  * File......: atdiff.c
@@ -11,15 +15,6 @@
  *
  * This is an original work by Andy Leighton and is placed in the
  * public domain.
- *
- * Modification history:
- * ---------------------
- *
- * $Log$
- * Revision 1.1  1999/06/02 06:18:45  ajahja
- * Adding GT Library
- *
- *
  */
 
 /*
@@ -53,18 +48,17 @@
  */
 
 
-#include <extend.h>
+#include "extend.h"
 
-HARBOUR
-gt_atdiff()
+HARBOUR HB_GT_ATDIFF( void )
 {
   char *s1, *s2;
   int pos, len;
 
   if (ISCHAR(1) && ISCHAR(2)) {
-    s1  = _parc(1);
-    s2  = _parc(2);
-    len = _parclen(2);
+    s1  = hb_parc(1);
+    s2  = hb_parc(2);
+    len = hb_parclen(2);
 
     /*
        loop through comparing both strings
@@ -76,11 +70,11 @@ gt_atdiff()
     for (pos = 1; (pos <= len) && (*s1 == *s2); s2++, s1++)
       pos++;
 
-    if (pos > len)                  // strings match exactly!!!
-      _retni(0);
+    if (pos > len)                  /* strings match exactly!!! */
+      hb_retni(0);
     else
-      _retni(pos);
+      hb_retni(pos);
   } else {
-    _retni(-1);                     // parameter mismatch - error -1
+    hb_retni(-1);                     /* parameter mismatch - error -1 */
   }
 }

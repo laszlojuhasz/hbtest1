@@ -4,7 +4,7 @@
 
 /*
  * Harbour Project source code:
- * CHECKSUM() CA-Tools function
+ * CT_CHECKSUM() CA-Tools function
  *
  * Copyright 1999 Victor Szel <info@szelvesz.hu>
  * www - http://www.harbour-project.org
@@ -37,13 +37,16 @@
 
 HARBOUR HB_CT_CHECKSUM( void )
 {
-   BYTE * pbyString = hb_parc( 1 );
+   BYTE * pbyString = ( BYTE * ) hb_parc( 1 );
    ULONG ulLen = hb_parclen( 1 );
    ULONG ulPos;
    ULONG ulResult = 0;
 
    for( ulPos = 0; ulPos < ulLen; ulPos++ )
-     ulResult += ( ( ULONG ) ( pbyString[ ulPos ] + ( ULONG ) ( pbyString[ ulPos + 1 ] * 256 ) ) ) & 0xFFFF;
+      ulResult += ( ( ULONG ) ( pbyString[ ulPos ] + ( ULONG ) ( pbyString[ ulPos + 1 ] * 256 ) ) ) & 0xFFFF;
 
-   hb_retnl( ( ULONG ) ( ( ulResult & 0x00FFFFFF ) | ( ( ulLen & 0xFF ) << 24 ) ) );
+   /* NOTE: Using hb_retnd() instead of hb_retnl() to always return a 
+            positive value. */
+
+   hb_retnd( ( ULONG ) ( ( ulResult & 0x00FFFFFF ) | ( ( ulLen & 0xFF ) << 24 ) ) );
 }
