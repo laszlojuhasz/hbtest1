@@ -1,0 +1,162 @@
+Build 0.31a 2000-02-02
+- Bugs fixed.
+
+Build #31 2000-01-27
+- Added macro support
+- Many changes, fixes, and enhancements to compiler internals
+- Many changes, fixes, and enhancements to RDD system
+- Many changes, fixes, and enhancements to the GT API system
+- Improved SETCURSOR() and SET( _SET_CURSOR )
+- Added FIELDBLOCK() and FIELDWBLOCK()
+- The Harbour '-w' command line option can set the maximal level of reported warnings. The following levels are supported currently:
+   '-w0'         - no warnings
+   '-w' or '-w1' - Clipper compatible warnings
+   '-w2'         - some useful warnings missed in Clipper
+   '-w3'         - warnings generated for Harbour language extensions
+- The 'libs' directory is now named 'lib'.
+- The 'runner' program is now named 'hbrun'.
+- Some include files now have an 'hb' prefix in the name.
+- db_brows significantly enhanced.
+- Regression testing enhanced and expanded, replacing several standalone test modules. Now in tests/regress directory.
+- Added FSETDEVMOD()
+- Added READINSERT()
+- Added MEMOLINE()
+- Added undocumented DISPOUTAT()
+- Added DEFPATH() and __DEFPATH()
+- Enhanced VERSION() to optionally include the compiler version used to create Harbour
+- Enhanced OS() to include more Windows version details
+- Added __INPUT(), __WAIT(), and SETTYPEAHEAD()
+- Added several undocumented __BOX*() functions
+- Added HB_VALTOSTR()
+- Improved Windows INKEY() support
+- Added missing Clipper 5.3 SETs:
+  _SET_VIDEOMODE
+  _SET_MBLOCKSIZE
+  _SET_MFILEEXT
+  _SET_STRICTREAD
+  _SET_OPTIMIZE
+  _SET_AUTOPEN
+  _SET_AUTORDER
+- Added undocumented GETE()
+- Compatibility functions added:
+  __CLASSNEW()
+  __CLASSINSTANCE()
+  __CLASSADD()
+  __CLASSNAME()
+  __CLASSSEL()
+  __CLEAR()
+  __ATCLEAR()
+- Added ANNOUNCE CLIPPER520 and ANNOUNCE CLIPPER530
+- Added PROCFILE()
+- Added national message related functions:
+  ISAFFIRM(), ISNEGATIVE(), NATIONMSG(), _NATSORTVER(), _NATMSGVER()
+- Added Harbour compiler tracing (i.e., debug output)
+- Many changes, fixes, and enhancements to documentation
+- Program added to extract documentation from source code and create NG,HLP ,OS2 IPF and TROFF output files
+- Compile time expression optimizer.
+- Some preprocessor fixes
+- Added ADS RDD
+- Added TYPE() function
+- MlCount() and MlPos() functions
+- Get system completely finished
+- Added HARBOURCMD/CLIPPERCMD environment variables
+- Added support for #pragma directives
+- Enhanced Getenv() function
+- Added //BUILD command line to compiler
+
+
+Build #30 September 30 1999
+- RDD support
+- Support for MEM files
+- The debugger
+- Support for BEGIN/END/RECOVER/BREAK statements
+- The preprocessor supports changed order of keywords in xcommand/xtranslate
+- Error handler supports retry/substitute operations
+- Support for aliased expressions
+- Support for FIELD variables
+- Support for canceling the application by pressing Alt-C
+- Enhanced ITEM API
+- Support for internal command line options '//'
+- Severe speed improvement
+- Better Directory() compatibility
+- Redirected output works now
+- Even more Preprocessor compatibility
+- Set HARBOUR= in environment to override Set CLIPPER= settings
+- Rudimentary Unix keyboard support added
+- Tone support added
+- SET KEY support was added
+- Extensive regression test suite added (RTL_TEST).
+- Array handling fixed and made Clipper compatible
+- Ragged array declaration and initialization support added
+- FileSys API extensions, more C5.3 compatible functions added
+- Compiler command line compatibility enhanced
+- Internal errors made uniform
+- Source code cleanup and formatting
+- Many new functions, samples and bug fixes
+
+Build #29 27 July 1999
+- Support for these compilers:
+   C++ Builder
+   DJGPP for Dos/Windows
+   MacIntosh
+   BC 3.1, 4.0, 4.5, 5.2
+   GCC OS/2
+   GCC Win32
+   MS VC
+   GCC Linux / Unix
+   IBM C
+   Watcom C/C++ 10
+- New INI file support
+- Enhanced support for MEMVAR's
+- Added support for PUBLIC, PRIVATE and PARAMETERS
+- Added support for empty arguments in functions.
+- Added colors support
+- Added support for concatenation operator "-"
+- Added support to generate runtime errors in functions
+
+
+Build #28 18 July 1999
+
+- Added support for MS Visual C++
+- First support for Apple Macintosh
+- Almost complete preprocessor
+- Error handling improved
+- Extend Library complete
+- First version of OOPS syntax added.
+- MEMVAR support started
+- Pre processor available as a run-time function
+- Rich Text Format Class added
+- Many Terminal functions created
+- Many national modules added
+- Many new functions
+- Many bug fixes
+
+----------------------------------------------------------------------
+
+Build #27 18 June 1999
+
+- Added new directory with GNU MAKE files for GCC on Linux
+- Added support for Watcom C/C++ compiler
+- Harbour compiles fine on Linux now.
+- Optional Strong Typed Variables
+- New DosShell function for DOS, OS/2 & Windows
+- First release of hScript added. Internet Scripting Samples!
+- Integrated preprocessor into compiler
+- Check on non used variables in codeblocks
+- Extended syntax for AllTrim and RTrim
+
+----------------------------------------------------------------------
+
+Build #26 12 June 1999
+
+- Check for non used declared variable
+- Better support for different platforms and compilers.
+- New Inifiles class
+- Support for IBM C++ compiler for OS/2
+- Harb26.Zip includes Runner.exe now
+  So NO NEED for any external software to run Harbour PRG's!
+- Many resolved Bugs
+- Many new functions
+- New National language message files
+- New TestBank. It compiles ALL Harbour samples 
+- <object>:<data> := <value> can now be used inside expressions (codeblocks)

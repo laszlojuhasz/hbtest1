@@ -1,0 +1,43 @@
+#
+# $Id$
+#
+
+ifndef MK
+all : first
+
+# There is a conflict with the use of '\' and '/' characters
+# The MAKE requires '/' in filenames (ARCH_DIR) however some compilers
+# and some DOS commands require '\' (ARCH_DOS)
+ARCH_DIR = $(subst \,/,$(ARCH))
+ARCH_DOS = $(subst /,\,$(ARCH))
+MK := $(subst \,/,$(subst \~,~,$(MAKE)))
+
+ifeq ($(COMSPEC),) #location of command.com
+  COMSPEC := command.com
+else
+  ifeq ($(HB_COMPILER),bcc31)
+    #Use standard dos path, which is already set up.
+  else
+    COMSPEC := $(subst \,/,$(COMSPEC))
+  endif
+endif
+
+RM = del
+RD = rmdir
+CP = copy
+MV = move
+MD = md
+
+dirbase::
+	-if not exist $(HB_ARCHITECTURE) $(MD) $(HB_ARCHITECTURE)
+	-if not exist $(ARCH_DOS)        $(MD) $(ARCH_DOS)
+
+clean::
+	-echo Y | $(RM) $(ARCH_DOS)\*.* 
+	-if exist *.bak $(RM) *.bak
+	-if exist *.obj $(RM) *.obj
+	-if exist core $(RM) core
+	-if exist *.o $(RM) *.o
+	-$(RD) $(ARCH_DOS)
+	-$(RD) $(HB_ARCHITECTURE)
+endif
