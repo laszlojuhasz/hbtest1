@@ -1,0 +1,11 @@
+#
+# $Id$
+#
+
+include $(TOP)$(ROOT)config/global.cf
+include $(TOP)$(ROOT)config/$(HB_ARCHITECTURE)/dir.cf
+
+all : first
+
+first clean install ::
+	$(DIR_RULE)

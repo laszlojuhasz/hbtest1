@@ -1,0 +1,9 @@
+@echo off
+del build32.err
+make -fmakefile.b32 > build32.err
+make -fterminal.b32 >> build32.err
+call bldgt32.bat >> build32.err
+cd tests\working
+call bld32exe.bat runner >> build32.err
+cd ..\..
+edit build32.err

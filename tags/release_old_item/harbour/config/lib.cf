@@ -1,0 +1,34 @@
+#
+# $Id$
+#
+
+include $(TOP)$(ROOT)config/global.cf
+include $(TOP)$(ROOT)config/c.cf
+include $(TOP)$(ROOT)config/prg.cf
+
+LIB_NAME := $(LIB_PREF)$(LIB)$(LIB_EXT)
+
+LIB_ARCH := $(notdir $(ARCH_DIR))
+ifeq ($(LIB_ARCH),)
+# ARCH_DIR ends with a slash
+LIB_ARCH := $(ARCH_DIR)$(LIB_NAME)
+else
+# there is no slash at the end of ARCH_DIR
+LIB_ARCH := $(ARCH_DIR)/$(LIB_NAME)
+endif
+
+ALL_OBJS = $(ALL_C_OBJS) $(ALL_PRG_OBJS)
+
+first : dirbase descend
+
+descend :
+	@$(MK) -C $(ARCH_DIR) -f $(GRANDP)Makefile 'TOP=$(GRANDP)' $(LIB_NAME)
+
+$(LIB_NAME) : $(ALL_OBJS)
+	$(AR_RULE)
+
+
+INSTALL_OBJS = $(LIB_ARCH)
+INSTALL_DIR = $(HB_LIB_DIR)
+
+include $(TOP)$(ROOT)config/install.cf

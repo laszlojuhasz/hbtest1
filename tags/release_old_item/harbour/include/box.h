@@ -1,0 +1,16 @@
+/*
+ * $Id$
+ */
+
+#ifndef HB_BOX_H_
+#define HB_BOX_H_
+
+/* strings for borders (same as box.ch, but defined for use by C) */
+                               /*01234567*/
+#define B_NONE                 "        "
+#define B_SINGLE               "ÚÄ¿³ÙÄÀ³"
+#define B_DOUBLE               "ÉÍ»º¼ÍÈº"
+#define B_SINGLE_DOUBLE        "ÖÄ·º½ÄÓº"
+#define B_DOUBLE_SINGLE        "ÕÍ¸³¾ÍÔ³"
+
+#endif /* HB_BOX_H_ */

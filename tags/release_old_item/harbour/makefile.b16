@@ -1,0 +1,95 @@
+# makefile for Borland C/C++ 16 bits
+
+.path.c   = source\compiler;source\vm;source\rtl;source\tools
+.path.h   = include
+.path.l   = source\compiler
+.path.y   = source\compiler
+.path.exe = bin
+.path.lib = libs\b16
+.path.obj = obj
+.path.prg = source\rtl;source\tools
+
+PROJECT: harbour.lib libs\b16\terminal.lib libs\win16\terminal.lib harbour.exe
+
+harbour.lib : arrays.obj asort.obj classes.obj codebloc.obj dates.obj datesx.obj \
+              debug.obj descend.obj dynsym.obj environ.obj error.obj \
+              errorapi.obj errorsys.obj extend.obj files.obj \
+              hardcr.obj initsymb.obj itemapi.obj math.obj \
+              mathx.obj mtran.obj objfunc.obj set.obj stringp.obj strings.obj \
+              stringsx.obj strcmp.obj tclass.obj transfrm.obj
+
+libs\b16\terminal.lib : console.obj
+
+libs\win16\terminal.lib : console.obj
+
+console.obj  : console.c  extend.h hbdefs.h
+  bcc -c -O2 -I.\include -o$@ source\rtl\console.c
+  tlib .\libs\b16\terminal.lib -+$@,,
+  bcc -c -O2 -DWINDOWS -I.\include -o$@ source\rtl\console.c
+  tlib .\libs\win16\terminal.lib -+$@,,
+
+arrays.obj   : arrays.c   extend.h hbdefs.h
+asort.obj    : asort.c    extend.h hbdefs.h
+classes.obj  : classes.c  extend.h hbdefs.h
+codebloc.obj : codebloc.c extend.h hbdefs.h
+dates.obj    : dates.c    extend.h hbdefs.h
+datesx.obj   : datesx.c   extend.h hbdefs.h
+debug.obj    : debug.c    extend.h hbdefs.h
+descend.obj  : descend.c  extend.h hbdefs.h
+dynsym.obj   : dynsym.c   extend.h hbdefs.h
+environ.obj  : environ.c  extend.h hbdefs.h
+error.obj    : error.c    extend.h hbdefs.h
+errorapi.obj : errorapi.c extend.h hbdefs.h
+errorsys.obj : errorsys.c extend.h hbdefs.h
+extend.obj   : extend.c   extend.h hbdefs.h
+files.obj    : extend.c   extend.h hbdefs.h
+hardcr.obj   : hardcr.c   extend.h hbdefs.h
+initsymb.obj : initsymb.c extend.h hbdefs.h
+itemapi.obj  : itemapi.c  extend.h hbdefs.h
+math.obj     : math.c     extend.h hbdefs.h
+mathx.obj    : mathx.c    extend.h hbdefs.h
+mtran.obj    : mtran.c    extend.h hbdefs.h
+objfunc.obj  : objfunc.c  extend.h hbdefs.h
+set.obj      : set.c      extend.h hbdefs.h
+strcmp.obj   : strcmp.c   extend.h hbdefs.h
+stringp.obj  : stringp.c  extend.h hbdefs.h
+strings.obj  : strings.c  extend.h hbdefs.h
+stringsx.obj : stringsx.c extend.h hbdefs.h
+tclass.obj   : tclass.c   extend.h hbdefs.h
+transfrm.obj : transfrm.c extend.h hbdefs.h
+
+asort.c      : asort.prg     harbour.exe
+error.c      : error.prg     harbour.exe
+errorsys.c   : errorsys.prg  harbour.exe
+objfunc.c    : objfunc.prg   harbour.exe
+stringp.c    : stringp.prg   harbour.exe
+tclass.c     : tclass.prg    harbour.exe
+
+.prg.c:
+  bin\harbour $< /n /osource\rtl
+
+.c.obj:
+  bcc -c -ml -O2 -I.\include -o$@ $<
+  tlib .\libs\b16\harbour.lib -+$@,,
+
+harbour.exe : harboury.c harbourl.c harbour.obj
+   echo -ml -O2 > bld.31
+   echo -ebin\harbour.exe >> bld.31
+   echo -Iinclude;source\compiler >> bld.31
+   echo source\compiler\harboury.c >> bld.31
+   echo source\compiler\harbourl.c >> bld.31
+   echo source\compiler\harbour.obj >> bld.31
+   bcc @bld.31
+   del bld.31
+   del harboury.obj
+   del harbourl.obj
+
+harboury.c : harbour.y
+   bison -d -v -y -osource\compiler\harboury.c source\compiler\harbour.y
+
+harbourl.c : harbour.l
+   flex -i -8 -osource\compiler\harbourl.c source\compiler\harbour.l
+
+harbour.obj : harbour.c
+   bcc -c -ml -O2 -I.\include -osource\compiler\harbour.obj \
+	source\compiler\harbour.c
