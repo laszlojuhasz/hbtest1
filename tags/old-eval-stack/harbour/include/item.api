@@ -1,0 +1,73 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Project source code:
+ * Compatibility header file for CA-Clipper Item API
+ *
+ * Copyright 1999 Victor Szakats <info@szelvesz.hu>
+ * www - http://www.harbour-project.org
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version, with one exception:
+ *
+ * The exception is that if you link the Harbour Runtime Library (HRL)
+ * and/or the Harbour Virtual Machine (HVM) with other files to produce
+ * an executable, this does not by itself cause the resulting executable
+ * to be covered by the GNU General Public License. Your use of that
+ * executable is in no way restricted on account of linking the HRL
+ * and/or HVM code into it.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA (or visit
+ * their web site at http://www.gnu.org/).
+ *
+ */
+
+/* DON'T USE THIS FILE FOR NEW HARBOUR C CODE */
+
+#ifndef _ITEM_API
+#define _ITEM_API
+
+#include "hbapiitm.h"
+
+typedef PEVALINFO EVALINFOP;
+
+#define _evalLaunch     hb_evalLaunch
+#define _evalNew        hb_evalNew
+#define _evalPutParam   hb_evalPutParam
+#define _evalRelease    hb_evalRelease
+
+#define _itemArrayGet   hb_itemArrayGet
+#define _itemArrayNew   hb_itemArrayNew
+#define _itemArrayPut   hb_itemArrayPut
+#define _itemCopyC      hb_itemCopyC
+#define _itemFreeC      hb_itemFreeC
+#define _itemGetC       hb_itemGetC
+#define _itemGetDS      hb_itemGetDS
+#define _itemGetL       hb_itemGetL
+#define _itemGetND      hb_itemGetND
+#define _itemGetNL      hb_itemGetNL
+#define _itemNew        hb_itemNew
+#define _itemParam      hb_itemParam
+#define _itemPutC       hb_itemPutC
+#define _itemPutCL      hb_itemPutCL
+#define _itemPutDS      hb_itemPutDS
+#define _itemPutL       hb_itemPutL
+#define _itemPutND      hb_itemPutND
+#define _itemPutNL      hb_itemPutNL
+#define _itemRelease    hb_itemRelease
+#define _itemReturn     hb_itemReturn
+#define _itemSize       hb_itemSize
+#define _itemType       hb_itemType
+
+#endif /* _ITEM_API */

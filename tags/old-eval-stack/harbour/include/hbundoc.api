@@ -1,0 +1,80 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Project source code:
+ * Compatibility header file for undocumented C API functions
+ *
+ * Copyright 1999 Victor Szakats <info@szelvesz.hu>
+ * www - http://www.harbour-project.org
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version, with one exception:
+ *
+ * The exception is that if you link the Harbour Runtime Library (HRL)
+ * and/or the Harbour Virtual Machine (HVM) with other files to produce
+ * an executable, this does not by itself cause the resulting executable
+ * to be covered by the GNU General Public License. Your use of that
+ * executable is in no way restricted on account of linking the HRL
+ * and/or HVM code into it.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA (or visit
+ * their web site at http://www.gnu.org/).
+ *
+ */
+
+/* DON'T USE THIS FILE FOR NEW HARBOUR C CODE */
+
+#ifndef HB_UNDOC_API_
+#define HB_UNDOC_API_
+
+#include "clipdefs.h"
+#include "hbapifs.h"
+
+/* Undocumented CA-Cl*pper Extend API */
+
+#define _reta           hb_reta
+#define _pcount         hb_pcount
+
+/* Undocumented CA-Cl*pper TSupport API */
+
+#define _tchdir         hb_fsChDir
+#define _tchdrv         hb_fsChDrv
+#define _tclose         hb_fsClose
+#define _tcommit        hb_fsCommit
+#define _tcreat         hb_fsCreate
+#define _tcurdir        hb_fsCurDir
+#define _tcurdrv        hb_fsCurDrv
+#define _tdevraw        hb_fsSetDevRaw
+#define _terror         hb_fsError
+#define _tisdevice      hb_fsIsDevice
+#define _tisdrv         hb_fsIsDrv
+#define _tlock          hb_fsLock
+#define _tlseek         hb_fsSeek
+#define _tmkdir         hb_fsMkDir
+#define _topen          hb_fsOpen
+#define _tread          hb_fsRead
+#define _trename        hb_fsRename
+#define _trmdir         hb_fsRmDir
+#define _tunlink        hb_fsDelete
+#define _twrite         hb_fsWrite
+
+/* Undocumented CA-Cl*pper support functions */
+
+#define _bset           memset
+#define _bmove          memmove
+#define _bcopy          memcpy
+#define _bcmp           memcmp
+#define _bscan(p,cnt,c) memchr( p, c, cnt )
+
+#endif /* HB_UNDOC_API_ */

@@ -1,0 +1,73 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Project source code:
+ * Compatibility header file for CA-Clipper Virtual Memory API
+ *
+ * Copyright 1999 Victor Szakats <info@szelvesz.hu>
+ * www - http://www.harbour-project.org
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version, with one exception:
+ *
+ * The exception is that if you link the Harbour Runtime Library (HRL)
+ * and/or the Harbour Virtual Machine (HVM) with other files to produce
+ * an executable, this does not by itself cause the resulting executable
+ * to be covered by the GNU General Public License. Your use of that
+ * executable is in no way restricted on account of linking the HRL
+ * and/or HVM code into it.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA (or visit
+ * their web site at http://www.gnu.org/).
+ *
+ */
+
+/* DON'T USE THIS FILE FOR NEW HARBOUR C CODE */
+
+#ifndef _VM_API
+#define _VM_API
+
+#include "clipdefs.h"
+#include "hbapi.h"
+
+/* Standard */
+#define _xvalloc( size, flags )      hb_xalloc( size )
+#define _xvfree( h )                 hb_xfree( h )
+#define _xvrealloc( h, size, flags ) hb_xrealloc( h, size )
+#define _xvlock( h )                 ( h )
+#define _xvunlock( h )               /* dummy */
+
+/* Wire */
+#define _xvwire( h )                 ( h )
+#define _xvunwire( h )               /* dummy */
+
+/* State */
+#define _xvlockcount( h )            ( 0 )
+#define _xvsize( h )                 hb_xsize( h )
+
+/* -------------------------------------------------------- */
+/* Warning: Heap functionality is not supported by Harbour. */
+/*          All functions will emulate constant failure.    */
+/* -------------------------------------------------------- */
+
+/* Heap */
+#define _xvheapnew( size )           ( 0 )
+#define _xvheapdestroy( h )          /* dummy */
+#define _xvheapresize( h, size )     /* dummy */
+#define _xvheapalloc( h, size )      ( 0 )
+#define _xvheapfree( h, offset )     /* dummy */
+#define _xvheaplock( h, offset )     ( 0 )
+#define _xvheapunlock( h, offset )   /* dummy */
+
+#endif /* _VM_API */
