@@ -1,0 +1,1047 @@
+/*
+ * $Id$
+ */
+
+/* Use this format for the entry headers:
+   YYYY-MM-DD HH:MM UTC[-|+]hhmm Your Full Name <your_email@address>
+   For example:
+   2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
+*/
+
+2002-12-31 11:45 UTC-0500 David G. Holm <dholm@jsd-llc.com>
+  * include/hbver.h
+    * Updated the build number and the ChangeLog information.
+
+2002-12-30 16:50 UTC-0300 Horacio Roldan <harbour_ar@yahoo.com.ar>
+   * source/rdd/dbfcdx/dbfcdx1.c
+        ! fixed scope related bug, reported by Blue Face
+        + added support for the EVAL clause in INDEX
+
+2002-12-28 09:05 UTC-0300 Horacio Roldan <harbour_ar@yahoo.com.ar>
+   * source/rdd/dbfcdx/dbfcdx1.c
+   * source/rdd/dbfcdx/dbfcdx2.h
+        ! fixed bug (search path related),
+          reported by Jacek Potempa <Jacek.Potempa@otc.pl>
+        ! fixed GPF bug reported by Alex Schaft <alexs@quicksoftware.co.za>
+        + added support for DBOI_KEYCOUNTRAW, DBOI_KEYNORAW == DBOI_RECNO,
+          DBOI_KEYTYPE, DBOI_KEYSIZE, DBOI_FULLPATH
+        ! fixed: DBOI_BAGNAME
+        ! fix return value when there's no active order to: DBOI_FILEHANDLE,
+          DBOI_ISCOND, DBOI_ISDESC, DBOI_UNIQUE, DBOI_POSITION, DBOI_RECNO,
+          DBOI_KEYNORAW, DBOI_KEYCOUNT, DBOI_KEYCOUNTRAW.
+          This makes ordKeyNo() = recno() and ordKeyCount() = lastrec()
+          in such case. Reported by Hernán Diego Ceccarelli
+          <hceccarelli@cesotech.com.ar>
+        + added helper function hb_cdxOrdListClear
+        ! structural index isn't closed anymore
+        ! fixed ordKeyNo() and ordKeyCount() to respect filters, they also
+          respect the set deleted but only when there is a filter (as C53)
+        ! fixed ordScope(0/1, ""), reported by Jean-Christophe AVARGUES and
+          Blue Face
+
+   * source/rdd/workarea.c
+        ! fix to fieldname, reported by Luiz Rafael Culik
+
+2002-12-27 16:40 UTC-0800 Brian Hays <bhays@abacuslaw.com>
+  + added doc/windll.txt as an introduction to Windows
+      32-bit dll creation with Harbour.
+
+2002-12-22 13:06 UTC+0200 Chen Kedem <niki@actcom.co.il>
+  * doc/dirstruc.txt
+    + Add a line about source/codepade
+
+2002-12-22 03:46 UTC-0300 Walter Negro <anegro@overnet.com.ar>
+  * source/rtl/set.c
+    ! Fix, reset PRINTFILE handle when close file.
+
+2002-12-18 14:00 UTC-0500 David G. Holm <dholm@jsd-llc.com>
+  * source/rtl/set.c
+    ! In the set_string function, when then item parameter is NIL use a
+      zero-length string (bug fix for SET PATH TO and SET DEFAULT TO).
+
+2002-12-17 10:50 UTC-0800 Brian Hays <bhays@abacuslaw.com>
+   * contrib/rdd_ads/ads.ch
+      - Removed commands for SET PATH, DEFAULT, DELETED, EXACT,
+        DATEFORMAT and EPOCH since these are handled by the
+        Set Listener functionality now.
+      + added new #define ADS_REQUIRE_VERSION6 to control version 6
+         ace32.lib/linker requirements
+
+   * contrib/rdd_ads/ads1.c
+      * created Set Listener support for
+         HB_SET_DATEFORMAT
+         HB_SET_DEFAULT
+         HB_SET_DELETED
+         HB_SET_EPOCH
+         HB_SET_EXACT
+         HB_SET_PATH
+         So whenever you call the Set() function or commands,
+         ADS is automatically updated.
+
+      * added these fixes by Luiz Culik:
+         * Created bDictionary and adsConnectHandle to allow access
+            to ads data dictionaries;
+         * store pFieldInfo.uiDec = uiDec for doubles in adsCreateFields.
+
+      * fixed initialization of dVal in adsGetValue
+            (fix by Ron Christie)
+
+      * fixed Trace in ADS_GETFUNCTABLE(%i, %p), *uiCount, pTable));
+         to show the contents of uiCount instead of the pointer address.
+
+   * contrib/rdd_ads/adsfunc.c
+      * to test SetListener capabilities, added or upgraded
+         these functions to be classic "Set/Get" functions so
+         they return the prior ads setting:
+            AdsSetDeleted
+            AdsSetDefault
+            AdsSetSearchPath
+            AdsSetExact
+         NOTE! Because the Set() function now also controls
+         ADS, there is no reason for normal code to ever call
+         these functions. If you do, you may get ADS out of sync
+         with Harbour's settings and create unpredictable results.
+
+      + added these funcs by Luiz Culik:
+         AdsAddTable()
+         AdsAddUser To Group()
+         AdsUseDictionary()
+         These are all protected by ADS_REQUIRE_VERSION6, so to use them
+         you must define it when compiling rddads.
+
+      The data dictionary support is a work-in-progress and may need
+      to be re-thought, so don't get too dependent upon current
+      implementation.
+
+    * contrib/rdd_ads/doc/en/adsfuncs.txt
+        + added documentation for functions in adsfunc.c
+    * contrib/rdd_ads/doc/en/readme.txt
+        + added explanation for using the Set() function call
+          as well as the equivalent commands for SET DEFAULT TO,
+          DATEFORMAT, DELETE, EXACT and EPOCH.
+        + added explanation of INDEXING and Progress Displays using
+            AdsRegCallBack() (and why EVAL/EVERY cannot be supported.)
+
+2002-12-17 12:40 UTC-0300 Walter Negro <anegro@overnet.com.ar>
+  * source/tget.prg
+    ! Fix, UpdateBuffer() should not actualize the variable if the value
+      was not modified.
+
+    Reported by Francisco Gamboa and Horacio Roldan
+
+2002-12-07 21:45 UTC-0300 Luiz Rafael Culik <culikr@uol.com.br>
+  * source/rtl/menuto.prg
+    ! Fixed Color Parameters when only One color is passed
+
+2002-12-02 15:30 UTC-0500 David G. Holm <dholm@jsd-llc.com>
+  * config/linux/global.cf
+    ! Add to PRG_USR instead of replacing it.
+  * source/rtl/set.c
+    ! When adding a new listener, set the next pointer to NULL.
+
+2002-12-03 22:40 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * makefile.bc
+  * makefile.nt
+    * Added lines, needed for compiling of cdpla850.c
+  * source/codepage/cdpla850.c
+  * source/codepage/Makefile
+    ! Minor fixes
+
+2002-11-01 12:00 UTC-0300 Luiz Rafael Culik <culikr@uol.com.br>
+  * source/rtl/dbsdf.prg
+    ! fixed importing/exporting on linux
+  * contrib/mysql/tmysql.prg
+    ! Applyed Fixes by  Wang Shuming
+  * config/linux/global.cf
+    + PRG_USR=-DHB_LINUX  macro Added to compile dbsdf.prg
+
+2002-11-28 15:10 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/pp/ppcore.c
+    ! Bug fixed, related to list match markers
+
+2002-11-27 13:30 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rdd/dbfntx/dbfntx1.c
+    ! Bug fixed, reported by Carlos Andr©s
+  * source/rtl/cdpapi.c
+    ! Bug fixed in HB_TRANSLATE()
+
+2002-11-26 21:20 UTC+0100 Tomaz Zupan <tomaz.zupan@orpo.si>
+  * contrib/odbc/browodbc.prg
+    ! There was a bug in skipping, that threw an error when
+      dataset contained 0 rows
+
+2002-11-25 21:45 UTC-0300 Luiz Rafael Culik <culikr@uol.com.br>
+  * utils/hbmake/hbmake.prg
+    ! removed unused Var
+  * source/rtl/menuto.prg
+    ! minor formating
+
+2002-11-21 12:05 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rdd/dbfntx/dbfntx1.c
+    * DBOI_ORDERCOUNT is supported now
+    * hb_stackPop() is added in ntxOrderCreate()
+  * contrib/rdd_ads/ads1.c
+    * adsOrderCreate() created indexes as if ADDITIVE clause is specified, even
+      it was absent - is fixed now.
+      adsOrderCreate() respects current order if WHILE clause is specified
+
+2002-11-20 22:00 UTC-0300 Luiz Rafael Culik <culikr@uol.com.br>
+  * utils/hbmake/hbmake.prg
+    utils/hbmake/hbmlang.c
+    * Some sinc from xharbour hbmake.prg hbmlang.c
+
+2002-11-20 21:45 UTC-0300 Luiz Rafael Culik <culikr@uol.com.br>
+  * source/pp/pptable.c
+    + COLOR parameter to @...PROMPT
+  * source/rtl/menuto.prg
+    ! Added code to use the passed Color to the Prompt.This will allow
+    to make Color menus and Was Far Requested since this feature is an Alaska,Flagship and Max compiler
+  * tests/menuto.prg
+    * Changes the Test to Show the ability of menu items in colors
+  * contrib/mysql/tmysql.prg
+    * On method  GetRow(nRow) of TMySQLQuery fixed Handling of Date
+     Retrived(The date is formated on Current SET DATE FORMAT)
+
+2002-11-20 21:56 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/codepage/cdppl852.c
+  * source/codepage/cdppliso.c
+  * source/codepage/cdpplmaz.c
+    ! Minor fix in comment delimiters
+  * source/rdd/dbcmd.c
+    ! COPY TO ... FIELDS is fixed again
+
+2002-11-18 22:35 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rdd/dbcmd.c
+    ! COPY TO ... FIELDS ... is fixed - fields in the result dbf are in the
+      same secuence as in the FIELDS clause.
+
+2002-11-18 14:55 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * include/hbrddapi.c
+  * source/rdd/dbcmd.c
+  * source/rdd/workarea.c
+  * source/rdd/dbfntx/dbfntx1.c
+  * source/pp/pptable.c
+  * contrib/rdd_ads/ads1.c
+     * WHILE clause implemented for ADS RDD
+
+2002-11-15 14:30 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * include/hbcdpapi.c
+  * source/rtl/cdpapi.c
+  * source/codepage/cdpru866.c
+  * source/codepage/cdprukoi.c
+  * source/codepage/cdpruwin.c
+    * Some fixes and enhancements
+  + source/codepage/cdp_tpl.c
+    + Template file for codepages is added
+  + source/codepage/cdppl852.c
+  + source/codepage/cdppliso.c
+  + source/codepage/cdpplmaz.c
+    + Codepages for Polish language, provided by Jacek Kubica <kubica@wssk.wroc.pl>
+  * source/codepage/Makefile
+  * makefile.bc
+  * makefile.nt
+  * makefile.vc
+    * Changed to compile new Polish codepages
+
+2002-11-13 15:50 UTC-0300 Horacio Roldan <harbour_ar@yahoo.com.ar>
+   * include/hbrddcdx.h
+   * source/rdd/dbfcdx/dbfcdx1.c
+   * source/rdd/dbfcdx/dbfcdx1.h
+   * source/rdd/dbfcdx/dbfcdx2.h
+        ! fixed some declarations to avoid warnings,
+          removed unnecessary introduced casts
+        ! fixed skip bug reported by Andrzej
+        ! fixed bug when empty scope used
+        ! fixed posible index corruption when shared.
+        + added functions cdxError, hb_cdxOrderListRebuild,
+          hb_cdxIndexReindex
+          Now reindex works, as well as pack and zap.
+
+2002-11-13 12:25 UTC+0100 Antonio Linares <alinares@fivetech.com>
+  * include/hbexprb.c
+    ! strings as bytes arrays management (assignment)
+    ! changes borrowed from xHarbour
+
+  * source/vm/hvm.c
+    ! strings as bytes arrays management (assignment)
+
+2002-11-12 14:32 UTC+0100 Antonio Linares <alinares@fivetech.com>
+  * source/vm/hvm.c
+    + strings as bytes arrays management implemented
+
+    Notice: Assignment is not implemented yet!
+
+2002-11-12 12:55 UTC+0100 Antonio Linares <alinares@fivetech.com>
+  * source/vm/hvm.c
+    + ":=" operator overloading support for locals and statics variables.
+
+2002-11-12 10:23 UTC+0100 Antonio Linares <alinares@fivetech.com>
+  * source/vm/classes.c
+  * source/vm/hvm.c
+    + Added support for "[]" operator overloading
+
+2002-11-10 19:35 UTC-0300 Luiz Rafael Culik <culikr@uol.com.br>
+  *source/rtl/alert.prg
+    ! fix initialization of cold Var
+
+2002-11-08 13:19 UTC+0100 Ignacio Ortiz <ignacio@fivetech.com>
+  * source/rtl/errorapi.c
+    !Fixed severity to 'can retry' on Base errors (as Clipper)
+  * source/rtl/mlcount.c
+    !Fixed bug reported Brian Hays (the solution is also from Brian)
+
+2002-11-07 22:05 UTC-0300 Luiz Rafael Culik <culikr@uol.com.br>
+  *source/rtl/alert.prg
+  ! due an little mistake i`ve posted xharbour code, i`ve reverted back to version 1.38 and applyed the patch
+2002-11-07 08:30 UTC-0300 Luiz Rafael Culik <culikr@uol.com.br>
+  * source/rtl/alert.prg
+    ! minor fix to my change from yesterday
+
+2002-11-06 18:38 UTC-0300 Walter Negro <anegro@overnet.com.ar>
+  * source/rtl/achoice.prg
+    ! Fix, if no UDF is set, pressing an alpha key it
+      go to first item finding this letter without respecting
+      upper and lowercase.
+    Reported by Luiz Culik.
+
+2002-11-06 00:00 UTC-0500 Paul Tucker <ptucker@sympatico.ca>
+  * makefile.vc
+  * makefile.nt
+  * make_vc.bat
+    * clean now handled by make
+    * corrected param handling
+    * use /? for help
+
+2002-11-05 21:41 UTC-0300 Luiz Rafael Culik <culikr@uol.com.br>
+  * source/rtl/alert.prg
+    ! Fixed problem when Text to display has more then 60 chars and the Line Breaker character (;) dont exist
+     (You notice this behaviour on some erros produced by xharbour rdd)
+
+2002-11-05 19:01 UTC-0300 Walter Negro <anegro@overnet.com.ar>
+  * source/rtl/strcase.c
+    ! Fix call to toupper(), tolower(), forcing unsigned char.
+      For the correct working with DJGPP compiler.
+  * source/rtl/is.c
+    ! Fix call to isdigit() and isalpha(), islower() and isupper(),
+      forcing unsigned char.
+      For the correct working with DJGPP compiler.
+
+2002-11-05 14:38 UTC-0300 Walter Negro <anegro@overnet.com.ar>
+  * contrib/libct/setlast.prg
+    + Init version of SETLASTKEY()
+  * contrib/libct/screen1.c
+    ! Fix variable declaration.
+  * contrib/libct/Makefile
+    + setlast.prg
+  * contrib/libct/makefile.bc
+    + setlast.prg
+  * contrib/libct/makefile.vc
+    + setlast.prg
+  * contrib/libct/ctflist.txt
+    * passed setlastkey() to Started state.
+  * contrib/libnf/dispc.c
+    ! Fix variable declaration.
+  * contrib/libnf/ftattr.c
+    ! Fix variable declaration.
+
+2002-11-04 15:18 UTC-0500 Paul Tucker <ptucker@sympatico.ca>
+  * makefile.vc
+    * no more recursive nmake calls
+  * makefile.nt
+    * corrected one batch mode call
+  * make_vc.bat
+    * if building Harbour under NT, use the alternate makefile.nt
+    * for faster builds.
+    * if you would prefer not to use batch mode,
+    *  run make_vc /y (just like nmake)
+
+2002-11-03 20:28 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rdd/dbcmd.c
+    * hb_rddFieldIndex() was declared as static - is changed now, because it is
+      called from dbfntx1.c
+
+2002-11-02 19:26 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * include/hbrddntx.h
+  * source/rdd/dbfntx/dbfntx1.c
+    * The algorithm of key expression evaluation is optimized. Now, if it is
+      the field name only, macro/codeblock evaluation doesn't used -
+      SELF_GETVALUE is used instead. It leads to sensible indexing speedup
+      in case of such simplest index keys.
+
+2002-11-02 11:55 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rdd/dbcmd.c
+    ! hb_rddGetCurrentWorkAreaPointer() fixed as proposed Jacek Potempa
+
+2002-10-31 16:40 UTC-0300 Walter Negro <anegro@overnet.com.ar>
+  * source/rtl/tget.prg
+    ! Fix ::DeleteEnd() method.
+      It didn't erase the last character.
+      Reported by Luiz Rafael Culik.
+
+2002-10-29 20:45 UTC-0500 Paul Tucker <ptucker@sympatico.ca>
+  * source/rtl/gtwin/gtwin.c
+    * Win9x Tone() support currently only for Borland and MSVC compilers.
+    * The only issue for the moment, is if the calculation of TICKS is
+    * incorrect for other compilers.  SEE dTicks in hb_gt_Tone().
+    * Someone may wish to adapt the code above hb_gt_tone() in gtwin.c
+    * for other compilers.
+
+2002-10-29 16:20 UTC-0500 Paul Tucker <ptucker@sympatico.ca>
+  * makefile.vc
+    * slight re-ordering and added missed codepage.lib directive.
+  + makefile.nt
+  * make_vc.bat
+    * if building Harbour under NT, use the alternate makefile.nt
+    * for faster builds.
+  * Changelog
+    Changed date of following entry from 28 to 29.
+
+2002-10-29 11:10 UTC-0500 Paul Tucker <ptucker@sympatico.ca>
+  * source/rtl/gtwin/gtwin.c
+    * modified by Robert Haley <rhaley@cheshire.net> to allow Tone()
+    * to work correctly under Win9x.
+  * source/vm/maindllp.c
+    * remove redundant returns.  Set parc to return NULL not ""
+  * source/rtl/transform.c
+    * changed nFor decl to UINT
+  * source/rtl/defpath.c
+    * removed unneeded assignment to size
+  * source/rdd/dbfcdx/dbfcdx1.c
+    * removed unneeded assignement to uiLen
+
+2002-10-27 21:35 UTC+0100 J-F lefebvre <jfl@mafact.com>
+  * source/rdd/dbf1.c
+    * added missing typecasting for msvc.
+
+2002-10-27 10:28 UTC+0200 Chen Kedem <niki@actcom.co.il>
+  * doc/en/lang.txt
+    + Added Russian KOI-8 to HB_LANGSELECT() list of supported ID's
+
+2002-10-25 14:30 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rtl/cdpapi.c
+  * source/codepage/cdpru866.c
+  * source/codepage/cdprukoi.c
+  * source/codepage/cdpruwin.c
+  * source/vm/hvm.c
+    * Memory for codepage tables is allocated dynamically now - this is needed
+      to provide a possibility of loading codepages from external file while
+      run-time.
+    * Possibility to have the same weight for some characters ( usually accented
+      and appropriate unaccented ) is implemented.
+
+2002-10-25 11:38 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rdd/dbfntx/dbfntx1.c
+    ! Few fixes, related to codepages support
+    ! Bug fixed ( setting controlling index doesn't caused movement to the
+      top logical record before )
+
+2002-10-24 15:00 UTC-0300 Walter Negro <anegro@overnet.com.ar>
+  * source/Makefile
+    ! Add codepage to compilation
+
+2002-10-24 20:58 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * include/hbapicdp.h
+    ! Minor fix
+
+2002-10-24 16:05 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  + include/hbapicdp.h
+    + added header file for codepage system
+  * include/hbapirdd.h
+  * include/hbrddcdx.h
+  * include/hbrdddbf.h
+  * include/hbrddntx.h
+  + source/lang/msgrukoi.c
+    + added a msg file for koi8-r
+  * source/lang/Makefile
+    * msgrukoi.c added to Makefile
+  + source/rtl/cdpapi.c
+    + added codepages api source
+      Functions HB_SETCODEPAGE() and HB_TRANSLATE() are implemented
+  * source/rtl/is.c
+  * source/rtl/strcase.c
+    * IsAlpha(), IsUpper(), IsLower(), Upper(), Lower() functions modified to
+      use codepages
+  * source/rdd/dbcmd.c
+  * source/rdd/dbf1.c
+  * source/rdd/dbstrux.prg
+  * source/rdd/dbfntx/dbfntx1.c
+    * Rdd sources are modified to use codepages
+      dbUseArea() and dbCreate() has new optional parameter - codepage id.
+  * source/pp/pptable.c
+    * Commands USE and CREATE FROM are changed - new optional clause
+      'CODEPAGE <id>' is added
+  * source/vm/itemapi.c
+    * hb_itemStrCmp() is modified to use codepages
+  * source/Makefile
+  * makefile.bc
+  * makefile.vc
+    * makefiles are modified
+
+2002-10-24 15:40 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  + source/codepage
+    + directory for codepage source files is added
+  + source/codepage/cdpru866.c
+  + source/codepage/cdprukoi.c
+  + source/codepage/cdpruwin.c
+  + source/codepage/Makefile
+    + Files for Russian codepages and Makefile for codepage library are added
+
+2002-10-22 18:30 UTC-0400 David G. Holm <dholm@jsd-llc.com>
+  * source/rtl/set.c
+    ! Removed comment block that incorrectly commented out
+      the default case in the HB_SET switch block.
+    ! Fixed the previously commented out code that prevented
+      changing the new HB_SET_DIRSEPARATOR value.
+  * tests/set_test.prg
+    + Added tests to display the Harbour-specific SET values
+      and a test for changing the _SET_DIRSEPARATOR value.
+
+2002-10-22 17:30 UTC-0400 David G. Holm <dholm@jsd-llc.com>
+  * source/rdd/dbfcmd.c
+    * Made FIELDNAME Clipper compatible for the case where there is
+      no current workarea and when the field number does not exist.
+
+2002-10-22 02:00 UTC-0500 Paul Tucker <ptucker@sympatico.ca>
+  * source/rdd/dbcmd.c
+    ! corrected copy length in rddsetdefault
+
+2002-10-22 18:53 UTC+0100 Antonio Linares <alinares@fivetech.com>
+  * source/rtl/filesys.c
+    ! minor fix reported by José Fco. Pérez
+
+2002-10-22 12:00 UTC-0500 Paul Tucker <ptucker@sympatico.ca>
+  * source/rdd/dbcmd.c
+    ! Fix a problem with Select() that I introduced.
+
+2002-10-21 05:11 UTC+0100 Antonio Linares <alinares@fivetech.com>
+  * source/rtl/achoice.prg
+    ! minor fix
+
+2002-10-21 23:41 UTC-0300 Walter Negro <anegro@overnet.com.ar>
+  * source/rtl/achoice.prg
+    ! Reduce redundant code.
+    ! Fix default values of nBottom and nRight out of range.
+    ! Add control of value of nBottom and nRight.
+  * source/rtl/tget.prg
+    ! Fix ::Changed property to conform UPDATE() behaviour with that Clipper.
+
+      Fixed by Andi Jahja in xHarbour
+
+2002-10-21 12:30 UTC-0500 Paul Tucker <ptucker@sympatico.ca>
+  * source/rdd/dbfcdx/dbfcdx1.c
+    ! added some long needed typecasts.
+    ! corrected for index on/to without a tag
+  * source/rdd/dbfntx/dbfntx1.c
+  * source/rdd/dbfcdx/dbfcdx1.c
+  * source/common/hbffind.c
+  * source/common/hbfsapi.c
+    ! some strncpy changes.
+
+2002-10-21 12:00 UTC-0500 Paul Tucker <ptucker@sympatico.ca>
+  + tests/vidtest.prg by Brian Dukes <bdukes@yellowthingy.co.uk>
+  * source/rdd/dbcmd.c
+  * source/rdd/workarea.c
+  * source/rdd/dbf1.c
+    ! modified string copy operations for efficiency where appropriate.
+
+2002-10-21 10:20 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * contrib/rdd_ads/adsfunc.c
+    ! Few fixes - checking for hb_parc() return value
+
+2002-10-20 22:50 UTC-0500 Paul Tucker <ptucker@sympatico.ca>
+  * source/rtl/inkey.c
+    ! reduce keyboard polling to <= once per tick.
+    ! Screen updating flies.
+  * source/rtl/philes.c
+    ! comparison to TRUE is not consistant with bool type in FREAD
+
+2002-10-20 16:18 UTC-0500 Paul Tucker <ptucker@sympatico.ca>
+  * source/rdd/dbfntx/dbfntx1.c
+    ! removed unused pLastPages
+
+2002-10-20 15:16 UTC-0500 Paul Tucker <ptucker@sympatico.ca>
+  * source/rdd/dbcmd.c
+    ! Just a few changes for efficiency...
+
+2002-10-20 22:40 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rdd/dbcmd.c
+    ! Yet another fix related to the hb_parc() changes
+
+2002-10-20 21:12 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rdd/dbcmd.c
+    ! Few fixes related to the latest hb_parc() changes
+  * source/rdd/dbfntx/dbfntx1.c
+    ! Bug fixed in indexing
+
+2002-10-19 16:50 UTC-0500 Paul Tucker <ptucker@sympatico.ca>
+   * include/hbdefs.h
+     * Added definition for UINT
+   * include/hbapigt.h
+   * source/rtl/gtapi.c
+   * source/rtl/saverest.c
+   * source/rtl/xsavescr.c
+   * source/rtl/gtdos/gtdos.c
+   * source/rtl/gtsln/gtsln.c
+   * source/rtl/gtos2/gtos2.c
+   * source/rtl/gtwin/gtwin.c
+     ! Properly account for the fact that hb_gt_rectsize returns an int
+       (ok, so we treat it as UINT, but this is better than USHORT)
+   * source/rtl/gtwin/gtwin.c
+     * New, highly optimized Windows console gt driver
+      written by Przemyslaw Czerpak <druzus@polbox.com>
+      with some (?) fixes suggested by Peter Rees <peter@rees.co.nz>
+      and Marek Paliwoda <paliwoda@inetia.pl>
+
+2002-10-19 16:26 UTC-0500 Paul Tucker <ptucker@sympatico.ca>
+   * source/rtl/box.c
+   * source/rtl/disksphb.c
+   * source/rtl/errorapi
+   * source/rtl/fnsplit
+   * source/rtl/setcolor
+     ! Simplified some calls to hb_parc()
+
+2002-10-19 21:40 UTC+0100 Martin Vogel <vogel@inttec.de>
+   * contrib/libct/Makefile
+   * contrib/libct/Makefile.bc
+   * contrib/libct/Makefile.vc
+   * contrib/libct/ctflist.txt
+   + contrib/libct/invertwin.prg
+     + INVERTWIN() function provided by Marek Horodyski <homar@altkom.com.pl>
+
+2002-10-19 20:52 UTC+0100 Antonio Linares <alinares@fivetech.com>
+   * debug/debugger.prg
+     ! minor fix to BP (breakpoints) settings saved to file
+
+   * debug/dbghelp.prg
+     ! mouse support added to debugger help
+
+2002-10-19 20:34 UTC+0100 Antonio Linares <alinares@fivetech.com>
+   * makefile.bc
+     + source/vm/maindllp.c added to the makefile
+     (don't know why this file was removed from it)
+
+2002-10-19 20:07 UTC+0100 Antonio Linares <alinares@fivetech.com>
+   * source/rtl/is.c
+     ! hb_parc() use made clipper compatible
+
+2002-10-19 16:20 UTC+0100 Antonio Linares <alinares@fivetech.com>
+   * source/rdd/dbcmd.c
+     ! some fixes on hb_parc() use from DbCreate()
+
+   WARNING: Cause recent fix to hb_parc() to make it Clipper compatible,
+            hb_parc() result must be checked before using the returned value.
+
+   REQUEST: Alexander, Horacio and Brian, as the RDDs captains, please review
+            all hb_parc() use from the RDDs source code, to asure hb_parc()
+            result is properly tested.
+
+2002-10-19 13:27 UTC+0100 Antonio Linares <alinares@fivetech.com>
+   * include/hbapi.h
+   * include/hbtypes.h
+   * source/vm/extend.c
+   * source/vm/maindllp.c
+     ! all hb_stor... functions changed to return an int value
+
+   Notice: These changes fixes the extend API compatibility issues
+           with Clipper reported by gabor salai <gabor.salai@euroherc.hr>
+
+2002-10-19 12:53 UTC+0100 Antonio Linares <alinares@fivetech.com>
+   * source/vm/extend.c
+     ! minor fix to hb_parc()
+
+   Notice: This change fixes the hb_parc() bug described by John Skelton
+
+2002-10-19 12:20 UTC+0100 Antonio Linares <alinares@fivetech.com>
+   * source/rtl/philes.c
+     ! FRead() fix for dynamic strings use with more than one holder
+
+   Notice: This change fixes the FRead() bug described by Randy Portnoff
+           <randy@palmasdev.com>
+
+2002-10-19 11:16 UTC+0100 Antonio Linares <alinares@fivetech.com>
+   * include/hbtypes.h
+     ! minor change to avoid compiling errors if using -DHB_API_MACROS
+
+2002-10-17 14:40 UTC-0300 Luiz Rafael Culik <culikr@uol.com.br>
+   * source/rtl/tbrowse.prg
+     ! Fixed SetColumnMethod() that was not using all Display Area(The nWidthMax variable was substraced by 2)
+
+2002-10-17 15:00 UTC+0700 Andi Jahja <andijahja@cbn.net.id>
+   * source/compiler/harbour.sly
+   * source/compiler/harbour.y
+     ! Add missing third parameter on calls of hb_compGenPushSymbol()
+
+2002-10-16 1:50 UTC-0800 Brian Hays <bhays@abacuslaw.com>
+   * include/dbInfo.ch
+     ! added comments
+
+2002-10-14 17:10 UTC-0300 Walter Negro <anegro@overnet.com.ar>
+  * source/rtl/tget.prg
+    ! fixed get (value and display) involving negative with decimal
+      number whose value is less than 1, in some pictures.
+
+2002-10-14 17:40 UTC+0100 Antonio Linares <alinares@fivetech.com>
+  * include/hbcomp.h
+  * include/hbexprb.c
+  * include/hbmacro.h
+  * include/hbvmpub.h
+  * source/compiler/genc.c
+  * source/compiler/harbour.c
+  * source/vm/dynsym.c
+  * source/vm/hvm.c
+  * source/vm/macro.c
+    ! bug fixed when accesing an aliased expression from within a static
+      function with the same name as the alias.
+    ! changes borrowed from xharbour
+
+  WARNING: All PRGs must be recompiled as defined value HB_FS_PUBLIC
+  has changed !!!
+
+2002-10-14 11:45 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rdd/dbfntx/dbfntx1.c
+    ! bug fixed in scopes, when the last record of current order was in the scope
+    ! bug fixed in error handling while index creating
+
+  * source/rdd/dbfcdx/dbfcdx1.c
+    ! bug fixed in error handling while index creating ( the same as in dbfntx )
+
+2002-10-14 0:10 UTC-0800 Brian Hays <bhays@abacuslaw.com>
+   * contrib/rdd_ads/rddads.h
+   * contrib/rdd_ads/ads1.c
+      * created iFileType to pArea so each workarea knows
+           whether it's ADT or CDX or NTX
+   * contrib/rdd_ads/adsfunc.c
+      - removed the 'far' from a char far *  added in last post
+
+   * include/dbstruct.ch
+      Added a note that it's also used by C code
+         #included it in hbapirdd.h (where I removed redundancies)
+   * include/ord.ch
+   + include/dbInfo.ch
+      * moved all the DBI_*, DBRI_* and DBOI_* constants to the
+         new dbInfo.ch, and included this in ord.ch and hbapirdd.h
+   * include/hbapirdd.h
+      * removed the redundancies, included dbinfo.ch and dbstruct.ch
+
+
+2002-10-12 19:00 UTC-0300 Luiz Rafael Culik <culikr@uol.com.br>
+   * contrib/mysql/mysql.c
+        ! Fixed Buffer sizes on DATATOSQL() and FILETOSQLBINARY() It was leading to GPF due buffer underflow.
+        Many thanks to Peter Rees
+
+2002-10-11 21:35 UTC-0300 Horacio Roldan <harbour_ar@yahoo.com.ar>
+   * source/rdd/dbfcdx/dbfcdx1.h
+   * source/rdd/dbfcdx/dbfcdx2.h
+   * source/rdd/dbfcdx/dbfcdx1.c
+        ! fixed bug reported by Richard Chidiak
+        + added function hb_cdxMacroRun
+        ! fixed bug reported by Peter Rees.
+        * changed index creation and updating:
+          some spaces in keys aren't compressed now, so ADS can read
+          the indexes. (it couldn't with some special keys)
+
+2002-10-07 13:22 UTC-0300 Gustavo Junior Alves <alves@coslinux.com.br>
+  * source/rtl/filesys.c
+    * Fix to compile on MSVC - Thanks to Andi Jahja <andijahja@harbour-id.net>
+
+2002-10-06 21:29 UTC-0300 Gustavo Junior Alves <alves@coslinux.com.br>
+  * source/rtl/filesys.c
+    * hb_filecase on hb_fsMkDir, hb_fsChDir and hb_fsRmDir
+
+2002-10-05 23:00 UTC-0300 Luiz Rafael Culik <culikr@uol.com.br>
+  * source/rtl/tget.prg
+    * Fixed small problem when using Mouse to select the editing get
+
+2002-10-04 15:552 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rdd/dbfntx/dbfntx1.c
+    ! Bug fixed in key appending with few open indexes
+
+2002-10-04 14:42 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rdd/dbcmd.c
+    ! Bug fixed in COPY TO, APPEND FROM with aliased fields
+
+2002-10-04 13:58 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rdd/dbfntx/dbfntx1.c
+    ! Few bugs fixed, related to OrdKeyNo() and OrdKeyCount()
+
+2002-10-03 0:40 UTC-0800 Brian Hays <bhays@abacuslaw.com>
+   * contrib/rdd_ads/ace.h
+      + added (void) to AdsApplicationExit( void );
+        This removes a compiler warning about missing the prototype.
+        Let me know if this creates a problem with any other compilers.
+
+   * contrib/rdd_ads/adsfunc.c
+      + added AdsGetLastError() contrib. by Randy Portnoff (Thanks!)
+
+   * contrib/rdd_ads/ads1.c
+      * Cleaned up adsPutValue and adsGetValue formatting,
+      * Fixed fieldname length references
+      * Removed errant setting of uiLen in adsGetValue since these
+            are set in adsOpen now.
+      * adsOrderInfo(DBOI_KEYVAL): fixed ntx handling of numerics
+               Added special decoding for keys of Negative values.
+      * adsCreate: fixed fielddefs buffer sizing
+      * adsOpen: fixed fieldname length references
+                 set uiLen of extended types
+
+      * adsInfo: reformatted, prepared for fleshing out the rest
+               of the options.
+               Added support for dbinfo(DBI_ISFLOCK)
+
+2002-10-01 08:25 UTC+0300 Chen Kedem <niki@actcom.co.il>
+  * doc/es/browse.txt
+  * doc/es/cmdline.txt
+  * doc/es/dbstrux.txt
+    ! columns in <table></table> need to be at least 3 spaces apart
+
+2002-09-30 16:46 UTC+0300 Chen Kedem <niki@actcom.co.il>
+  * doc/en/input.txt
+  * doc/en/lang.txt
+  * doc/en/menu.txt
+  * doc/en/objfunc.txt
+    ! columns in <table></table> need to be at least 3 spaces apart
+
+2002-09-29 12:00 UTC+0700 Andi Jahja <andijahja@harbour-id.net>
+  * source/rtl/tget.prg
+    ! fixed get (value and display) involving negative (with decimal)
+      number whose value is less than 1.
+
+2002-09-28 21:50 UTC-0300 Horacio Roldan <harbour_ar@yahoo.com.ar>
+   * source/compiler/hbusage.c
+        ! fixed a bug in the list of hb_compPrintCredits ;-)
+
+2002-09-28 01:55 UTC-0300 Horacio Roldan <harbour_ar@yahoo.com.ar>
+   * include/hbapirdd.h
+   * include/hbrdddbf.h
+   * include/hbrddcdx.h
+   * include/hbrddntx.h
+   * source/rdd/dbcmd.c
+   * source/rdd/workarea.c
+   * contrib/rdd_ads/ads1.c
+   * contrib/rdd_ads/rddads.h
+        + Changed fieldname max length handling,
+          it is now a workarea property. (set by the RDD)
+          (in ADS, this is just a patch)
+
+2002-09-28 01:50 UTC-0300 Horacio Roldan <harbour_ar@yahoo.com.ar>
+   * source/rdd/dbfcdx/dbfcdx1.h
+   * source/rdd/dbfcdx/dbfcdx1.c
+        ! changed key in-memory management.
+          this fixes trimmed key problems, reported by Lorenzo Fiorini.
+        ! fixed error reported by Gianni Santamarina.
+   * source/rdd/dbf1.c
+        ! fixed some typos
+
+2002-09-26 12:30 UTC-0300 Horacio Roldan <harbour_ar@yahoo.com.ar>
+   * include/hbapi.h
+        - removed filecase() definition from Extend API
+   * include/hbapifs.h
+        - added filecase() definition to FS API
+   * include/hbset.h
+   * source/rtl/set.c
+   * source/rtl/filesys.c
+        ! fixed GPF, fixed MSVC typecast,
+          changed settings from strings to numeric constants.
+
+2002-09-25 18:47 UTC-0300 Horacio Roldan <harbour_ar@yahoo.com.ar>
+   * source/rdd/rtl/file.c
+   * source/rdd/rtl/filesys.c
+        ! added some missing casts.
+
+2002-09-25 17:15 UTC-0300 Horacio Roldan <harbour_ar@yahoo.com.ar>
+   * source/rdd/rtl/file.c
+   * source/rdd/rtl/filesys.c
+        ! fixed GPF, hb_xfree must be used for hb_xgrab memory.
+
+2002-09-25 20:00 GMT+0100 Martin Vogel <vogel@inttec.de>
+  * contrib/libct/color.prg
+    ! fixed initialization bug reported by Marek Horodyski<homar@altkom.com.pl>
+
+2002-09-25 13:15 UTC-0300 Gustavo Junior Alves <alves@coslinux.com.br>
+  * source/rtl/file.c
+  * source/rtl/filesys.c
+    ! Allow last changes to compile under MSVC
+    ! Change strdup to hb_strdup and rindex (BSD) to strrchr (POSIX)
+
+2002-09-23 11:00 UTC-0300 Gustavo Junior Alves <alves@coslinux.com.br>
+  * include/hbapi.h
+  * include/hbset.h
+  * include/set.ch
+  * source/pp/pptable.c
+  * source/rtl/file.c
+  * source/rtl/filesys.c
+  * source/rtl/set.c
+    ! Implement SET FILECASE, DIRCASE and DIRSEPARATOR
+  * source/pp/ppcore.c
+    ! Fix a core dump on HB_TR_DEBUG PrevSquare
+
+2002-09-22 16:40 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rdd/dbfntx/dbfntx1.c
+    ! Bug fixed introduced in previous fix :)
+
+2002-09-22 12:25 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rdd/dbfntx/dbfntx1.c
+    ! Bug fixed in key append
+
+2002-09-21 12:20 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rdd/dbfntx/dbfntx1.c
+    ! Bug fixed, related to seeking while set deleted on is set
+
+2002-09-20 23:55 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rdd/dbfntx/dbfntx1.c
+    ! Bug fixed, related to softseek
+
+2002-09-20 14:50 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rdd/dbfntx/dbfntx1.c
+    ! Bug fixed in ntxZap()
+
+2002-09-20 12:32 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rdd/dbfntx/dbfntx1.c
+  * include/hbrddntx.h
+    * Improved algorithm of record append in shared mode - that should result
+      in better speed.
+    * Maximum number of keys in the index page is now Clipper compatible -
+      as I just discovered for myself, in Clipper it is already ( hm... I forgot
+      appropriate English word - is divided by 2 ).
+
+2002-09-19 00:35 UTC-0300 Horacio Roldan <harbour_ar@yahoo.com.ar>
+   * source/rdd/dbfcdx/dbfcdx2.h
+   * source/rdd/dbfcdx/dbfcdx1.c
+        + added function hb_cdxGetTagNumber
+        ! fixed some castings and warnings reported by
+          Larry Sevilla, Luiz and Andy.
+        ! fixed controlling order after ordCreate()
+        ! fixed controlling order after ordListAdd()
+          This fixes the controlling order after:
+          USE name INDEX name
+          SET INDEX TO name
+          INDEX ON key TAG tagname
+   * source/rdd/dbcmd.c
+        ! fix gpf in pack, reported by Jorge Mason.
+   * source/rdd/dbf1.c
+        + added support for DBI_FULLPATH and DBI_SHARED,
+          sent by Gianluca Piemonte.
+
+2002-09-18 16:00 UTC-0400 David G. Holm <dholm@jsd-llc.com>
+  * source/rdd/dbfcdx/dbfcdx1.c
+    ! Replaced non-existent _SORTSWAPPAGE used in hb_xgrab() type
+      override with the existing, and correct, LPSORTSWAPPAGE.
+
+2002-09-17 21:55 UTC-01 jf lefebvre (mafact) <jfl@mafact.com>
+  * source/rdd/dbfcdx\dbfcdx1.c
+    ! Added needed typecasting for M$soft C
+  * source/vm/classes.c
+    ! Minor cosmetic change and syncro with xHarbour
+
+2002-09-13 23:30 UTC-0400 David G. Holm <dholm@jsd-llc.com>
+  * source/rtl/dbdelim.prg
+    ! Bug fix for fields that have an embedded delimiter.
+
+2002-09-13 22:20 UTC-0400 David G. Holm <dholm@jsd-llc.com>
+  * source/rtl/dbdelim.prg
+    ! Bug fixes for consecutive blank fields in a record and for
+      records that have no delimiters (either because there are
+      no character fields or because all of the character fields
+      are blank).
+
+2002-09-09 16:48 UTC+0300 Chen Kedem <niki@actcom.co.il>
+  * source/common/hbffind.c
+    - Remove redundant line which used FILE_ATTRIBUTE_NOT_CONTENT_INDEXED
+      from hb_fsAttToRaw(). The next line already use the explicit
+      value 0x00002000. Now Harbour complie with Borland BCB 3.0
+
+2002-09-09 14:25 UTC+0100 Tomaz Zupan <tomaz.zupan@orpo.si>
+  * contrib/odbc/todbc.prg
+    + Added recordset caching.
+
+2002-09-07 14:38 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * source/rdd/dbfntx/dbfntx1.c
+    ! GPF fixed, which appeared after pack operation if dbf became empty.
+
+2002-09-07 00:30 UTC-0300 Luiz Rafael Culik <culikr@uol.com.br>
+   * source/rtl/tget.prg
+     Added missing Caption DATA and init to ""
+
+2002-09-05 21:15 UTC-0300 Luiz Rafael Culik <culikr@uol.com.br>
+   * contrib/rdd_ads/ads1.c
+     ! Fixed Support for Long fields names in adscreate
+     ! Fixed Display for the follow type of fields when ADT format is USED
+       Autoinc -> 10
+       Double/Curdouble 8(Official Size of field on Database)+2*HB_SET_DECIMALS value
+
+2002-09-05 18:46 UTC-0300 Horacio Roldan <harbour_ar@yahoo.com.ar>
+   * include/hbrddcdx.h
+   * source/rdd/dbfcdx/dbfcdx1.c
+   * source/rdd/dbfcdx/dbfcdx1.h
+   * source/rdd/dbfcdx/dbfcdx2.h
+     + added support for creating big indexes
+     hb_cdxSortSwapSavePage, hb_cdxSortSwapFillPage,
+     hb_cdxSortSwapRecurseDict, hb_cdxSortSwapSendWord
+     hb_cdxSortSwapBuildIndex, hb_cdxSortSwapGetNextKey;
+     + added hb_cdxKeyValCompare
+     ! fixed hb_cdxKeyGetItem for numeric keys
+     ! fixed hb_cdxTagExtNodeWrite
+     ! renamed some structs because td was confused
+
+   * source/rdd/dbf1.c
+     synched with
+       2002-08-31 20:38 UTC-0800 Ron Pinkas <ron@ronpinkas.com>
+         * source/rdd/dbf1.c
+           ! Fixed hb_dbfLockFile() to release record locks before
+             attempting to lock the file.
+       2002-08-31 15:24 UTC-0800 Ron Pinkas <ron@ronpinkas.com>
+         * source/rdd/dbf1.c
+           ! Fixed hb_dbfLockRecord() to return success when area
+             alread has file lock.
+
+2002-09-04 17:56 UTC+0200 Maurilio Longo <maurilio.longo@libero.it>
+   * harbour/source/rtl/tbrowse.prg
+     ! Fixed cell padding inside ::DispCell(). Character or memo fields have to be
+       padded right. Number fields have to be padded left.
+
+2002-09-03 19:10 UTC+0200 Maurilio Longo <maurilio.longo@libero.it>
+   * harbour/source/rtl/teditor.prg
+     ! fixed line splitting when a character is deleted from a line and there is a
+       word wrapping limit. Please note that lines of text are treated differently
+       from the way clipper 5.x treats them, in particular when past EOL there is no
+       deletion from current line
+   * harbour/source/rtl/memoedit.prg
+     ! fixed cursor positiong and shaping when calling an user function
+
+2002-09-02 19:25 UTC-0400 David G. Holm <dholm@jsd-llc.com>
+  * ChangeLog
+    + Started a new ChangeLog.
+  * source/rtl/ChangeLog.013
+    + Renamed old ChangeLog, due to file size.
+  * source/rtl/dbdelim.prg
+    ! Code fix to handle the field delimiters, provided by the
+      APPEND FROM code author, Marco Braida <marcobra@elart.it>.
+2006-02-15 13:50 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/vm/hvm.c
+    ! fixed memory leak I introduced changing Ryszard modifications
+
+      need such functionality yet
+  + harbour/ChangeLog.015
+  * harbour/source/vm/debug.c
+
+  * harbour/harbour.spec
+  * harbour/bin/hb-func.sh
+    * some modification in xhb* scripts building - adding passing
+      predefined compiler and linker switches
+  * harbour/source/vm/hvm.c
+    * minor code cleanup
+
+2006-09-03 18:55 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbapicls.h
+  * harbour/source/vm/classes.c
+  * harbour/source/vm/hvm.c
+  * harbour/tests/overload.prg
+    + added support for overloading [] in assignment operation
+
+2006-09-03 16:30 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/ChangeLog
+  + harbour/ChangeLog.016
+    * new ChangeLog file created
+  * harbour/include/hbver.h
+    * updated version number to 0.47.0
+  * tagged CVS as build47
