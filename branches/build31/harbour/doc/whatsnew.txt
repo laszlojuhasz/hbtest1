@@ -56,6 +56,10 @@ Build #31 2000-01-27
 - Added TYPE() function
 - MlCount() and MlPos() functions
 - Get system completally finished
+- Added HARBOURCMD/CLIPPERCMD environment variables
+- Added support for #pragma directives
+- Enhanced Getenv() function
+- Added //BUILD command line to compiler
 
 
 Build #30 September 30 1999
