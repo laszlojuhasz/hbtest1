@@ -1,0 +1,188 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Las siguientes partes son derechos adquiridos de sus autores individuales.
+ * www - http://www.harbour-project.org
+ *
+ * Copyright 2000 Alejandro de G rate <alex_degarate@hotmail.com>
+ * Documentaci¢n en Espa¤ol de: HB_LANGSELECT(), HB_LANGNAME()
+ *
+ * Copyright 2000-2001 Viktor Szakats <viktor.szakats@syenar.hu>
+ * Documentaci¢n en Ingl‚s de: HB_LANGSELECT(), HB_LANGNAME()
+ *
+ * Vea doc/license.txt por los t‚rminos de la licencia.
+ *
+ */
+
+/*  $DOC$
+ *  $FUNCNAME$
+ *      HB_LANGSELECT()
+ *  $CATEGORY$
+ *      Nacion
+ *  $ONELINER$
+ *      Selecciona un m¢dulo de mensajes espec¡fico a una nacionalidad.
+ *  $SYNTAX$
+ *      HB_LANGSELECT(<cNuevoLeng>)   --> cViejoLeng
+ *  $ARGUMENTS$
+ *      <cNuevoLeng>  El c¢digo de identificaci¢n del m¢dulo de idioma del
+ *                    pa¡s.
+ *      Los valores posibles para <cNuevoLeng> estan mostrados abajo, tal
+ *      como est n definidos en la librer¡a de Lenguajes, ordenados por
+ *      idioma.
+ *
+ *      <table>
+ *      Idioma              C¢digo de P gina   <cNuevoLeng>
+ *      Vasco               850                EU
+ *      Catal n             850                CA
+ *      Chino Simplificado  936                ZHGB
+ *      Chino Tradicional   950                ZHB5
+ *      Croata              852                HR852
+ *      Croata              ISO-8859-2         HRISO
+ *      Checo               852                CS852
+ *      Checo               ISO-8859-2         CSISO
+ *      Checo               KAM                CSKAM
+ *      Checo               Windows-1250       CSWIN
+ *      Ingl‚s              437                EN
+ *      Esperanto           850                EO
+ *      Franc‚s             850                FR
+ *      Gallego             850                GL
+ *      Alem n              850                DE
+ *      Alem n ANSI         ANSI               DEWIN
+ *      Hebreo              862                HE862
+ *      Hebreo              Windows-1255       HEWIN
+ *      Hungaro             852                HU852
+ *      Hungaro             CWI-2              HUCWI
+ *      Hungaro             Windows-1          HUWIN
+ *      Island‚s            850                IS850
+ *      Indonesio           437                ID
+ *      Italiano            437                IT
+ *      Coreano             949                KO
+ *      Polaco              852                PL852
+ *      Polaco              ISO-8859-1         PLISO
+ *      Polaco              Mozowia            PLMAZ
+ *      Polaco              Windows-1250       PLWIN
+ *      Portugu‚s           850                PT
+ *      Rumano              852                RO
+ *      Ruso                866                RU866
+ *      Ruso                KOI-8              RUKOI8
+ *      Ruso                Windows-1251       RUWIN
+ *      Serbio              852                SR852
+ *      Serbio              ISO-8859-2         SRISO
+ *      Serbio              Windows-1251       SRWIN
+ *      Eslovenio           437                SL437
+ *      Eslovenio           852                SL852
+ *      Eslovenio           ISO-8859-2         SLISO
+ *      Eslovenio           Windows-1251       SLWIN
+ *      Espa¤ol             850                ES
+ *      Espa¤ol ANSI        ANSI               ESWIN
+ *      </table>
+ *  $RETURNS$
+ *      <cViejoLeng>   El anterior identificador de Lenguaje
+ *  $DESCRIPTION$
+ *      Esta funci¢n establece un m¢dulo de lenguaje o idioma para las
+ *      advertencias internas, mensajes NatMsg y errores internos que
+ *      utilizan nombres de fechas, d¡as, meses, etc.
+ *      Cuando una IDentificaci¢n de Lenguaje es elegida todos los mensajes
+ *      son mostrados de acuerdo al actual idioma, hasta que otro sea
+ *      seleccionado, ¢ el programa termine.
+ *      La ID son dos letras que establecen la correspondencia con un idioma
+ *      dado de acuerdo a una tabla.
+ *
+ *      Nota: La tabla que se muestra arriba puede no estar completa.
+ *  $EXAMPLES$
+ *      * El siguiente ejemplo cambia el m¢dulo de idioma por defecto, y
+ *        luego muestra por pantalla la ID del m¢dulo de lenguaje, el nombre
+ *        del d¡a de la semana y el mes en varios idiomas.
+ *
+ *        REQUEST HB_LANG_PT
+ *        REQUEST HB_LANG_RO
+ *        REQUEST HB_LANG_ES
+ *        LOCAL nViejo
+ *
+ *        HB_LANGSELECT("PT")    // el idioma por defecto es ahora Portugu‚s
+ *        ? "La nueva ID de idioma elegida es ", HB_LANGSELECT()   // PT
+ *        ? CDOW( DATE() )
+ *        ? CMONTH( DATE() )
+ *
+ *        nViejo := HB_LANGSELECT("RO")  // el idioma por defecto es Romano
+ *        ? "La vieja ID de idioma elegida era ", nViejo            // PT
+ *        ? "La nueva ID de idioma elegida es  ", HB_LANGSELECT()   // RO
+ *        ? CDOW( DATE() )
+ *        ? CMONTH( DATE() )
+ *
+ *        HB_LANGSELECT("ES")      // el idioma por defecto es ahora Espa¤ol
+ *        ? "La nueva ID de idioma elegida es  ", HB_LANGSELECT()   // ES
+ *        ? CDOW( DATE() )
+ *        ? CMONTH( DATE() )
+ *
+ *  $TESTS$
+ *      Vea ..\tests\langapi.prg
+ *  $STATUS$
+ *      R
+ *  $COMPLIANCE$
+ *      Esta funci¢n es una Extensi¢n de Harbour.
+ *  $PLATFORMS$
+ *      Dos, Win32, OS/2
+ *  $FILES$
+ *      La librer¡a asociada es rtl
+ *  $SEEALSO$
+ *      HB_LANGNAME(),NATIONMSG()
+ *  $END$
+ */
+
+
+/*  $DOC$
+ *  $FUNCNAME$
+ *      HB_LANGNAME()
+ *  $CATEGORY$
+ *      Nacion
+ *  $ONELINER$
+ *      Retorna el nombre del m¢dulo actual de lenguaje en uso.
+ *  $SYNTAX$
+ *      HB_LANGNAME()   --> cNombreLenguaje
+ *  $ARGUMENTS$
+ *      Ninguno.
+ *  $RETURNS$
+ *      HB_LANGNAME() retorna <cNombreLenguaje>, el nombre del idioma en uso
+ *  $DESCRIPTION$
+ *      Esta funci¢n describe el nombre del idioma ¢ lenguaje correspondiente
+ *      al que existe por defecto ¢ ha sido establecido por HB_LANGSELECT().
+ *  $EXAMPLES$
+ *      * El siguiente ejemplo cambia el m¢dulo de idioma por defecto, y
+ *      luego muestra por pantalla la ID del m¢dulo de lenguaje, el idioma
+ *      asociado a esa ID. y el d¡a de la semana y el mes en varios idiomas
+ *
+ *        REQUEST HB_LANG_PT
+ *        REQUEST HB_LANG_ES
+ *
+ *        HB_LANGSELECT("PT")    // el idioma por defecto es ahora Portugu‚s
+ *        ? "El idioma actual es ", HB_LANGNAME()               // Portugu‚s
+ *        ? "La nueva ID de idioma elegida es ", HB_LANGSELECT()   // RO
+ *        ? CDOW( DATE() )
+ *        ? CMONTH( DATE() )
+ *
+ *        HB_LANGSELECT("ES")     // el idioma por defecto es ahora Espa¤ol
+ *        ? "El idioma actual es ", HB_LANGNAME()         // Espa¤ol
+ *        ? CDOW( DATE() )
+ *        ? CMONTH( DATE() )
+ *  $TESTS$
+ *      Vea ..\tests\langapi.prg
+ *  $STATUS$
+ *      R
+ *  $COMPLIANCE$
+ *      Esta funci¢n es una Extensi¢n de Harbour.
+ *  $PLATFORMS$
+ *      Dos, Win32, OS/2
+ *  $FILES$
+ *      La librer¡a asociada es lang
+ *      Nota: el nombre de la extensi¢n de la librer¡a, puede cambiar con el
+ *            sistema operativo
+ *  $SEEALSO$
+ *      HB_LANGSELECT(),NATIONMSG()
+ *  $END$
+ */ 
+
+
+
