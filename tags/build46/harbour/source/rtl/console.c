@@ -1,0 +1,528 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Project source code:
+ * The Console API
+ *
+ * Copyright 1999 Antonio Linares <alinares@fivetech.com>
+ * www - http://www.harbour-project.org
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this software; see the file COPYING.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307 USA (or visit the web site http://www.gnu.org/).
+ *
+ * As a special exception, the Harbour Project gives permission for
+ * additional uses of the text contained in its release of Harbour.
+ *
+ * The exception is that, if you link the Harbour libraries with other
+ * files to produce an executable, this does not by itself cause the
+ * resulting executable to be covered by the GNU General Public License.
+ * Your use of that executable is in no way restricted on account of
+ * linking the Harbour library code into it.
+ *
+ * This exception does not however invalidate any other reasons why
+ * the executable file might be covered by the GNU General Public License.
+ *
+ * This exception applies only to the code released by the Harbour
+ * Project under the name Harbour.  If you copy code from other
+ * Harbour Project or Free Software Foundation releases into a copy of
+ * Harbour, as the General Public License permits, the exception does
+ * not apply to the code that you add in this way.  To avoid misleading
+ * anyone as to the status of such modified files, you must delete
+ * this exception notice from them.
+ *
+ * If you write modifications of your own for Harbour, it is your choice
+ * whether to permit this exception to apply to your modifications.
+ * If you do not wish that, delete this exception notice.
+ *
+ */
+
+/*
+ * The following parts are Copyright of the individual authors.
+ * www - http://www.harbour-project.org
+ *
+ * Copyright 1999 David G. Holm <dholm@jsd-llc.com>
+ *    hb_conOutAlt(), hb_conOutDev(), DEVOUT(), hb_conDevPos(),
+ *    DEVPOS(), __EJECT(),
+ *    hb_conOut(), hb_conOutErr(), OUTERR(),
+ *    hb_conOutStd(), OUTSTD(), PCOL(), PROW(),
+ *    SETPRC(), and hb_conInit()
+ *
+ * Copyright 1999-2001 Viktor Szakats <viktor.szakats@syenar.hu>
+ *    hb_conNewLine()
+ *    DISPOUTAT()
+ *
+ * See doc/license.txt for licensing terms.
+ *
+ */
+
+#define HB_OS_WIN_32_USED
+#include "hbapi.h"
+#include "hbapiitm.h"
+#include "hbapifs.h"
+#include "hbapigt.h"
+#include "hbset.h"
+#include "hb_io.h"
+
+/* length of buffer for CR/LF characters */
+#define CRLF_BUFFER_LEN   OS_EOL_LEN + 1
+
+static BOOL    s_bInit = FALSE;
+static USHORT  s_uiPRow;
+static USHORT  s_uiPCol;
+static char    s_szCrLf[ CRLF_BUFFER_LEN ] = { HB_CHAR_LF, 0 };
+static int     s_iCrLfLen = 1;
+static FHANDLE s_hFilenoStdin  = 0;
+static FHANDLE s_hFilenoStdout = 1;
+static FHANDLE s_hFilenoStderr = 2;
+
+void hb_conInit( void )
+{
+   HB_TRACE(HB_TR_DEBUG, ("hb_conInit()"));
+
+#if !defined( HB_WIN32_IO )
+   /* when HB_WIN32_IO is set file handles with numbers 0, 1, 2 are
+      transalted inside filesys to:
+      GetStdHandle( STD_INPUT_HANDLE ), GetStdHandle( STD_OUTPUT_HANDLE ),
+      GetStdHandle( STD_ERROR_HANDLE ) */
+
+   s_hFilenoStdin  = fileno( stdin );
+   s_hFilenoStdout = fileno( stdout );
+   s_hFilenoStderr = fileno( stderr );
+
+#endif
+
+#ifdef HB_C52_UNDOC
+   {
+      /* Undocumented CA-Clipper switch //STDERR:x */
+      FHANDLE hStderr = ( FHANDLE ) hb_cmdargNum( "STDERR" );
+
+      if( hStderr == 0 )      /* //STDERR with no parameter or 0 */
+         s_hFilenoStderr = s_hFilenoStdout;
+      else if( hStderr > 0 ) /* //STDERR:x */
+         s_hFilenoStderr = hStderr;
+   }
+#endif
+
+#if defined(OS_UNIX_COMPATIBLE) && !defined(HB_EOL_CRLF)
+   s_szCrLf[ 0 ] = HB_CHAR_LF;
+   s_szCrLf[ 1 ] = '\0';
+   s_iCrLfLen = 1;
+#else
+   s_szCrLf[ 0 ] = HB_CHAR_CR;
+   s_szCrLf[ 1 ] = HB_CHAR_LF;
+   s_szCrLf[ 2 ] = '\0';
+   s_iCrLfLen = 2;
+#endif
+
+   /*
+    * Some compilers open stdout and stderr in text mode, but
+    * Harbour needs them to be open in binary mode.
+    */
+   hb_fsSetDevMode( s_hFilenoStdout, FD_BINARY );
+   hb_fsSetDevMode( s_hFilenoStderr, FD_BINARY );
+
+   s_uiPRow = s_uiPCol = 0;
+   s_bInit = TRUE;
+
+   hb_gtInit( s_hFilenoStdin, s_hFilenoStdout, s_hFilenoStderr );
+   hb_setkeyInit();  /* April White, May 6, 2000 */
+}
+
+void hb_conRelease( void )
+{
+   HB_TRACE(HB_TR_DEBUG, ("hb_conRelease()"));
+
+   /*
+    * Clipper does not restore screen size on exit so I removed the code with:
+    *    hb_gtSetMode( s_originalMaxRow + 1, s_originalMaxCol + 1 );
+    * If the low level GT drive change some video adapter parameters which
+    * have to be restored on exit then it should does it in its Exit()
+    * method. Here we cannot force any actions because it may cause bad
+    * results in some GTs, f.e. when the screen size is controlled by remote
+    * user and not Harbour application (some terminal modes), [Druzus]
+    */
+
+   hb_setkeyExit();  /* April White, May 6, 2000 */
+   hb_conXSaveRestRelease();
+
+   hb_gtExit();
+
+   hb_fsSetDevMode( s_hFilenoStdout, FD_TEXT );
+   hb_fsSetDevMode( s_hFilenoStderr, FD_TEXT );
+
+   s_bInit = FALSE;
+}
+
+char * hb_conNewLine( void )
+{
+   HB_TRACE(HB_TR_DEBUG, ("hb_conNewLine()"));
+
+   return s_szCrLf;
+}
+
+HB_FUNC( HB_OSNEWLINE )
+{
+   hb_retc( s_szCrLf );
+}
+
+typedef void hb_out_func_typedef( const char *, ULONG );
+
+/* Format items for output, then call specified output function */
+static void hb_conOut( USHORT uiParam, hb_out_func_typedef * pOutFunc )
+{
+   char * pszString;
+   ULONG ulLen;
+   BOOL bFreeReq;
+
+   HB_TRACE(HB_TR_DEBUG, ("hb_conOut(%hu, %p)", uiParam, pOutFunc));
+
+   pszString = hb_itemString( hb_param( uiParam, HB_IT_ANY ), &ulLen, &bFreeReq );
+
+   if ( ulLen )
+      pOutFunc( pszString, ulLen );
+
+   if( bFreeReq )
+      hb_xfree( pszString );
+}
+
+/* Output an item to STDOUT */
+void hb_conOutStd( const char * pStr, ULONG ulLen )
+{
+   HB_TRACE(HB_TR_DEBUG, ("hb_conOutStd(%s, %lu)", pStr, ulLen));
+
+   if( ulLen == 0 )
+      ulLen = strlen( pStr );
+
+   if( ulLen > 0 )
+      hb_gtOutStd( ( BYTE * ) pStr, ulLen );
+}
+
+/* Output an item to STDERR */
+void hb_conOutErr( const char * pStr, ULONG ulLen )
+{
+   HB_TRACE(HB_TR_DEBUG, ("hb_conOutErr(%s, %lu)", pStr, ulLen));
+
+   if( ulLen == 0 )
+      ulLen = strlen( pStr );
+
+   if( ulLen > 0 )
+      hb_gtOutErr( ( BYTE * ) pStr, ulLen );
+}
+
+/* Output an item to the screen and/or printer and/or alternate */
+static void hb_conOutAlt( const char * pStr, ULONG ulLen )
+{
+   HB_TRACE(HB_TR_DEBUG, ("hb_conOutAlt(%s, %lu)", pStr, ulLen));
+
+   if( hb_set.HB_SET_CONSOLE )
+      hb_gtWriteCon( ( BYTE * ) pStr, ulLen );
+
+   if( hb_set.HB_SET_ALTERNATE && hb_set.hb_set_althan != FS_ERROR )
+   {
+      /* Print to alternate file if SET ALTERNATE ON and valid alternate file */
+      USHORT uiErrorOld = hb_fsError(); /* Save current user file error code */
+      hb_fsWriteLarge( hb_set.hb_set_althan, ( BYTE * ) pStr, ulLen );
+      hb_fsSetError( uiErrorOld ); /* Restore last user file error code */
+   }
+
+   if( hb_set.hb_set_extrahan != FS_ERROR )
+   {
+      /* Print to extra file if valid alternate file */
+      USHORT uiErrorOld = hb_fsError(); /* Save current user file error code */
+      hb_fsWriteLarge( hb_set.hb_set_extrahan, ( BYTE * ) pStr, ulLen );
+      hb_fsSetError( uiErrorOld ); /* Restore last user file error code */
+   }
+
+   if( hb_set.HB_SET_PRINTER && hb_set.hb_set_printhan != FS_ERROR )
+   {
+      /* Print to printer if SET PRINTER ON and valid printer file */
+      USHORT uiErrorOld = hb_fsError(); /* Save current user file error code */
+      hb_fsWriteLarge( hb_set.hb_set_printhan, ( BYTE * ) pStr, ulLen );
+      hb_fsSetError( uiErrorOld ); /* Restore last user file error code */
+      s_uiPCol += ( USHORT ) ulLen;
+   }
+}
+
+/* Output an item to the screen and/or printer */
+static void hb_conOutDev( const char * pStr, ULONG ulLen )
+{
+   HB_TRACE(HB_TR_DEBUG, ("hb_conOutDev(%s, %lu)", pStr, ulLen));
+
+   if( hb_set.hb_set_printhan != FS_ERROR && hb_stricmp( hb_set.HB_SET_DEVICE, "PRINTER" ) == 0 )
+   {
+      /* Display to printer if SET DEVICE TO PRINTER and valid printer file */
+      USHORT uiErrorOld = hb_fsError(); /* Save current user file error code */
+      hb_fsWriteLarge( hb_set.hb_set_printhan, ( BYTE * ) pStr, ulLen );
+      hb_fsSetError( uiErrorOld ); /* Restore last user file error code */
+      s_uiPCol += ( USHORT ) ulLen;
+   }
+   else
+      /* Otherwise, display to console */
+      hb_gtWrite( ( BYTE * ) pStr, ulLen );
+}
+
+HB_FUNC( OUTSTD ) /* writes a list of values to the standard output device */
+{
+   USHORT uiPCount = hb_pcount();
+   USHORT uiParam;
+
+   for( uiParam = 1; uiParam <= uiPCount; uiParam++ )
+   {
+      hb_conOut( uiParam, hb_conOutStd );
+      if( uiParam < uiPCount )
+         hb_conOutStd( " ", 1 );
+   }
+}
+
+HB_FUNC( OUTERR ) /* writes a list of values to the standard error device */
+{
+   USHORT uiPCount = hb_pcount();
+   USHORT uiParam;
+
+   for( uiParam = 1; uiParam <= uiPCount; uiParam++ )
+   {
+      hb_conOut( uiParam, hb_conOutErr );
+      if( uiParam < uiPCount )
+         hb_conOutErr( " ", 1 );
+   }
+}
+
+HB_FUNC( QQOUT ) /* writes a list of values to the current device (screen or printer) and is affected by SET ALTERNATE */
+{
+   USHORT uiPCount = hb_pcount();
+   USHORT uiParam;
+
+   for( uiParam = 1; uiParam <= uiPCount; uiParam++ )
+   {
+      hb_conOut( uiParam, hb_conOutAlt );
+      if( uiParam < uiPCount )
+         hb_conOutAlt( " ", 1 );
+   }
+}
+
+HB_FUNC( QOUT )
+{
+   hb_conOutAlt( s_szCrLf, s_iCrLfLen );
+
+   if( hb_set.HB_SET_PRINTER && hb_set.hb_set_printhan != FS_ERROR )
+   {
+      USHORT uiErrorOld = hb_fsError(); /* Save current user file error code */
+      USHORT uiCount;
+
+      s_uiPRow++;
+
+      uiCount = s_uiPCol = hb_set.HB_SET_MARGIN;
+      while( uiCount-- > 0 )
+         hb_fsWrite( hb_set.hb_set_printhan, ( BYTE * ) " ", 1 );
+
+      hb_fsSetError( uiErrorOld ); /* Restore last user file error code */
+   }
+
+   HB_FUNCNAME( QQOUT )();
+}
+
+HB_FUNC( __EJECT ) /* Ejects the current page from the printer */
+{
+   if( hb_stricmp( hb_set.HB_SET_DEVICE, "PRINTER" ) == 0 && hb_set.hb_set_printhan != FS_ERROR )
+   {
+      USHORT uiErrorOld = hb_fsError(); /* Save current user file error code */
+      hb_fsWrite( hb_set.hb_set_printhan, ( BYTE * ) "\x0C\x0D", 2 );
+      hb_fsSetError( uiErrorOld ); /* Restore last user file error code */
+   }
+
+   s_uiPRow = s_uiPCol = 0;
+}
+
+HB_FUNC( PROW ) /* Returns the current printer row position */
+{
+   hb_retni( ( int ) s_uiPRow );
+}
+
+HB_FUNC( PCOL ) /* Returns the current printer row position */
+{
+   hb_retni( ( int ) s_uiPCol );
+}
+
+static void hb_conDevPos( SHORT iRow, SHORT iCol )
+{
+   HB_TRACE(HB_TR_DEBUG, ("hb_conDevPos(%hd, %hd)", iRow, iCol));
+
+   /* Position printer if SET DEVICE TO PRINTER and valid printer file
+      otherwise position console */
+
+   if( hb_set.hb_set_printhan != FS_ERROR && hb_stricmp( hb_set.HB_SET_DEVICE, "PRINTER" ) == 0 )
+   {
+      USHORT uiErrorOld = hb_fsError(); /* Save current user file error code */
+      USHORT uiPRow = ( USHORT ) iRow;
+      USHORT uiPCol = ( USHORT ) iCol + hb_set.HB_SET_MARGIN;
+
+      if( s_uiPRow != uiPRow )
+      {
+         if( ++s_uiPRow > uiPRow )
+         {
+            hb_fsWrite( hb_set.hb_set_printhan, ( BYTE * ) "\x0C\x0D", 2 );
+            s_uiPRow = 0;
+         }
+         else
+         {
+            hb_fsWrite( hb_set.hb_set_printhan, ( BYTE * ) s_szCrLf, s_iCrLfLen );
+         }
+
+         while( s_uiPRow < uiPRow )
+         {
+            hb_fsWrite( hb_set.hb_set_printhan, ( BYTE * ) s_szCrLf, s_iCrLfLen );
+            ++s_uiPRow;
+         }
+         s_uiPCol = 0;
+      }
+      else if( s_uiPCol > uiPCol )
+      {
+         hb_fsWrite( hb_set.hb_set_printhan, ( BYTE * ) "\x0D", 1 );
+         s_uiPCol = 0;
+      }
+
+      while( s_uiPCol < uiPCol )
+      {
+         hb_fsWrite( hb_set.hb_set_printhan, ( BYTE * ) " ", 1 );
+         ++s_uiPCol;
+      }
+
+      hb_fsSetError( uiErrorOld ); /* Restore last user file error code */
+   }
+   else
+      hb_gtSetPos( iRow, iCol );
+}
+
+/* NOTE: This should be placed after the hb_conDevPos() definition. */
+
+HB_FUNC( DEVPOS ) /* Sets the screen and/or printer position */
+{
+   if( ISNUM( 1 ) && ISNUM( 2 ) )
+      hb_conDevPos( hb_parni( 1 ), hb_parni( 2 ) );
+}
+
+HB_FUNC( SETPRC ) /* Sets the current printer row and column positions */
+{
+   if( hb_pcount() == 2 && ISNUM( 1 ) && ISNUM( 2 ) )
+   {
+      s_uiPRow = ( USHORT ) hb_parni( 1 );
+      s_uiPCol = ( USHORT ) hb_parni( 2 );
+   }
+}
+
+HB_FUNC( DEVOUT ) /* writes a single value to the current device (screen or printer), but is not affected by SET ALTERNATE */
+{
+   if( ISCHAR( 2 ) )
+   {
+      char szOldColor[ CLR_STRLEN ];
+
+      hb_gtGetColorStr( szOldColor );
+      hb_gtSetColorStr( hb_parc( 2 ) );
+
+      hb_conOut( 1, hb_conOutDev );
+
+      hb_gtSetColorStr( szOldColor );
+   }
+   else if( hb_pcount() >= 1 )
+      hb_conOut( 1, hb_conOutDev );
+}
+
+HB_FUNC( DISPOUT ) /* writes a single value to the screen, but is not affected by SET ALTERNATE */
+{
+   char * pszString;
+   ULONG ulLen;
+   BOOL bFreeReq;
+
+   if( ISCHAR( 2 ) )
+   {
+      char szOldColor[ CLR_STRLEN ];
+
+      hb_gtGetColorStr( szOldColor );
+      hb_gtSetColorStr( hb_parc( 2 ) );
+
+      pszString = hb_itemString( hb_param( 1, HB_IT_ANY ), &ulLen, &bFreeReq );
+
+      hb_gtWrite( ( BYTE * ) pszString, ulLen );
+
+      if( bFreeReq )
+         hb_xfree( pszString );
+
+      hb_gtSetColorStr( szOldColor );
+   }
+   else if( hb_pcount() >= 1 )
+   {
+      pszString = hb_itemString( hb_param( 1, HB_IT_ANY ), &ulLen, &bFreeReq );
+
+      hb_gtWrite( ( BYTE * ) pszString, ulLen );
+
+      if( bFreeReq )
+         hb_xfree( pszString );
+   }
+}
+
+/* Undocumented Clipper function */
+
+/* NOTE: Clipper does no checks about the screen positions. [vszakats] */
+
+HB_FUNC( DISPOUTAT ) /* writes a single value to the screen at speficic position, but is not affected by SET ALTERNATE */
+{
+   char * pszString;
+   ULONG ulLen;
+   BOOL bFreeReq;
+
+   if( ISCHAR( 4 ) )
+   {
+      char szOldColor[ CLR_STRLEN ];
+
+      hb_gtGetColorStr( szOldColor );
+      hb_gtSetColorStr( hb_parc( 4 ) );
+
+      pszString = hb_itemString( hb_param( 3, HB_IT_ANY ), &ulLen, &bFreeReq );
+
+      hb_gtWriteAt( hb_parni( 1 ), hb_parni( 2 ), ( BYTE * ) pszString, ulLen );
+
+      if( bFreeReq )
+         hb_xfree( pszString );
+
+      hb_gtSetColorStr( szOldColor );
+   }
+   else if( hb_pcount() >= 3 )
+   {
+      pszString = hb_itemString( hb_param( 3, HB_IT_ANY ), &ulLen, &bFreeReq );
+
+      hb_gtWriteAt( hb_parni( 1 ), hb_parni( 2 ), ( BYTE * ) pszString, ulLen );
+
+      if( bFreeReq )
+         hb_xfree( pszString );
+   }
+}
+
+
+HB_FUNC( HB_GETSTDIN ) /* Return Handel for STDIN */
+{
+   hb_retni( s_hFilenoStdin );
+}
+
+HB_FUNC( HB_GETSTDOUT ) /* Return Handel for STDOUT */
+{
+   hb_retni( s_hFilenoStdout );
+}
+
+HB_FUNC( HB_GETSTDERR ) /* Return Handel for STDERR */
+{
+   hb_retni( s_hFilenoStderr );
+}

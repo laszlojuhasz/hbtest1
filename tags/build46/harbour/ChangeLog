@@ -1,0 +1,1214 @@
+/*
+ * $Id$
+ */
+
+/* Use this format for the entry headers:
+   YYYY-MM-DD HH:MM UTC[-|+]hhmm Your Full Name <your_email@address>
+   For example:
+   2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
+*/
+
+    * force 10 bytes size for memo fields in DBF and SMT memos.
+    * some minor clean-up.
+
+  * harbour/source/rdd/workarea.c
+    * added some dummy DBI_* actions in base RDD level
+
+2006-05-30 12:09 UTC+0300 Chen Kedem <niki@actcom.co.il>
+   + doc/howtorel.txt
+     + How-to-Release document by Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+   * doc/whatsnew.txt
+     + Add tag information to all tagged builds.
+
+      
+   * harbour.spec
+   * doc/whatsnew.txt
+   * include/hbver.h
+      * modified to store build number 46
+      
+
+2006-05-29 14:10 UTC+0100 Ryszard Glab <rglab//imid.med.pl>
+      in PARAMETERS and PRIVATE statements (NOTICE: this error is 
+      *fixed invalid memory access
+
+      
+      *fixed to generate error in cases when variable name is duplicated
+      in PARAMETERS and PRIVATE statements (NOTICE: this error is
+      generated when automatic memvar declaration was requested only
+      using -a command line switch)
+
+
+2006-05-23 14:21 UTC+0300 Chen Kedem <niki@actcom.co.il>
+   * doc/whatsnew.txt
+     + Add information about the upcoming alpha build 46.
+
+   * doc/en/compiler.txt
+     + Add a line for -gc3 switch.
+
+   * source/compiler/hbusage.c
+     + Add a line for -gc3 switch.
+     * Bumped the copyright year from 2005 to 2006.
+
+2006-05-19 21:05 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/bin/hb-func.sh
+    * added support -go[0-3] and other -g* switches to xhb* scripts
+
+  * harbour/include/hbapi.h
+    + added ISSYMBOL() macro
+    * formatting
+
+  * harbour/include/hbapirdd.h
+    * changed definition of SUPERTABLE for optional dynamic overloading
+      this modification will not effect existing code
+
+  * harbour/include/hbrddfpt.h
+  * harbour/source/rdd/dbffpt/dbffpt1.c
+    * added support for NIL value in SIX3 FPT files
+
+  * harbour/include/hbcomp.h
+  * harbour/source/compiler/harbour.c
+  * harbour/source/compiler/genc.c
+  * harbour/source/compiler/gencli.c
+  * harbour/source/compiler/genhrb.c
+  * harbour/source/compiler/genjava.c
+    ! message symbols are not function symbols - cleaned the HB_FS_MESSAGE
+      usage and fix the problem with registering static function in global
+      symbol table
+
+  * harbour/source/compiler/gencc.c
+    ! fixed typo in compilation for platforms 64 bit LONG
+
+  * harbour/include/hbvmpub.h
+  * harbour/source/compiler/cmdcheck.c
+  * harbour/source/vm/asort.c
+  * harbour/source/vm/evalhb.c
+    * formatting
+
+  * harbour/source/rdd/dbcmd.c
+    * formatting and some minor clean-up
+
+  * harbour/source/rdd/workarea.c
+    * added default SYSNAME method
+    ! fixed possible memory leak when APPEND failed in TRANSREC method
+
+  * harbour/source/rdd/hsx/hsx.c
+    ! fixed using HS_ADD()/HS_REPLACE() without STRING/BLOCK expression
+
+  * harbour/source/rtl/cdpapi.c
+    * cleaned GCC4 warning
+
+  * harbour/source/rtl/do.c
+    * changed to keep parameter references in DO() function. Now it works
+      like IIF()/EVAL()
+
+  * harbour/source/vm/classes.c
+    * removed some definitions repared from hbapi.h
+    + added support to passing function references as HB_IT_SYMBOL
+
+  * harbour/source/vm/dynlibhb.c
+    ! fixed GPF in HB_LIBDO called with wrong parameter
+
+  * harbour/source/vm/hvm.c
+    ! fixed hb_rddGetFieldValue() to not operate on unallocated stack area
+      it could cause unpredictable results when RDD had to access HVM, f.e.
+      for evaluation some pending relations. The whole code should be
+      carefully checked and to not operate on hb_stackTopItem() if other
+      functions are called to make the HVM fully reentrant.
+    + added commented out support for passing HB_IT_SYMBOL as function
+      pointer
+    * formatting
+
+  * harbour/source/vm/itemapi.c
+    * return "S" for HB_IT_SYMBOL by hb_itemType()
+    * formatting
+
+2006-05-14 09:36 UTC+0300 Chen Kedem <niki@actcom.co.il>
+   * doc/dirstruc.txt
+     + Add oneliner description for: source\rtl\gtalleg, source\rtl\gtwvt,
+       source\rtl\gtxwc, source\vm\mainstd
+
+   * doc/howtocvs.txt
+     * Update CVS location to reflect recent changes in SourceForge.
+
+2006-05-05 11:30 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/bin/hb-func.sh
+    * changed the exit code for .hrb file compilation by xhbcmp
+
+  * harbour/include/hbcomp.h
+  * harbour/source/compiler/gencc.c
+  * harbour/source/compiler/hblbl.c
+    * removed some variables which are not necessary in Harbour
+
+  * harbour/source/compiler/hbfix.c
+    + added unconditional and conditional jump joining optimization
+
+  * harbour/source/vm/classes.c
+  * xharbour/include/hbvmpub.h
+
+  * harbour/source/rdd/dbfcdx/dbfcdx1.c
+  * xharbour/source/vm/dynsym.c
+      or hot record buffer updating
+
+  * harbour/source/rdd/dbffpt/dbffpt1.c
+  * harbour/source/vm/hvm.c
+    * casting
+
+  * harbour/source/vm/macro.c
+
+  * harbour/include/hbvmpub.h
+    * removed HB_FS_ALLOCATED
+
+  * harbour/source/vm/dynsym.c
+    * changed the code for hb_symbolNew() to avoid possible memory leak
+      alerts and keep the list of all dynamic symbols accessible.
+      It also reduced a little bit the memory fragmentation and total
+      
+
+      * fixed bug in ParseOptional 
+   * bin/bld.sh
+      * fixed typo
+
+   * source/pp/ppcore.c
+      * fixed bug in ParseOptional
+      <"var"> were not recognized correctly
+      (This fixes SET RELATION bug reported by David Macias)
+
+
+2006-04-15 20:20 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/Makefile
+  + harbour/include/blob.ch
+  * harbour/include/dbinfo.ch
+  * harbour/include/hbdbferr.h
+  * harbour/include/hbrddfpt.h
+  * harbour/source/rdd/dbf1.c
+  * harbour/source/rdd/workarea.c
+  * harbour/source/rdd/dbffpt/dbffpt1.c
+    + added all CL5.3 BLOB*() functions support
+    + added new RDD DBFBLOB compatible with CL5.3 DBFBLOB
+      It operates on memo files only (.dbv) without tables (.dbf)
+      To create .DBV file use:
+         dbCreate( cFile, {}, "DBFBLOB" )
+
+  * harbour/source/rdd/dbcmd.c
+    * do not report error when empty structure table is passed to DBCREATE()
+      CL5.3 allow to create even DBF files without any fields and because
+      I can imagine some valid code which use it as a feature then I also
+      allow it in DBF RDD.
+      Authors of RDDs which do not allow to create tables without fields
+      should add to their low level RDD code necessary RT error.
+ 
+2006-04-14 20:51 UTC+0100 Jacek Kubica (kubica/at/wssk.wroc.pl)
+  * source/rtl/filesys.c
+    ! fixed problem in CURDIR() wchich return truncate value
+      if directory name is 3 chars long (fix given by Przemyslaw Czerpak)
+
+2006-04-10 00:50 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/rdd/dbfntx/dbfntx1.c
+    ! fixed skip back after updating last record
+
+2006-04-09 19:16 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/rdd/dbfcdx/dbfcdx1.c
+    ! fixed scope checking when skip is done from the record which
+      dos not exist in index
+
+  * harbour/source/vm/classes.c
+    * use hb_itemClone() - it will save us modifications in the
+      future if we will add new items which will be passed as
+      parameters like arrays (f.e. hashes)
+    * some source code formatting
+
+2006-04-09 14:55 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * contrib/rdd_ads/ads1.c
+    * Added possibility to save memo fields > 64K
+
+2006-04-08 02:42 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/rdd/dbfcdx/dbfcdx1.c
+    ! update current order number after ordDestroy()
+
+  * harbour/source/rdd/dbfntx/dbfntx1.c
+     % Optimized __CLSADDMSG() to call hb_parc() only once instead 
+      but I forgot to also change the record in DBF
+     ! Possible problem fixed in __CLSADDMSG() where message parameter 
+       was required to be uppercase when overloading operator .NOT., 
+   * harbour/source/vm/classes.c
+     % hb_dynsymGet() calls replaced with hb_dynsymGetCase() where the 
+       of 25 times for most cases.
+     ! Possible problem fixed in __CLSADDMSG() where message parameter
+       was required to be uppercase when overloading operator .NOT.,
+       .AND. or .OR.
+     % hb_dynsymGet() calls replaced with hb_dynsymGetCase() where the
+       parameter was an already uppercased constant.
+
+   * harbour/source/vm/dynsym.c
+     ! Fixed HB_TRACE() function name in hb_dynsymGetCase().
+
+2006-04-07 15:00 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/bin/hb-func.sh
+    * support for detecting startup function in C++ mode
+
+  * harbour/include/hbapi.h
+    * some few #defines to translate some xHarbour functions names to Harbour
+
+  * harbour/include/hbxvm.h
+  * harbour/source/compiler/gencc.c
+  * harbour/source/vm/hvm.c
+  * harbour/source/vm/itemapi.c
+  * harbour/source/common/hbdate.c
+    + added optimizations for add and div by integer value
+    * changed code generated for double values to avoid limitation in some
+      C compilers like MSC and possible differ conversion inside C RTL then
+      the one which uses Harbour RTL
+    * some minor optimizations, cleanups and code formating
+
+  * harbour/source/compiler/hbfix.c
+    * optimize usage of HB_P_NOT PCODE - remove repeated NOT operations
+      or revert conditional jumps if they are just after NOT.
+
+  * harbour/source/rdd/dbf1.c
+    * added support for NULL value set in memo fields by ACCESS
+
+  * harbour/source/rdd/dbfcdx/dbfcdx1.c
+    * fixed ordKeyPos() - for records out of scope
+
+  * harbour/source/rtl/padc.c
+  * harbour/source/rtl/padl.c
+  * harbour/source/rtl/padr.c
+  * harbour/source/rtl/substr.c
+    * some minor optimizations to avoid new string item creation when
+      it's not necessary
+
+  * harbour/source/vm/classes.c
+  * harbour/source/vm/extend.c
+      
+
+2006-04-06 14:05 UTC+0100 Ryszard Glab <rglab//imid.med.pl>
+   * source/compiler/harbour.c
+      * fixed registering of startup procedure name
+
+   * source/pp/ppcore.c
+      * ignore escaped '<' in command/translate definitions
+        (work in progress)
+
+2006-04-05 15:49 UTC+0100 Antonio Linares <alinares@fivetechsoft.com>
+   * source/makefile.nt
+     + Added hblbl.c and gencc.c modules
+
+   * harbour/source/vm/mainwin.c
+   * harbour/source/rtl/gtwvt/gtwvt.c
+   * harbour/source/compiler/harbour.l
+      
+
+2006-04-05 13:35 UTC+0100 Ryszard Glab <rglab//imid.med.pl>
+   * source/compiler/harbour.c
+      
+
+   * source/compiler/harbour.l
+      * fixed compilation of macro expression (the first letter
+        was eaten in some cases)
+
+      
+   * source/pp/ppcore.c
+   * source/pp/pplib.c
+      * fixed calls to hb_pp_ParseDirective
+      * increased back the input buffer to HB_PP_STR_SIZE (12288 bytes)
+      
+
+2006-03-29 11:55 UTC+0100 Ryszard Glab <rglab//imid.med.pl>
+      
+      *fixed declaration of hb_pp_StreamBlock
+
+   * source/pp/ppcore.c
+      * added two guards for buffer overflow
+
+
+2006-03-28 18:00 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/compiler/harbour.c
+    ! upper the default .prg function name created from .prg file name
+      when compiled without -n switch
+
+2006-03-28 17:20 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/vm/hvm.c
+    
+
+2006-03-28 14:35 UTC+0100 Ryszard Glab <rglab//imid.med.pl>
+  * include/hbexpra.c
+    * fixed optimization of 'EVAL' in macro compiler
+
+    * harbour/makefile.bc  
+    * fixed calculation of length of stringify expressions
+
+
+2006-03-28 13:46 UTC+0200 Jacek Kubica (kubica/at/wssk.wroc.pl)
+    * harbour/makefile.bc
+    * harbour/makefile.nt
+    * harbour/makefile.vc
+    * harbour/makefile64.nt
+      + added references for harbour/source/compiler/hbstrong.c
+
+2006-03-28 13:00 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbcomp.h
+    + added hb_compPCodeSize() and hb_compStrongType() declarations
+
+  * harbour/include/hbpp.h
+    * formatting
+
+  * harbour/source/compiler/Makefile
+  + harbour/source/compiler/hbstrong.c
+  * harbour/source/compiler/hbpcode.c
+    * moved strong typing code to separate file
+
+  * harbour/source/compiler/hbpcode.c
+    + added hb_compPCodeSize() function
+    + added support for automatic size checking of variable size PCODEs
+      in hb_compPCodeEval()
+
+  * harbour/source/compiler/gencc.c
+    * added escaping of '?' character in generated strings to
+      avoid possible conflicts with trigraph sequences which
+      are part of ANSI C standard
+    * force .0 at the end of double numbers to avoid possible range
+      conflicts in generated .c files
+    * removed unnecessary HB_SYMBOL_UNUSED()
+
+  * harbour/source/compiler/harbour.l
+  * harbour/source/compiler/harbour.y
+  * harbour/source/macro/macro.l
+  * harbour/source/macro/macro.y
+    * added #define realloc hb_xrealloc
+
+  * harbour/source/compiler/hbdead.c
+  * harbour/source/compiler/hbfix.c
+  * harbour/source/compiler/hblbl.c
+  * harbour/source/compiler/hbstripl.c
+    * use hb_compPCodeSize() function
+    * removed not longer necessary functions for checking the real size
+      of variable size PCODEs
+
+  * harbour/source/vm/hvm.c
+    * fixed RT error number in hb_vmAddInt() for negative values to be
+    
+
+2006-03-27 15:25 UTC+0100 Ryszard Glab <rglab//imid.med.pl>
+  * contrib/htmllib/default.ch
+    
+
+  * source/compiler/hbident.c
+  * source/compiler/harbour.l
+    
+
+  * source/pp/ppcore.c
+    * fixed my last commits
+    * processed this file with indent
+
+
+2006-03-25 03:30 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbstack.h
+  * harbour/source/vm/estack.c
+    * added pEnd to hb_stack structure to speed up hb_stackPush()
+      which is one of the most often used operation in HVM.
+
+  * harbour/include/hbapi.h
+    * small trick with HB_IS_* macros to give a compiler a chance to make
+      them faster on some machines
+
+  * harbour/source/compiler/genc.c
+    ! fixed stripping non identifier characters from symbol table name
+
+  * harbour/source/compiler/hbpcode.c
+    * cleaned comment
+
+  * harbour/source/rdd/dbf1.c
+    * set Operation in error object to field name in field{put,get} methods.
+    + added DBI_LOCKOFFSET
+
+  * harbour/source/vm/classes.c
+    * formatting
+
+  * harbour/source/vm/hvm.c
+  * harbour/source/vm/itemapi.c
+    * some minor speed optimizations
+    
+2006-03-23 14:50 UTC+0100 Ryszard Glab <rglab//imid.med.pl>
+  * source/pp/ppcore.c
+    
+      as Clipper
+
+  * tests/pretest.prg
+    * added more tests to check preprocessor
+
+
+2006-03-22 16:05 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbstack.h
+  * harbour/source/vm/estack.c
+    + added hb_stackDecrease( ULONG )
+
+  * harbour/include/hbxvm.h
+  * harbour/source/vm/hvm.c
+    + added hb_xvmArrayItemPush(), hb_xvmArrayItemPop(), hb_xvmMultByInt()
+
+  * harbour/source/compiler/gencc.c
+    % use hb_xvmArrayItemPush(), hb_xvmArrayItemPop(), hb_xvmMultByInt()
+      If someone has time then it will be good to also add:
+      hb_xvmDivByInt(), hb_xvmModulusInt(), hb_xvmPlusInt(), hb_xvmMinusInt()
+
+  * harbour/source/vm/itemapi.c
+    * use simple memcpy() in hb_itemSwap() - it's save in current HVM
+      It could become unsafe if we add reference tracing or sth like
+      that in the future but in such case we will have to also update
+      hb_itemCopy() and hb_itemMove() so we can also update hb_itemSwap()
+
+  * harbour/source/vm/asort.c
+  * harbour/source/vm/classes.c
+  * harbour/source/vm/memvars.c
+  * harbour/source/vm/hvm.c
+    * cleaned the code which created HB_ITEMs on C stack. Only three
+      places have to be update yet and array/clodeblock creation little
+      bit modified and we will be able add automatic GC activation in
+      hb_xgrab() or hb_gcAlloc().
+
+2006-03-21 13:40 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/vm/hvm.c
+    ! added missing void in hb_xvmActionRequest() declaration to avoid
+      BCC warnings
+
+    * harbour/makefile.bc  
+    * harbour/source/vm/hvm.c
+      + missing declaration for hb_xvmActionRequest added
+
+2006-03-21 03:17 UTC+0100 Jacek Kubica (kubica/at/wssk.wroc.pl)
+    * harbour/makefile.bc
+      added referenced to:
+         harbour/source/compiler/gencc.c
+         harbour/source/compiler/hblbl.c
+
+2006-03-21 02:25 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/make_gnu.bat
+  * harbour/make_gnu.cmd
+  * harbour/make_gnu.sh
+    * added information about GTWVT to GT description for Windows
+
+  * harbour/contrib/rdd_ads/ads1.c
+  * harbour/contrib/rdd_ads/adsfunc.c
+  * harbour/source/rdd/dbf1.c
+    * synced with xHarbour
+
+  * harbour/source/rtl/console.c
+    ! fixed PROW() updating to be Clipper compatible when row number
+      exceed 16bit integer value
+
+  * harbour/source/rtl/filesys.c
+    ! fixed possible GPF when hb_fsCurDirBuff()
+
+  * harbour/source/rtl/str.c
+  * harbour/source/rtl/strzero.c
+    * minor optimizations
+
+  * harbour/source/rtl/strpeek.c
+    ! fixed accessing the last character in STRPEEK() and STRPOKE()
+
+  * harbour/include/hbgtinfo.ch
+  * harbour/source/rtl/gtwin/gtwin.c
+    + synced with recent xHarbour modifications
+
+  * harbour/source/rtl/gtwvt/gtwvt.c
+    * cleaned BCC warning
+
+  * harbour/include/hbapi.h
+  * harbour/source/vm/codebloc.c
+    * declare BYTE * passed to hb_codeblockNew() as const
+
+  * harbour/include/hbpcode.h
+    ! fixed the PCODE numbers in PCODE description, 122 was repeated for
+      two different PCODEs: HB_P_ONE and HB_P_MACROLIST
+
+  * harbour/source/compiler/genc.c
+    ! fixed hb_p_functionshort pcode size returned by genc function
+    ! fixed double value presented in verbose genc mode for HB_P_PUSHDOUBLE
+    ! fixed number of cases presented in verbose genc mode for HB_P_SWITCH
+
+  * harbour/source/compiler/hbdead.c
+    + added support for dead code elimination in functions which uses
+      SWITCH ...; CASE ...; ...; END syntax
+
+  * harbour/source/compiler/harbour.c
+  * harbour/source/compiler/hbfix.c
+    ! fixed optimization for HB_P_PUSHLOCALNEAR and HB_P_POPLOCALNEAR.
+      It was a long existing bug not reported so far because 0, 1 and 2
+      PCODEs uses only one BYTE and bad PCODE tracing in hbfix.c didn't
+      caused bad side effects as long as number of locals in function
+      was smaller then 768. Now for functions HB_P_PUSHLOCAL and
+      HB_P_POPLOCAL is used and later changed to NEAR version in hbfix.c
+      if possible.
+
+  * harbour/source/compiler/hbfix.c
+    * join sequential jumps to optimize constructions like:
+         while ...
+            ...
+            if ...
+               exit
+            endif
+         enddo
+
+  * harbour/source/compiler/hbdead.c
+    * remove HB_P_END PCODE also at the and of function if is repeated
+      just before, f.e. in code like (source/rtl/color53.prg):
+         Function RADGRDEFCO( cColor )
+            if isdefcolor()
+               Return applydefau( cColor, "W/N", "W/N", "W+/N")
+            Else
+               Return applydefau( cColor, 3, 1, 4)
+            endif
+         Return nil
+      Now such redundant constructions like above are fully stripped by
+      compiler anyhow if someone has time and think is important then can
+      clean also this .prg code.
+
+
+  * harbour/include/Makefile
+  * harbour/include/hbcomp.h
+  + harbour/include/hbxvm.h
+  * harbour/source/compiler/Makefile
+  * harbour/source/compiler/cmdcheck.c
+  * harbour/source/compiler/genc.c
+  + harbour/source/compiler/gencc.c
+  + harbour/source/compiler/hblbl.c
+  * harbour/source/compiler/hbpcode.c
+  * harbour/source/vm/hvm.c
+    + added support for generating real C code not PCODE in .c files.
+      Now with  -gc3 Harbour will generate .c files with real .c code
+      which is later compiled to real machine code.
+      I left PCODE only for code block definitions though it's also
+      possible to have even code block compiled to machine code but
+      we will have to add a flag to codeblock structure which will
+      be checked at runtime and proper method of execution in EVAL
+      will be chosen. If you think it's worth of afford then I can
+      add it too in some spare time.
+      The final binaries are noticable longer then the one which has
+      only PCODE but they are faster. The speed improvement depends
+      on type of operations. The pure Clipper code which does not
+      execute any external time consuming C functions compiled with
+      -gc3 is from 10% to 50% faster.
+      The side effect of generating pure machine code is also harder
+      recompilation but it does not mean that is impossible. If sth
+      can be executed by some machines (virtual or hardware) then it
+      can always be decompiled by definition.
+      This modification opens door for farther optimization, f.e. when
+      we will have fully working strong type support then we can add
+      using native .c types.
+      In fact this module is PCODE to .c translater not part of compiler
+      and can be used as separate module to translate generated PCODE,
+      f.e. .hrb files.
+      Maybe in the future we will change the compiler to generate meta
+      code not directly PCODE and it will be possible to make optimizations
+      on this meta code which will depend on selected output type:
+      VHM PCODE, C code, .NET code, etc. but at this moment adding support
+      for .c compilation directly into compiler will make the compiler code
+      too much complicated for me - IMHO it's better to invest time into
+      clear separation to FRONT_END->REAL_COMPILER->BACK_END
+      Please make test with your code. I rebuild whole Harbour code with
+      -gc3 set in HB_FLAGS in harbour/config/rules.cf and all seems to
+      work correctly. hbtest returns exactly the same results.
+      I also made tests with my programs and they work correctly but
+    * harbour/makefile.bc  
+      some typos in some of them which are very seldom used so your tests
+      will be very important.
+
+2006-03-19 03:43 UTC+0100 Jacek Kubica (kubica/at/wssk.wroc.pl)
+    * harbour/makefile.bc
+    * harbour/makefile.nt
+    * harbour/makefile.vc
+    * harbour/makefile64.nt
+    * harbour/makefile.bc  
+    * harbour/makefile.vc
+      - removed references to harbour/source/rtl/gtwin/mouseobj
+
+2006-03-16 09:00 UTC+0100 Jacek Kubica (kubica/at/wssk.wroc.pl)
+    * harbour/makefile.bc
+    * harbour/makefile.nt
+    * harbour/makefile.vc
+    * harbour/makefile64.nt
+      - removed entry for harbour/source/lang/msgen.c file.
+
+2006-03-16 05:35 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/lang/Makefile
+  - harbour/source/lang/msgen.c
+  * harbour/source/rtl/langapi.c
+    * moved EN lang definitions to core lang code so we always have at
+      least one lang module defined at sartup.
+      Modified after common group agreement - no one was against,
+      thanks to all for answers.
+      Please update non GNU make files and remove
+      harbour/source/lang/msgen.c file.
+
+  * harbour/source/rtl/cdpapi.c
+    * replaced CDP startup initialization with simple assignment
+
+  * harbour/source/rtl/gtpca/gtpca.c
+    * added #include <sys/time.h> for *nix platforms
+
+2006-03-13 23:15 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/rtl/hbgtcore.c
+    * respect pure REQUEST HB_GT_NUL as user GT choice if only GTNUL
+      is linked
+
+  * harbour/source/rtl/errorint.c
+    ! fixed GPF when no lang module is register - I'll wait a while for
+      other people opinion and if no one will give good reason against
+      then I'll make EN language definition default part of langapi.c
+      what will resolve the problem of valid error description when no
+      language module is linked.
+
+2006-03-13 19:20 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/ChangeLog
+    * fixed description in last commit. Should be HB_GTSYS() not GTSYS()
+
+  * harbour/include/hbapi.h
+    * fixed hb_retl() macro by adding missing parenthesis
+
+  * harbour/source/compiler/harbour.c
+    * removed unnecessary initialization to avoid BCC warning
+
+  * harbour/source/rtl/console.c
+  * harbour/source/rtl/hbgtcore.c
+    * do not call hb_gtOutStd()/hb_gtOutErr() when given string
+      has 0 length - it may cause unpredictable results in low level
+      hb_fsWrite() when trunc operation will be activated for non
+      real file handles in some systems
+
+  * harbour/source/rtl/errorint.c
+    * increased the error message buffer
+
+  * harbour/source/rtl/inkey.c
+    * fixed typo in comment
+
+  * harbour/source/rtl/gtcrs/gtcrs.c
+    * formatting
+    
+2006-03-13 11:40 UTC+0100 Ryszard Glab <rglab//imid.med.pl>
+  * source/compiler/cmdcheck.c
+  * source/pp/pragma.c
+    * fixed to force max recurse preprocessor passed bigger then 0
+
+  * source/pp/ppcore.c
+    * suppressed memory access error in getExpReal
+    + added missing '.' in valid match markers (ConvertOptional)
+
+2006-03-11 09:45 UTC+0100 Ryszard Glab <rglab//imid.med.pl>
+  * source/pp/ppcomp.c
+  * source/pp/ppcore.c
+  * source/rtl/gtcrs/gtcrs.c
+    * fixed to suppress warning messages in some compilers
+
+2006-03-10 21:15 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/config/rules.cf
+  * harbour/config/bsd/gcc.cf
+  * harbour/config/darwin/gcc.cf
+  * harbour/config/dos/bcc16.cf
+  * harbour/config/dos/djgpp.cf
+  * harbour/config/dos/owatcom.cf
+  * harbour/config/dos/rsx32.cf
+  * harbour/config/dos/watcom.cf
+  * harbour/config/linux/gcc.cf
+  * harbour/config/os2/gcc.cf
+  * harbour/config/os2/icc.cf
+  * harbour/config/sunos/gcc.cf
+  * harbour/config/w32/bcc32.cf
+  * harbour/config/w32/gcc.cf
+  * harbour/config/w32/global.cf
+  * harbour/config/w32/icc.cf
+  * harbour/config/w32/mingw32.cf
+  * harbour/config/w32/msvc.cf
+  * harbour/config/w32/rsxnt.cf
+  * harbour/config/w32/watcom.cf
+    * use F macro extension to extract file name from given macros.
+      It simplified some rules and allow to use vpath and differ file
+      locations in GNU Makefiles
+    * moved the BCC16 excpetion for C_RULE from global rules.cf to
+      DOS bcc16.cf file
+    * use mainstd library in MinGW build
+
+  * harbour/include/hbapi.h
+    + added two new functions: hb_winmainArgInit() and hb_winmainArgGet()
+      to set/retrieve WinMain() parameters.
+    + added hb_strMatchWildExact()
+
+  * harbour/source/pp/ppcore.c
+    * initialized variable to avoid compiler warning
+
+  * harbour/source/rtl/console.c
+    * cleaned comment
+
+  * harbour/source/rtl/hbffind.c
+    ! Fixed invalid handle error in Windows when file() fails
+      (fix borrowed from xHarbour)
+
+  * harbour/source/rtl/strmatch.c
+    + added hb_strMatchWildExact()
+    + added 3-rd parameter <lExact> to WildMatch() - when it's TRUE
+      WildMatch() will check if given pattern cover the whole string.
+      Without it it check if pattern is valid prefix only.
+
+  * harbour/source/rtl/gtcrs/gtcrs.c
+  * harbour/source/rtl/gtcrs/gtcrs.h
+  * harbour/source/rtl/gtsln/mousesln.c
+    * do not call Gpm_GetSnapshot() to avoid stupid message on stderr
+      generated from GPM library - I lost the the hope that it will be
+      fixed ;-)
+
+  * harbour/source/rtl/gtpca/gtpca.c
+    * use select() in *nixes for cursor position terminal feedback.
+
+  * harbour/source/rtl/gtwin/gtwin.c
+    * try to always allocate console when compiled without
+      HB_NO_ALLOC_CONSOLE. It allow to use GTWIN also in real windows
+      programs.
+
+  + harbour/source/rtl/gtwvt/Makefile
+  + harbour/source/rtl/gtwvt/gtwvt.c
+  + harbour/source/rtl/gtwvt/gtwvt.h
+    + added new GT driver GTWVT - the core of this driver it's Peter Ress
+      work in xHarbour. In Harbour GTWVT contains only pure GT code without
+      local to GTWVT xHarbour extensions and GTWVT contrib libraries.
+      This extensions can be added but later but I want to keep them
+      separated from the core GTWVT code and add them as upper level GT
+      which can inherit from GTWVT. Just like I've implemented CTWIN.
+      Please update non GNU make files and test this GT in Windows.
+      The programs which want to use GTWVT should be compiled as standard
+      Windows GUI programs. GTWVT replaces window console code.
+      if you add to your code:
+         proc HB_GTSYS()
+         request HB_GT_WIN
+         request HB_GT_WVT
+         return
+      then the final binaries will be linked with both GT drivers and you
+      can switch between them using //gt[:]<name> switch. F.e.:
+         ./my_prog //gtwin
+      or
+         ./my_prog //gtwvt
+      this feature works in all platforms.
+      People who works in shell environment (*nixes, MSYS, DJGPP) and use
+      hb* scripts does not have to use HB_GTSYS() in source code but can
+      simply use -gt<name> switch in hblnk and hbmk.
+
+  * harbour/source/rtl/gtxwc/gtxwc.c
+    * some minor cleanups and code formatting
+
+  * harbour/source/vm/Makefile
+  + harbour/source/vm/mainstd/Makefile
+    * moved mainstd.c to separate mainstd library for MinGW32 build.
+      Unfortunately MinGW always link main() function if it locate
+      it in libraries and ignores WinMain() what effectively makes
+      impossible to create Windows GUI programs if we have main() in
+      VM library. People who are using MinGW and wants to create only
+      pure console programs should now include mainstd library to linked
+      library list.
+
+  * harbour/source/vm/cmdarg.c
+  * harbour/source/vm/mainwin.c
+    + added two new functions: hb_winmainArgInit() and hb_winmainArgGet()
+      to set/retrieve WinMain() parameters.
+
+2006-03-10 12:20 UTC+0100 Ryszard Glab <rglab//imid.med.pl>
+    
+    + added 'extern' declaration
+
+  * source/compiler/hbusage.c
+    + added short usage info abour /r= switch
+
+  * doc/pragma.txt
+  * doc/en/compiler.txt
+    
+
+2006-03-10 10:20 UTC+0100 Ryszard Glab <rglab//imid.med.pl>
+    
+    *fixed compilation for Borland C
+
+  * source/pp/ppcore.c
+    
+
+  * tests/Makefile
+  + tests/pretest.prg
+    + added the file to show '#pragma __stream' and '#pragma __cstream'
+
+
+2006-03-09 16:30 UTC+0100 Ryszard Glab <rglab//imid.med.pl>
+    
+  * include/hbexpra.c
+  * include/hbexprb.c
+  * include/hbexprop.h
+    * modified to support strings with embeded LF/CR characters
+    
+  * source/common/hbstr.c
+    * added new command line switch 
+    * added hb_strRemEscSeq() function that removes C-like Esc
+      sequences (\n \t \r \b currently)
+
+  * source/compiler/cmdcheck.c
+    * added new command line switch
+      -r=<max_recursive_preprocessor_passes>
+      with defaults equal to -r=1024
+
+  * include/hbpp.h
+  * source/compiler/harbour.l
+  * source/compiler/harbour.y
+  * source/macro/macro.y
+  * source/pp/ppcomp.c
+  * source/pp/ppcore.c
+  * source/pp/pplib.c
+  * source/pp/pptable.c
+  * source/pp/pragma.c
+    * fixed compilation of #command ( => (,7
+      (loops in #define or #command are trapped now)
+    * fixed compilation of \[ and \] in command/translate
+    * modified TEXT/ENDTEXT to use '#pragma __text'
+    + added #pragma __stream and #pragma __cstream
+      (examples later)
+
+
+2006-03-08 3:31 UTC-0500 David Arturo Macias Corona <dmacias@mail.udg.mx>
+   - harbour/source/codepage/cdpsl437.c
+   - harbour/source/codepage/cdpsl852.c
+   - harbour/source/codepage/cdpslwin.c
+   - harbour/source/codepage/cdpsliso.c
+     - Removed these four files.
+
+2006-03-06 12:00 UTC+0100 Mitja Podgornik <Yamamoto@rocketmail.com>
+   David Macias: Source code provided by Mitja Podgornik
+   * harbour/contrib/mysql/mysql.ch
+     + added MYSQL_DECIMAL_TYPE for MySQL versions 5.0 and above
+
+       returns 5 digit numeric version of MySQL server 
+   * harbour/contrib/mysql/tmysql.prg
+     + added functions sql_commit(), sql_rollback()(CLASS TMySQLServer)
+       to support transactions with InnoDB table types
+     + added function sql_version()                (CLASS TMySQLServer)
+       returns 5 digit numeric version of MySQL server
+
+   * harbour/source/codepage/cdpsl437.c
+   * harbour/source/codepage/cdpsl852.c
+   * harbour/source/codepage/cdpslwin.c
+   * harbour/source/codepage/cdpsliso.c
+     + Update startup code to work with MSC
+
+2006-03-02 18:00 UTC+0100 Ryszard Glab <rglab//imid.med.pl>
+   * source/compiler/harbour.l
+   * source/pp/ppcomp.c
+   * source/pp/ppcore.c
+        +added new hidden preprocessor directive 
+      * fixed compilation of included files in cases when the file
+        
+      * fixed translation of nested command/translate
+      * fixed translation of TEXT/ENDTEXT to be more Clipper compatible
+        +added new hidden preprocessor directive
+        __text|ParseBlockCode|EndBlockCode|StartBlockCode
+        
+        currently TEXT is preprocessed using:
+        #command TEXT => __text|Qout(%s)|QQOut()
+        #command TEXT TO FILE <f> => ;
+         __text|Qout(%s)|__TextRestore()|__TextSave(<f>)
+
+        ParseBlockCode is called for every line beetwen TEXT/ENDTEXT,
+        %s is replaced with the text enclosed with []
+
+2006-03-02 01:10 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/pp/ppcore.c
+    * fixed yest another problem with PP which caused GPF on
+      minigui compilation
+
+2006-03-01 21:15 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/dbinfo.ch
+  * harbour/source/rdd/workarea.c
+    * added DBI_SCOPEDRELATION action. It alow to test if given
+      relation on current work area sets scope on child index.
+      F.e.: dbInfo( DBI_SCOPEDRELATION, 1 )
+
+2006-03-01 20:40 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbapicdp.h
+  * harbour/source/rtl/cdpapi.c
+    * added optional BOOL parameter to functions which translate to UTF8
+      to not translate control code characters
+
+  * harbour/source/rtl/gtsln/gtsln.c
+  * harbour/source/rtl/gtxwc/gtxwc.c
+    * update for new parameter in UTF8 functions
+
+2006-03-01 16:40 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/rtl/cdpapi.c
+  * harbour/source/rtl/gtxwc/gtxwc.c
+    ! fixed UTF8 trnalsations
+
+2006-03-01 14:30 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/contrib/htmllib/default.ch
+    * fixed few wrong definitions - Ryszard, the definitions where wrong
+      but Clipper PP seems to parse them.
+
+  * harbour/contrib/rdd_ads/ads1.c
+    * call AdsFlushFileBuffers() only when _SET_HARDCOMMIT is set (default)
+
+  * harbour/include/Makefile
+  + harbour/include/hbgfx.ch
+  + harbour/include/hbgfxdef.ch
+    + added hbgfx.ch, hbgfxdef.ch and missing tbrowse.ch
+
+  * harbour/include/hbapigt.h
+  * harbour/include/hbgtcore.h
+  * harbour/source/rtl/gtapi.c
+  * harbour/source/rtl/hbgtcore.c
+    + added hb_gtGfxPrimitive(), hb_gtGfxText() - it's a work in progress
+      now this functions works like in xHarbour allow to draw graphic
+      objects in GTs which can do that (GTALLEG, GTXWC) but I plan to
+      introduce some modifications in them.
+
+  + harbour/tests/gfx.prg
+    + added test program by Mauricio Abre (borrowed from xHarbour) which
+      illustrates GFX usage
+
+  * harbour/include/hbdefs.h
+  * harbour/source/compiler/genc.c
+  * harbour/source/compiler/harbour.c
+  * harbour/source/vm/hvm.c
+    * minor modification in some harbour func name and symbol scope
+      definitions - I'd like to keep them in one place for easier
+      manipulations in the future
+
+  * harbour/source/compiler/harbour.y
+  * harbour/source/pp/ppcore.c
+  * harbour/source/pp/pplib.c
+  * harbour/utils/hbpp/hbpp.c
+    * clean a little bit recent modification it should resolve the
+      problem with GPFs reported by users and some possible memory
+      leaks when preprocessing/compilation process is interrupted.
+      Ryszard I decided to always store copy of file name in open
+      files structure - it can be used by compiler, preprocessor,
+      PPLIB and HBPP and IMHO in all cases it should have valid
+      and always initialized in the same way members for easier
+      manipulation. In the future I'd like to clean the whole PP
+      usage. I will need to keep all compiler and PP static variables
+      in one structure pointed by pointer in thread local data or
+      passed to called functions for MT support.
+
+  * harbour/source/rtl/cdpapi.c
+    * set 0 at the end of destination string in hb_cdpStrnToUTF8()
+
+  * harbour/source/rtl/dateshb.c
+    ! fixed possible GPF in CTOD when badly formated date is given
+
+  * harbour/source/rtl/gtxwc/gtxwc.c
+  * harbour/source/rtl/gtxwc/gtxwc.h
+    * changed the selection code - now both PRIMARY and CLIPBOARD
+      selections are set by Harbour. It should work with any programs
+      which uses any of them but I'd like to remove one of this selections
+      or give user a way to chose the preferred one. I can also add support
+      for automatic setting/clearing/pasting PRIMARY selection by GTXWC
+      with mouse and shift key. I'm waiting for opinions.
+    + added basic support for GFX operations
+
+  + harbour/source/rtl/gtalleg/Makefile
+  + harbour/source/rtl/gtalleg/fixedth.sfc
+  + harbour/source/rtl/gtalleg/gtalleg.c
+  + harbour/source/rtl/gtalleg/ssf.c
+  + harbour/source/rtl/gtalleg/ssf.h
+    + added new GT by Mauricio Abre based on Allegro cross platform
+      graphic libraries.
+      Code borrowed from xHarbour and modified by my for new Harbour
+      GT API.
+
+2006-02-28 17:00 UTC+0100 Ryszard Glab <rglab//imid.med.pl>
+   * include/hbpp.h
+   * source/pp/ppcore.c
+   * source/pp/pptable.c
+      * fixed handling of optional clauses in command/translate
+      
+        #command PRINT TO <oPage> => [<oPage>:=]PrintPage()
+      * fixed <-x-> match marker
+      * added fixed length of command/translate/define name to
+        speed translation
+
+   * source/compiler/harbour.l
+      * fixed GPF in handling of '&macro.tekst' syntax
+        (introduced recently)
+
+
+2006-02-22 21:25 UTC-0400 Alejandro de Garate <alex_degarate@hotmail.com>
+   * harbour/.cvsignore
+   restored to previous 1.9 revision
+
+2006-02-22 15:48 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/compiler/harbour.c
+  * harbour/source/rtl/gtdos/gtdos.c
+    * fixed casting and typos for DOS OpenWatcom compilation
+
+2006-02-21 23:20 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/bin/hb-func.sh
+    * added support for -L<librarypath> in xhbmk
+    * set the highest priority to user libraries specified by
+      -l<libname> linker option
+
+  * harbour/include/hbapicdp.h
+  * harbour/source/rtl/cdpapi.c
+    * added UTF8 related functions: hb_cdpUTF8StringLength(),
+      hb_cdpStringInUTF8Length(), hb_cdpUTF8ToStrn().
+    * Changed name of hb_cdpStrnToUTF() function to hb_cdpStrnToUTF8()
+      to avoid confusions with UTF16
+
+  * harbour/include/hberrors.h
+  * harbour/source/compiler/hbgenerr.c
+  * harbour/source/compiler/harbour.c
+    + added to new errors (memory corruption and memory overflow) for
+      compiler level FM statistic.
+
+  * harbour/source/compiler/hbfix.c
+    ! fixed stupid typo in copy and past which broke conditional jump
+      reduction
+
+  * harbour/include/hbgtcore.h
+  * harbour/source/rtl/hbgtcore.c
+  * harbour/include/hbgtinfo.ch
+  * harbour/source/rtl/gtdos/gtdos.c
+  * harbour/source/rtl/gtos2/gtos2.c
+  * harbour/source/rtl/gtwin/gtwin.c
+    * added new method to change screen buffer state (hot/cold/scroll)
+      and use them in some GTs.
+
+  * harbour/source/rtl/gx.c
+    * use screen dimensions as default values for SETMODE() not maxrow()/
+      maxcol()
+
+  * harbour/source/rtl/gtxwc/gtxwc.c
+  * harbour/source/rtl/gtxwc/gtxwc.h
+    * added support for clipboard
+    * added support for cursor shape - like in DOS/VGA
+
+  * harbour/source/rdd/workarea.c
+  * harbour/source/rdd/dbffpt/dbffpt1.c
+    * cleaned some redundant extern declarations
+
+  * harbour/contrib/rdd_ads/ads1.c
+  * harbour/contrib/rdd_ads/adsfunc.c
+    * removed some unnecessary #include ...
+
+  * harbour/source/rtl/str.c
+  * harbour/source/rtl/transfrm.c
+  * harbour/source/vm/itemapi.c
+    ! fixed some small incompatibilities with Clipper in number to string
+      conversions
+
+2006-02-17 10:10 UTC+0100 Ryszard Glab <rglab//imid.med.pl>
+   * include/hbcomp.h
+   * source/compiler/Makefile
+   * source/compiler/cmdcheck.c
+       
+   * source/compiler/harbour.y
+   * source/compiler/hbident.c
+      * even more fixes to memory leaks in the compiler
+       (all compiler structures are deallocated on exit now, really :)
+
+
+2006-02-16 14:40 UTC+0100 Ryszard Glab <rglab//imid.med.pl>
+   * include/hbcomp.h
+   * include/hbexpra.c
+   * source/compiler/Makefile
+   * source/compiler/expropta.c
+      
+   * source/compiler/harbour.c
+   * source/compiler/harbour.y
+   * source/compiler/hbgenerr.c
+      * all compiler structures are deallocated on exit now
+
+
+2006-02-15 20:24 UTC+0100 Viktor Szakats (viktor.szakats syenar.hu)
+   * harbour/hrbdll.bc
+   * harbour/hrbdll.vc
+   * harbour/makefile.bc
+   * harbour/makefile.nt
+   * harbour/makefile.vc
+   * harbour/makefile64.nt
+   * harbour/source/codepage/Makefile
+   + harbour/source/codepage/cp_tpl.c
+   + harbour/source/codepage/cpbg866.c
+   + harbour/source/codepage/cpbgiso.c
+   + harbour/source/codepage/cpbgwin.c
+   + harbour/source/codepage/cpeldos.c
+   + harbour/source/codepage/cpelwin.c
+   + harbour/source/codepage/cpesdos.c
+   + harbour/source/codepage/cpesmwi.c
+   + harbour/source/codepage/cpeswin.c
+   + harbour/source/codepage/cpgedos.c
+   + harbour/source/codepage/cpgewin.c
+   + harbour/source/codepage/cphu852.c
+   + harbour/source/codepage/cphuiso.c
+   + harbour/source/codepage/cphuwin.c
+   + harbour/source/codepage/cppl852.c
+   + harbour/source/codepage/cppliso.c
+   + harbour/source/codepage/cpplmaz.c
+   + harbour/source/codepage/cpplwin.c
+   + harbour/source/codepage/cppt850.c
+   + harbour/source/codepage/cpptiso.c
+   + harbour/source/codepage/cpru866.c
+   + harbour/source/codepage/cprukoi.c
+   + harbour/source/codepage/cpruwin.c
+   + harbour/source/codepage/cpsl437.c
+   + harbour/source/codepage/cpsl852.c
+   + harbour/source/codepage/cpsliso.c
+   + harbour/source/codepage/cpslwin.c
+   + harbour/source/codepage/cpsrwin.c
+   - harbour/source/codepage/cdp_tpl.c
+   - harbour/source/codepage/cdpbg866.c
+   - harbour/source/codepage/cdpbgiso.c
+   - harbour/source/codepage/cdpbgwin.c
+   - harbour/source/codepage/cdpeldos.c
+   - harbour/source/codepage/cdpelwin.c
+   - harbour/source/codepage/cdpesdos.c
+   - harbour/source/codepage/cdpesmwi.c
+   - harbour/source/codepage/cdpeswin.c
+   - harbour/source/codepage/cdpgedos.c
+   - harbour/source/codepage/cdpgewin.c
+   - harbour/source/codepage/cdphu852.c
+   - harbour/source/codepage/cdphuiso.c
+   - harbour/source/codepage/cdphuwin.c
+   - harbour/source/codepage/cdppl852.c
+   - harbour/source/codepage/cdppliso.c
+   - harbour/source/codepage/cdpplmaz.c
+   - harbour/source/codepage/cdpplwin.c
+   - harbour/source/codepage/cdppt850.c
+   - harbour/source/codepage/cdpptiso.c
+   - harbour/source/codepage/cdpru866.c
+   - harbour/source/codepage/cdprukoi.c
+   - harbour/source/codepage/cdpruwin.c
+   - harbour/source/codepage/cdpsl437.c
+   - harbour/source/codepage/cdpsl852.c
+   - harbour/source/codepage/cdpsliso.c
+   - harbour/source/codepage/cdpslwin.c
+   - harbour/source/codepage/cdpsrwin.c
+     * Renamed codepage files (cdp*.c -> cd*.c)
+     * Updated init code for all remaining codepages.
+
+2006-02-15 13:50 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/vm/hvm.c
+    ! fixed memory leak I introduced changing Ryszard modifications
+
+      need such functionality yet
+  + harbour/ChangeLog.015
+  * harbour/source/vm/debug.c
+
+  * harbour/harbour.spec
+  * harbour/bin/hb-func.sh
+    * some modification in xhb* scripts building - adding passing
+      predefined compiler and linker switches
+  * harbour/source/vm/hvm.c
+    * minor code cleanup
+
+2006-09-03 18:55 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbapicls.h
+  * harbour/source/vm/classes.c
+  * harbour/source/vm/hvm.c
+  * harbour/tests/overload.prg
+    + added support for overloading [] in assignment operation
+
+2006-09-03 16:30 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/ChangeLog
+  + harbour/ChangeLog.016
+    * new ChangeLog file created
+  * harbour/include/hbver.h
+    * updated version number to 0.47.0
+  * tagged CVS as build47

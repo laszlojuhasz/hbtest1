@@ -1,0 +1,304 @@
+#!/bin/sh
+#
+# $Id$
+#
+
+# ---------------------------------------------------------------
+# Copyright 2003 Przemyslaw Czerpak <druzus@polbox.com>
+# simple script to build binaries .tgz from Harbour sources
+#
+# See doc/license.txt for licensing terms.
+# ---------------------------------------------------------------
+
+cd `dirname $0`
+. bin/hb-func.sh
+
+name="harbour"
+hb_ver=`get_hbver`
+hb_platform=`get_hbplatform`
+[ "${hb_platform}" = "" ] || hb_platform="-${hb_platform}"
+hb_archfile="${name}-${hb_ver}${hb_platform}.bin.tar.gz"
+hb_instfile="${name}-${hb_ver}${hb_platform}.inst.sh"
+hb_lnkso="yes"
+hb_pref="hb"
+hb_contrib=""
+hb_sysdir="yes"
+hb_exesuf=""
+export C_USR="-DHB_FM_STATISTICS_OFF -O3"
+
+[ -z "$HB_INSTALL_PREFIX" ] && [ -n "$PREFIX" ] && export HB_INSTALL_PREFIX="$PREFIX"
+
+if [ -z "$TMPDIR" ]; then TMPDIR="/tmp"; fi
+HB_INST_PREF="$TMPDIR/$name.bin.$USER.$$"
+
+if [ -z "$HB_ARCHITECTURE" ]; then
+    if [ "$OSTYPE" = "msdosdjgpp" ]; then
+        hb_arch="dos"
+    else
+        hb_arch=`uname -s | tr -d "[-]" | tr '[A-Z]' '[a-z]' 2>/dev/null`
+        case "$hb_arch" in
+            *windows*|*mingw32*)    hb_arch="w32" ;;
+            *dos)   hb_arch="dos" ;;
+            *bsd)   hb_arch="bsd" ;;
+        esac
+    fi
+    export HB_ARCHITECTURE="$hb_arch"
+fi
+
+if [ -z "$HB_COMPILER" ]; then
+    case "$HB_ARCHITECTURE" in
+        w32) HB_COMPILER="mingw32" ;;
+        dos) HB_COMPILER="djgpp" ;;
+        *)   HB_COMPILER="gcc" ;;
+    esac
+    export HB_COMPILER
+fi
+
+if [ -z "$HB_GT_LIB" ]; then
+    case "$HB_ARCHITECTURE" in
+        w32) HB_GT_LIB="gtwin" ;;
+        dos) HB_GT_LIB="gtdos" ;;
+        *)   HB_GT_LIB="gtcrs" ;;
+    esac
+    export HB_GT_LIB
+fi
+
+if [ -z "$HB_COMMERCE" ]; then export HB_COMMERCE=no; fi
+
+# default lib dir name
+HB_LIBDIRNAME="lib"
+
+ETC="/etc"
+
+HB_ARCH64=""
+if [ "$HB_ARCHITECTURE" = "linux" ]
+then
+    HB_CPU=`uname -m`
+    case "$HB_CPU" in
+        *[_@]64)
+            export C_USR="$C_USR -fPIC"
+            HB_ARCH64="yes"
+            ;;
+        *)
+            ;;
+    esac
+fi
+
+# Select the platform-specific installation prefix and ownership
+HB_INSTALL_OWNER=root
+case "$HB_ARCHITECTURE" in
+    darwin)
+        [ -z "$HB_INSTALL_PREFIX" ] && HB_INSTALL_PREFIX="/usr/local"
+        HB_INSTALL_GROUP=wheel
+        ETC="/private/etc"
+	;;
+    linux)
+        [ -z "$HB_INSTALL_PREFIX" ] && HB_INSTALL_PREFIX="/usr"
+        [ -d "$HB_INSTALL_PREFIX/lib64" ] && [ "${HB_ARCH64}" = yes ] && HB_LIBDIRNAME="lib64"
+        HB_INSTALL_GROUP=root
+        ;;
+    w32)
+        [ -z "$HB_INSTALL_PREFIX" ] && HB_INSTALL_PREFIX="/usr/local"
+        HB_INSTALL_GROUP=0
+        hb_sysdir="no"
+        hb_exesuf=".exe"
+        hb_instfile=""
+        ;;
+    dos)
+        [ -z "$HB_INSTALL_PREFIX" ] && HB_INSTALL_PREFIX="/${name}"
+        HB_INSTALL_GROUP=root
+        hb_lnkso="no"
+        hb_sysdir="no"
+        hb_exesuf=".exe"
+        hb_instfile=""
+        hb_archfile="${name}.tgz"
+        HB_INST_PREF="$TMPDIR/hb-$$"
+        ;;
+    *)
+        [ -z "$HB_INSTALL_PREFIX" ] && HB_INSTALL_PREFIX="/usr/local"
+        HB_INSTALL_GROUP=wheel
+        ;;
+esac
+
+# Select the platform-specific command names
+INSTALL=install
+MAKE=make
+TAR=tar
+case "$HB_ARCHITECTURE" in
+    darwin)
+        gtar --version >/dev/null 2>&1 && TAR=gtar
+        INSTALL="install -c"
+        ;;
+    bsd)
+        MAKE=gmake
+        ;;
+esac
+
+# Set other platform-specific build options
+if [ -z "$HB_GPM_MOUSE" ]; then
+    if [ "$HB_ARCHITECTURE" = "linux" ] && \
+       ( [ -f /usr/include/gpm.h ] || [ -f /usr/local/include/gpm.h ]); then
+        HB_GPM_MOUSE=yes
+    else
+        HB_GPM_MOUSE=no
+    fi
+    export HB_GPM_MOUSE
+fi
+
+case "$HB_ARCHITECTURE" in
+    linux)
+        ;;
+    darwin)
+        # Autodetect old Darwin versions and set appropriate build options
+        if [ `uname -r | sed "s/\..*//g"` -lt 6 ]; then
+            export HB_NCURSES_FINK=yes
+        fi
+        [ -z "$HB_WITHOUT_X11" ] && export HB_WITHOUT_X11=yes
+        ;;
+    dos|w32)
+        [ -z "${HB_WITHOUT_GTSLN}" ] && export HB_WITHOUT_GTSLN=yes
+        [ -z "$HB_WITHOUT_X11" ] && export HB_WITHOUT_X11=yes
+        ;;
+    *)
+        [ -z "$HB_WITHOUT_X11" ] && export HB_WITHOUT_X11=yes
+        ;;
+esac
+
+if [ "$HB_COMMERCE" = yes ]
+then
+   export HB_GPM_MOUSE=no
+   export HB_WITHOUT_GTSLN=yes
+fi
+
+if [ "${hb_sysdir}" = "yes" ]; then
+    export HB_BIN_INSTALL="$HB_INSTALL_PREFIX/bin"
+    export HB_INC_INSTALL="$HB_INSTALL_PREFIX/include/${name}"
+    export HB_LIB_INSTALL="$HB_INSTALL_PREFIX/$HB_LIBDIRNAME/${name}"
+else
+    export HB_BIN_INSTALL="$HB_INSTALL_PREFIX/bin"
+    export HB_INC_INSTALL="$HB_INSTALL_PREFIX/include"
+    export HB_LIB_INSTALL="$HB_INSTALL_PREFIX/$HB_LIBDIRNAME"
+fi
+
+# build
+umask 022
+$MAKE -r clean
+$MAKE -r
+for l in ${hb_contrib}
+do
+    (cd "contrib/$l"
+     $MAKE -r clean
+     $MAKE -r)
+done
+
+# install
+rm -fR "${HB_INST_PREF}"
+
+export _DEFAULT_BIN_DIR=$HB_BIN_INSTALL
+export _DEFAULT_INC_DIR=$HB_INC_INSTALL
+export _DEFAULT_LIB_DIR=$HB_LIB_INSTALL
+export HB_BIN_INSTALL="$HB_INST_PREF$HB_BIN_INSTALL"
+export HB_INC_INSTALL="$HB_INST_PREF$HB_INC_INSTALL"
+export HB_LIB_INSTALL="$HB_INST_PREF$HB_LIB_INSTALL"
+
+mkdir -p $HB_BIN_INSTALL
+mkdir -p $HB_INC_INSTALL
+mkdir -p $HB_LIB_INSTALL
+$MAKE -r -i install
+for l in ${hb_contrib}
+do
+    (cd "contrib/$l"
+     $MAKE -r -i install)
+done
+
+# Keep the size of the binaries to a minimim.
+strip $HB_BIN_INSTALL/harbour${hb_exesuf}
+# Keep the size of the libraries to a minimim, but don't try to strip symlinks.
+strip -S `find $HB_LIB_INSTALL -type f`
+
+if [ "${hb_sysdir}" = "yes" ]; then
+
+mkdir -p $HB_INST_PREF$ETC/harbour
+$INSTALL -m644 source/rtl/gtcrs/hb-charmap.def $HB_INST_PREF$ETC/harbour/hb-charmap.def
+
+cat > $HB_INST_PREF$ETC/harbour.cfg <<EOF
+CC=${CCPREFIX}gcc
+CFLAGS=-c -I$_DEFAULT_INC_DIR -O3
+VERBOSE=YES
+DELTMP=YES
+EOF
+
+fi
+
+# check if we should rebuild tools with shared libs
+if [ "${hb_lnkso}" = yes ]
+then
+    case $HB_ARCHITECTURE in
+        darwin)     ADD_LIBS="$ADD_LIBS -lncurses -L/opt/local/lib -L/sw/lib" ;;
+        dos|w32)    ADD_LIBS="" ;;
+        *)          ADD_LIBS="$ADD_LIBS -lncurses" ;;
+    esac 
+    [ "${HB_GPM_MOUSE}" = yes ] && ADD_LIBS="$ADD_LIBS -lgpm"
+    [ "${HB_WITHOUT_GTSLN}" != yes ] && ADD_LIBS="$ADD_LIBS -lslang"
+    [ "${HB_WITHOUT_X11}" != yes ] && ADD_LIBS="$ADD_LIBS -L/usr/X11R6/$HB_LIBDIRNAME -lX11"
+
+    export L_USR="-L${HB_LIB_INSTALL} -l${name} ${ADD_LIBS}"
+    export PRG_USR="\"-D_DEFAULT_INC_DIR='${_DEFAULT_INC_DIR}'\" ${PRG_USR}"
+
+    for utl in hbmake hbrun hbpp hbdoc hbtest
+    do
+        (cd "utils/${utl}"
+         rm -fR "./${HB_ARCHITECTURE}"
+         $MAKE -r install
+         strip "${HB_BIN_INSTALL}/${utl}${hb_exesuf}")
+    done
+fi
+
+# Create and install PP
+(cd contrib/dot
+export PRG_USR="\"-D_DEFAULT_INC_DIR='${_DEFAULT_INC_DIR}'\""
+$HB_BIN_INSTALL/${hb_pref}mk pp -n -w
+strip pp${hb_exesuf}
+$INSTALL -m755 pp${hb_exesuf} $HB_BIN_INSTALL/pp${hb_exesuf}
+ln -s pp${hb_exesuf} $HB_BIN_INSTALL/pprun${hb_exesuf}
+$INSTALL -m644 rp_dot.ch $HB_INC_INSTALL/
+rm -f pp${hb_exesuf})
+
+
+CURDIR=$(pwd)
+(cd "${HB_INST_PREF}"; $TAR -czvf "${CURDIR}/${hb_archfile}" --owner=${HB_INSTALL_OWNER} --group=${HB_INSTALL_GROUP} .)
+rm -fR "${HB_INST_PREF}"
+
+if [ -n "${hb_instfile}" ]; then
+
+   if [ "${HB_ARCHITECTURE}" = linux ]; then
+      DO_LDCONFIG="&& ldconfig"
+   else
+      DO_LDCONFIG=""
+   fi
+   # In the generated script use tar instead of $TAR because we can't be sure
+   # if $TAR exists in the installation environment
+   cat > "${hb_instfile}" <<EOF
+#!/bin/sh
+if [ "\$1" = "--extract" ]; then
+    sed -e '1,/^HB_INST_EOF\$/ d' "\$0" > "${hb_archfile}"
+    exit
+fi
+if [ \`id -u\` != 0 ]; then
+    echo "This package has to be installed from root account."
+    exit 1
+fi
+echo "Do you want to install ${name} (y/n)"
+read ASK
+if [ "\${ASK}" != "y" ] && [ "\${ASK}" != "Y" ]; then
+    exit 1
+fi
+(sed -e '1,/^HB_INST_EOF\$/ d' "\$0" | gzip -cd | tar xvpf - -C /) ${DO_LDCONFIG}
+exit \$?
+HB_INST_EOF
+EOF
+    cat "${hb_archfile}" >> "${hb_instfile}"
+    chmod +x "${hb_instfile}"
+    rm -f "${hb_archfile}"
+
+fi
