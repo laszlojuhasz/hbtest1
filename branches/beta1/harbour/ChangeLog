@@ -8,6 +8,10 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-01-09 16:22 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/common/hbver.c
+    * changed "Aplha" state to "Beta" in release info
+
 2007-01-09 15:57 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   * harbour/ChangeLog
   * harbour/harbour.spec
