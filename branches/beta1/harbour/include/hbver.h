@@ -56,13 +56,13 @@
 /* NOTE: One of these next three fields can be incremented by the hbverfix program */
 
 #define HB_VER_MAJOR    0       /* Major version number */
-#define HB_VER_MINOR    47      /* Minor version number */
+#define HB_VER_MINOR    99      /* Minor version number */
 #define HB_VER_REVISION 0       /* Revision number */
 
 /* NOTE: The next two fields are automatically updated by the hbverfix program */
 
-#define HB_VER_LENTRY   "2007-01-09 15:34 UTC+0100 Przemyslaw Czerpak"
-#define HB_VER_CHLCVS   "ChangeLog,v 1.5168 2007/01/09 14:34:33 druzus"
+#define HB_VER_LENTRY   "2007-01-09 15:57 UTC+0100 Przemyslaw Czerpak"
+#define HB_VER_CHLCVS   "ChangeLog,v 1.5169 2007/01/09 15:57:00 druzus"
 
 /* TOFIX: The next three fields need to get updated automatically */
 
