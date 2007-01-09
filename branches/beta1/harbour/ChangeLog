@@ -1,0 +1,19 @@
+/*
+ * $Id$
+ */
+
+/* Use this format for the entry headers:
+   YYYY-MM-DD HH:MM UTC[-|+]hhmm Your Full Name <your_email@address>
+   For example:
+   2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
+*/
+
+2007-01-09 15:34 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/ChangeLog
+  + harbour/ChangeLog.017
+    * new ChangeLog file created
+  * harbour/doc/whatsnew.txt
+  * harbour/harbour.spec
+  * harbour/include/hbver.h
+    * updated version number to 0.47.0
+  * tagged CVS as build47

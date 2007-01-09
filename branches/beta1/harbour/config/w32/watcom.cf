@@ -1,0 +1,102 @@
+#
+# $Id$
+#
+# The Harbour project
+# GNU MAKE file for Watcom C/C++ 10.x
+
+include $(TOP)$(ROOT)config/$(HB_ARCHITECTURE)/global.cf
+
+OBJ_EXT = .obj
+EXE_EXT = .exe
+LIB_PREF =
+LIB_EXT = .lib
+
+$(HB_ARCHITECTURE)_$(HB_COMPILER)_GRANDP = $(subst /,\,$(GRANDP))
+
+CC = wpp386
+CC_IN =
+CC_OUT = -fo=
+
+CPPFLAGS = -w3 -d2 -5s -5r -fp5 -oxehtz -zq -zt0 -mf -bt=NT
+CFLAGS := -i$(subst /,\,$(HB_INC_COMPILE)) -i.
+
+# work arround to DOS command line size limit
+export WPP386 := $(CPPFLAGS)
+CPPFLAGS =
+
+# Note: The empty line directly before 'endef' HAVE TO exist!
+# It causes that the 'echo' command is separated by LF
+define link_file
+echo FILE $(file) >> __link__.tmp
+
+endef
+
+#Note: The empty line directly before 'endef' HAVE TO exist!
+define link_lib
+echo LIB $(lib) >> __link__.tmp
+
+endef
+
+define link_exe_file
+echo $(LDFLAGS) NAME $@ > __link__.tmp
+echo LIB kernel32.lib, user32.lib, winspool.lib, oleaut32.lib, uuid.lib >> __link__.tmp
+$(foreach file, $(^F), $(link_file))
+$(foreach lib, $(LINKLIBS), $(link_lib))
+$(foreach lib, $(RDDLIBS), $(link_lib))
+$(foreach lib, $(GTLIBS), $(link_lib))
+-$(LD) @__link__.tmp
+endef
+
+LD = wlink
+LDFLAGS = debug all OP osn=NT OP stack=65536 OP CASEEXACT
+
+ifeq ($(HB_LIB_COMPILE),)
+LINKLIBS := $(foreach lib, $(CONTRIBS), $(subst /,\,$(TOP)$(ROOT)contrib/$(lib)/$(HB_ARCH)/$(subst lib,,$(lib))))
+LINKLIBS := $(foreach lib, $(LIBS), $(subst /,\,$(TOP)$(ROOT)source/$(lib)/$(HB_ARCH)/$(lib)))
+else
+LINKLIBS := $(foreach lib, $(CONTRIBS), $(subst /,\,$(HB_LIB_COMPILE)/$(lib)))
+LINKLIBS := $(foreach lib, $(LIBS), $(subst /,\,$(HB_LIB_COMPILE)/$(lib)))
+endif
+
+# If LIBS specifies the rdd library, add all DB drivers.
+ifeq ($(findstring rdd,$(LIBS)),rdd)
+RDDLIBS := $(foreach drv, $(HB_DB_DRIVERS), $(subst /,\,$(TOP)$(ROOT)source/rdd/$(drv)/$(HB_ARCH)/$(drv)))
+endif
+
+ifeq ($(findstring rtl,$(LIBS)),rtl)
+GTLIBS := $(TOP)$(ROOT)source/rtl/$(HB_GT_LIB)/$(HB_ARCH)/$(HB_GT_LIB)
+ifneq ($(HB_GT_DEFAULT),)
+ifneq ($(HB_GT_DEFAULT),$(HB_GT_LIB))
+GTLIBS := $(TOP)$(ROOT)source/rtl/$(HB_GT_DEFAULT)/$(HB_ARCH)/$(HB_GT_DEFAULT)
+endif
+endif
+GTLIBS := $(subst /,\,$(GTLIBS))
+endif
+
+
+LD_RULE = $(link_exe_file)
+
+#Note: The empty line below HAVE TO exist!
+define lib_object
+echo -+$(file) >> __lib__.tmp
+
+endef
+
+define create_library
+echo $@ > __lib__.tmp
+$(foreach file, $(^F), $(lib_object))
+$(AR) $(ARFLAGS) @__lib__.tmp
+endef
+
+AR = wlib
+ARFLAGS = -p=64 -c $(A_USR)
+AR_RULE = $(create_library)
+
+include $(TOP)$(ROOT)config/rules.cf
+
+HB := $(subst /,\,$(HB))
+HB_FLAGS := $(subst /,\,$(HB_FLAGS))
+
+# work arround to DOS command line size limit
+export HARBOURCMD := $(HB_FLAGS)
+HB_FLAGS =
