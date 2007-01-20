@@ -1223,11 +1223,14 @@ HB_EXPR_PTR hb_compExprReduceIIF( HB_EXPR_PTR pSelf, HB_COMP_DECL )
          pSelf->pNext = NULL;
       }
 
+      /* this will cause warning when IIF is used as statement */
+      /*
       if( pSelf->ExprType == HB_ET_NONE )
       {
          pSelf->ExprType = HB_ET_NIL;
          pSelf->ValType = HB_EV_NIL;
       }
+      */
    }
    /* check if valid expression is passed
    */
@@ -1280,7 +1283,8 @@ BOOL hb_compExprReduceAT( HB_EXPR_PTR pSelf, HB_COMP_DECL )
 
    if( pSub->ExprType == HB_ET_STRING && pText->ExprType == HB_ET_STRING )
    {
-   	if( pSub->value.asString.string[0] == '\0' )
+      /* This is CA-Clipper optimizer behavior */
+      if( pSub->ulLength == 0 )
       {
          pReduced = hb_compExprNewLong( 1, HB_COMP_PARAM );
       }

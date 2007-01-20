@@ -523,8 +523,22 @@ char * hb_verHarbour( void )
 
    pszVersion = ( char * ) hb_xgrab( 80 );
 
-   snprintf( pszVersion, 80, "Harbour Beta build %d.%d Intl.",
-             HB_VER_MINOR, HB_VER_REVISION );
+   snprintf( pszVersion, 80, "Harbour %s build %d.%d-%d Intl.",
+             HB_VER_STATUS, HB_VER_MAJOR, HB_VER_MINOR, HB_VER_REVISION );
 
    return pszVersion;
+}
+
+char * hb_verPCode( void )
+{
+   char * pszPCode;
+
+   HB_TRACE(HB_TR_DEBUG, ("hb_verPCode()"));
+
+   pszPCode = ( char * ) hb_xgrab( 24 );
+
+   snprintf( pszPCode, 32, "PCode version: %d.%d",
+             HB_PCODE_VER >> 8, HB_PCODE_VER & 0xff );
+
+   return pszPCode;
 }
