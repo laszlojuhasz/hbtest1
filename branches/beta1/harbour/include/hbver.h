@@ -62,8 +62,8 @@
 
 /* NOTE: The next two fields are automatically updated by the hbverfix program */
 
-#define HB_VER_LENTRY   "2007-01-09 16:10 UTC+0100 Przemyslaw Czerpak"
-#define HB_VER_CHLCVS   "ChangeLog,v 1.5169 2007/01/09 15:11:31"
+#define HB_VER_LENTRY   "2007-01-20 04:00 UTC+0100 Przemyslaw Czerpak"
+#define HB_VER_CHLCVS   "ChangeLog,v 1.5168.2.3 2007/01/20 03:01:59"
 
 /* TOFIX: The next three fields need to get updated automatically */
 

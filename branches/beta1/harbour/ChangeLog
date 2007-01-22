@@ -8,6 +8,10 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-01-22 10:50 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * include/hbver.h
+    * Changed HB_VER_LENTRY and HB_VER_CHLCVS for beta1 release.
+
 2007-01-20 04:00 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   * harbour/ChangeLog
   * harbour/config/w32/bcc32.cf
