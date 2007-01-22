@@ -8,6 +8,28 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-01-22 21:55 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/rtl/set.c
+    * changed default initialization of _SET_DEBUG flag to TRUE when
+      debugger is linked. These modification already existed in the
+      past but was removed by Ryszard. Ryszard I know that in Clipper
+      _SET_DEBUG is always set to FALSE at application startup but
+      if we make the same then we will not be Clipper compatible.
+      These is a note I left in source/rtl/set.c which should explain why:
+
+      Tests shows that Clipper has two different flags to control ALT+D
+      and ALTD() behavior and on startup these flags are not synchronized.
+      When application starts _SET_DEBUG is set to FALSE but debugger
+      can be activated by hitting K_ALT_D or calling ALTD() function without
+      parameter. It means that some other internal flag enables these
+      operations.
+      Because Harbour is using _SET_DEBUG flag only then we have to
+      initialize it to TRUE when debugger is linked to keep real Clipper
+      behavior or we will have to add second flag too and try to replicate
+      exactly unsynchronized behavior of these flags which exists in Clipper.
+      IMHO it's a bug in Clipper (side effect of some internal solutions) and
+      we should not try to emulate it [druzus].
+
 2007-01-22 19:40 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   * harbour/include/hbexprb.c
   * harbour/include/hbpcode.h
