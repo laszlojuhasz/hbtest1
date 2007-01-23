@@ -57,13 +57,13 @@
 
 #define HB_VER_MAJOR    0       /* Major version number */
 #define HB_VER_MINOR    99      /* Minor version number */
-#define HB_VER_REVISION 0       /* Revision number */
+#define HB_VER_REVISION 1       /* Revision number */
 #define HB_VER_STATUS   "Beta"  /* Build status */
 
 /* NOTE: The next two fields are automatically updated by the hbverfix program */
 
-#define HB_VER_LENTRY   "2007-01-20 04:00 UTC+0100 Przemyslaw Czerpak"
-#define HB_VER_CHLCVS   "ChangeLog,v 1.5168.2.3 2007/01/20 03:01:59"
+#define HB_VER_LENTRY   "2007-01-22 21:55 UTC+0100 Przemyslaw Czerpak"
+#define HB_VER_CHLCVS   "ChangeLog,v 1.5168.2.6 2007/01/22 20:56:40"
 
 /* TOFIX: The next three fields need to get updated automatically */
 

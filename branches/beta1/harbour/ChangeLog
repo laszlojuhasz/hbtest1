@@ -8,6 +8,11 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-01-23 09:50 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * include/hbver.h
+    * Changed HB_VER_LENTRY, HB_VER_CHLCVS and HB_VER_REVISION 
+      for 0.99.1 release.
+
 2007-01-22 21:55 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   * harbour/source/rtl/set.c
     * changed default initialization of _SET_DEBUG flag to TRUE when
