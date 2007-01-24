@@ -8,6 +8,13 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-01-24 23:59 UTC+0200 Tomaz Zupan <tomaz.zupan@orpo.si>
+  * harbour.spec
+    * Changed version to 0.99.1 
+    * Aded Mandriva One distro to platforms 
+  * bin/hb-func.sh
+    * Aded Mandriva and Mandriva One distro to platforms 
+
 2007-01-23 09:50 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
   * include/hbver.h
     * Changed HB_VER_LENTRY, HB_VER_CHLCVS and HB_VER_REVISION 
