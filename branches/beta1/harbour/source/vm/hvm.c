@@ -922,7 +922,7 @@ HB_EXPORT void hb_vmExecute( const BYTE * pCode, PHB_SYMB pSymbols )
             break;
             
          case HB_P_SWITCH:
-            w = hb_vmSwitch( pCode, w+3, HB_PCODE_MKUSHORT( &( pCode[ w + 1 ] ) ) );
+            w = hb_vmSwitch( pCode, w+3, HB_PCODE_MKUSHORT( &pCode[ w + 1 ] ) );
             break;
             
          /* Operators (logical) */
@@ -3487,15 +3487,11 @@ static LONG hb_vmSwitch( const BYTE * pCode, LONG offset, USHORT casesCnt )
    {
       HB_ITEM_PTR pResult = hb_errRT_BASE_Subst( EG_ARG, 3104, NULL, "SWITCH", 1, pSwitch );
 
-      if( pResult )
-      {
-         hb_stackPop();
-         hb_vmPush( pResult );
-         hb_itemRelease( pResult );
-         pSwitch = hb_stackItemFromTop( -1 );
-      }
-      else
+      if( !pResult )
          return offset;
+
+      hb_itemMove( pSwitch, pResult );
+      hb_itemRelease( pResult );
    }
 
    while( !fFound && casesCnt-- )
@@ -3696,7 +3692,7 @@ static void hb_vmArrayPush( void )
          {
             /* this is a temporary copy of an array - we can overwrite
              * it with no problem
-            */
+             */
             hb_itemCopy( pArray, pArray->item.asArray.value->pItems + ulIndex - 1 );
             hb_stackPop();
          }
@@ -3843,7 +3839,7 @@ static void hb_vmArrayPop( void )
       if( HB_IS_VALID_INDEX( ulIndex, pArray->item.asArray.value->ulLen ) )
       {
          pValue->type &= ~HB_IT_MEMOFLAG;
-         hb_itemMove( pArray->item.asArray.value->pItems + ulIndex - 1, pValue );
+         hb_itemMoveRef( pArray->item.asArray.value->pItems + ulIndex - 1, pValue );
          hb_stackPop();
          hb_stackPop();
          hb_stackDec();    /* value was moved above hb_stackDec() is enough */
@@ -8134,7 +8130,7 @@ static void hb_vmArrayItemPop( ULONG ulIndex )
       if( HB_IS_VALID_INDEX( ulIndex, pArray->item.asArray.value->ulLen ) )
       {
          pValue->type &= ~HB_IT_MEMOFLAG;
-         hb_itemMove( pArray->item.asArray.value->pItems + ulIndex - 1, pValue );
+         hb_itemMoveRef( pArray->item.asArray.value->pItems + ulIndex - 1, pValue );
          hb_stackPop();
          hb_stackDec();    /* value was moved above hb_stackDec() is enough */
       }

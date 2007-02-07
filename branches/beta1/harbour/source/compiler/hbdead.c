@@ -223,6 +223,15 @@ static HB_CODETRACE_FUNC( hb_p_seqbegin )
    BYTE * pAddr = &pFunc->pCode[ lPCodePos + 1 ];
    ULONG ulRecoverPos = lPCodePos + HB_PCODE_MKINT24( pAddr );
 
+   /* this is a hack for -gc3 output - it's not really necessary
+    * for pure PCODE evaluation
+    */
+   if( pFunc->pCode[ ulRecoverPos ] != HB_P_SEQEND &&
+       pFunc->pCode[ ulRecoverPos - 4 ] == HB_P_SEQEND )
+   {
+      hb_compCodeTraceAddJump( cargo, ulRecoverPos - 4 );
+   }
+
    hb_compCodeTraceMark( cargo, lPCodePos, 4 );
    hb_compCodeTraceAddJump( cargo, ulRecoverPos );
 
@@ -235,6 +244,7 @@ static HB_CODETRACE_FUNC( hb_p_seqend )
    ULONG ulNewPos = lPCodePos + HB_PCODE_MKINT24( pAddr );
 
    hb_compCodeTraceMark( cargo, lPCodePos, 4 );
+
    return hb_compCodeTraceNextPos( cargo, ulNewPos );
 }
 
@@ -249,11 +259,27 @@ static HB_CODETRACE_FUNC( hb_p_switch )
    {
       switch( pFunc->pCode[ lPCodePos ] )
       {
+         case HB_P_PUSHBYTE:
+            lPCodePos += 2;
+            break;
+         case HB_P_PUSHINT:
+            lPCodePos += 3;
+            break;
          case HB_P_PUSHLONG:
+         case HB_P_PUSHDATE:
             lPCodePos += 5;
+            break;
+         case HB_P_PUSHLONGLONG:
+            lPCodePos += 9;
             break;
          case HB_P_PUSHSTRSHORT:
             lPCodePos += 2 + pFunc->pCode[ lPCodePos + 1 ];
+            break;
+         case HB_P_PUSHSTR:
+            lPCodePos += 3 + HB_PCODE_MKUSHORT( &pFunc->pCode[ lPCodePos + 1 ] );
+            break;
+         case HB_P_PUSHSTRLARGE:
+            lPCodePos += 4 + HB_PCODE_MKUINT24( &pFunc->pCode[ lPCodePos + 1 ] );
             break;
          case HB_P_PUSHNIL:
             /* default clause */

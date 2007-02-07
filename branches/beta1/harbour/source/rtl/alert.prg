@@ -29,6 +29,7 @@
 #include "common.ch"
 #include "inkey.ch"
 #include "setcurs.ch"
+#include "hbgtinfo.ch"
 
 /* TOFIX: Clipper defines a clipped window for Alert() [vszakats] */
 
@@ -49,8 +50,9 @@ STATIC s_lNoAlert
 
 FUNCTION Alert( xMessage, aOptions, cColorNorm, nDelay )
    LOCAL nChoice
-   LOCAL aSay, nPos, nWidth, nOpWidth, nInitRow, nInitCol, nEval
-   LOCAL nKey, aPos, nCurrent, aHotkey, aOptionsOK
+   LOCAL aSay
+   LOCAL nPos, nMaxWidth, nDefWidth, nWidth, nOpWidth, nInitRow, nInitCol, nEval
+   LOCAL nKey, cKey, aPos, nCurrent, aHotkey, aOptionsOK
    LOCAL cColorHigh
 
    LOCAL nOldRow
@@ -60,16 +62,16 @@ FUNCTION Alert( xMessage, aOptions, cColorNorm, nDelay )
 
    LOCAL nOldDispCount
    LOCAL nCount
-   Local cNew,cOld,cTemp
+   Local cLine
 
 #ifdef HB_COMPAT_C53
    LOCAL nMRow, nMCol
 #endif
 
-   /* TOFIX: Clipper decides at runtime, whether the GT is linked in,
-             if it is not, the console mode is choosen here. [vszakats] */
-   /* We can simply check if GTNUL (always present) is current GT driver */
-   LOCAL lConsole := HB_GTVERSION( 0 ) != "NUL"
+   /* TOFIX: Clipper decides at runtime, whether the full screen GT is
+             linked. if it is not, the pure tty mode is choosen here.
+             [vszakats] */
+   LOCAL lTTY := !hb_gtInfo( GTI_FULLSCREEN )
 
 #ifdef HB_C52_UNDOC
 
@@ -83,17 +85,43 @@ FUNCTION Alert( xMessage, aOptions, cColorNorm, nDelay )
 
    aSay := {}
 
+   nMaxWidth := MaxCol() - 3
+   nDefWidth := Int( nMaxWidth / 4 * 3 )
+
 #ifdef HB_C52_STRICT
 
    IF !ISCHARACTER( xMessage )
       RETURN NIL
    ENDIF
 
-   DO WHILE ( nPos := At( ';', xMessage ) ) != 0
-      AAdd( aSay, Left( xMessage, nPos - 1 ) )
-      xMessage := SubStr( xMessage, nPos + 1 )
+   DO WHILE Len( xMessage ) != 0
+      nPos := At( ';', xMessage )
+      IF nPos == 0
+         cLine := xMessage
+         xMessage := ""
+      ELSE
+         cLine := Left( xMessage, nPos - 1 )
+         xMessage := SubStr( xMessage, nPos + 1 )
+      ENDIF
+      IF !lTTY
+         DO WHILE Len( cLine ) > nDefWidth
+            nPos := Rat( ' ', Left( cLine, nDefWidth + 1 ) )
+            IF nPos == 0
+               nPos := Rat( ' ', Left( cLine, nMaxWidth + 1 ) )
+            ENDIF
+            IF nPos == 0
+               cLine := NIL
+               EXIT
+            ELSE
+               AAdd( aSay, Left( cLine, nPos - 1 ) )
+               cLine := SubStr( cLine, nPos + 1 )
+            ENDIF
+         ENDDO
+      ENDIF
+      IF cLine != NIL
+         AAdd( aSay, cLine )
+      ENDIF
    ENDDO
-   AAdd( aSay, xMessage )
 
 #else
 
@@ -104,8 +132,23 @@ FUNCTION Alert( xMessage, aOptions, cColorNorm, nDelay )
    IF ISARRAY( xMessage )
 
       FOR nEval := 1 TO Len( xMessage )
-         IF ISCHARACTER( xMessage[ nEval ] )
-            AAdd( aSay, xMessage[ nEval ] )
+         IF ISCHARACTER( cLine := xMessage[ nEval ] )
+            IF !lTTY
+               DO WHILE Len( cLine ) > nDefWidth
+                  nPos := Rat( ' ', Left( cLine, nDefWidth + 1 ) )
+                  IF nPos == 0
+                     nPos := Rat( ' ', Left( cLine, nMaxWidth + 1 ) )
+                  ENDIF
+                  IF nPos == 0
+                     AAdd( aSay, Left( cLine, nMaxWidth ) )
+                     cLine := SubStr( cLine, nMaxWidth + 1 )
+                  ELSE
+                     AAdd( aSay, Left( cLine, nPos - 1 ) )
+                     cLine := SubStr( cLine, nPos + 1 )
+                  ENDIF
+               ENDDO
+            ENDIF
+            AAdd( aSay, cLine )
          ENDIF
       NEXT
 
@@ -121,28 +164,32 @@ FUNCTION Alert( xMessage, aOptions, cColorNorm, nDelay )
       OTHERWISE                       ; xMessage := "NIL"
       ENDCASE
 
-      cOld:= xMessage
-      if Len(cOld) > 60 .AND. AT(';',cOld) == 0  //Dont do this  if ; exist
-         cNew := ""
-         WHILE LEN(cOld) > 60
-            cTemp := SubStr( cOld, 1, 60 )
-            nPos  := Rat(' ',cTemp)
-
-            IF( nPos = 0 )
-               nPos := 60
-            ENDIF
-            cNew += SubStr( cTemp, 1, nPos ) + ';'
-            cOld := SubStr( cOld, nPos + 1 )
-         ENDDO
-         xMessage := cNew + cOld
-      endif
-
-
-      DO WHILE ( nPos := At( ';', xMessage ) ) != 0
-         AAdd( aSay, Left( xMessage, nPos - 1 ) )
-         xMessage := SubStr( xMessage, nPos + 1 )
+      DO WHILE Len( xMessage ) != 0
+         nPos := At( ';', xMessage )
+         IF nPos == 0
+            cLine := xMessage
+            xMessage := ""
+         ELSE
+            cLine := Left( xMessage, nPos - 1 )
+            xMessage := SubStr( xMessage, nPos + 1 )
+         ENDIF
+         IF !lTTY
+            DO WHILE Len( cLine ) > nDefWidth
+               nPos := Rat( ' ', Left( cLine, nDefWidth + 1 ) )
+               IF nPos == 0
+                  nPos := Rat( ' ', Left( cLine, nMaxWidth + 1 ) )
+               ENDIF
+               IF nPos == 0
+                  AAdd( aSay, Left( cLine, nMaxWidth ) )
+                  cLine := SubStr( cLine, nMaxWidth + 1 )
+               ELSE
+                  AAdd( aSay, Left( cLine, nPos - 1 ) )
+                  cLine := SubStr( cLine, nPos + 1 )
+               ENDIF
+            ENDDO
+         ENDIF
+         AAdd( aSay, cLine )
       ENDDO
-      AAdd( aSay, xMessage )
 
    ENDIF
 
@@ -152,9 +199,9 @@ FUNCTION Alert( xMessage, aOptions, cColorNorm, nDelay )
       aOptions := {}
    ENDIF
 
-   IF !ISCHARACTER( cColorNorm )
-      cColorNorm := "W+/R"
-      cColorHigh := "W+/B"
+   IF !ISCHARACTER( cColorNorm ) .or. EMPTY( cColorNorm )
+      cColorNorm := "W+/R" // first pair color (Box line and Text)
+      cColorHigh := "W+/B" // second pair color (Options buttons)
    ELSE
       cColorHigh := StrTran( StrTran( iif( At( "/", cColorNorm ) == 0, "N", SubStr( cColorNorm, At( "/", cColorNorm ) + 1 ) ) + "/" +;
                                       iif( At( "/", cColorNorm ) == 0, cColorNorm, Left( cColorNorm, At( "/", cColorNorm ) - 1 ) ), "+", "" ), "*", "" )
@@ -200,11 +247,14 @@ FUNCTION Alert( xMessage, aOptions, cColorNorm, nDelay )
    aPos := {}
    aHotkey := {}
    nCurrent := nInitCol + Int( ( nWidth - nOpWidth ) / 2 ) + 2
+   IF nCurrent < 0
+      nCurrent := 0
+   ENDIF
    AEval( aOptionsOK, {| x | AAdd( aPos, nCurrent ), AAdd( aHotKey, Upper( Left( x, 1 ) ) ), nCurrent += Len( x ) + 4 } )
 
    nChoice := 1
 
-   IF !lConsole
+   IF lTTY
 
       FOR nEval := 1 TO Len( aSay )
          OutStd( aSay[ nEval ] )
@@ -225,9 +275,8 @@ FUNCTION Alert( xMessage, aOptions, cColorNorm, nDelay )
       /* choice loop */
       DO WHILE .T.
 
-         /* TOFIX, we need a way to check if key input exist for
-            nonconsole GTs, [druzus] */
-         nKey := 0 /* Inkey( nDelay, INKEY_ALL ) */
+         nKey := iif( hb_gtInfo( GTI_KBDSUPPORT ), ;
+                      Inkey( nDelay, INKEY_ALL ), 0 )
 
          DO CASE
 
@@ -242,16 +291,21 @@ FUNCTION Alert( xMessage, aOptions, cColorNorm, nDelay )
             nChoice := 0
             EXIT
 
-         CASE aScan( aHotkey, {| x | x == Upper( Chr( nKey ) ) } ) > 0
+         CASE nKey >= 32 .AND. nKey <= 255
 
-            nChoice := aScan( aHotkey, {| x | x == Upper( Chr( nKey ) ) } )
-            EXIT
+            cKey := Upper( Chr( nKey ) )
+            nChoice := aScan( aHotkey, {| x | x == cKey } )
+            IF nChoice != 0
+               EXIT
+            ENDIF
 
          ENDCASE
 
       ENDDO
 
-      OutStd( Chr( nKey ) )
+      IF nKey >= 32 && nKey <= 255
+         OutStd( Chr( nKey ) )
+      ENDIF
 
    ELSE
 
@@ -284,9 +338,6 @@ FUNCTION Alert( xMessage, aOptions, cColorNorm, nDelay )
       /* choice loop */
       DO WHILE .T.
 
-         IF DispCount() == 0
-            DispBegin()
-         ENDIF
          FOR nEval := 1 TO Len( aOptionsOK )
             DispOutAt( nInitRow + Len( aSay ) + 2, aPos[ nEval ], " " + aOptionsOK[ nEval ] + " ",;
                iif( nEval == nChoice, cColorHigh, cColorNorm ) )
@@ -348,12 +399,17 @@ FUNCTION Alert( xMessage, aOptions, cColorNorm, nDelay )
 
             nDelay := 0
 
-         CASE aScan( aHotkey, {| x | x == Upper( Chr( nKey ) ) } ) > 0
+         CASE nKey > 32 .AND. nKey <= 255
 
-            nChoice := aScan( aHotkey, {| x | x == Upper( Chr( nKey ) ) } )
-            EXIT
+            cKey := Upper( Chr( nKey ) )
+            nChoice := aScan( aHotkey, {| x | x == cKey } )
+            IF nChoice != 0
+               EXIT
+            ENDIF
 
          ENDCASE
+
+         DispBegin()
 
       ENDDO
 

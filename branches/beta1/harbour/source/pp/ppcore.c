@@ -51,7 +51,7 @@
  */
 
 /* #define HB_C52_STRICT */
-#define HB_PP_NO_LINEINFO_TOKEN
+/* #define HB_PP_NO_LINEINFO_TOKEN */
 
 #define _HB_PP_INTERNAL
 
@@ -215,12 +215,7 @@ static void hb_pp_error( PHB_PP_STATE pState, char type, int iError, const char 
 
    if( pState->pErrorFunc )
    {
-      if( !pState->fError )
-      {
-         ( pState->pErrorFunc )( pState->cargo, szMsgTable, type, iError, szParam, NULL );
-         if( type != 'W' )
-            pState->fError = TRUE;
-      }
+      ( pState->pErrorFunc )( pState->cargo, szMsgTable, type, iError, szParam, NULL );
    }
    else
    {
@@ -231,6 +226,8 @@ static void hb_pp_error( PHB_PP_STATE pState, char type, int iError, const char 
       fprintf( stderr, "\n" );
       fflush( stderr );
    }
+   if( type != 'W' )
+      pState->fError = TRUE;
 }
 
 static void hb_pp_operatorsFree( PHB_PP_OPERATOR pOperators, int iOperators )
@@ -4402,6 +4399,8 @@ void hb_pp_initRules( PHB_PP_RULE * pRulesPtr, int * piRules,
  */
 PHB_PP_TOKEN hb_pp_tokenGet( PHB_PP_STATE pState )
 {
+   pState->fError = FALSE;
+
    if( pState->pTokenOut )
    {
       PHB_PP_TOKEN pToken = pState->pTokenOut;
@@ -4617,6 +4616,7 @@ void hb_pp_readRules( PHB_PP_STATE pState, char * szRulesFile )
    char szFileName[ _POSIX_PATH_MAX + 1 ];
    PHB_PP_FILE pFile = pState->pFile;
    PHB_FNAME pFileName;
+   BOOL fError = FALSE;
 
    pFileName = hb_fsFNameSplit( szRulesFile );
    if( !pFileName->szExtension )
@@ -4635,13 +4635,19 @@ void hb_pp_readRules( PHB_PP_STATE pState, char * szRulesFile )
    {
       pState->iFiles++;
       pState->iLastType = HB_PP_TOKEN_NUL;
-      while( hb_pp_tokenGet( pState ) );
+      while( hb_pp_tokenGet( pState ) )
+      {
+         if( pState->fError )
+            fError = TRUE;
+      }
       if( pState->pFile )
       {
          hb_pp_FileFree( pState, pState->pFile, pState->pCloseFunc );
          pState->iFiles--;
       }
       pState->pFile = pFile;
+      if( fError )
+         pState->fError = TRUE;
    }
 }
 
@@ -4847,8 +4853,7 @@ char * hb_pp_nextLine( PHB_PP_STATE pState, ULONG * pulLen )
    if( pState->pFile )
    {
       PHB_PP_TOKEN pToken;
-
-      pState->fError = FALSE;
+      BOOL fError = FALSE;
 
       if( !pState->pOutputBuffer )
          pState->pOutputBuffer = hb_membufNew();
@@ -4858,6 +4863,8 @@ char * hb_pp_nextLine( PHB_PP_STATE pState, ULONG * pulLen )
       pState->iLastType = HB_PP_TOKEN_NUL;
       while( ( pToken = hb_pp_tokenGet( pState ) ) != NULL )
       {
+         if( pState->fError )
+            fError = TRUE;
          if( hb_pp_tokenStr( pToken, pState->pOutputBuffer, TRUE, TRUE,
                              pState->iLastType ) )
             break;
@@ -4865,6 +4872,8 @@ char * hb_pp_nextLine( PHB_PP_STATE pState, ULONG * pulLen )
          if( !pState->pTokenOut->pNext )
             break;
       }
+      if( fError )
+         pState->fError = TRUE;
 
       if( pulLen )
          * pulLen = hb_membufLen( pState->pOutputBuffer );
@@ -4885,9 +4894,8 @@ char * hb_pp_parseLine( PHB_PP_STATE pState, char * pLine, ULONG * pulLen )
 {
    PHB_PP_TOKEN pToken;
    PHB_PP_FILE pFile;
+   BOOL fError = FALSE;
    ULONG ulLen;
-
-   pState->fError = FALSE;
 
    if( !pState->pOutputBuffer )
       pState->pOutputBuffer = hb_membufNew();
@@ -4904,9 +4912,13 @@ char * hb_pp_parseLine( PHB_PP_STATE pState, char * pLine, ULONG * pulLen )
    pState->iLastType = HB_PP_TOKEN_NUL;
    while( ( pToken = hb_pp_tokenGet( pState ) ) != NULL )
    {
+      if( pState->fError )
+         fError = TRUE;
       hb_pp_tokenStr( pToken, pState->pOutputBuffer, TRUE, TRUE,
                       pState->iLastType );
    }
+   if( fError )
+      pState->fError = TRUE;
 
    if( ( ulLen && pLine[ ulLen - 1 ] == '\n' ) ||
        hb_membufLen( pState->pOutputBuffer ) == 0 ||
@@ -5014,6 +5026,7 @@ void hb_pp_tokenToString( PHB_PP_STATE pState, PHB_PP_TOKEN pToken )
 {
    BOOL fError = TRUE;
 
+   pState->fError = FALSE;
    hb_membufFlush( pState->pBuffer );
    if( HB_PP_TOKEN_TYPE( pToken->type ) == HB_PP_TOKEN_LEFT_SB )
    {

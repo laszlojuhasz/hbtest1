@@ -8,6 +8,54 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-02-07 22:35 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbgtinfo.ch
+  * harbour/contrib/libct/ctwin.c
+  * harbour/source/rtl/gtalleg/gtalleg.c
+  * harbour/source/rtl/gtcrs/gtcrs.c
+  * harbour/source/rtl/gtdos/gtdos.c
+  * harbour/source/rtl/gtos2/gtos2.c
+  * harbour/source/rtl/gtpca/gtpca.c
+  * harbour/source/rtl/gtsln/gtsln.c
+  * harbour/source/rtl/gtstd/gtstd.c
+  * harbour/source/rtl/gtwin/gtwin.c
+  * harbour/source/rtl/gtwvt/gtwvt.c
+  * harbour/source/rtl/gtxwc/gtxwc.c
+  * harbour/source/rtl/hbgtcore.c
+  * harbour/source/rtl/hbgtcore.c
+    ! fixed line and box drawing when the coordinates are out of screen size
+    + added support for GTI_FULLSCREEN, GTI_KBDSUPPORT, GTI_ISCTWIN
+
+  * harbour/source/rtl/alert.prg
+    * use hb_gtInfo( GTI_FULLSCREEN ) to detect type of GT driver
+    ! some minor fixes
+      TOFIX: we have to also use GTI_ISCTWIN or add window allocation
+             to standard GT drivers to be Clipper compatible when CTWIN
+	     is used - In Clipper Tools ALERT() works in differ way then
+	     the standard one. It creates separate window box to display
+	     data, supports SETKEY(), etc. I'll think about adding some
+	     extended support for ALERT() and similar operations (f.e.
+	     separate debugger windows) to GT API so it will be also
+	     possible to overload standard alert() command by GUI message
+	     box in GTGUI and similar GT drivers. But this will be only
+	     in devel version.
+
+  * harbour/source/compiler/hbdead.c
+    * do not eliminate unaccessible HB_P_SEQEND - it's necessary for
+      proper -gc3 formatting
+
+  * harbour/source/compiler/ppcomp.c
+  * harbour/source/pp/ppcore.c
+  * harbour/source/pp/pplib.c
+    * tuned error messages to be more Clipper compatible
+
+  * harbour/source/rtl/binnumx.c
+    ! fixed U2BIN() - wrong casting
+
+  * harbour/source/vm/hvm.c
+  * harbour/source/vm/itemapi.c
+    ! added protection against cyclic references in arrays
+
 2007-01-24 23:59 UTC+0200 Tomaz Zupan <tomaz.zupan@orpo.si>
   * harbour.spec
     * Changed version to 0.99.1 

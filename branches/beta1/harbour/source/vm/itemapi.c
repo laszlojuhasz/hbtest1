@@ -1391,22 +1391,23 @@ void hb_itemMoveRef( PHB_ITEM pDest, PHB_ITEM pSource )
 {
    HB_TRACE(HB_TR_DEBUG, ("hb_itemMoveRef(%p, %p)", pDest, pSource));
 
-   if( HB_IS_COMPLEX( pDest ) )
-      hb_itemClear( pDest );
-
    if( HB_IS_BYREF( pSource ) )
    {
-      if( hb_itemUnRef( pSource ) == pDest )
+      if( hb_itemUnRef( pSource ) == ( HB_IS_BYREF( pDest ) ?
+                                             hb_itemUnRef( pDest ) : pDest ) )
       {
          /*
           * assign will create cyclic reference
           * pSource is a reference to pDest
           * we can simply drop coping
           */
-         hb_itemClear( pDest );
+         hb_itemSetNil( pSource );
          return;
       }
    }
+
+   if( HB_IS_COMPLEX( pDest ) )
+      hb_itemClear( pDest );
 
    memcpy( pDest, pSource, sizeof( HB_ITEM ) );
    pSource->type = HB_IT_NIL;
@@ -1497,26 +1498,40 @@ PHB_ITEM hb_itemUnRefOnce( PHB_ITEM pItem )
          /* enumerator variable */
          if( pItem->item.asEnum.valuePtr )
             return pItem->item.asEnum.valuePtr;
-         else if( HB_IS_ARRAY( pItem->item.asEnum.basePtr ) )
+         else
          {
-            PHB_ITEM pResult = hb_arrayGetItemPtr( pItem->item.asEnum.basePtr,
-                                                   pItem->item.asEnum.offset );
-            if( pResult )
-               return pResult;
+            PHB_ITEM pBase = HB_IS_BYREF( pItem->item.asEnum.basePtr ) ?
+                                 hb_itemUnRef( pItem->item.asEnum.basePtr ) :
+                                 pItem->item.asEnum.basePtr;
+            if( HB_IS_ARRAY( pBase ) )
+            {
+               pBase = hb_arrayGetItemPtr( pBase, pItem->item.asEnum.offset );
+               if( pBase )
+                  return pBase;
+            }
+            else if( HB_IS_STRING( pBase ) )
+            {
+               if( pItem->item.asEnum.offset > 0 &&
+                   ( ULONG ) pItem->item.asEnum.offset <= pBase->item.asString.length )
+               {
+                  pItem->item.asEnum.valuePtr = hb_itemPutCL( NULL,
+                     pBase->item.asString.value + pItem->item.asEnum.offset - 1, 1 );
+                  return pItem->item.asEnum.valuePtr;
+               }
+            }
+
+            /* put it here to avoid recursive RT error generation */
+            pItem->item.asEnum.valuePtr = hb_itemNew( NULL );
+
+            if( hb_vmRequestQuery() == 0 )
+            {
+               hb_itemPutNInt( hb_stackAllocItem(), pItem->item.asEnum.offset );
+               hb_errRT_BASE( EG_BOUND, 1132, NULL, hb_langDGetErrorDesc( EG_ARRACCESS ),
+                              2, pItem->item.asEnum.basePtr, hb_stackItemFromTop( -1 ) );
+               hb_stackPop();
+            }
+            return pItem->item.asEnum.valuePtr;
          }
-
-         /* put it here to avoid recursive RT error generation */
-         pItem->item.asEnum.valuePtr = hb_itemNew( NULL );
-
-         if( hb_vmRequestQuery() == 0 )
-         {
-            hb_itemPutNInt( hb_stackAllocItem(), pItem->item.asEnum.offset );
-            hb_errRT_BASE( EG_BOUND, 1132, NULL, hb_langDGetErrorDesc( EG_ARRACCESS ),
-                           2, pItem->item.asEnum.basePtr, hb_stackItemFromTop( -1 ) );
-            hb_stackPop();
-         }
-
-         return pItem->item.asEnum.valuePtr;
       }
       else
       {
