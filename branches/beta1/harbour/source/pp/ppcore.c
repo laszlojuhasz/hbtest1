@@ -1619,6 +1619,7 @@ static PHB_PP_FILE hb_pp_FileBufNew( char * pLineBuf, ULONG ulLineBufLen )
 
    pFile->pLineBuf = pLineBuf;
    pFile->ulLineBufLen = ulLineBufLen;
+   pFile->iLastLine = 1;
 
    return pFile;
 }
