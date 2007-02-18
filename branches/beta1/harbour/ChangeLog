@@ -8,6 +8,14 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-02-18 12:45 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/hbgtmk.sh
+    * updated CVS server name
+
+  * harbour/bin/hb-func.sh
+    * do not pass linking parameters to GCC/G++ when is used for
+      compilation only
+
 2007-02-12 16:50 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   * harbour/contrib/rdd_ads/ads1.c
     ! fixed typo in DBI_GETHEADERSIZE
