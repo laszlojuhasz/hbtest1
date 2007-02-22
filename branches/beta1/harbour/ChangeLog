@@ -8,6 +8,19 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-02-22 09:05 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/common.ch
+    + Changed HB_SYMBOL_UNUSED() to also work in codeblock.
+      It's the older version with: iif( !((.T.)), symbol, .T. )
+      because ( symbol := ( symbol ) ) is stripped only in devel branch
+
+  * harbour/source/rdd/dbf1.c
+    ! fixed for GPF in DBRI_RAWDATA, DBRI_RAWMEMOS
+
+  * harbour/source/rtl/tget.prg
+    ! Victor's fixes from devel branch:
+      Fixed :Type to not return NIL right after the GetNew() call.
+
 2007-02-18 12:45 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   * harbour/hbgtmk.sh
     * updated CVS server name
