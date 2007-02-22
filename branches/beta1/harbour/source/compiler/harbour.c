@@ -813,7 +813,7 @@ void hb_compVariableAdd( HB_COMP_DECL, char * szVarName, BYTE cValueType )
    pVar->cType = cValueType;
    pVar->iUsed = VU_NOT_USED;
    pVar->pNext = NULL;
-   pVar->iDeclLine = hb_pp_line( HB_COMP_PARAM->pLex->pPP );
+   pVar->iDeclLine = HB_COMP_PARAM->currLine;
 
    if ( toupper( cValueType ) == 'S' )
    {
@@ -1182,7 +1182,7 @@ PCOMCLASS hb_compClassAdd( HB_COMP_DECL, char * szClassName )
 
    /*printf( "Declaring Class: %s\n", szClassName );*/
 
-   if ( HB_COMP_PARAM->iWarnings < 3 )
+   if( HB_COMP_PARAM->iWarnings < 3 )
       return NULL;
 
    if ( ( pClass = hb_compClassFind( HB_COMP_PARAM, szClassName ) ) != NULL )
@@ -1939,14 +1939,8 @@ void hb_compFunctionAdd( HB_COMP_DECL, char * szFunName, HB_SYMBOLSCOPE cScope, 
 
    if( HB_COMP_PARAM->fDebugInfo )
    {
-      char * szFile = hb_pp_fileName( HB_COMP_PARAM->pLex->pPP );
-
-      hb_compGenPCode1( HB_P_MODULENAME, HB_COMP_PARAM );
-      hb_compGenPCodeN( ( BYTE * ) szFile, strlen( szFile ), HB_COMP_PARAM );
-      hb_compGenPCode1( ':', HB_COMP_PARAM );
-      hb_compGenPCodeN( ( BYTE * ) szFunName, strlen( szFunName ) + 1, HB_COMP_PARAM );
+      hb_compGenModuleName( HB_COMP_PARAM, szFunName );
    }
-   HB_COMP_PARAM->fDontGenLineNum = FALSE; /* reset the flag */
 }
 
 PINLINE hb_compInlineAdd( HB_COMP_DECL, char * szFunName, int iLine )
@@ -2342,7 +2336,7 @@ int hb_compLocalGetPos( HB_COMP_DECL, char * szVarName ) /* returns the order + 
                      pVar->cType = ' ';
                      pVar->iUsed = VU_NOT_USED;
                      pVar->pNext  = NULL;
-                     pVar->iDeclLine = hb_pp_line( HB_COMP_PARAM->pLex->pPP );
+                     pVar->iDeclLine = HB_COMP_PARAM->currLine;
 
                      /* Use negative order to signal that we are accessing a local
                       * variable from a codeblock
@@ -2551,8 +2545,9 @@ USHORT hb_compFunctionGetPos( HB_COMP_DECL, char * szFunctionName ) /* return 0 
    return 0;
 }
 
-void hb_compNOOPadd( PFUNCTION pFunc, ULONG ulPos )
+static void hb_compNOOPadd( PFUNCTION pFunc, ULONG ulPos )
 {
+   pFunc->pCode[ ulPos ] = HB_P_NOOP;
    pFunc->iNOOPs++;
 
    if( pFunc->pNOOPs )
@@ -2640,21 +2635,48 @@ void hb_compGenJumpHere( ULONG ulOffset, HB_COMP_DECL )
    hb_compGenJumpThere( ulOffset, HB_COMP_PARAM->functions.pLast->lPCodePos, HB_COMP_PARAM );
 }
 
+/* generates the pcode with the currently compiled module and function name */
+void hb_compGenModuleName( HB_COMP_DECL, char * szFunName )
+{
+   hb_compGenPCode1( HB_P_MODULENAME, HB_COMP_PARAM );
+   hb_compGenPCodeN( ( BYTE * ) HB_COMP_PARAM->currModule,
+                     strlen( HB_COMP_PARAM->currModule ), HB_COMP_PARAM );
+   hb_compGenPCode1( ':', HB_COMP_PARAM );
+   if( szFunName && *szFunName )
+      hb_compGenPCodeN( ( BYTE * ) szFunName, strlen( szFunName ) + 1, HB_COMP_PARAM );
+   else /* special version for included files */
+      hb_compGenPCode1( '\0', HB_COMP_PARAM );
+   HB_COMP_PARAM->lastModule = HB_COMP_PARAM->currModule;
+   HB_COMP_PARAM->lastLine = -1;
+}
+
 void hb_compLinePush( HB_COMP_DECL ) /* generates the pcode with the currently compiled source code line */
 {
-   if( HB_COMP_PARAM->fLineNumbers && ! HB_COMP_PARAM->fDontGenLineNum )
+   if( HB_COMP_PARAM->fLineNumbers )
    {
-      int iLine = hb_pp_line( HB_COMP_PARAM->pLex->pPP );
-      if( HB_COMP_PARAM->functions.pLast->lPCodePos - HB_COMP_PARAM->lastLinePos > 3 ||
-          HB_COMP_PARAM->fDebugInfo )
+      if( HB_COMP_PARAM->fDebugInfo && HB_COMP_PARAM->lastModule != HB_COMP_PARAM->currModule )
       {
-         HB_COMP_PARAM->lastLinePos = HB_COMP_PARAM->functions.pLast->lPCodePos;
-         hb_compGenPCode3( HB_P_LINE, HB_LOBYTE( iLine ), HB_HIBYTE( iLine ), HB_COMP_PARAM );
+         if( HB_COMP_PARAM->functions.pLast->pCode[ HB_COMP_PARAM->lastLinePos ] == HB_P_LINE &&
+             HB_COMP_PARAM->functions.pLast->lPCodePos - HB_COMP_PARAM->lastLinePos == 3 )
+            HB_COMP_PARAM->functions.pLast->lPCodePos -= 3;
+         hb_compGenModuleName( HB_COMP_PARAM, NULL );
       }
-      else
+
+      if( HB_COMP_PARAM->currLine != HB_COMP_PARAM->lastLine )
       {
-         HB_COMP_PARAM->functions.pLast->pCode[ HB_COMP_PARAM->lastLinePos +1 ] = HB_LOBYTE( iLine );
-         HB_COMP_PARAM->functions.pLast->pCode[ HB_COMP_PARAM->lastLinePos +2 ] = HB_HIBYTE( iLine );
+         if( HB_COMP_PARAM->functions.pLast->pCode[ HB_COMP_PARAM->lastLinePos ] == HB_P_LINE &&
+             HB_COMP_PARAM->functions.pLast->lPCodePos - HB_COMP_PARAM->lastLinePos == 3 )
+         {
+            HB_COMP_PARAM->functions.pLast->pCode[ HB_COMP_PARAM->lastLinePos + 1 ] = HB_LOBYTE( HB_COMP_PARAM->currLine );
+            HB_COMP_PARAM->functions.pLast->pCode[ HB_COMP_PARAM->lastLinePos + 2 ] = HB_HIBYTE( HB_COMP_PARAM->currLine );
+         }
+         else
+         {
+            HB_COMP_PARAM->lastLinePos = HB_COMP_PARAM->functions.pLast->lPCodePos;
+            hb_compGenPCode3( HB_P_LINE, HB_LOBYTE( HB_COMP_PARAM->currLine ),
+                                         HB_HIBYTE( HB_COMP_PARAM->currLine ), HB_COMP_PARAM );
+         }
+         HB_COMP_PARAM->lastLine = HB_COMP_PARAM->currLine;
       }
    }
 
@@ -2662,10 +2684,9 @@ void hb_compLinePush( HB_COMP_DECL ) /* generates the pcode with the currently c
    {
       /* previous line contained RETURN/BREAK/LOOP/EXIT statement */
       hb_compGenWarning( HB_COMP_PARAM, hb_comp_szWarnings, 'W', HB_COMP_WARN_UNREACHABLE, NULL, NULL );
+      /* clear RETURN/BREAK flag */
+      HB_COMP_PARAM->functions.pLast->bFlags &= ~ ( /*FUN_WITH_RETURN |*/ FUN_BREAK_CODE );
    }
-   HB_COMP_PARAM->fDontGenLineNum = FALSE;
-   /* clear RETURN/BREAK flag */
-   HB_COMP_PARAM->functions.pLast->bFlags &= ~ ( /*FUN_WITH_RETURN |*/ FUN_BREAK_CODE );
 }
 
 /*
@@ -2686,6 +2707,12 @@ void hb_compStatmentStart( HB_COMP_DECL )
    }
 }
 
+void hb_compLinePushIfInside( HB_COMP_DECL ) /* generates the pcode with the currently compiled source code line */
+{
+   hb_compStatmentStart( HB_COMP_PARAM );
+   hb_compLinePush( HB_COMP_PARAM );
+}
+
 /* Generates the pcode with the currently compiled source code line
  * if debug code was requested only
  */
@@ -2704,12 +2731,6 @@ void hb_compLinePushIfDebugger( HB_COMP_DECL )
       }
       HB_COMP_PARAM->functions.pLast->bFlags &= ~ ( /*FUN_WITH_RETURN |*/ FUN_BREAK_CODE );  /* clear RETURN flag */
    }
-}
-
-void hb_compLinePushIfInside( HB_COMP_DECL ) /* generates the pcode with the currently compiled source code line */
-{
-   hb_compStatmentStart( HB_COMP_PARAM );
-   hb_compLinePush( HB_COMP_PARAM );
 }
 
 /*
@@ -3448,7 +3469,7 @@ void hb_compFinalizeFunction( HB_COMP_DECL ) /* fixes all last defined function 
 
    if( pFunc )
    {
-      if( (pFunc->bFlags & FUN_WITH_RETURN) == 0 )
+      if( ( pFunc->bFlags & FUN_WITH_RETURN ) == 0 )
       {
          /* The last statement in a function/procedure was not a RETURN
           * Generate end-of-procedure pcode
@@ -3699,10 +3720,7 @@ void hb_compNOOPfill( PFUNCTION pFunc, ULONG ulFrom, int iCount, BOOL fPop, BOOL
             hb_compNOOPadd( pFunc, ulFrom );
       }
       else
-      {
-         pFunc->pCode[ ulFrom ] = HB_P_NOOP;
          hb_compNOOPadd( pFunc, ulFrom );
-      }
       ++ulFrom;
    }
 }
@@ -4098,11 +4116,10 @@ void hb_compSequenceFinish( ULONG ulStartPos, int bUsualStmts, HB_COMP_DECL )
    {
       if( ! bUsualStmts )
       {
+         --ulStartPos;  /* remove also HB_P_SEQBEGIN */
+         HB_COMP_PARAM->lastLinePos = ulStartPos - 3;
          if( ! HB_COMP_ISSUPPORTED(HB_COMPFLAG_OPTJUMP) )
-         {
-            HB_COMP_PARAM->functions.pLast->lPCodePos = ulStartPos - 1; /* remove also HB_P_SEQBEGIN */
-            HB_COMP_PARAM->lastLinePos = ulStartPos - 5;
-         }
+            HB_COMP_PARAM->functions.pLast->lPCodePos = ulStartPos;
          else
          {
             /*
@@ -4110,13 +4127,9 @@ void hb_compSequenceFinish( ULONG ulStartPos, int bUsualStmts, HB_COMP_DECL )
              * is enabled by replacing it with HB_P_NOOP PCODEs - which
              * will be later eliminated and jump data updated.
              */
-            while( ulStartPos <= HB_COMP_PARAM->functions.pLast->lPCodePos )
-            {
-               HB_COMP_PARAM->functions.pLast->pCode[ ulStartPos - 1 ] = HB_P_NOOP;
-               hb_compNOOPadd( HB_COMP_PARAM->functions.pLast, ulStartPos - 1 );
-               ++ulStartPos;
-            }
-            HB_COMP_PARAM->lastLinePos = ulStartPos - 5;
+            do
+               hb_compNOOPadd( HB_COMP_PARAM->functions.pLast, ulStartPos );
+            while( ++ulStartPos < HB_COMP_PARAM->functions.pLast->lPCodePos );
          }
       }
    }
