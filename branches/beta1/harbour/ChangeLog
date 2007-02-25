@@ -8,6 +8,17 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-02-25 21:05 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/contrib/odbc/Makefile
+  * harbour/contrib/odbc/odbc.c
+  * harbour/contrib/odbc/sql.ch
+  * harbour/contrib/odbc/todbc.prg
+  - harbour/contrib/odbc/sql.h
+  - harbour/contrib/odbc/sqlext.h
+  - harbour/contrib/odbc/sqltypes.h
+    * synced with version in DEVEL tree - the previous one couldn't be
+      compiled on many platforms what was breaking the whole build process
+
 2007-02-22 15:50 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   * harbour/include/hbcomp.h
   * harbour/include/hbcompdf.h
