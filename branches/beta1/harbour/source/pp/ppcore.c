@@ -58,8 +58,6 @@
 #include "hbpp.h"
 #include "hbdate.h"
 #include <errno.h>
-#include <ctype.h>
-
 
 #define HB_PP_WARN_DEFINE_REDEF                 1     /* C1005 */
 
@@ -439,17 +437,9 @@ static PHB_PP_TOKEN hb_pp_tokenNew( const char * value, ULONG ulLen,
 
    if( HB_PP_TOKEN_ALLOC( type ) )
    {
-      if( ulLen <= 1 )
-      {
-         pToken->value = ( char * ) hb_szAscii[ ulLen ? ( UCHAR ) value[ 0 ] : 0 ];
-         type |= HB_PP_TOKEN_STATIC;
-      }
-      else
-      {
-         pToken->value = ( char * ) hb_xgrab( ulLen + 1 );
-         memcpy( pToken->value, value, ulLen );
-         pToken->value[ ulLen ] = '\0';
-      }
+      pToken->value = ( char * ) hb_xgrab( ulLen + 1 );
+      memcpy( pToken->value, value, ulLen );
+      pToken->value[ ulLen ] = '\0';
    }
    else
       pToken->value = ( char * ) value;
@@ -469,18 +459,10 @@ static void hb_pp_tokenSetValue( PHB_PP_TOKEN pToken,
 {
    if( HB_PP_TOKEN_ALLOC( pToken->type ) )
       hb_xfree( pToken->value );
-   if( ulLen <= 1 )
-   {
-      pToken->value = ( char * ) hb_szAscii[ ulLen ? ( UCHAR ) value[ 0 ] : 0 ];
-      pToken->type |= HB_PP_TOKEN_STATIC;
-   }
-   else
-   {
-      pToken->type &= ~HB_PP_TOKEN_STATIC;
-      pToken->value = ( char * ) hb_xgrab( ulLen + 1 );
-      memcpy( pToken->value, value, ulLen );
-      pToken->value[ ulLen ] = '\0';
-   }
+   pToken->type &= ~HB_PP_TOKEN_STATIC;
+   pToken->value = ( char * ) hb_xgrab( ulLen + 1 );
+   memcpy( pToken->value, value, ulLen );
+   pToken->value[ ulLen ] = '\0';
    pToken->len = ( USHORT ) ulLen;
 }
 
@@ -5080,15 +5062,14 @@ void hb_pp_tokenUpper( PHB_PP_TOKEN pToken )
       else
          pToken->len--;
 
-      if( pToken->len <= 1 )
+      if( pToken->len == 0 )
       {
-         UCHAR ucVal = pToken->len ? ( UCHAR ) pToken->value[ 1 ] : 0;
          if( HB_PP_TOKEN_ALLOC( pToken->type ) )
          {
             hb_xfree( pToken->value );
             pToken->type |= HB_PP_TOKEN_STATIC;
          }
-         pToken->value = ( char * ) hb_szAscii[ ucVal ];
+         pToken->value = "";
       }
       else
       {
@@ -5104,7 +5085,7 @@ void hb_pp_tokenUpper( PHB_PP_TOKEN pToken )
          pToken->value[ pToken->len ] = '\0';
       }
    }
-   else if( pToken->len > 1 )
+   else if( pToken->len > 0 )
    {
       if( !HB_PP_TOKEN_ALLOC( pToken->type ) )
       {
@@ -5121,17 +5102,7 @@ void hb_pp_tokenUpper( PHB_PP_TOKEN pToken )
       }
    }
 
-   if( pToken->len <= 1 )
-   {
-      UCHAR ucVal = ( UCHAR ) ( pToken->len ? toupper( ( UCHAR ) pToken->value[ 0 ] ) : 0 );
-      if( HB_PP_TOKEN_ALLOC( pToken->type ) )
-      {
-         hb_xfree( pToken->value );
-         pToken->type |= HB_PP_TOKEN_STATIC;
-      }
-      pToken->value = ( char * ) hb_szAscii[ ucVal ];
-   }
-   else
+   if( pToken->len > 0 )
       hb_strupr( pToken->value );
 }
 
