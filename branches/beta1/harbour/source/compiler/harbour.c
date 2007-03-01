@@ -1938,9 +1938,9 @@ void hb_compFunctionAdd( HB_COMP_DECL, char * szFunName, HB_SYMBOLSCOPE cScope, 
    hb_compGenPCode3( HB_P_SFRAME, 0, 0, HB_COMP_PARAM );    /* frame for statics variables */
 
    if( HB_COMP_PARAM->fDebugInfo )
-   {
       hb_compGenModuleName( HB_COMP_PARAM, szFunName );
-   }
+   else
+      HB_COMP_PARAM->lastLine = -1;
 }
 
 PINLINE hb_compInlineAdd( HB_COMP_DECL, char * szFunName, int iLine )
@@ -4204,10 +4204,10 @@ void hb_compStaticDefStart( HB_COMP_DECL )
       
       if( HB_COMP_PARAM->fDebugInfo )
       {
-         char * szFile = hb_pp_fileName( HB_COMP_PARAM->pLex->pPP );
-
-         hb_compGenPCode1( HB_P_MODULENAME, HB_COMP_PARAM );
-         hb_compGenPCodeN( ( BYTE * ) szFile, strlen( szFile ) + 1, HB_COMP_PARAM );
+         /* uncomment this if you want to always set main module name
+            not the one where first static variable was declared */
+         /* HB_COMP_PARAM->currModule = HB_COMP_PARAM->szFile; */
+         hb_compGenModuleName( HB_COMP_PARAM, "" );
       }
    }
    else
@@ -4334,12 +4334,7 @@ void hb_compCodeBlockEnd( HB_COMP_DECL )
 
    if( HB_COMP_PARAM->fDebugInfo )
    {
-      char * szFile = hb_pp_fileName( HB_COMP_PARAM->pLex->pPP );
-
-      hb_compGenPCode1( HB_P_MODULENAME, HB_COMP_PARAM );
-      hb_compGenPCodeN( ( BYTE * ) szFile, strlen( szFile ), HB_COMP_PARAM );
-      hb_compGenPCode1( ':', HB_COMP_PARAM );
-      hb_compGenPCodeN( ( BYTE * ) pFunc->szName, strlen( pFunc->szName ) + 1, HB_COMP_PARAM );
+      hb_compGenModuleName( HB_COMP_PARAM, pFunc->szName );
 
       /* generate the name of referenced local variables */
       pVar = pCodeblock->pStatics;
@@ -4606,7 +4601,9 @@ static int hb_compCompile( HB_COMP_DECL, char * szPrg, BOOL bSingleFile )
          {
             BOOL bSkipGen = FALSE ;
 
-            HB_COMP_PARAM->szFile = szFileName;
+            HB_COMP_PARAM->szFile = HB_COMP_PARAM->currModule =
+               hb_compIdentifierNew( HB_COMP_PARAM, szFileName, HB_IDENT_COPY );
+            HB_COMP_PARAM->currLine = 1;
 
             if( bSingleFile )
             {
@@ -4632,8 +4629,11 @@ static int hb_compCompile( HB_COMP_DECL, char * szPrg, BOOL bSingleFile )
                   hb_compFunctionAdd( HB_COMP_PARAM, "", HB_FS_PUBLIC, FUN_PROCEDURE );
                }
 
-               hb_compparse( HB_COMP_PARAM );
-               hb_compCheckUnclosedStru( HB_COMP_PARAM );
+               if( !HB_COMP_PARAM->fExit )
+               {
+                  hb_compparse( HB_COMP_PARAM );
+                  hb_compCheckUnclosedStru( HB_COMP_PARAM );
+               }
 
                if( HB_COMP_PARAM->pFilePpo )
                {
@@ -4965,6 +4965,10 @@ static int hb_compAutoOpen( HB_COMP_DECL, char * szPrg, BOOL * pbSkipGen, BOOL b
          /* Minimal Init. */
          if( hb_pp_inFile( HB_COMP_PARAM->pLex->pPP, szFileName, FALSE, NULL, FALSE ) )
          {
+            HB_COMP_PARAM->currModule =
+               hb_compIdentifierNew( HB_COMP_PARAM, szFileName, HB_IDENT_COPY );
+            HB_COMP_PARAM->currLine = 1;
+
             if( ! HB_COMP_PARAM->fQuiet )
             {
                if( HB_COMP_PARAM->fPPO )
@@ -4986,14 +4990,14 @@ static int hb_compAutoOpen( HB_COMP_DECL, char * szPrg, BOOL * pbSkipGen, BOOL b
 
                hb_compparse( HB_COMP_PARAM );
 
-               if( HB_COMP_PARAM->pFilePpo )
-               {
-                  hb_xfree( HB_COMP_PARAM->pFilePpo );
-                  HB_COMP_PARAM->pFilePpo = NULL;
-               }
-
                HB_COMP_PARAM->iExitLevel = ( i > HB_COMP_PARAM->iExitLevel ? i : HB_COMP_PARAM->iExitLevel );
                HB_COMP_PARAM->fAnyWarning = ( b ? b : HB_COMP_PARAM->fAnyWarning );
+            }
+
+            if( HB_COMP_PARAM->pFilePpo )
+            {
+               hb_xfree( HB_COMP_PARAM->pFilePpo );
+               HB_COMP_PARAM->pFilePpo = NULL;
             }
 
             if( HB_COMP_PARAM->fAnyWarning )
