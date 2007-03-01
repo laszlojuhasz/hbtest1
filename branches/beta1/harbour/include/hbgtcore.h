@@ -179,7 +179,7 @@ typedef struct
    void     (* Tone) ( double, double );
    void     (* Bell) ( void );
    BOOL     (* Info) ( int, PHB_GT_INFO );
-   BOOL     (* SetFlag) ( int, int );
+   int      (* SetFlag) ( int, int );
 
    /* internationalization */
    BOOL     (* SetDispCP) ( char *, char *, BOOL );
