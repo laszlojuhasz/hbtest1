@@ -8,6 +8,12 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-03-08 03:00 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/harbour.spec
+  * harbour/doc/whatsnew.txt
+  * harbour/include/hbver.h
+    * updated version number to 0.99.2 and tagged beta branch as "beta2"
+
 2007-03-05 23:30 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   * harbour/include/hbcompdf.h
   * harbour/include/hbexprb.c
