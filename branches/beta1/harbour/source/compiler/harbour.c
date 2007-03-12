@@ -2664,8 +2664,8 @@ void hb_compLinePush( HB_COMP_DECL ) /* generates the pcode with the currently c
 
       if( HB_COMP_PARAM->currLine != HB_COMP_PARAM->lastLine )
       {
-         if( HB_COMP_PARAM->functions.pLast->pCode[ HB_COMP_PARAM->lastLinePos ] == HB_P_LINE &&
-             HB_COMP_PARAM->functions.pLast->lPCodePos - HB_COMP_PARAM->lastLinePos == 3 )
+         if( HB_COMP_PARAM->functions.pLast->lPCodePos - HB_COMP_PARAM->lastLinePos == 3 &&
+             HB_COMP_PARAM->functions.pLast->pCode[ HB_COMP_PARAM->lastLinePos ] == HB_P_LINE )
          {
             HB_COMP_PARAM->functions.pLast->pCode[ HB_COMP_PARAM->lastLinePos + 1 ] = HB_LOBYTE( HB_COMP_PARAM->currLine );
             HB_COMP_PARAM->functions.pLast->pCode[ HB_COMP_PARAM->lastLinePos + 2 ] = HB_HIBYTE( HB_COMP_PARAM->currLine );
@@ -4241,6 +4241,7 @@ void hb_compCodeBlockStart( BOOL bLateEval, HB_COMP_DECL )
    pBlock->bLateEval    = bLateEval;
 
    HB_COMP_PARAM->functions.pLast = pBlock;
+   HB_COMP_PARAM->lastLinePos = 0;
 }
 
 void hb_compCodeBlockEnd( HB_COMP_DECL )

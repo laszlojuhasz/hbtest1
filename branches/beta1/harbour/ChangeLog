@@ -8,6 +8,14 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-03-12 15:20 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/compiler/harbour.c
+    ! fixed GPF which can appear when -b option is used in line numbering
+      inside codeblocks
+
+  * harbour/include/hbver.h
+    * updated ChangeLog IDs and retagged CVS as "beta2"
+
 2007-03-08 03:00 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   * harbour/harbour.spec
   * harbour/doc/whatsnew.txt
