@@ -1,0 +1,373 @@
+/*
+ * $Id$
+ */
+
+/* Use this format for the entry headers:
+   YYYY-MM-DD HH:MM UTC[-|+]hhmm Your Full Name <your_email@address>
+   For example:
+   2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
+*/
+
+2007-03-12 15:20 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/compiler/harbour.c
+    ! fixed GPF which can appear when -b option is used in line numbering
+      inside codeblocks
+
+  * harbour/include/hbver.h
+    * updated ChangeLog IDs and retagged CVS as "beta2"
+
+2007-03-08 03:00 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/harbour.spec
+  * harbour/doc/whatsnew.txt
+  * harbour/include/hbver.h
+    * updated version number to 0.99.2 and tagged beta branch as "beta2"
+
+2007-03-05 23:30 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbcompdf.h
+  * harbour/include/hbexprb.c
+  * harbour/source/compiler/hbgenerr.c
+    * do not generate warnings about meaningless expression usage
+      in code optimized by short logical expression evaluation, f.e.:
+         proc main()
+         (f1() .or. (f2(), .t.))
+         return
+
+2007-03-05 14:00 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/config/os2/install.cf
+    * workaround for command line size limitation borrowed from xHarbour
+
+2007-03-05 04:10 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbexpra.c
+    ! fixed GPF when _GET_() parameter is passed in parenthesis
+
+2007-03-04 14:00 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbapifs.h
+  * harbour/include/hbcompdf.h
+  * harbour/include/hbpp.h
+  * harbour/source/common/hbfsapi.c
+  * harbour/source/compiler/cmdcheck.c
+  * harbour/source/compiler/harbour.c
+  * harbour/source/compiler/hbusage.c
+  * harbour/source/compiler/ppcomp.c
+  * harbour/source/pp/ppcore.c
+    * cleanup .ppo file creation
+    + new compiler switch: p+ to enable preprocessor tracing
+      when used information about applied rules is stored in .ppt file
+  * harbour/include/hbdefs.h
+  * harbour/source/rtl/gtos2/gtos2.c
+    * OS2 build cleanup
+
+2007-03-02 03:30 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/rdd/dbf1.c
+  * harbour/source/rdd/delim1.c
+  * harbour/source/rdd/sdf1.c
+  * harbour/source/rdd/dbfcdx/dbfcdx1.c
+  * harbour/source/rdd/dbffpt/dbffpt1.c
+  * harbour/source/rdd/hbsix/sxcompr.c
+  * harbour/source/rdd/hsx/hsx.c
+  * harbour/source/rdd/usrrdd/usrrdd.c
+  * harbour/source/rtl/cdpapi.c
+    * casting
+
+2007-03-02 00:40 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/pp/ppcore.c
+    * clear included file counter in hb_pp_reset()
+    * insert space after stream comment /* */ - it's not Clipper
+      compatible but it's necessary as long as we have automatic
+      identifier concatenation
+
+2007-03-01 14:10 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/config/os2/global.cf
+  * harbour/contrib/hgf/os2pm/os2pm.c
+  * harbour/include/hbdefs.h
+  * harbour/include/hbgtcore.h
+  * harbour/source/rdd/dbcmd.c
+  * harbour/source/vm/mainpm.c
+    * cleaned OS2 build errors and warnings reported by David Macias.
+      Modifications not tested - OS2 users will have to make tests and
+      reports problems.
+
+2007-03-01 05:30 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbclass.ch
+  * harbour/include/hbpp.h
+  * harbour/source/compiler/complex.c
+  * harbour/source/compiler/harbour.c
+  * harbour/source/compiler/harbour.y
+  * harbour/source/compiler/harbour.yyc
+  * harbour/source/compiler/harbour.yyh
+  * harbour/source/macro/macro.yyc
+  * harbour/source/pp/ppcore.c
+    * synced with fixes in devel branch
+
+2007-02-25 22:10 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/pp/ppcore.c
+    * removed optimizations with hb_szAscii table committed by mistake
+
+2007-02-25 21:10 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/compiler/ppcomp.c
+  * harbour/source/pp/ppcore.c
+    * synced with fixes in devel branch
+
+2007-02-25 21:05 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/contrib/odbc/Makefile
+  * harbour/contrib/odbc/odbc.c
+  * harbour/contrib/odbc/sql.ch
+  * harbour/contrib/odbc/todbc.prg
+  - harbour/contrib/odbc/sql.h
+  - harbour/contrib/odbc/sqlext.h
+  - harbour/contrib/odbc/sqltypes.h
+    * synced with version in DEVEL tree - the previous one couldn't be
+      compiled on many platforms what was breaking the whole build process
+
+2007-02-22 15:50 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbcomp.h
+  * harbour/include/hbcompdf.h
+  * harbour/include/hbexprc.c
+  * harbour/include/hbexprop.h
+  * harbour/source/common/expropt1.c
+  * harbour/source/common/hbdate.c
+  * harbour/source/compiler/cmdcheck.c
+  * harbour/source/compiler/complex.c
+  * harbour/source/compiler/harbour.c
+  * harbour/source/compiler/harbour.y
+  * harbour/source/compiler/harbour.yyc
+  * harbour/source/compiler/hbcomp.c
+  * harbour/source/compiler/hbgenerr.c
+  * harbour/source/compiler/hbident.c
+    * synced with some chosen fixes like line numbering from devel branch
+
+2007-02-22 09:05 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/common.ch
+    + Changed HB_SYMBOL_UNUSED() to also work in codeblock.
+      It's the older version with: iif( !((.T.)), symbol, .T. )
+      because ( symbol := ( symbol ) ) is stripped only in devel branch
+
+  * harbour/source/rdd/dbf1.c
+    ! fixed for GPF in DBRI_RAWDATA, DBRI_RAWMEMOS
+
+  * harbour/source/rtl/tget.prg
+    ! Victor's fixes from devel branch:
+      Fixed :Type to not return NIL right after the GetNew() call.
+
+2007-02-18 12:45 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/hbgtmk.sh
+    * updated CVS server name
+
+  * harbour/bin/hb-func.sh
+    * do not pass linking parameters to GCC/G++ when is used for
+      compilation only
+
+2007-02-12 16:50 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/contrib/rdd_ads/ads1.c
+    ! fixed typo in DBI_GETHEADERSIZE
+    * do not release FLOCK() after DBAPPEND() - only RLOCKs should be
+      removed
+  * harbour/contrib/rdd_ads/rddads.h
+    * set ADS_REQUIRE_VERSION when not set by user scripts
+
+2007-02-11 18:05 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/pp/ppcore.c
+    ! fix line numbering when preprocess static buffers, f.e. by
+       __PP_PROCESS()
+
+2007-02-07 22:35 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbgtinfo.ch
+  * harbour/contrib/libct/ctwin.c
+  * harbour/source/rtl/gtalleg/gtalleg.c
+  * harbour/source/rtl/gtcrs/gtcrs.c
+  * harbour/source/rtl/gtdos/gtdos.c
+  * harbour/source/rtl/gtos2/gtos2.c
+  * harbour/source/rtl/gtpca/gtpca.c
+  * harbour/source/rtl/gtsln/gtsln.c
+  * harbour/source/rtl/gtstd/gtstd.c
+  * harbour/source/rtl/gtwin/gtwin.c
+  * harbour/source/rtl/gtwvt/gtwvt.c
+  * harbour/source/rtl/gtxwc/gtxwc.c
+  * harbour/source/rtl/hbgtcore.c
+  * harbour/source/rtl/hbgtcore.c
+    ! fixed line and box drawing when the coordinates are out of screen size
+    + added support for GTI_FULLSCREEN, GTI_KBDSUPPORT, GTI_ISCTWIN
+
+  * harbour/source/rtl/alert.prg
+    * use hb_gtInfo( GTI_FULLSCREEN ) to detect type of GT driver
+    ! some minor fixes
+      TOFIX: we have to also use GTI_ISCTWIN or add window allocation
+             to standard GT drivers to be Clipper compatible when CTWIN
+	     is used - In Clipper Tools ALERT() works in differ way then
+	     the standard one. It creates separate window box to display
+	     data, supports SETKEY(), etc. I'll think about adding some
+	     extended support for ALERT() and similar operations (f.e.
+	     separate debugger windows) to GT API so it will be also
+	     possible to overload standard alert() command by GUI message
+	     box in GTGUI and similar GT drivers. But this will be only
+	     in devel version.
+
+  * harbour/source/compiler/hbdead.c
+    * do not eliminate unaccessible HB_P_SEQEND - it's necessary for
+      proper -gc3 formatting
+
+  * harbour/source/compiler/ppcomp.c
+  * harbour/source/pp/ppcore.c
+  * harbour/source/pp/pplib.c
+    * tuned error messages to be more Clipper compatible
+
+  * harbour/source/rtl/binnumx.c
+    ! fixed U2BIN() - wrong casting
+
+  * harbour/source/vm/hvm.c
+  * harbour/source/vm/itemapi.c
+    ! added protection against cyclic references in arrays
+
+2007-01-24 23:59 UTC+0200 Tomaz Zupan <tomaz.zupan@orpo.si>
+  * harbour.spec
+    * Changed version to 0.99.1 
+    * Aded Mandriva One distro to platforms 
+  * bin/hb-func.sh
+    * Aded Mandriva and Mandriva One distro to platforms 
+
+2007-01-23 09:50 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * include/hbver.h
+    * Changed HB_VER_LENTRY, HB_VER_CHLCVS and HB_VER_REVISION 
+      for 0.99.1 release.
+
+2007-01-22 21:55 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/rtl/set.c
+    * changed default initialization of _SET_DEBUG flag to TRUE when
+      debugger is linked. These modification already existed in the
+      past but was removed by Ryszard. Ryszard I know that in Clipper
+      _SET_DEBUG is always set to FALSE at application startup but
+      if we make the same then we will not be Clipper compatible.
+      These is a note I left in source/rtl/set.c which should explain why:
+
+      Tests shows that Clipper has two different flags to control ALT+D
+      and ALTD() behavior and on startup these flags are not synchronized.
+      When application starts _SET_DEBUG is set to FALSE but debugger
+      can be activated by hitting K_ALT_D or calling ALTD() function without
+      parameter. It means that some other internal flag enables these
+      operations.
+      Because Harbour is using _SET_DEBUG flag only then we have to
+      initialize it to TRUE when debugger is linked to keep real Clipper
+      behavior or we will have to add second flag too and try to replicate
+      exactly unsynchronized behavior of these flags which exists in Clipper.
+      IMHO it's a bug in Clipper (side effect of some internal solutions) and
+      we should not try to emulate it [druzus].
+
+2007-01-22 19:40 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbexprb.c
+  * harbour/include/hbpcode.h
+  * harbour/include/hbxvm.h
+  * harbour/source/compiler/genc.c
+  * harbour/source/compiler/gencc.c
+  * harbour/source/compiler/hbdead.c
+  * harbour/source/compiler/hbfix.c
+  * harbour/source/compiler/hblbl.c
+  * harbour/source/compiler/hbpcode.c
+  * harbour/source/compiler/hbstripl.c
+  * harbour/source/vm/hvm.c
+    ! fixed a:={0}; ? a[1]++; ? a[1]
+      By mistake I used HB_P_DUPLUNREF in two different context - to avoid
+      confusion in the future I added HB_P_PUSHUNREF PCODE which should be
+      used in assignment context
+
+  * harbour/source/rtl/gtsln/gtsln.c
+    * cleaned GCC warning and potential problems in future SLANG versions
+
+2007-01-22 10:50 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
+  * include/hbver.h
+    * Changed HB_VER_LENTRY and HB_VER_CHLCVS for beta1 release.
+
+2007-01-20 04:00 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/ChangeLog
+  * harbour/config/w32/bcc32.cf
+  * harbour/contrib/libct/ctc.c
+  * harbour/contrib/libct/files.c
+  * harbour/contrib/libnf/ftattr.c
+  * harbour/contrib/libnf/n2color.c
+  * harbour/contrib/rdd_ads/adsfunc.c
+  * harbour/include/hbapi.h
+  * harbour/include/hbapicdp.h
+  * harbour/include/hbapiitm.h
+  * harbour/include/hbexpra.c
+  * harbour/include/hbexprb.c
+  * harbour/include/hbsetup.ch
+  * harbour/include/hbver.h
+  * harbour/source/common/expropt1.c
+  * harbour/source/common/expropt2.c
+  * harbour/source/common/hbver.c
+  * harbour/source/common/hbverdsp.c
+  * harbour/source/compiler/cmdcheck.c
+  * harbour/source/compiler/complex.c
+  * harbour/source/compiler/gencc.c
+  * harbour/source/compiler/harbour.c
+  * harbour/source/compiler/harbour.y
+  * harbour/source/compiler/hbcomp.c
+  * harbour/source/macro/macro.y
+  * harbour/source/rdd/workarea.c
+  * harbour/source/rtl/cdpapi.c
+  * harbour/source/rtl/transfrm.c
+  * harbour/source/rtl/gtsln/kbsln.c
+  * harbour/source/rtl/gtxwc/gtxwc.c
+  * harbour/source/vm/arrays.c
+  * harbour/source/vm/arrayshb.c
+  * harbour/source/vm/classes.c
+  * harbour/source/vm/cmdarg.c
+  * harbour/source/vm/debug.c
+  * harbour/source/vm/extend.c
+  * harbour/source/vm/hvm.c
+  * harbour/source/vm/itemapi.c
+  * harbour/source/vm/macro.c
+  * harbour/source/vm/memvars.c
+  * harbour/utils/hbtest/rt_misc.prg
+    * synced with fixes in devel branch. This patch includes also some
+      extensions but most of them is disabled by default and I decided
+      that it will be safer to commit some already tested code then
+      manually update modifications merged with extensions. The most
+      important are:
+
+      ! fixed typo in hb_xvmGreaterEqualThenIntIs() - <= was used instead
+        of >=
+      ! fixed :&macro() messages used in WITH OBJECT structure and -gc3
+        output
+      ! fixed Harbour support for accessing string characters with array
+        index operators []
+      ! fixed very serious bug in HVM closing. The s_uiActionRequest flag
+        was not cleared before hb_rddShutDown() so when RDD buffers were
+        hot and flushing required some PCODE evaluation (f.e. index KEY
+        or FOR expression) then they were not properly evaluated.
+      ! fixed one of expected result in hbtest, it was neither Harbour nor
+        Clipper result
+      ! fixed macrocompiler for proper compilation of string with embedded
+        ASCII NUL byte (chr(0)), f.e.:
+           ? &("'["+chr(0)+"]'")
+      ! use HB_P_DUPLUNREF instead of HB_P_DUPLICATE when assign is used in
+        push context - Clipper compatible behavior, see:
+           x:=10
+           f(y:=iif(.t.,@x,))
+           ? x, y
+           func f(x)
+           x+=100
+           return nil
+      + added missing hb_storptrGC()
+      + added hack for potential problems caused by WITH OBJECT syntax
+      * some warning fixes
+
+2007-01-09 16:22 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/common/hbver.c
+    * changed "Aplha" state to "Beta" in release info
+
+2007-01-09 15:57 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/ChangeLog
+  * harbour/harbour.spec
+  * harbour/include/hbver.h
+    * created branch tag "beta1"
+    * updated version number to 0.99.0
+
+2007-01-09 15:34 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/ChangeLog
+  + harbour/ChangeLog.017
+    * new ChangeLog file created
+  * harbour/doc/whatsnew.txt
+  * harbour/harbour.spec
+  * harbour/include/hbver.h
+    * updated version number to 0.47.0
+  * tagged CVS as build47
