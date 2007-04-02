@@ -364,7 +364,6 @@ METHOD GetPreValidate() CLASS HBGetList
 
    if oGet:PreBlock != NIL
       xValue    := oGet:VarGet()
-      oGet:type := ValType( xValue )
       lUpdated  := ::lUpdated
 
       lWhen     := Eval( oGet:PreBlock, oGet )
