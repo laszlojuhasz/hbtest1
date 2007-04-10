@@ -8,6 +8,23 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-04-10 14:45 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbclass.ch
+  * harbour/include/hbpp.h
+  * harbour/source/compiler/harbour.y
+  * harbour/source/compiler/harbour.yyc
+  * harbour/source/debug/tbrwtext.prg
+  * harbour/source/pp/ppcore.c
+  * harbour/source/pp/pplib.c
+  * harbour/source/rtl/memoedit.prg
+  * harbour/source/rtl/philes.c
+  * harbour/source/rtl/valtype.c
+  * harbour/source/vm/classes.c
+  * harbour/source/vm/extend.c
+  * harbour/utils/hbdoc/ffile1.prg
+  * harbour/utils/hbmake/ffile1.prg
+    * synced with some important fixes and cleanups in devel branch
+
 2007-04-02 17:00 UTC+0300 Alexander Kresin <alex@belacy.belgorod.su>
   * source/rtl/tgetlist.prg
      ! synced with a fix in devel branch

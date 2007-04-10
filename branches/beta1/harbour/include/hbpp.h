@@ -236,7 +236,7 @@ typedef HB_PP_SWITCH_FUNC * PHB_PP_SWITCH_FUNC;
 #  define HB_PP_TOKEN_ISEOS(t)   HB_PP_TOKEN_ISEOL(t)
 #  define HB_PP_TOKEN_ISEOP(t,l) HB_PP_TOKEN_ISEOL(t)
 #else
-/* End Of Subst - define how mant tokens in line should be translated,
+/* End Of Subst - define how many tokens in line should be translated,
                   Clipper translate whole line */
 #  define HB_PP_TOKEN_ISEOS(t)   ( HB_PP_TOKEN_ISEOL(t) || \
                                    ( HB_PP_TOKEN_TYPE((t)->type) == HB_PP_TOKEN_EOC && \
@@ -586,6 +586,7 @@ typedef struct
    PHB_MEM_BUFFER pBuffer;       /* buffer for input and output line */
    int      iSpaces;             /* leading spaces for next token */
    int      iSpacesNL;           /* leading spaces ';' token (fCanNextLine) if it will not be line concatenator */
+   int      iSpacesMin;          /* minimal number of leading spaces for next token */
    int      iLastType;           /* last token type */
    BOOL     fCanNextLine;        /* ';' token found and we do not know yet if it's command separator or line concatenator */
    BOOL     fDirective;          /* # directives is parsed */

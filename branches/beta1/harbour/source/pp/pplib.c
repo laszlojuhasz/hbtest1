@@ -149,10 +149,10 @@ HB_FUNC( __PP_INIT )
       if( szPath )
          hb_pp_addSearchPath( pState, szPath, TRUE );
 
-      if( szStdCh )
-         hb_pp_readRules( pState, szStdCh );
-      else
+      if( !szStdCh )
          hb_pp_StdRules( pState );
+      else if( *szStdCh )
+         hb_pp_readRules( pState, szStdCh );
 
       hb_pp_initDynDefines( pState );
       hb_pp_setStdBase( pState );

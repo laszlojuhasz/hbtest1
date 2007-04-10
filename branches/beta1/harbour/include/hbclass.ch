@@ -414,7 +414,7 @@ DECLARE HBClass ;
 #ifdef HB_CLS_CSY
 
    #xcommand CREATE CLASS <ClassName> [<*more*>] => CLASS <ClassName> [<more>]
-   #xcommand END CLASS              => ENDCLASS
+   #xcommand END CLASS [<*more*>]   => ENDCLASS <more>
    #xcommand CLASS VAR <*more*>     => CLASSVAR <more>
    #xcommand CLASS METHOD <*more*>  => CLASSMETHOD <more>
 
@@ -499,6 +499,7 @@ DECLARE HBClass ;
 
 #xtranslate  ( <!name!>{ [<p,...>] }        =>  ( <name>():New( <p> )
 #xtranslate  = <!name!>{ [<p,...>] }        =>  = <name>():New( <p> )
+#xtranslate := <!name!>{ [<p,...>] }        => := <name>():New( <p> )
 #xtranslate  , <!name!>{ [<p,...>] }        =>  , <name>():New( <p> )
 
 #xcommand EXPORT <!DataName1!> [, <!DataNameN!>] [ <tp: TYPE, AS> <type> ] [ <as: ASSIGN, INIT> <uValue> ] [<ro: READONLY, RO>] [<persistent: PERSISTENT, PROPERTY>] => ;

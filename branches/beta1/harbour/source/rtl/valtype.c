@@ -70,29 +70,3 @@ HB_FUNC( VALTYPE )
 {
    hb_retc( hb_itemTypeStr( hb_param( 1, HB_IT_ANY ) ) );
 }
-
-HB_FUNC( HB_ISBYREF )
-{
-   PHB_ITEM pItem;
-
-   if( hb_pcount() )
-   {
-      pItem = hb_stackItemFromBase( 1 );
-
-      if( HB_IS_BYREF( pItem ) )
-      {
-         pItem = hb_itemUnRefOnce( pItem );
-
-         if( HB_IS_BYREF( pItem ) )
-
-            hb_retl( TRUE );
-
-         else
-
-            hb_retl( FALSE );
-      }
-      else
-         hb_ret( );
-   }
-}
-

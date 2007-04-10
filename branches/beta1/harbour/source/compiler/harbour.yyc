@@ -7373,7 +7373,9 @@ static void hb_compSwitchStart( HB_COMP_DECL )
 static void hb_compSwitchAdd( HB_COMP_DECL, HB_EXPR_PTR pExpr )
 {
    HB_SWITCHCASE_PTR pCase;
-   
+
+   HB_COMP_PARAM->functions.pLast->bFlags &= ~FUN_BREAK_CODE;
+
    if( pExpr )
    {
       /* normal CASE */
