@@ -101,13 +101,14 @@ HB_FUNC( GETENV )
          #endif
 
          szValue = hb_getenv( pszName );
-
          if( szValue && szValue[ 0 ] != '\0' )
             hb_retc_buffer( szValue );
-         else if( ISCHAR( 2 ) )
-            hb_retc( hb_parc( 2 ) );
          else
-            hb_retc( NULL );
+         {
+            if( szValue )
+               hb_xfree( szValue );
+            hb_retc( hb_parcx( 2 ) );
+         }
       }
       else
          hb_retc( NULL );
@@ -122,5 +123,5 @@ HB_FUNC( GETENV )
 
 HB_FUNC( GETE )
 {
-   HB_FUNCNAME( GETENV )();
+   HB_FUNC_EXEC( GETENV );
 }

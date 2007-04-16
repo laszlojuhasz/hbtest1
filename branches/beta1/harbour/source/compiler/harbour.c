@@ -156,12 +156,14 @@ int main( int argc, char * argv[] )
       {
          printf( "\n" );
          hb_verBuildInfo();
+         hb_compMainExit( HB_COMP_PARAM );
          return iStatus;
       }
 
       if( HB_COMP_PARAM->fCredits )
       {
          hb_compPrintCredits();
+         hb_compMainExit( HB_COMP_PARAM );
          return iStatus;
       }
 
