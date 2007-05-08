@@ -8,6 +8,75 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-05-08 23:20 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/bin/hb-func.sh
+  * harbour/config/global.cf
+  * harbour/config/w32/mingw32.cf
+  * harbour/contrib/mysql/Makefile
+  * harbour/contrib/rdd_ads/ads1.c
+  * harbour/include/Makefile
+  * harbour/include/hbapi.h
+  * harbour/include/hbapicls.h
+  * harbour/include/hbapirdd.h
+  * harbour/include/hbextern.ch
+  - harbour/include/usrrdd.ch
+  + harbour/include/hbusrrdd.ch
+  * harbour/include/hbvm.h
+  * harbour/source/compiler/harbour.c
+  * harbour/source/compiler/harbour.y
+  * harbour/source/compiler/harbour.yyc
+  * harbour/source/compiler/harbour.yyh
+  * harbour/source/macro/macro.y
+  * harbour/source/macro/macro.yyc
+  * harbour/source/macro/macro.yyh
+  * harbour/source/rdd/Makefile
+  * harbour/source/rdd/dbcmd.c
+  * harbour/source/rdd/dbf1.c
+  * harbour/source/rdd/delim1.c
+  * harbour/source/rdd/sdf1.c
+  * harbour/source/rdd/workarea.c
+  * harbour/source/rdd/dbfcdx/dbfcdx1.c
+  * harbour/source/rdd/dbfdbt/dbfdbt1.c
+  * harbour/source/rdd/dbffpt/dbffpt1.c
+  * harbour/source/rdd/dbfntx/dbfntx1.c
+  * harbour/source/rdd/nulsys/nulsys.c
+  * harbour/source/rdd/usrrdd/usrrdd.c
+  * harbour/source/rtl/empty.c
+  * harbour/source/rtl/errorsys.c
+  * harbour/source/rtl/idle.c
+  * harbour/source/rtl/tclass.prg
+  * harbour/source/rtl/terror.prg
+  * harbour/source/rtl/tmenuitm.prg
+  * harbour/source/rtl/tobject.prg
+  * harbour/source/rtl/tpopup.prg
+  * harbour/source/rtl/gtstd/gtstd.c
+  * harbour/source/vm/classes.c
+  * harbour/source/vm/dynsym.c
+  * harbour/source/vm/hvm.c
+    * synced with some important fixes and cleanups in devel branch
+      - fixed FIELD f1, f2 IN db1 IN db2 ...
+      - some other minor compiler and grammar fixes
+      - fixed releasing idle CPU cycles
+      - changed some declarations from 'char *' to 'const char *'
+      - cleaned some OW and BCC warnings
+      - regenerated grammar parser with modified bison version
+      - MenuItem() and PopUp() changed for new classy code
+      - do not stop Harbour process using GTSTD when controlling terminal
+        has TOSTOP attribute set
+      - clear NetErr() flag in dbSetIndex()
+      - removed all NetErr() setting other then in error handler
+      - changed dbSetIndex(), dbUseArea(), dbCreate(), dbAppend() to
+        return logical value indicating success
+      - changed library name from mysql to hbmysql
+      - changed usrrdd.ch to hbusrrdd.ch
+      - changed EMPTY( <symboItem> ) - not it returns .T. when <symboItem>
+        is not a function symbol
+      - use default RDD instead of current one in COPY TO and APPEND FROM
+      - removed __RDDSETDEFAULT()
+      - added workaround for SIX3 bug in compression
+      - synced with RDD API
+      - some other minor fixes and cleanups
+
 2007-04-16 13:50 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   * harbour/source/compiler/harbour.c
   * harbour/source/compiler/ppcomp.c

@@ -4612,7 +4612,7 @@ HB_FUNC( DBF_GETFUNCTABLE )
 
       if ( uiCount )
          * uiCount = RDDFUNCSCOUNT;
-      errCode = hb_rddInherit( pTable, &dbfTable, &dbfSuper, 0 );
+      errCode = hb_rddInherit( pTable, &dbfTable, &dbfSuper, NULL );
       hb_retni( errCode );
       if ( errCode == SUCCESS )
       {

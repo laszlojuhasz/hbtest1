@@ -1092,7 +1092,7 @@ void hb_clsIsClassRef( void )
 #endif
 }
 
-HB_EXPORT BOOL hb_clsIsParent( USHORT uiClass, char * szParentName )
+HB_EXPORT BOOL hb_clsIsParent( USHORT uiClass, const char * szParentName )
 {
    if( uiClass && uiClass <= s_uiClasses )
    {
@@ -1178,9 +1178,9 @@ HB_EXPORT char * hb_clsName( USHORT uiClass )
  * Will return the class name from wich the message is inherited in case
  * of inheritance.
  */
-HB_EXPORT char * hb_objGetRealClsName( PHB_ITEM pObject, char * szName )
+HB_EXPORT char * hb_objGetRealClsName( PHB_ITEM pObject, const char * szName )
 {
-   HB_TRACE(HB_TR_DEBUG, ("hb_objGetrealClsName(%p)", pObject));
+   HB_TRACE(HB_TR_DEBUG, ("hb_objGetrealClsName(%p,%s)", pObject, szName));
 
    if( HB_IS_OBJECT( pObject ) )
    {
@@ -1474,7 +1474,7 @@ PHB_SYMB hb_objGetMethod( PHB_ITEM pObject, PHB_SYMB pMessage,
    }
    else if( HB_IS_BLOCK( pObject ) )
    {
-      if( pMessage == &hb_symEval || pMsg == hb_symEval.pDynSym )
+      if( pMsg == hb_symEval.pDynSym )
          return &hb_symEval;
    }
    else if( HB_IS_BYREF( pObject ) )
@@ -1526,7 +1526,7 @@ PHB_SYMB hb_objGetMethod( PHB_ITEM pObject, PHB_SYMB pMessage,
    }
    else if( HB_IS_SYMBOL( pObject ) )
    {
-      if( pMsg == s___msgExec.pDynSym )
+      if( pMsg == s___msgExec.pDynSym || pMsg == hb_symEval.pDynSym )
       {
          if( ! pObject->item.asSymbol.value->value.pFunPtr &&
                pObject->item.asSymbol.value->pDynSym )
@@ -1679,14 +1679,12 @@ void hb_objDestructorCall( PHB_ITEM pObject )
 
       if( pClass->fHasDestructor )
       {
-         USHORT uiAction;
-
-         if( hb_vmRequestReenter( &uiAction ) )
+         if( hb_vmRequestReenter() )
          {
             hb_vmPushSymbol( &s___msgDestructor );
             hb_vmPush( pObject );
             hb_vmSend( 0 );
-            hb_vmRequestRestore( uiAction );
+            hb_vmRequestRestore();
          }
       }
    }
@@ -1759,7 +1757,7 @@ HB_EXPORT BOOL hb_objHasMessage( PHB_ITEM pObject, PHB_DYNS pMessage )
  *
  * <uPtr> should be read as a boolean
  */
-HB_EXPORT BOOL hb_objHasMsg( PHB_ITEM pObject, char *szString )
+HB_EXPORT BOOL hb_objHasMsg( PHB_ITEM pObject, const char *szString )
 {
    PHB_DYNS pDynSym;
 
@@ -1803,7 +1801,7 @@ HB_EXPORT void hb_objSendMessage( PHB_ITEM pObject, PHB_DYNS pMsgSym, ULONG ulAr
    }
 }
 
-HB_EXPORT void hb_objSendMsg( PHB_ITEM pObject, char *sMsg, ULONG ulArg, ... )
+HB_EXPORT void hb_objSendMsg( PHB_ITEM pObject, const char *sMsg, ULONG ulArg, ... )
 {
    hb_vmPushSymbol( hb_dynsymGet( sMsg )->pSymbol );
    hb_vmPush( pObject );
@@ -2015,7 +2013,7 @@ static HB_TYPE hb_clsGetItemType( PHB_ITEM pItem )
  *             HB_OO_MSG_CLSASSIGN  : /
  *             HB_OO_MSG_SUPER      : Superclass handle
  */
-static BOOL hb_clsAddMsg( USHORT uiClass, char * szMessage,
+static BOOL hb_clsAddMsg( USHORT uiClass, const char * szMessage,
                           USHORT uiType, USHORT uiScope,
                           PHB_ITEM pFunction, PHB_ITEM pInit )
 {
@@ -2165,7 +2163,7 @@ static BOOL hb_clsAddMsg( USHORT uiClass, char * szMessage,
 
       if( !fOK )
       {
-         hb_errRT_BASE( EG_ARG, 3000, NULL, "__CLSADDMSG", HB_ERR_ARGS_BASEPARAMS );
+         hb_errRT_BASE( EG_ARG, 3000, NULL, &hb_errFuncName, HB_ERR_ARGS_BASEPARAMS );
          return FALSE;
       }
 
@@ -2448,7 +2446,7 @@ HB_FUNC( __CLSADDMSG )
  * <fModuleFriendly> when true all functions and classes from the same
  *                   module as pClassFunc are defined as friends
  */
-static USHORT hb_clsNew( char * szClassName, USHORT uiDatas,
+static USHORT hb_clsNew( const char * szClassName, USHORT uiDatas,
                          PHB_ITEM pSuperArray, PHB_SYMB pClassFunc,
                          BOOL fModuleFriendly )
 {
@@ -3132,12 +3130,12 @@ HB_FUNC( __CLS_DECDATA )
 {
    USHORT uiClass = ( USHORT ) hb_parni( 1 );
 
-   if( uiClass && uiClass <= s_uiClasses && s_pClasses[ uiClass ].uiDatas )
+   if( uiClass && uiClass <= s_uiClasses &&
+       s_pClasses[ uiClass ].uiDatas > s_pClasses[ uiClass ].uiDataFirst )
    {
-      if( s_pClasses[ uiClass ].fLocked )
-         hb_retni( s_pClasses[ uiClass ].uiDatas );
-      else
-         hb_retni( --s_pClasses[ uiClass ].uiDatas );
+      if( !s_pClasses[ uiClass ].fLocked )
+         s_pClasses[ uiClass ].uiDatas--;
+      hb_retni( s_pClasses[ uiClass ].uiDatas - s_pClasses[ uiClass ].uiDataFirst );
    }
    else
       hb_retni( 0 );
@@ -3145,7 +3143,7 @@ HB_FUNC( __CLS_DECDATA )
 
 /*
  * <nSeq> = __cls_IncData( <hClass> )
- * Increase number of datas and return new value
+ * Increase number of datas and return offset to new value
  */
 HB_FUNC( __CLS_INCDATA )
 {
@@ -3153,10 +3151,9 @@ HB_FUNC( __CLS_INCDATA )
 
    if( uiClass && uiClass <= s_uiClasses )
    {
-      if( s_pClasses[ uiClass ].fLocked )
-         hb_retni( s_pClasses[ uiClass ].uiDatas );
-      else
-         hb_retni( ++s_pClasses[ uiClass ].uiDatas );
+      if( !s_pClasses[ uiClass ].fLocked )
+         s_pClasses[ uiClass ].uiDatas++;
+      hb_retni( s_pClasses[ uiClass ].uiDatas - s_pClasses[ uiClass ].uiDataFirst );
    }
    else
       hb_retni( 0 );
@@ -3890,13 +3887,13 @@ HB_FUNC( HB_SETCLSHANDLE ) /* ( oObject, nClassHandle ) --> nPrevClassHandle */
 }
 
 /* Harbour equivalent for Clipper internal __mdCreate() */
-USHORT hb_clsCreate( USHORT usSize, char * szClassName )
+USHORT hb_clsCreate( USHORT usSize, const char * szClassName )
 {
    return hb_clsNew( szClassName, usSize, NULL, NULL, FALSE );
 }
 
 /* Harbour equivalent for Clipper internal __mdAdd() */
-void hb_clsAdd( USHORT usClassH, char * szMethodName, PHB_FUNC pFuncPtr )
+void hb_clsAdd( USHORT usClassH, const char * szMethodName, PHB_FUNC pFuncPtr )
 {
    PHB_SYMB pExecSym;
    PHB_ITEM pFuncItem;

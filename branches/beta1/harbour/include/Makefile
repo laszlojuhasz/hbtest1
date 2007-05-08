@@ -87,6 +87,7 @@ PRG_HEADERS=\
 	hbpers.ch    \
 	hbsetup.ch   \
 	hbstdgen.ch  \
+	hbusrrdd.ch  \
 	inkey.ch     \
 	memoedit.ch  \
 	ord.ch       \
@@ -97,7 +98,6 @@ PRG_HEADERS=\
 	simpleio.ch  \
 	std.ch       \
 	tbrowse.ch   \
-	usrrdd.ch    \
 
 API_HEADERS=\
 	error.api    \

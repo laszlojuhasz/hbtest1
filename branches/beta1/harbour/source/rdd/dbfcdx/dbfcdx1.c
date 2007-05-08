@@ -9329,11 +9329,11 @@ HB_FUNC( SIXCDX_GETFUNCTABLE )
 
       if ( uiCount )
          * uiCount = RDDFUNCSCOUNT;
-      errCode = hb_rddInherit( pTable, &cdxTable, &cdxSuper, ( BYTE * ) "DBFFPT" );
+      errCode = hb_rddInherit( pTable, &cdxTable, &cdxSuper, "DBFFPT" );
       if ( errCode != SUCCESS )
-         errCode = hb_rddInherit( pTable, &cdxTable, &cdxSuper, ( BYTE * ) "DBFDBT" );
+         errCode = hb_rddInherit( pTable, &cdxTable, &cdxSuper, "DBFDBT" );
       if ( errCode != SUCCESS )
-         errCode = hb_rddInherit( pTable, &cdxTable, &cdxSuper, ( BYTE * ) "DBF" );
+         errCode = hb_rddInherit( pTable, &cdxTable, &cdxSuper, "DBF" );
       hb_retni( errCode );
       if ( errCode == SUCCESS )
       {
@@ -9393,11 +9393,11 @@ HB_FUNC( DBFCDX_GETFUNCTABLE )
 
       if ( uiCount )
          * uiCount = RDDFUNCSCOUNT;
-      errCode = hb_rddInherit( pTable, &cdxTable, &cdxSuper, ( BYTE * ) "DBFFPT" );
+      errCode = hb_rddInherit( pTable, &cdxTable, &cdxSuper, "DBFFPT" );
       if ( errCode != SUCCESS )
-         errCode = hb_rddInherit( pTable, &cdxTable, &cdxSuper, ( BYTE * ) "DBFDBT" );
+         errCode = hb_rddInherit( pTable, &cdxTable, &cdxSuper, "DBFDBT" );
       if ( errCode != SUCCESS )
-         errCode = hb_rddInherit( pTable, &cdxTable, &cdxSuper, ( BYTE * ) "DBF" );
+         errCode = hb_rddInherit( pTable, &cdxTable, &cdxSuper, "DBF" );
       if ( errCode == SUCCESS )
       {
          /*

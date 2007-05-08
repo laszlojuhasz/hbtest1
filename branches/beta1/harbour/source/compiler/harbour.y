@@ -196,7 +196,7 @@ extern void yyerror( HB_COMP_DECL, char * );     /* parsing error management fun
 %right '\n' ';' ','
 /*the highest precedence*/
 
-%type <string>  IdentName IDENTIFIER MACROVAR MACROTEXT CompTimeStr
+%type <string>  IdentName IDENTIFIER MACROVAR MACROTEXT CompTimeStr InAlias
 %type <string>  DOIDENT WHILE
 %type <valChar> LITERAL
 %type <valDouble>  NUM_DOUBLE
@@ -1123,12 +1123,20 @@ DimIndex   : '[' Expression               { $$ = hb_compExprNewArgList( $2, HB_C
            ;
 
 
-FieldsDef  : FIELD { HB_COMP_PARAM->iVarScope = VS_FIELD; } FieldList Crlf { HB_COMP_PARAM->cVarType = ' '; }
+FieldsDef  : FIELD { HB_COMP_PARAM->iVarScope = VS_FIELD; }
+             FieldList InAlias Crlf
+             {
+               if( $4 ) hb_compFieldSetAlias( HB_COMP_PARAM, $4, $3 );
+               HB_COMP_PARAM->cVarType = ' ';
+             }
            ;
 
-FieldList  : IdentName AsType               { $$=hb_compFieldsCount( HB_COMP_PARAM ); hb_compVariableAdd( HB_COMP_PARAM, $1, HB_COMP_PARAM->cVarType ); }
-           | FieldList ',' IdentName AsType { hb_compVariableAdd( HB_COMP_PARAM, $3, HB_COMP_PARAM->cVarType ); }
-           | FieldList IN IdentName { hb_compFieldSetAlias( HB_COMP_PARAM, $3, $<iNumber>1 ); }
+FieldList  : IdentName AsType                { $$=hb_compFieldsCount( HB_COMP_PARAM ); hb_compVariableAdd( HB_COMP_PARAM, $1, HB_COMP_PARAM->cVarType ); }
+           | FieldList ',' IdentName AsType  { hb_compVariableAdd( HB_COMP_PARAM, $3, HB_COMP_PARAM->cVarType ); }
+           ;
+
+InAlias    : /* no alias */   { $$ = NULL; }
+           | IN IdentName     { $$ = $2; }
            ;
 
 MemvarDef  : MEMVAR { HB_COMP_PARAM->iVarScope = VS_MEMVAR; } MemvarList Crlf { HB_COMP_PARAM->cVarType = ' '; }
@@ -1335,10 +1343,10 @@ IfElseIf   : ELSEIF { HB_COMP_PARAM->functions.pLast->bFlags &= ~ FUN_BREAK_CODE
 
 EndIf      : ENDIF    { if( HB_COMP_PARAM->wIfCounter )
                            --HB_COMP_PARAM->wIfCounter; 
-                        HB_COMP_PARAM->functions.pLast->bFlags &= ~ ( /*FUN_WITH_RETURN |*/ FUN_BREAK_CODE ); }
+                        HB_COMP_PARAM->functions.pLast->bFlags &= ~ ( FUN_WITH_RETURN | FUN_BREAK_CODE ); }
            | END      { if( HB_COMP_PARAM->wIfCounter )
                            --HB_COMP_PARAM->wIfCounter; 
-                        HB_COMP_PARAM->functions.pLast->bFlags &= ~ ( /*FUN_WITH_RETURN |*/ FUN_BREAK_CODE ); }
+                        HB_COMP_PARAM->functions.pLast->bFlags &= ~ ( FUN_WITH_RETURN | FUN_BREAK_CODE ); }
            ;
 
 DoCase     : DoCaseBegin

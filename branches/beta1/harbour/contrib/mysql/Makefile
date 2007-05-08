@@ -11,7 +11,7 @@ PRG_SOURCES=\
 	tmysql.prg  \
 	tsqlbrw.prg \
 
-LIBNAME=mysql
+LIBNAME=hbmysql
 
 include $(TOP)$(ROOT)config/lib.cf
 

@@ -525,12 +525,12 @@ ERRCODE hb_waAlias( AREAP pArea, BYTE * szAlias )
 /*
  * Close the table in the WorkArea - helper function
  */
-static short hb_waCloseAux( AREAP pArea, int nChildArea )
+static ERRCODE hb_waCloseAux( AREAP pArea, void * pChildArea )
 {
    USHORT uiPrevArea, uiArea;
    LPDBRELINFO lpdbRelation, lpdbRelPrev, lpdbRelTmp;
 
-   uiArea = ( USHORT ) nChildArea;
+   uiArea = ( ( AREAP ) pChildArea )->uiArea;
    if( pArea->lpdbRelations )
    {
       uiPrevArea = hb_rddGetCurrentWorkAreaNumber();
@@ -565,7 +565,7 @@ static short hb_waCloseAux( AREAP pArea, int nChildArea )
          }
       }
    }
-   return 1;
+   return SUCCESS;
 }
 
 /*
@@ -583,7 +583,7 @@ ERRCODE hb_waClose( AREAP pArea )
    if( pArea->uiParents > 0 )
    {
       /* Clear relations that has this area as a child */
-      hb_rddIterateWorkAreas ( hb_waCloseAux, pArea->uiArea );
+      hb_rddIterateWorkAreas( hb_waCloseAux, pArea );
    }
 
    if( pArea->atomAlias )

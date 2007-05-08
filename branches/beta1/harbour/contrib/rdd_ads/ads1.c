@@ -4611,7 +4611,7 @@ static void adsRegisterRDD( USHORT * pusRddId )
    {
       ERRCODE errCode;
 
-      errCode = hb_rddInherit( pTable, &adsTable, &adsSuper, 0 );
+      errCode = hb_rddInherit( pTable, &adsTable, &adsSuper, NULL );
       if ( errCode == SUCCESS )
       {
          /*

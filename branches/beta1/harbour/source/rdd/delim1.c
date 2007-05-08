@@ -1523,7 +1523,7 @@ HB_FUNC( DELIM_GETFUNCTABLE )
    HB_TRACE(HB_TR_DEBUG, ("DELIM_GETFUNCTABLE(%i, %p)", uiCount, pTable));
 
    if( pTable )
-      hb_retni( hb_rddInherit( pTable, &delimTable, &delimSuper, 0 ) );
+      hb_retni( hb_rddInherit( pTable, &delimTable, &delimSuper, NULL ) );
    else
       hb_retni( FAILURE );
 }

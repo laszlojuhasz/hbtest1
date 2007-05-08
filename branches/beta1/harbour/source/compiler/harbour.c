@@ -69,7 +69,6 @@
 #endif
 
 static void hb_compGenOutput( HB_COMP_DECL, int );
-static void hb_compCompileEnd( HB_COMP_DECL );
 static int  hb_compCompile( HB_COMP_DECL, char * szPrg, BOOL bSingleFile );
 
 static int hb_compStaticGetPos( char *, PFUNCTION ); /* return if passed name is a static variable */
@@ -97,7 +96,6 @@ FILE *         hb_comp_errFile = NULL;
 
 static void hb_compMainExit( HB_COMP_DECL )
 {
-   hb_compCompileEnd( HB_COMP_PARAM );
    hb_compParserStop( HB_COMP_PARAM );
    if( HB_COMP_PARAM->iErrorCount != 0 )
       hb_compExprLstDealloc( HB_COMP_PARAM );
@@ -4553,6 +4551,91 @@ static void hb_compOutputFile( HB_COMP_DECL )
    }
 }
 
+static void hb_compCompileEnd( HB_COMP_DECL )
+{
+   hb_compRTVariableKill( HB_COMP_PARAM );
+   
+   if( HB_COMP_PARAM->pMainFileName )
+   {
+      if( HB_COMP_PARAM->pFileName != HB_COMP_PARAM->pMainFileName )
+         /* currently compiled file was autoopened - close also
+          * the main module
+          */
+         hb_xfree( HB_COMP_PARAM->pMainFileName );
+      HB_COMP_PARAM->pMainFileName = NULL;
+   }
+   if( HB_COMP_PARAM->pFileName )
+   {
+      hb_xfree( HB_COMP_PARAM->pFileName );
+      HB_COMP_PARAM->pFileName = NULL;
+   }
+
+   if( HB_COMP_PARAM->functions.pFirst )
+   {
+      PFUNCTION pFunc = HB_COMP_PARAM->functions.pFirst;
+      while( pFunc )
+         pFunc = hb_compFunctionKill( HB_COMP_PARAM, pFunc );
+
+      HB_COMP_PARAM->functions.pFirst = NULL;
+   }
+
+   while( HB_COMP_PARAM->funcalls.pFirst )
+   {
+      PFUNCTION pFunc = HB_COMP_PARAM->funcalls.pFirst;
+
+      HB_COMP_PARAM->funcalls.pFirst = pFunc->pNext;
+      hb_xfree( ( void * ) pFunc );
+   }
+
+   while( HB_COMP_PARAM->externs )
+   {
+      PEXTERN pExtern = HB_COMP_PARAM->externs;
+
+      HB_COMP_PARAM->externs = HB_COMP_PARAM->externs->pNext;
+      hb_xfree( pExtern );
+   }
+
+   while( HB_COMP_PARAM->inlines.pFirst )
+   {
+      PINLINE pInline = HB_COMP_PARAM->inlines.pFirst;
+
+      HB_COMP_PARAM->inlines.pFirst = pInline->pNext;
+      if( pInline->pCode )
+         hb_xfree( pInline->pCode );
+      hb_xfree( ( void * ) pInline );
+   }
+
+   while( HB_COMP_PARAM->pReleaseDeclared )
+   {
+      PCOMDECLARED pDeclared = HB_COMP_PARAM->pReleaseDeclared;
+      HB_COMP_PARAM->pReleaseDeclared = pDeclared->pNext;
+      hb_xfree( ( void * ) pDeclared );
+   }
+   HB_COMP_PARAM->pFirstDeclared = HB_COMP_PARAM->pLastDeclared = NULL;
+
+   while( HB_COMP_PARAM->pReleaseClass )
+   {
+      PCOMCLASS pClass = HB_COMP_PARAM->pReleaseClass;
+      HB_COMP_PARAM->pReleaseClass = pClass->pNext;
+      while( pClass->pMethod )
+      {
+         PCOMDECLARED pDeclared = pClass->pMethod;
+         pClass->pMethod = pDeclared->pNext;
+         hb_xfree( ( void * ) pDeclared );
+      }
+      hb_xfree( ( void * ) pClass );
+   }
+   HB_COMP_PARAM->pFirstClass = HB_COMP_PARAM->pLastClass = NULL;
+
+   if( HB_COMP_PARAM->symbols.pFirst )
+   {
+      PCOMSYMBOL pSym = HB_COMP_PARAM->symbols.pFirst;
+      while( pSym )
+         pSym = hb_compSymbolKill( pSym );
+      HB_COMP_PARAM->symbols.pFirst = NULL;
+   }
+}
+
 static int hb_compCompile( HB_COMP_DECL, char * szPrg, BOOL bSingleFile )
 {
    int iStatus = EXIT_SUCCESS;
@@ -4779,92 +4862,9 @@ static int hb_compCompile( HB_COMP_DECL, char * szPrg, BOOL bSingleFile )
       hb_compGenError( HB_COMP_PARAM, hb_comp_szErrors, 'F', HB_COMP_ERR_BADFILENAME, szPrg, NULL );
       iStatus = EXIT_FAILURE;
    }
+   hb_compCompileEnd( HB_COMP_PARAM );
 
    return HB_COMP_PARAM->fExit ? EXIT_FAILURE : iStatus;
-}
-
-static void hb_compCompileEnd( HB_COMP_DECL )
-{
-   hb_compRTVariableKill( HB_COMP_PARAM );
-   
-   if( HB_COMP_PARAM->pFileName )
-   {
-      if( HB_COMP_PARAM->pFileName != HB_COMP_PARAM->pMainFileName && HB_COMP_PARAM->pMainFileName )
-      {
-         /* currently compiled file was autoopened - close also
-          * the main module
-         */
-         hb_xfree( HB_COMP_PARAM->pMainFileName );
-         HB_COMP_PARAM->pMainFileName = NULL;
-      }
-      hb_xfree( HB_COMP_PARAM->pFileName );
-      HB_COMP_PARAM->pFileName = NULL;
-   }
-
-   if( HB_COMP_PARAM->functions.pFirst )
-   {
-      PFUNCTION pFunc = HB_COMP_PARAM->functions.pFirst;
-      while( pFunc )
-         pFunc = hb_compFunctionKill( HB_COMP_PARAM, pFunc );
-
-      HB_COMP_PARAM->functions.pFirst = NULL;
-   }
-
-   while( HB_COMP_PARAM->funcalls.pFirst )
-   {
-      PFUNCTION pFunc = HB_COMP_PARAM->funcalls.pFirst;
-
-      HB_COMP_PARAM->funcalls.pFirst = pFunc->pNext;
-      hb_xfree( ( void * ) pFunc );
-   }
-
-   while( HB_COMP_PARAM->externs )
-   {
-      PEXTERN pExtern = HB_COMP_PARAM->externs;
-
-      HB_COMP_PARAM->externs = HB_COMP_PARAM->externs->pNext;
-      hb_xfree( pExtern );
-   }
-
-   while( HB_COMP_PARAM->inlines.pFirst )
-   {
-      PINLINE pInline = HB_COMP_PARAM->inlines.pFirst;
-
-      HB_COMP_PARAM->inlines.pFirst = pInline->pNext;
-      if( pInline->pCode )
-         hb_xfree( pInline->pCode );
-      hb_xfree( ( void * ) pInline );
-   }
-
-   while( HB_COMP_PARAM->pReleaseDeclared )
-   {
-      PCOMDECLARED pDeclared = HB_COMP_PARAM->pReleaseDeclared;
-      HB_COMP_PARAM->pReleaseDeclared = pDeclared->pNext;
-      hb_xfree( ( void * ) pDeclared );
-   }
-   HB_COMP_PARAM->pFirstDeclared = HB_COMP_PARAM->pLastDeclared = NULL;
-
-   while( HB_COMP_PARAM->pReleaseClass )
-   {
-      PCOMCLASS pClass = HB_COMP_PARAM->pReleaseClass;
-      HB_COMP_PARAM->pReleaseClass = pClass->pNext;
-      while( pClass->pMethod )
-      {
-         PCOMDECLARED pDeclared = pClass->pMethod;
-         pClass->pMethod = pDeclared->pNext;
-         hb_xfree( ( void * ) pDeclared );
-      }
-      hb_xfree( ( void * ) pClass );
-   }
-   HB_COMP_PARAM->pFirstClass = HB_COMP_PARAM->pLastClass = NULL;
-
-   if( HB_COMP_PARAM->symbols.pFirst )
-   {
-      PCOMSYMBOL pSym = HB_COMP_PARAM->symbols.pFirst;
-      while( pSym )
-         pSym = hb_compSymbolKill( pSym );
-      HB_COMP_PARAM->symbols.pFirst = NULL;
-   }
 }
 
 static BOOL hb_compAutoOpenFind( HB_COMP_DECL, char * szName )

@@ -73,8 +73,9 @@
 #include "error.ch"
 #include <time.h>
 #if defined( HB_OS_UNIX )
-  #include <sys/times.h>
-  #include <unistd.h>
+   #include <sys/times.h>
+   #include <sys/types.h>
+   #include <unistd.h>
 #endif
 
 /* list of background tasks 
@@ -134,21 +135,18 @@ void hb_releaseCPU( void )
 
       HB_DOS_INT86( 0x2F, &regs, &regs );
    }
-
+#elif defined(HB_OS_DARWIN)
+   {
+      struct timeval tv;
+      tv.tv_sec = 0;
+      tv.tv_usec = 1000;
+      select( 0, NULL, NULL, NULL, &tv );
+   }
 #elif defined(HB_OS_UNIX)
-
-   #if defined(HB_OS_DARWIN)
-      {
-         usleep( 1 );
-      }
-   #else
-      {
-         static const struct timespec nanosecs = { 0, 1000 };
-         /* NOTE: it will sleep at least 10 miliseconds (forced by kernel) */
-         nanosleep( &nanosecs, NULL );
-      }
-   #endif
-
+   {
+      static const struct timespec nanosecs = { 0, 1000000 };
+      nanosleep( &nanosecs, NULL );
+   }
 #else
 
    /* Do nothing */

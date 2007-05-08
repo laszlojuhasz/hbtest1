@@ -7602,11 +7602,11 @@ HB_FUNC( DBFNTX_GETFUNCTABLE )
 
       if( uiCount )
          * uiCount = RDDFUNCSCOUNT;
-      errCode = hb_rddInherit( pTable, &ntxTable, &ntxSuper, ( BYTE * ) "DBFFPT" );
+      errCode = hb_rddInherit( pTable, &ntxTable, &ntxSuper, "DBFFPT" );
       if( errCode != SUCCESS )
-         errCode = hb_rddInherit( pTable, &ntxTable, &ntxSuper, ( BYTE * ) "DBFDBT" );
+         errCode = hb_rddInherit( pTable, &ntxTable, &ntxSuper, "DBFDBT" );
       if( errCode != SUCCESS )
-         errCode = hb_rddInherit( pTable, &ntxTable, &ntxSuper, ( BYTE * ) "DBF" );
+         errCode = hb_rddInherit( pTable, &ntxTable, &ntxSuper, "DBF" );
       if( errCode == SUCCESS )
       {
          /*

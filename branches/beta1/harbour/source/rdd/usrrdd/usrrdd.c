@@ -61,7 +61,7 @@
 #include "hbstack.h"
 #include "hbinit.h"
 #include "rddsys.ch"
-#include "usrrdd.ch"
+#include "hbusrrdd.ch"
 
 #define SELF_USRNODE( w )     ( s_pUsrRddNodes[ (w)->rddID ] )
 #define SELF_USRDATA( w )     ( ( LPUSRRDDDATA ) ( ( BYTE * )( w ) + \
@@ -312,8 +312,8 @@ static PHB_ITEM hb_usrRelInfoToItem( LPDBRELINFO pRelInfo )
       hb_itemCopy( hb_arrayGetItemPtr( pItem, UR_RI_CEXPR ), pRelInfo->abKey );
    hb_itemPutL( hb_arrayGetItemPtr( pItem, UR_RI_SCOPED ), pRelInfo->isScoped );
    hb_itemPutL( hb_arrayGetItemPtr( pItem, UR_RI_OPTIMIZED ), pRelInfo->isOptimized );
-   hb_itemPutNI( hb_arrayGetItemPtr( pItem, UR_RI_PARENT ), pRelInfo->lpaParent->uiArea );
-   hb_itemPutNI( hb_arrayGetItemPtr( pItem, UR_RI_CHILD ), pRelInfo->lpaChild->uiArea );
+   hb_itemPutNI( hb_arrayGetItemPtr( pItem, UR_RI_PARENT ), pRelInfo->lpaParent ? pRelInfo->lpaParent->uiArea : 0 );
+   hb_itemPutNI( hb_arrayGetItemPtr( pItem, UR_RI_CHILD ), pRelInfo->lpaChild ? pRelInfo->lpaChild->uiArea : 0 );
    hb_itemPutPtr( hb_arrayGetItemPtr( pItem, UR_RI_NEXT ), pRelInfo->lpdbriNext );
 
    return pItem;
@@ -2963,7 +2963,7 @@ HB_FUNC( USRRDD_GETFUNCTABLE )
          ++pRddFunction;
          ++pFunction;
       }
-      uiResult = hb_rddInherit( pSelfTable, &funcTable, pSuperTable, ( BYTE * ) szSuperRDD );
+      uiResult = hb_rddInherit( pSelfTable, &funcTable, pSuperTable, szSuperRDD );
       if( uiResult == SUCCESS )
       {
          pSelfTable->whoCares = ( DBENTRYP_SVP ) hb_itemNew( pMethods );

@@ -6356,34 +6356,38 @@ USHORT hb_vmRequestQuery( void )
    return s_uiActionRequest;
 }
 
-BOOL hb_vmRequestReenter( USHORT * puiAction )
+BOOL hb_vmRequestReenter( void )
 {
-   HB_TRACE(HB_TR_DEBUG, ("hb_vmRequestReenter(%p)", puiAction));
-
-   * puiAction = s_uiActionRequest;
-   s_uiActionRequest = 0;
+   HB_TRACE(HB_TR_DEBUG, ("hb_vmRequestReenter()"));
 
    hb_stackPushReturn();
+
+   hb_vmPushInteger( s_uiActionRequest );
+   s_uiActionRequest = 0;
 
    return TRUE;
 }
 
-void hb_vmRequestRestore( USHORT uiAction )
+void hb_vmRequestRestore( void )
 {
-   HB_TRACE(HB_TR_DEBUG, ("hb_vmRequestRestore(%hu)", uiAction));
+   USHORT uiAction;
 
-   /* Do not overwrite QUIT request */
-   if( !( s_uiActionRequest & HB_QUIT_REQUESTED ) )
-   {
-      if( uiAction & HB_QUIT_REQUESTED )
-         s_uiActionRequest = HB_QUIT_REQUESTED;
-      else if( !( s_uiActionRequest & HB_BREAK_REQUESTED ) )
-         s_uiActionRequest = uiAction;
-   }
+   HB_TRACE(HB_TR_DEBUG, ("hb_vmRequestRestore()"));
 
+   uiAction = ( USHORT ) hb_stackItemFromTop( -1 )->item.asInteger.value |
+              s_uiActionRequest;
+   if( uiAction & HB_QUIT_REQUESTED )
+      s_uiActionRequest = HB_QUIT_REQUESTED;
+   else if( uiAction & HB_BREAK_REQUESTED )
+      s_uiActionRequest = HB_BREAK_REQUESTED;
+   else if( uiAction & HB_ENDPROC_REQUESTED )
+      s_uiActionRequest = HB_ENDPROC_REQUESTED;
+   else
+      s_uiActionRequest = 0;
+
+   hb_stackDec();
    hb_stackPopReturn();
 }
-
 
 
 

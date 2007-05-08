@@ -1249,7 +1249,7 @@ HB_FUNC( SDF_GETFUNCTABLE )
    HB_TRACE(HB_TR_DEBUG, ("SDF_GETFUNCTABLE(%i, %p)", uiCount, pTable));
 
    if( pTable )
-      hb_retni( hb_rddInherit( pTable, &sdfTable, &sdfSuper, 0 ) );
+      hb_retni( hb_rddInherit( pTable, &sdfTable, &sdfSuper, NULL ) );
    else
       hb_retni( FAILURE );
 }

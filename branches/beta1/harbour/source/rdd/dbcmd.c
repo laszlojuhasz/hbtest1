@@ -314,7 +314,7 @@ HB_EXPORT LPRDDNODE hb_rddGetNode( USHORT uiNode )
 /*
  * Find a RDD node.
  */
-static LPRDDNODE hb_rddFindNode( char * szDriver, USHORT * uiIndex )
+static LPRDDNODE hb_rddFindNode( const char * szDriver, USHORT * uiIndex )
 {
    USHORT uiCount;
 
@@ -337,7 +337,7 @@ static LPRDDNODE hb_rddFindNode( char * szDriver, USHORT * uiIndex )
 /*
  * Get (/set) default RDD driver
  */
-static char * hb_rddDefaultDrv( char * szDriver )
+static char * hb_rddDefaultDrv( const char * szDriver )
 {
    static BOOL fInit = FALSE;
 
@@ -374,7 +374,7 @@ static char * hb_rddDefaultDrv( char * szDriver )
 /*
  * Register a RDD driver.
  */
-HB_EXPORT int hb_rddRegister( char * szDriver, USHORT uiType )
+HB_EXPORT int hb_rddRegister( const char * szDriver, USHORT uiType )
 {
    LPRDDNODE pRddNewNode;
    PHB_DYNS pGetFuncTable;
@@ -443,7 +443,7 @@ HB_EXPORT int hb_rddRegister( char * szDriver, USHORT uiType )
  * pSuperTable - a current table in a RDDNODE
  * szDrvName - a driver name that will be inherited
  */
-HB_EXPORT ERRCODE hb_rddInherit( PRDDFUNCS pTable, PRDDFUNCS pSubTable, PRDDFUNCS pSuperTable, BYTE * szDrvName )
+HB_EXPORT ERRCODE hb_rddInherit( RDDFUNCS * pTable, const RDDFUNCS * pSubTable, RDDFUNCS * pSuperTable, const char * szDrvName )
 {
    LPRDDNODE pRddNode;
    USHORT uiCount;
@@ -494,7 +494,7 @@ HB_EXPORT ERRCODE hb_rddInherit( PRDDFUNCS pTable, PRDDFUNCS pSubTable, PRDDFUNC
 /*
  * check if a given name can be used as alias expression
  */
-static ERRCODE hb_rddVerifyAliasName( char * szAlias )
+static ERRCODE hb_rddVerifyAliasName( const char * szAlias )
 {
    char c;
 
@@ -530,7 +530,7 @@ static ERRCODE hb_rddVerifyAliasName( char * szAlias )
 /*
  * Find a WorkArea by the alias, return FAILURE if not found
  */
-HB_EXPORT ERRCODE hb_rddGetAliasNumber( char * szAlias, int * iArea )
+HB_EXPORT ERRCODE hb_rddGetAliasNumber( const char * szAlias, int * iArea )
 {
    BOOL fOneLetter;
    char c;
@@ -797,7 +797,7 @@ HB_EXPORT void hb_rddShutDown( void )
 /*
  * Insert the new WorkArea node
  */
-HB_EXPORT USHORT hb_rddInsertAreaNode( char *szDriver )
+HB_EXPORT USHORT hb_rddInsertAreaNode( const char *szDriver )
 {
    HB_THREAD_STUB
 
@@ -888,7 +888,7 @@ HB_EXPORT USHORT hb_rddInsertAreaNode( char *szDriver )
 /*
  * allocate and return atomAlias for new workarea or NULL if alias already exist
  */
-HB_EXPORT void * hb_rddAllocWorkAreaAlias( char * szAlias, int iArea )
+HB_EXPORT void * hb_rddAllocWorkAreaAlias( const char * szAlias, int iArea )
 {
    PHB_DYNS pSymAlias;
    int iDummyArea;
@@ -1028,7 +1028,7 @@ HB_EXPORT ERRCODE hb_rddSelectWorkAreaSymbol( PHB_SYMB pSymAlias )
 /*
  * Select a WorkArea by the name.
  */
-HB_EXPORT ERRCODE hb_rddSelectWorkAreaAlias( char * szAlias )
+HB_EXPORT ERRCODE hb_rddSelectWorkAreaAlias( const char * szAlias )
 {
    ERRCODE bResult;
    int iArea;
@@ -1082,28 +1082,29 @@ HB_EXPORT void * hb_rddGetCurrentWorkAreaPointer( void )
 /*
  * call a pCallBack function with all open workareas ###
  */
-HB_EXPORT ERRCODE hb_rddIterateWorkAreas( WACALLBACK pCallBack, int data )
+HB_EXPORT ERRCODE hb_rddIterateWorkAreas( WACALLBACK pCallBack, void * cargo )
 {
+   ERRCODE errCode = SUCCESS;
    USHORT uiIndex;
 
-   HB_TRACE(HB_TR_DEBUG, ("hb_rddIterateWorkAreas(%p)", pCallBack));
+   HB_TRACE(HB_TR_DEBUG, ("hb_rddIterateWorkAreas(%p,%p)", pCallBack, cargo));
 
    LOCK_AREA
    for ( uiIndex = 1; uiIndex < s_uiWaMax; uiIndex++ )
    {
-      if ( ! (*pCallBack)( s_WaList[ uiIndex ], data ) )
-      {
+      errCode = pCallBack( s_WaList[ uiIndex ], cargo );
+      if( errCode != SUCCESS )
          break;
-      }
    }
    UNLOCK_AREA
-   return SUCCESS;
+
+   return errCode;
 }
 
 /*
  * Find a field index by name
  */
-HB_EXPORT USHORT hb_rddFieldIndex( AREAP pArea, char * szName )
+HB_EXPORT USHORT hb_rddFieldIndex( AREAP pArea, const char * szName )
 {
    USHORT uiCount = 0;
    LPFIELD pField;
@@ -1136,7 +1137,7 @@ HB_EXPORT USHORT hb_rddFieldIndex( AREAP pArea, char * szName )
  * find a field expression index, this function strips _FIELD->, FIELD->,
  * alias-> prefixes
  */
-HB_EXPORT USHORT hb_rddFieldExpIndex( AREAP pArea, char * szField )
+HB_EXPORT USHORT hb_rddFieldExpIndex( AREAP pArea, const char * szField )
 {
    int n;
 
@@ -1532,10 +1533,7 @@ HB_FUNC( DBAPPEND )
    {
       bUnLockAll = ISLOG( 1 ) ? hb_parl( 1 ) : TRUE;
       s_bNetError = FALSE;
-      if( SELF_APPEND( pArea, bUnLockAll ) != SUCCESS )
-      {
-         s_bNetError = TRUE;  /* Temp fix! What about other types of errors? */
-      }
+      hb_retl( SELF_APPEND( pArea, bUnLockAll ) == SUCCESS );
    }
    else
       hb_errRT_DBCMD( EG_NOTABLE, EDBCMD_NOTABLE, NULL, "DBAPPEND" );
@@ -1592,51 +1590,66 @@ HB_FUNC( DBCOMMITALL )
    hb_rddSelectWorkAreaNumber( uiArea );
 }
 
-static ERRCODE hb_rddOpenTable( char * szFileName,  char * szDriver,
-                                USHORT uiArea, char *szAlias,
+static ERRCODE hb_rddOpenTable( const char * szFileName,  const char * szDriver,
+                                USHORT uiArea, const char *szAlias,
                                 BOOL fShared, BOOL fReadonly,
-                                char * szCpId, ULONG ulConnection,
+                                const char * szCpId, ULONG ulConnection,
                                 PHB_ITEM pStruct, PHB_ITEM pDelim )
 {
    char szDriverBuffer[ HARBOUR_MAX_RDD_DRIVERNAME_LENGTH + 1 ];
    DBOPENINFO pInfo;
    ERRCODE errCode;
-   USHORT uiPrevArea;
    AREAP pArea;
 
+   /* uiArea = 0 in hb_rddInsertAreaNode() means chose first
+    * available free area, otherwise we should close table in
+    * current WA and it should be done before parameter validation
+    * RT errors below. This breaks xHarbour like MT code which
+    * shares WA between threads so dbUseArea() should be covered
+    * by external mutex to make lNewArea MT safe, [druzus]
+    */
+   if( uiArea )
+   {
+      hb_rddSelectWorkAreaNumber( uiArea );
+      hb_rddReleaseCurrentArea();
+   }
+   else
+      hb_rddSelectFirstAvailable();
+
+   /* Clipper clears NETERR flag before parameter validation, [druzus]
+    */
    s_bNetError = FALSE;
 
+   /* Now check parameters, first RDD name.
+    * Clipper seems to make sth like:
+    *    if( szDriver && strlen( szDriver ) > 1 )
+    * but I do not think we should replicate it, [druzus]
+    */
    if( szDriver && szDriver[ 0 ] )
    {
       hb_strncpyUpper( szDriverBuffer, szDriver, HARBOUR_MAX_RDD_DRIVERNAME_LENGTH );
       szDriver = szDriverBuffer;
    }
    else
-   {
       szDriver = hb_rddDefaultDrv( NULL );
-   }
 
-   uiPrevArea = hb_rddGetCurrentWorkAreaNumber();
-
-   /*
-    * 0 means chose first available in hb_rddInsertAreaNode()
-    * This hack is necessary to avoid race condition in MT
-    * if we don't want to lock whole RDD subsystem, Druzus
-    */
-   hb_rddSelectWorkAreaNumber( uiArea );
-   if( uiArea )
-   {
-      hb_rddReleaseCurrentArea();
-   }
-
-   s_bNetError = TRUE;
-
-   /* Create a new WorkArea node */
+   /* First try to create new are node and validate RDD name */
    if( ! hb_rddInsertAreaNode( szDriver ) )
    {
+      hb_errRT_DBCMD( EG_ARG, EDBCMD_BADPARAMETER, NULL, "DBUSEAREA" );
+      return FAILURE;
+   }
+
+   /* Then check if valid file name was given - Clipper allows to use empty
+    * ("") file name
+    */
+   if( !szFileName )
+   {
+      hb_rddReleaseCurrentArea();
       hb_errRT_DBCMD( EG_ARG, EDBCMD_USE_BADPARAMETER, NULL, "DBUSEAREA" );
       return FAILURE;
    }
+
    pArea = ( AREAP ) hb_rddGetCurrentWorkAreaPointer();
 
    /* Fill pInfo structure */
@@ -1649,47 +1662,27 @@ static ERRCODE hb_rddOpenTable( char * szFileName,  char * szDriver,
    pInfo.ulConnection = ulConnection;
    pInfo.lpdbHeader = NULL;
 
-   if( pStruct )
-   {
-      errCode = SELF_CREATEFIELDS( pArea, pStruct );
-   }
-   else
-   {
-      errCode = SUCCESS;
-   }
-
+   errCode = pStruct ? SELF_CREATEFIELDS( pArea, pStruct ) : SUCCESS;
    if( errCode == SUCCESS )
    {
       if( pDelim && !HB_IS_NIL( pDelim ) )
          errCode = SELF_INFO( pArea, DBI_SETDELIMITER, pDelim );
-
       if( errCode == SUCCESS )
-      {
          /* Open file */
          errCode = SELF_OPEN( pArea, &pInfo );
-
-         if( errCode != SUCCESS )
-         {
-            hb_rddReleaseCurrentArea();
-            hb_rddSelectWorkAreaNumber( uiPrevArea );
-         }
-      }
    }
 
-   /*
-    * Warning: this is not Clipper compatible. NETERR() should be set by
-    * error handler not here
-    */
-   s_bNetError = errCode != SUCCESS;
+   if( errCode != SUCCESS )
+      hb_rddReleaseCurrentArea();
 
    return errCode;
 }
 
-static ERRCODE hb_rddCreateTable( char * szFileName, PHB_ITEM pStruct,
-                                  char * szDriver,
-                                  BOOL fKeepOpen, USHORT uiArea, char *szAlias,
+static ERRCODE hb_rddCreateTable( const char * szFileName, PHB_ITEM pStruct,
+                                  const char * szDriver,
+                                  BOOL fKeepOpen, USHORT uiArea, const char *szAlias,
                                   PHB_ITEM pDelim,
-                                  char * szCpId, ULONG ulConnection )
+                                  const char * szCpId, ULONG ulConnection )
 {
    char szDriverBuffer[ HARBOUR_MAX_RDD_DRIVERNAME_LENGTH + 1 ];
    DBOPENINFO pInfo;
@@ -1719,8 +1712,6 @@ static ERRCODE hb_rddCreateTable( char * szFileName, PHB_ITEM pStruct,
    {
       hb_rddReleaseCurrentArea();
    }
-
-   s_bNetError = TRUE;
 
    /* Create a new WorkArea node */
    if( ! hb_rddInsertAreaNode( szDriver ) )
@@ -1757,12 +1748,6 @@ static ERRCODE hb_rddCreateTable( char * szFileName, PHB_ITEM pStruct,
       hb_rddReleaseCurrentArea();
       hb_rddSelectWorkAreaNumber( uiPrevArea );
    }
-
-   /*
-    * Warning: this is not Clipper compatible. NETERR() should be set by
-    * error handler not here
-    */
-   s_bNetError = errCode != SUCCESS;
 
    return errCode;
 }
@@ -1832,9 +1817,9 @@ HB_FUNC( DBCREATE )
       }
    }
 
-   hb_rddCreateTable( szFileName, pStruct, szDriver, fKeepOpen,
-                      fCurrArea ? hb_rddGetCurrentWorkAreaNumber() : 0,
-                      szAlias, pDelim, szCpId, ulConnection );
+   hb_retl( hb_rddCreateTable( szFileName, pStruct, szDriver, fKeepOpen,
+                        fCurrArea ? hb_rddGetCurrentWorkAreaNumber() : 0,
+                        szAlias, pDelim, szCpId, ulConnection ) == SUCCESS );
 }
 
 /*
@@ -2369,11 +2354,11 @@ HB_FUNC( DBUSEAREA )
       return;
    }
 
-   hb_rddOpenTable( szFileName, hb_parc( 2 ),
-                    hb_parl( 1 ) ? 0 : hb_rddGetCurrentWorkAreaNumber(),
-                    hb_parc( 4 ),
-                    ISLOG( 5 ) ? hb_parl( 5 ) : !hb_set.HB_SET_EXCLUSIVE,
-                    hb_parl( 6 ), hb_parc( 7 ), hb_parnl( 8 ), NULL, NULL );
+   hb_retl( hb_rddOpenTable( szFileName, hb_parc( 2 ),
+               hb_parl( 1 ) ? 0 : hb_rddGetCurrentWorkAreaNumber(),
+               hb_parc( 4 ),
+               ISLOG( 5 ) ? hb_parl( 5 ) : !hb_set.HB_SET_EXCLUSIVE,
+               hb_parl( 6 ), hb_parc( 7 ), hb_parnl( 8 ), NULL, NULL ) == SUCCESS );
 }
 
 HB_FUNC( __DBZAP )
@@ -3353,24 +3338,26 @@ HB_FUNC( ORDWILDSEEK )
 HB_FUNC( ORDLISTADD )
 {
    HB_THREAD_STUB
-   DBORDERINFO pOrderInfo;
    AREAP pArea = HB_CURRENT_WA;
 
    if( pArea )
    {
+      DBORDERINFO pOrderInfo;
+
+      /* Clipper clears NETERR flag when index is open */
+      s_bNetError = FALSE;
+
       memset( &pOrderInfo, 0, sizeof( DBORDERINFO ) );
       pOrderInfo.atomBagName = hb_param( 1, HB_IT_STRING );
       pOrderInfo.itmOrder    = hb_param( 2, HB_IT_STRING );
+
       if( !pOrderInfo.atomBagName )
       {
          if( !ISNIL( 1 ) )
             hb_errRT_DBCMD( EG_ARG, EDBCMD_REL_BADPARAMETER, NULL, "ORDLISTADD" );
-         return;
       }
-      pOrderInfo.itmResult = hb_itemNew( NULL );
-      SELF_ORDLSTADD( pArea, &pOrderInfo );
-      hb_itemReturn( pOrderInfo.itmResult );
-      hb_itemRelease( pOrderInfo.itmResult );
+      else
+         hb_retl( SELF_ORDLSTADD( pArea, &pOrderInfo ) == SUCCESS );
    }
    else
       hb_errRT_DBCMD( EG_NOTABLE, EDBCMD_NOTABLE, NULL, "ORDLISTADD" );
@@ -3636,30 +3623,6 @@ HB_FUNC( USED )
    hb_retl( HB_CURRENT_WA != NULL );
 }
 
-/* NOTE: Same as dbSetDriver() and rddSetDefault(), but doesn't
-         throw any error if the driver doesn't exist, this is
-         required in the RDDSYS INIT function, since it's not guaranteed
-         that the RDD is already registered at that point. [vszakats] */
-
-HB_FUNC( __RDDSETDEFAULT )
-{
-   HB_THREAD_STUB
-   USHORT uiLen;
-
-   hb_retc( s_szDefDriver );
-
-   uiLen = ( USHORT ) hb_parclen( 1 );
-
-   if( uiLen > 0 )
-   {
-      if( uiLen > HARBOUR_MAX_RDD_DRIVERNAME_LENGTH )
-      {
-         uiLen = HARBOUR_MAX_RDD_DRIVERNAME_LENGTH;
-      }
-      hb_strncpyUpper( s_szDefDriver, hb_parc( 1 ), uiLen );
-   }
-}
-
 HB_FUNC( RDDSETDEFAULT )
 {
    HB_THREAD_STUB
@@ -3811,11 +3774,12 @@ HB_FUNC( DBSETRELATION )
          return;
       }
 
-      dbRelations.lpaChild = pChildArea;
       dbRelations.itmCobExpr = hb_itemNew( hb_param( 2, HB_IT_BLOCK ) );
       dbRelations.abKey = hb_itemNew( hb_param( 3, HB_IT_STRING ) );
       dbRelations.isScoped = hb_parl( 4 );
       dbRelations.isOptimized = FALSE;
+      dbRelations.lpaChild = pChildArea;
+      dbRelations.lpaParent = pArea;
       dbRelations.lpdbriNext = NULL;
 
       SELF_SETREL( pArea, &dbRelations );
@@ -4446,7 +4410,8 @@ static ERRCODE hb_rddTransRecords( AREAP pArea,
    uiPrevArea = hb_rddGetCurrentWorkAreaNumber();
 
    if( szDriver == NULL )
-      szDriver = SELF_RDDNODE( pArea )->szName;
+      /* szDriver = SELF_RDDNODE( pArea )->szName; */
+      szDriver = hb_rddDefaultDrv( NULL );
 
    if( fExport )
    {

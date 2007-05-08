@@ -4689,7 +4689,7 @@ static void hb_dbffptRegisterRDD( USHORT * pusRddId )
       if ( uiCount )
          * uiCount = RDDFUNCSCOUNT;
 
-      errCode = hb_rddInherit( pTable, &fptTable, &fptSuper, ( BYTE * ) "DBF" );
+      errCode = hb_rddInherit( pTable, &fptTable, &fptSuper, "DBF" );
       if ( errCode == SUCCESS )
          *pusRddId = uiRddId;
       hb_retni( errCode );
