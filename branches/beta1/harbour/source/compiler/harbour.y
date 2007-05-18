@@ -1070,8 +1070,7 @@ VarDef     : IdentName AsType { hb_compVariableAdd( HB_COMP_PARAM, $1, HB_COMP_P
                   if( HB_COMP_PARAM->iVarScope == VS_STATIC )
                   {
                      hb_compStaticDefStart( HB_COMP_PARAM );   /* switch to statics pcode buffer */
-                     hb_compStaticDefEnd( HB_COMP_PARAM );
-                     hb_compGenStaticName( $1, HB_COMP_PARAM );
+                     hb_compStaticDefEnd( HB_COMP_PARAM, $1 );
                   }
                   else if( HB_COMP_PARAM->iVarScope == VS_PUBLIC || HB_COMP_PARAM->iVarScope == VS_PRIVATE )
                   {
@@ -1092,8 +1091,7 @@ VarDef     : IdentName AsType { hb_compVariableAdd( HB_COMP_PARAM, $1, HB_COMP_P
                   {
                      hb_compStaticDefStart( HB_COMP_PARAM );   /* switch to statics pcode buffer */
                      hb_compExprDelete( hb_compExprGenStatement( hb_compExprAssignStatic( hb_compExprNewVar( $1, HB_COMP_PARAM ), $6, HB_COMP_PARAM ), HB_COMP_PARAM ), HB_COMP_PARAM );
-                     hb_compStaticDefEnd( HB_COMP_PARAM );
-                     hb_compGenStaticName( $1, HB_COMP_PARAM );
+                     hb_compStaticDefEnd( HB_COMP_PARAM, $1 );
                   }
                   else if( HB_COMP_PARAM->iVarScope == VS_PUBLIC || HB_COMP_PARAM->iVarScope == VS_PRIVATE )
                   {
@@ -2152,7 +2150,7 @@ static void hb_compVariableDim( char * szName, HB_EXPR_PTR pInitValue, HB_COMP_D
      hb_compExprGenPop( pVar, HB_COMP_PARAM );
      /* delete all used expressions */
      hb_compExprDelete( pAssign, HB_COMP_PARAM );
-     hb_compStaticDefEnd( HB_COMP_PARAM );
+     hb_compStaticDefEnd( HB_COMP_PARAM, szName );
   }
   else
   {

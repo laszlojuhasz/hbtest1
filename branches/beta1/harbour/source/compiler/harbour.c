@@ -1046,33 +1046,6 @@ void hb_compVariableAdd( HB_COMP_DECL, char * szVarName, BYTE cValueType )
    }
 }
 
-void hb_compGenStaticName( char *szVarName, HB_COMP_DECL )
-{
-  if( HB_COMP_PARAM->fDebugInfo )
-  {
-      BYTE bGlobal = 0;
-      PFUNCTION pFunc;
-      int iVar;
-      
-      if( ! HB_COMP_PARAM->fStartProc && HB_COMP_PARAM->functions.iCount <= 1 )
-      {
-         /* Variable declaration is outside of function/procedure body.
-            File-wide static variable
-         */
-         hb_compStaticDefStart( HB_COMP_PARAM );
-         bGlobal = 1;
-      }
-      pFunc = HB_COMP_PARAM->functions.pLast;
-      iVar = hb_compStaticGetPos( szVarName, pFunc );
-
-      hb_compGenPCode4( HB_P_STATICNAME, bGlobal, HB_LOBYTE( iVar ), HB_HIBYTE( iVar ), HB_COMP_PARAM );
-      hb_compGenPCodeN( ( BYTE * ) szVarName, strlen( szVarName ) + 1, HB_COMP_PARAM );
-
-      if( bGlobal )
-         hb_compStaticDefEnd( HB_COMP_PARAM );
-   }
-}
-
 /* Check if macrotext variable does not refer to local, static or field.
  * Only MEMVAR or undeclared (memvar will be assumed) variables can be used
  * in macro text
@@ -4221,11 +4194,35 @@ void hb_compStaticDefStart( HB_COMP_DECL )
  * End of definition of static variable
  * Return to previously pcoded function.
  */
-void hb_compStaticDefEnd( HB_COMP_DECL )
+void hb_compStaticDefEnd( HB_COMP_DECL, char * szVarName )
 {
    HB_COMP_PARAM->functions.pLast = HB_COMP_PARAM->pInitFunc->pOwner;
    HB_COMP_PARAM->pInitFunc->pOwner = NULL;
    ++HB_COMP_PARAM->iStaticCnt;
+   if( HB_COMP_PARAM->fDebugInfo )
+   {
+      BYTE bGlobal = 0;
+      int iVar;
+
+      if( ! HB_COMP_PARAM->fStartProc && HB_COMP_PARAM->functions.iCount <= 1 )
+      {
+         /* Variable declaration is outside of function/procedure body.
+          * File-wide static variable
+          */
+         HB_COMP_PARAM->pInitFunc->pOwner = HB_COMP_PARAM->functions.pLast;
+         HB_COMP_PARAM->functions.pLast = HB_COMP_PARAM->pInitFunc;
+         bGlobal = 1;
+      }
+
+      iVar = HB_COMP_PARAM->iStaticCnt;
+      hb_compGenPCode4( HB_P_STATICNAME, bGlobal, HB_LOBYTE( iVar ), HB_HIBYTE( iVar ), HB_COMP_PARAM );
+      hb_compGenPCodeN( ( BYTE * ) szVarName, strlen( szVarName ) + 1, HB_COMP_PARAM );
+      if( bGlobal )
+      {
+         HB_COMP_PARAM->functions.pLast = HB_COMP_PARAM->pInitFunc->pOwner;
+         HB_COMP_PARAM->pInitFunc->pOwner = NULL;
+      }
+   }
 }
 
 /*

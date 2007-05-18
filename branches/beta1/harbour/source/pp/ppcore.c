@@ -637,7 +637,6 @@ static void hb_pp_readLine( PHB_PP_STATE pState )
 static BOOL hb_pp_canQuote( BOOL fQuote, char * pBuffer, ULONG ulLen, ULONG * pulAt )
 {
    ULONG ul = 0;
-   BOOL fQ1 = FALSE, fQ2 = FALSE;
 
    /*
     * TODO: this is Clipper compatible but it breaks valid code so we may
@@ -648,12 +647,8 @@ static BOOL hb_pp_canQuote( BOOL fQuote, char * pBuffer, ULONG ulLen, ULONG * pu
       if( pBuffer[ ul ] == ']' )
       {
          * pulAt = ul;
-         return fQuote || fQ1 || fQ2;
+         return fQuote;
       }
-      else if( pBuffer[ ul ] == '\'' )
-         fQ1 = !fQ1;
-      else if( pBuffer[ ul ] == '"' )
-         fQ2 = !fQ2;
       ++ul;
    }
    return FALSE;

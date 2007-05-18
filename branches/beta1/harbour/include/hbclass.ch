@@ -255,8 +255,8 @@ DECLARE HBClass ;
    [ ; #translate Super: => ::<SuperClass1>: ] ;
    [ ; #translate ::Super : => ::<SuperClass1>: ]
 
-#xcommand ENDCLASS => ;
-         s_oClass:Create() ;;
+#xcommand ENDCLASS [<lck: LOCK, LOCKED>] => ;
+         s_oClass:Create() ; [<-lck-> __clsLock( s_oClass:hClass ) ] ;;
       end ;;
       return s_oClass:Instance() AS CLASS _CLASS_NAME_ ;;
    #undef  _CLASS_MODE_ ; #define _CLASS_MODE_ _CLASS_IMPLEMENTATION_
@@ -498,9 +498,9 @@ DECLARE HBClass ;
 #ifdef HB_CLS_VO
 
 #xtranslate  ( <!name!>{ [<p,...>] }        =>  ( <name>():New( <p> )
+#xtranslate  , <!name!>{ [<p,...>] }        =>  , <name>():New( <p> )
 #xtranslate  = <!name!>{ [<p,...>] }        =>  = <name>():New( <p> )
 #xtranslate := <!name!>{ [<p,...>] }        => := <name>():New( <p> )
-#xtranslate  , <!name!>{ [<p,...>] }        =>  , <name>():New( <p> )
 
 #xcommand EXPORT <!DataName1!> [, <!DataNameN!>] [ <tp: TYPE, AS> <type> ] [ <as: ASSIGN, INIT> <uValue> ] [<ro: READONLY, RO>] [<persistent: PERSISTENT, PROPERTY>] => ;
    _HB_MEMBER {[ AS <type>] <DataName1> [, <DataNameN>] } ;;
