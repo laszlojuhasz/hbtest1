@@ -634,9 +634,10 @@ static void hb_pp_readLine( PHB_PP_STATE pState )
    }
 }
 
-static BOOL hb_pp_canQuote( BOOL fQuote, char * pBuffer, ULONG ulLen, ULONG * pulAt )
+static BOOL hb_pp_canQuote( BOOL fQuote, char * pBuffer, ULONG ulLen,
+                            ULONG ul, ULONG * pulAt )
 {
-   ULONG ul = 0;
+   char cQuote = 0;
 
    /*
     * TODO: this is Clipper compatible but it breaks valid code so we may
@@ -646,8 +647,42 @@ static BOOL hb_pp_canQuote( BOOL fQuote, char * pBuffer, ULONG ulLen, ULONG * pu
    {
       if( pBuffer[ ul ] == ']' )
       {
-         * pulAt = ul;
+         if( cQuote && !fQuote )
+         {
+            ULONG u = ul + 1;
+            cQuote = 0;
+            while( u < ulLen )
+            {
+               if( cQuote )
+               {
+                  if( pBuffer[ u ] == cQuote )
+                     cQuote = 0;
+               }
+               else if( pBuffer[ u ] == '`' )
+                  cQuote = '\'';
+               else if( pBuffer[ u ] == '\'' || pBuffer[ u ] == '"' )
+                  cQuote = pBuffer[ u ];
+               else if( pBuffer[ u ] == '[' )
+                  hb_pp_canQuote( TRUE, pBuffer, ulLen, u + 1, &u );
+               ++u;
+            }
+            fQuote = cQuote == 0;
+         }
+         if( fQuote )
+            * pulAt = ul;
          return fQuote;
+      }
+      else if( !fQuote )
+      {
+         if( cQuote )
+         {
+            if( pBuffer[ ul ] == cQuote )
+               cQuote = 0;
+         }
+         else if( pBuffer[ ul ] == '`' )
+            cQuote = '\'';
+         else if( pBuffer[ ul ] == '\'' || pBuffer[ ul ] == '"' )
+            cQuote = pBuffer[ ul ];
       }
       ++ul;
    }
@@ -982,10 +1017,7 @@ static void hb_pp_getLine( PHB_PP_STATE pState )
                   while( ++ul < ulLen && pBuffer[ ul ] != ch );
                }
                else
-               {
-                  ul = ulLen;
                   break;
-               }
             }
 #endif
             hb_pp_tokenAddNext( pState, pBuffer + 1, ul - 1,
@@ -1015,6 +1047,34 @@ static void hb_pp_getLine( PHB_PP_STATE pState )
                      break;
                }
             }
+#ifdef HB_PP_MULTILINE_STRING
+            while( ul == ulLen )
+            {
+               ULONG u = 1;
+               while( ul > u && pBuffer[ ul - u ] == ' ' ) ++u;
+               if( ul >= u && pBuffer[ ul - u ] == ';' )
+               {
+                  ul -= u;
+                  ulLen -= u;
+                  u = hb_membufLen( pState->pBuffer ) - u;
+                  hb_membufRemove( pState->pBuffer, u );
+                  hb_pp_readLine( pState );
+                  ulLen += hb_membufLen( pState->pBuffer ) - u;
+                  pBuffer = hb_membufPtr( pState->pBuffer ) + u - ul;
+                  --ul;
+                  while( ++ul < ulLen && pBuffer[ ul ] != '"' )
+                  {
+                     if( pBuffer[ ul ] == '\\' )
+                     {
+                        if( ++ul == ulLen )
+                           break;
+                     }
+                  }
+               }
+               else
+                  break;
+            }
+#endif
             ulStrip = ul - 2;
             hb_strRemEscSeq( pBuffer + 2, &ulStrip );
             hb_pp_tokenAddNext( pState, pBuffer + 2, ulStrip,
@@ -1033,10 +1093,10 @@ static void hb_pp_getLine( PHB_PP_STATE pState )
          else if( ch == '[' && !pState->fDirective &&
                   hb_pp_canQuote( pState->fCanNextLine ||
                                   HB_PP_TOKEN_CANQUOTE( pState->iLastType ),
-                                  pBuffer + 1, ulLen - 1, &ul ) )
+                                  pBuffer, ulLen, 1, &ul ) )
          {
-            hb_pp_tokenAddNext( pState, pBuffer + 1, ul, HB_PP_TOKEN_STRING );
-            ul += 2;
+            hb_pp_tokenAddNext( pState, pBuffer + 1, ul - 1, HB_PP_TOKEN_STRING );
+            ++ul;
          }
          else if( ( ch == '/' || ch == '&' ) && ulLen > 1 && pBuffer[ 1 ] == ch )
          {
@@ -2067,7 +2127,8 @@ static void hb_pp_pragmaNew( PHB_PP_STATE pState, PHB_PP_TOKEN pToken )
    {
       if( !pState->iCondCompile )
       {
-         pValue = hb_pp_pragmaGetSwitch( pToken->pNext, &iValue );
+         pToken = pToken->pNext;
+         pValue = hb_pp_pragmaGetSwitch( pToken, &iValue );
          if( pValue )
             fError = hb_pp_setCompilerSwitch( pState, pValue->value, iValue );
          else
