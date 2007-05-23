@@ -93,38 +93,35 @@
 
 CLASS TBrowse
 
-   EXPORTED:
-
-   DATA autoLite         INIT .T.                           // Logical value to control highlighting
-   DATA cargo                                               // User-definable variable
-   DATA colorSpec        INIT SetColor()                    // Color table for the TBrowse display
-   DATA colPos           INIT 1                             // Current cursor column position
-   DATA colSep           INIT " "                           // Column separator character
-   DATA footSep          INIT ""                            // Footing separator character
-   DATA goBottomBlock                                       // Code block executed by TBrowse:goBottom()
-   DATA goTopBlock                                          // Code block executed by TBrowse:goTop()
-   DATA headSep          INIT ""                            // Heading separator character
-   DATA hitBottom        INIT .F.                           // Indicates the end of available data
-   DATA hitTop           INIT .F.                           // Indicates the beginning of available data
-   DATA leftVisible      INIT 1                             // Indicates position of leftmost unfrozen column in display
-   DATA nBottom                                             // Bottom row number for the TBrowse display
-   DATA nLeft                                               // Leftmost column for the TBrowse display
-   DATA nRight                                              // Rightmost column for the TBrowse display
-   DATA nTop                                                // Top row number for the TBrowse display
-   DATA rightVisible                                        // Indicates position of rightmost unfrozen column in display
-   DATA rowCount                                            // Number of visible data rows in the TBrowse display
-   DATA rowPos           INIT 1                             // Current cursor row position
+   DATA aColumns              // Array to hold all browse columns
+   DATA autoLite              // Logical value to control highlighting
+   DATA cargo                 // User-definable variable
+   DATA colorSpec             // Color table for the TBrowse display
+   DATA colPos                // Current cursor column position
+   DATA colSep                // Column separator character
+   DATA footSep               // Footing separator character
+   DATA goBottomBlock         // Code block executed by TBrowse:goBottom()
+   DATA goTopBlock            // Code block executed by TBrowse:goTop()
+   DATA headSep               // Heading separator character
+   DATA hitBottom             // Indicates the end of available data
+   DATA hitTop                // Indicates the beginning of available data
+   DATA leftVisible           // Indicates position of leftmost unfrozen column in display
+   DATA nBottom               // Bottom row number for the TBrowse display
+   DATA nLeft                 // Leftmost column for the TBrowse display
+   DATA nRight                // Rightmost column for the TBrowse display
+   DATA nTop                  // Top row number for the TBrowse display
+   DATA rightVisible          // Indicates position of rightmost unfrozen column in display
+   DATA rowCount              // Number of visible data rows in the TBrowse display
+   DATA rowPos                // Current cursor row position
    ACCESS skipBlock INLINE ::bSkipBlock
    ASSIGN skipBlock( b ) INLINE ::SetSkipBlock( b )
-   DATA stable           INIT .F.                           // Indicates if the TBrowse object is stable
+   DATA stable                // Indicates if the TBrowse object is stable
 
-#ifdef HB_COMPAT_C53                                   
-   DATA nRow             INIT 0                             // Row number for the actual cell
-   DATA nCol             INIT 0                             // Col number for the actual cell
+#ifdef HB_COMPAT_C53
+   DATA nRow                  // Row number for the actual cell
+   DATA nCol                  // Col number for the actual cell
    DATA aKeys
-   DATA mColpos          INIT 0
-   DATA mRowPos          INIT 0
-   DATA message          INIT ""
+   DATA mColpos, mRowPos, message
 #endif
 
    ACCESS freeze INLINE ::nFrozenCols                       // Number of columns to freeze/frozen
@@ -152,9 +149,8 @@ CLASS TBrowse
    METHOD GetColumn( nColumn )                              // Gets a specific TBColumn object
    METHOD SetColumn( nColumn, oCol )                        // Replaces one TBColumn object with another
    METHOD ColWidth( nColumn )                               // Returns the display width of a particular column
-   METHOD ColCount()
+   METHOD ColCount() INLINE ::nColumns
    METHOD ColorRect()                                       // Alters the color of a rectangular group of cells
-   /* NOTE: nMode is an undocumented Harbour parameter. Should not be used by app code. */
    METHOD Configure( nMode )                                // Reconfigures the internal settings of the TBrowse object
                                                             // nMode is an undocumented parameter in CA-Cl*pper
    METHOD DeHilite()                                        // Dehighlights the current cell
@@ -162,7 +158,8 @@ CLASS TBrowse
    METHOD Hilite()                                          // Highlights the current cell
    METHOD Invalidate()                                      // Forces entire redraw during next stabilization
    METHOD RefreshAll()                                      // Causes all data to be recalculated during the next stabilize
-   METHOD RefreshCurrent()                                  // Causes the current row to be refilled and repainted on next stabilize
+   METHOD RefreshCurrent() INLINE;                          // Causes the current row to be refilled and repainted on next stabilize
+          If( ! Empty( ::aRedraw ), ::aRedraw[ ::RowPos ] := .T., Nil ), ::stable := .F., Self
    METHOD Stabilize()                                       // Performs incremental stabilization
 
 #ifdef HB_COMPAT_C53
@@ -176,50 +173,51 @@ CLASS TBrowse
 
    PROTECTED:
 
-   METHOD MGotoYX( nRow, nCol )                             // Given screen coordinates nRow, nCol sets TBrowse cursor on underlaying cell
-                                                            // _M_GotoXY because this method will mostly be called to handle mouse requests
+   METHOD MGotoYX( nRow, nCol )           // Given screen coordinates nRow, nCol sets TBrowse cursor on underlaying cell
+                                          // _M_GotoXY because this method will mostly be called to handle mouse requests
 
    HIDDEN:
 
-   METHOD PosCursor()                                       // Positions the cursor to the beginning of the call, used only when autolite==.F.
-   METHOD LeftDetermine()                                   // Determine leftmost unfrozen column in display
-   METHOD DispCell( nRow, nCol, nMode )                     // Displays a single cell and returns cell type as a single letter like Valtype()
-   METHOD HowManyCol()                                      // Counts how many cols can be displayed
-   METHOD RedrawHeaders()                                   // Repaints TBrowse Headers
-   METHOD Moved()                                           // Every time a movement key is issued I need to reset certain properties of TBrowse, I do these settings inside this method
+   METHOD PosCursor()                     // Positions the cursor to the beginning of the call, used only when autolite==.F.
+   METHOD LeftDetermine()                 // Determine leftmost unfrozen column in display
+   METHOD DispCell( nRow, nCol, nMode )   // Displays a single cell and returns cell type as a single letter like Valtype()
+   METHOD HowManyCol()                    // Counts how many cols can be displayed
+   METHOD RedrawHeaders()                 // Repaints TBrowse Headers
+   METHOD Moved()                         // Every time a movement key is issued I need to reset certain properties
+                                          // of TBrowse, I do these settings inside this method
 
-   METHOD WriteMLineText(cStr, nPadLen, lHeader, cColor)    // Writes a multi-line text where ";" is a line break, lHeader is .T. if it is a header and not a footer
-   METHOD SetFrozenCols( nHowMany )                         // Handles freezing of columns
-   METHOD SetColumnWidth( oCol )                            // Calcs width of given column
-   METHOD SetSkipBlock( b )                                 // Sets ::skipBlock()
+   METHOD WriteMLineText(cStr, nPadLen, lHeader, cColor) // Writes a multi-line text where ";" is a line break, lHeader
+                                                         // is .T. if it is a header and not a footer
+   METHOD SetFrozenCols( nHowMany )       // Handles freezing of columns
+   METHOD SetColumnWidth( oCol )          // Calcs width of given column
+   METHOD SetSkipBlock( b )               // Sets ::skipBlock()
 
-   DATA aColumns         INIT {}                            // Array to hold all browse columns
-   DATA aRect            INIT {}                            // The rectangle specified with ColorRect()
-   DATA aRectColor       INIT {}                            // The color positions to use in the rectangle specified with ColorRect()
-   DATA aRedraw          INIT {}                            // Array of logical items indicating, is appropriate row need to be redraw
-   DATA aColsWidth       INIT {}                            // Array with width of TBrowse's columns
-   DATA lHeaders         INIT .F.                           // Internal variable which indicates whether there are column footers to paint
-   DATA lFooters         INIT .F.                           // Internal variable which indicates whether there are column footers to paint
-   DATA lRedrawFrame     INIT .T.                           // True if I need to redraw Headers/Footers
-   DATA nColsWidth       INIT 0                             // Total width of visible columns plus ColSep
-   DATA nColsVisible     INIT 0                             // Number of columns that fit on the browse width
-   DATA lHitTop          INIT .F.                           // Internal Top reached flag
-   DATA lHitBottom       INIT .F.                           // Internal Bottom reached flag
-   DATA nRecsToSkip      INIT 0                             // Recs to skip on next Stabilize()
-   DATA nNewRowPos       INIT 1                             // Next position of data source (after first phase of stabilization)
-   DATA nLastRetrieved   INIT 1                             // Position, relative to first row, of last retrieved row (with an Eval(::bSkipBlock, n))
-                                                            
-   DATA nHeaderHeight    INIT 1                             // How many lines is highest Header/Footer and so how many lines of
-   DATA nFooterHeight    INIT 1                             // screen space I have to reserve
-   DATA nFrozenWidth     INIT 0                             // How many screen column are not available on the left side of TBrowse display
-                                                            // > 0 only when there are frozen columns
-   DATA bSkipBlock       INIT {|| NIL }                     // Code block used to reposition data source
-   DATA nFrozenCols      INIT 0                             // Number of frozen columns on left side of TBrowse
-   DATA nColumns         INIT 0                             // Number of columns added to TBrowse
-   DATA lNeverDisplayed  INIT .T.                           // .T. if TBrowse has never been stabilized()
+   DATA aRect                             // The rectangle specified with ColorRect()
+   DATA aRectColor                        // The color positions to use in the rectangle specified with ColorRect()
+   DATA aRedraw                           // Array of logical items indicating, is appropriate row need to be redraw
+   DATA aColsWidth                        // Array with width of TBrowse's columns
+   DATA lHeaders                          // Internal variable which indicates whether there are column footers to paint
+   DATA lFooters                          // Internal variable which indicates whether there are column footers to paint
+   DATA lRedrawFrame                      // True if I need to redraw Headers/Footers
+   DATA nColsWidth                        // Total width of visible columns plus ColSep
+   DATA nColsVisible                      // Number of columns that fit on the browse width
+   DATA lHitTop                           // Internal Top/Bottom reached flag
+   DATA lHitBottom
+   DATA nRecsToSkip                       // Recs to skip on next Stabilize()
+   DATA nNewRowPos                        // Next position of data source (after first phase of stabilization)
+   DATA nLastRetrieved                    // Position, relative to first row, of last retrieved row (with an Eval(::bSkipBlock, n))
+
+   DATA nHeaderHeight                     // How many lines is highest Header/Footer and so how many lines of
+   DATA nFooterHeight                     // screen space I have to reserve
+   DATA nFrozenWidth                      // How many screen column are not available on the left side of TBrowse display
+                                          // > 0 only when there are frozen columns
+   DATA bSkipBlock                        // Code block used to reposition data source
+   DATA nFrozenCols                       // Number of frozen columns on left side of TBrowse
+   DATA nColumns                          // Number of columns added to TBrowse
+   DATA lNeverDisplayed                   // .T. if TBrowse has never been stabilized()
 #ifdef HB_COMPAT_C53
    DATA rect
-   DATA aVisibleCols     INIT {}
+   DATA aVisibleCols
    DATA aSetStyle
 #endif
 ENDCLASS
@@ -227,10 +225,44 @@ ENDCLASS
 
 METHOD New( nTop, nLeft, nBottom, nRight ) CLASS TBrowse
 
-   default nTop    to 0
-   default nLeft   to 0
-   default nBottom to MaxRow()
-   default nRight  to MaxCol()
+   default  nTop    to 0
+   default  nLeft   to 0
+   default  nBottom to MaxRow()
+   default  nRight  to MaxCol()
+
+   ::aColumns        := {}
+   ::aColsWidth      := {}
+   ::AutoLite        := .T.
+   ::leftVisible     := 1
+   ::ColPos          := 1
+   ::HitBottom       := .F.
+   ::HitTop          := .F.
+   ::lHitTop         := .F.
+   ::lHitBottom      := .F.
+   ::ColorSpec       := SetColor()
+   ::ColSep          := " "
+   ::FootSep         := ""
+   ::HeadSep         := ""
+   ::RowPos          := 1
+   ::nNewRowPos      := 1
+   ::bSkipBlock      := {|| NIL }
+   ::stable          := .F.
+   ::nLastRetrieved  := 1
+   ::nRecsToSkip     := 0
+   ::aRedraw         := {}
+   ::lHeaders        := .F.
+   ::lFooters        := .F.
+   ::lRedrawFrame    := .T.
+   ::aRect           := {}
+   ::aRectColor      := {}
+   ::nColsWidth      := 0
+   ::nColsVisible    := 0
+   ::nHeaderHeight   := 1
+   ::nFooterHeight   := 1
+   ::nFrozenWidth    := 0
+   ::nFrozenCols     := 0
+   ::nColumns        := 0
+   ::lNeverDisplayed := .T.
 
    ::nTop            := nTop
    ::nLeft           := nLeft
@@ -239,7 +271,13 @@ METHOD New( nTop, nLeft, nBottom, nRight ) CLASS TBrowse
 
    #ifdef HB_COMPAT_C53
 
+      ::mColPos         := 0
+      ::mRowPos         := 0
       ::rect            := { nTop, nLeft, nBottom, nRight }
+      ::aVisibleCols    := {}
+      ::message         := ''
+      ::nRow            := 0
+      ::nCol            := 0
       ::aSetStyle       := Array( TBR_CUSTOM - 1 )
 
       ::aSetStyle[ TBR_APPEND ]    := .f.
@@ -265,16 +303,6 @@ return Self
 METHOD RefreshAll() CLASS TBrowse
 
    AFill( ::aRedraw, .T. )
-   ::stable := .F.
-
-return Self
-
-
-METHOD RefreshCurrent() CLASS TBrowse
-
-   if ! Empty( ::aRedraw )
-      ::aRedraw[ ::RowPos ] := .T.
-   endif
    ::stable := .F.
 
 return Self
@@ -418,11 +446,6 @@ METHOD ColWidth( nColumn ) CLASS TBrowse
 return iif( 0 < nColumn .AND. nColumn <= ::nColumns, ::aColsWidth[ nColumn ], 0 )
 
 
-METHOD ColCount() CLASS TBrowse
-
-return ::nColumns
-
-
 METHOD DelColumn( nPos ) CLASS TBrowse
 
    local oCol := ::aColumns[ nPos ]
@@ -513,8 +536,8 @@ METHOD SetColumnWidth( oCol ) CLASS TBrowse
 
          endcase
 
-         cHeading := oCol:Heading
-         while ( nL := Len( hb_TokenPtr( @cHeading, @nTokenPos, ";" ) ) ) > 0
+         cHeading := oCol:Heading + ";"
+         while ( nL := Len( __StrTkPtr( @cHeading, @nTokenPos, ";" ) ) ) > 0
             nColWidth := Max( nL, nColWidth )
          enddo
       endif
@@ -1333,7 +1356,7 @@ return cType
 
 #ifdef HB_COMPAT_C53
 
-METHOD ApplyKey( nKey ) CLASS TBrowse
+METHOD ApplyKey( nKey )  CLASS TBrowse
 
 return ::TApplyKey( nKey, self )
 
@@ -1461,7 +1484,7 @@ return Self
 
 METHOD WriteMLineText( cStr, nPadLen, lHeader, cColor ) CLASS TBrowse
 
-   local n
+   local n, cS
    local nCol := Col()
    local nRow := Row()
 
@@ -1473,9 +1496,12 @@ METHOD WriteMLineText( cStr, nPadLen, lHeader, cColor ) CLASS TBrowse
          DispOut( PadR( cStr, nPadLen ), cColor )
 
       else
+         // __StrToken needs that even last token be ended with token separator
+         cS := cStr + ";"
+
          for n := ::nHeaderHeight to 1 step -1
             SetPos( nRow + n - 1, nCol )
-            DispOut( PadR( hb_TokenGet( @cStr, n, ";" ), nPadLen ), cColor )
+            DispOut( PadR( __StrToken( @cS, n, ";" ), nPadLen ), cColor )
          next
 
          SetPos( nRow, nCol + nPadLen )
@@ -1490,9 +1516,12 @@ METHOD WriteMLineText( cStr, nPadLen, lHeader, cColor ) CLASS TBrowse
          DispOut( PadR( cStr, nPadLen ), cColor )
 
       else
+         // __StrToken needs that even last token be ended with token separator
+         cS := cStr + ";"
+
          for n := 0 to ( ::nFooterHeight - 1 )
             SetPos( nRow - n, nCol )
-            DispOut( PadR( hb_TokenGet( @cStr, ::nFooterHeight - n, ";" ), nPadLen ), cColor )
+            DispOut( PadR( __StrToken( @cS, ::nFooterHeight - n, ";" ), nPadLen ), cColor )
          next
 
          SetPos( nRow, nCol + nPadLen )
@@ -1562,7 +1591,7 @@ function TBMOUSE( oBrowse, nMouseRow, nMouseCol )
 
    return 1
 
-METHOD hitTest( mRow, mCol ) CLASS TBROWSE
+Method hitTest( mRow, mCol ) CLASS TBROWSE
   local i
   ::mRowPos := ::rowPos
   ::mColPos := ::colPos

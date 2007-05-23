@@ -8,6 +8,11 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-05-23 09:15 UTC+0100 Viktor Szakats (harbour.01 syenar.hu)
+   * harbour/source/rtl/strmatch.c
+   * harbour/source/rtl/tbrowse.prg
+     * Undone part of the previous sync.
+
 2007-05-23 08:35 UTC+0100 Viktor Szakats (harbour.01 syenar.hu)
    * harbour/source/common/hbver.c
    * harbour/source/rtl/diskspac.c
