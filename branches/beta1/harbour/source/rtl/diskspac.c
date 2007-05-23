@@ -214,7 +214,7 @@ HB_FUNC( DISKSPACE )
       struct statfs st;
       if ( statfs( szName, &st) == 0 )
 #endif
-         dSpace = ( double ) st.f_blocks * ( double ) st.f_bsize;
+         dSpace = ( double ) st.f_bfree * ( double ) st.f_bsize;
       else
          bError = TRUE;
 
