@@ -8,6 +8,30 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-05-23 03:35 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbapi.h
+  * harbour/include/hbapicls.h
+  * harbour/include/hbcomp.h
+  * harbour/include/hbvm.h
+  * harbour/include/hbvmpub.h
+  * harbour/source/compiler/genc.c
+  * harbour/source/compiler/gencc.c
+  * harbour/source/compiler/gencli.c
+  * harbour/source/compiler/hbdead.c
+  * harbour/source/compiler/hbfix.c
+  * harbour/source/compiler/hblbl.c
+  * harbour/source/compiler/hbpcode.c
+  * harbour/source/compiler/hbstripl.c
+  * harbour/source/rdd/dbcmd.c
+  * harbour/source/rtl/Makefile
+  * harbour/source/rtl/gtsln/gtsln.c
+  * harbour/source/vm/classes.c
+  * harbour/source/vm/dynsym.c
+  * harbour/source/vm/hvm.c
+  * harbour/source/vm/memvars.c
+  * harbour/source/vm/runner.c
+    * synced with casting and warning cleanup in devel branch
+
 2007-05-21 14:15 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   * harbour/source/pp/ppcore.c
   * harbour/source/rtl/hbffind.c

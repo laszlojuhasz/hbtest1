@@ -149,6 +149,23 @@ static HB_FIX_FUNC( hb_p_pushblocklarge )
    return (lPCodePos - ulStart);
 }
 
+static HB_FIX_FUNC( hb_p_localname )
+{
+   /* only local variables used outside of a codeblock need fixing
+    */
+   if( cargo->iNestedCodeblock == 0 )
+   {
+      BYTE * pVar = &pFunc->pCode[ lPCodePos + 1 ];
+      SHORT iVar = HB_PCODE_MKSHORT( pVar );
+
+      iVar += pFunc->wParamCount;
+      pVar[ 0 ] = HB_LOBYTE( iVar );
+      pVar[ 1 ] = HB_HIBYTE( iVar );
+   }
+
+   return 0;
+}
+
 static HB_FIX_FUNC( hb_p_poplocal )
 {
    /* only local variables used outside of a codeblock need fixing
@@ -673,7 +690,7 @@ static HB_FIX_FUNC( hb_p_jumptruefar )
 /* NOTE: The  order of functions have to match the order of opcodes
  *       mnemonics
  */
-static HB_FIX_FUNC_PTR s_fixlocals_table[] =
+static const HB_FIX_FUNC_PTR s_fixlocals_table[] =
 {
    NULL,                       /* HB_P_AND,                  */
    NULL,                       /* HB_P_ARRAYPUSH,            */
@@ -712,7 +729,7 @@ static HB_FIX_FUNC_PTR s_fixlocals_table[] =
    NULL,                       /* HB_P_LESSEQUAL,            */
    NULL,                       /* HB_P_LESS,                 */
    NULL,                       /* HB_P_LINE,                 */
-   NULL,                       /* HB_P_LOCALNAME,            */
+   hb_p_localname,             /* HB_P_LOCALNAME,            */
    NULL,                       /* HB_P_MACROPOP,             */
    NULL,                       /* HB_P_MACROPOPALIASED,      */
    NULL,                       /* HB_P_MACROPUSH,            */
@@ -847,6 +864,7 @@ static HB_FIX_FUNC_PTR s_fixlocals_table[] =
 
 void hb_compFixFuncPCode( HB_COMP_DECL, PFUNCTION pFunc )
 {
+   const HB_FIX_FUNC_PTR * pFuncTable = s_fixlocals_table;
    HB_FIX_INFO fix_info;
 
    fix_info.iNestedCodeblock = 0;
@@ -854,5 +872,5 @@ void hb_compFixFuncPCode( HB_COMP_DECL, PFUNCTION pFunc )
 
    assert( HB_P_LAST_PCODE == sizeof( s_fixlocals_table ) / sizeof( HB_FIX_FUNC_PTR ) );
 
-   hb_compPCodeEval( pFunc, ( HB_PCODE_FUNC_PTR * ) s_fixlocals_table, ( void * ) &fix_info );
+   hb_compPCodeEval( pFunc, ( HB_PCODE_FUNC_PTR * ) pFuncTable, ( void * ) &fix_info );
 }

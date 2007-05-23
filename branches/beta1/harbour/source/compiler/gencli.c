@@ -1741,7 +1741,7 @@ static HB_GENC_FUNC( hb_p_localnearaddint )
 /* NOTE: The  order of functions have to match the order of opcodes
  *       mnemonics
  */
-static HB_GENC_FUNC_PTR s_verbose_table[] = {
+static const HB_GENC_FUNC_PTR s_verbose_table[] = {
    hb_p_and,
    hb_p_arraypush,
    hb_p_arraypop,
@@ -1883,6 +1883,7 @@ static HB_GENC_FUNC_PTR s_verbose_table[] = {
 
 static void hb_compGenCReadable( HB_COMP_DECL, PFUNCTION pFunc, FILE * yyc )
 {
+   const HB_GENC_FUNC_PTR * pFuncTable = s_verbose_table;
    HB_GENC_INFO genc_info;
 
    /* Make sure that table is correct */
@@ -1893,7 +1894,7 @@ static void hb_compGenCReadable( HB_COMP_DECL, PFUNCTION pFunc, FILE * yyc )
    genc_info.bVerbose = ( HB_COMP_PARAM->iGenCOutput == HB_COMPGENC_VERBOSE );
    genc_info.yyc = yyc;
 
-   hb_compPCodeEval( pFunc, ( HB_PCODE_FUNC_PTR * ) s_verbose_table, ( void * ) &genc_info );
+   hb_compPCodeEval( pFunc, ( HB_PCODE_FUNC_PTR * ) pFuncTable, ( void * ) &genc_info );
 }
 
 static void hb_compGenCCompact( PFUNCTION pFunc, FILE * yyc )
