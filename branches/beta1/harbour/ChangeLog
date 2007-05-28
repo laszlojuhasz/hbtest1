@@ -8,6 +8,10 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-05-28 23:01 UTC+0100 JF Lefebvre (Mafact) (jfl/at/mafact.com)
+  + harbour/Makefile.vc
+    Adding 2 missing libs to HBRUN for msvc compiler
+
 2007-05-28 20:05 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   * harbour/TODO
     - removed some not longer valid notes (missing in previous commit)
