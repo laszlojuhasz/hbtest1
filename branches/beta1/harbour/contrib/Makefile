@@ -30,8 +30,9 @@ ifeq ($(HB_COMPILER),rsxnt)
 else
 
 DIRS +=\
-	ole \
+	ole2 \
 	odbc \
+	adordd \
 
 endif
 endif
