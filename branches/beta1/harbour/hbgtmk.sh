@@ -23,7 +23,7 @@ test_reqrpm()
 }
 
 TOINST_LST=""
-for i in cvs make gcc binutils bison flex bash ncurses ncurses-devel
+for i in cvs make gcc binutils bash ncurses ncurses-devel
 do
     test_reqrpm "$i" || TOINST_LST="${TOINST_LST} $i"
 done
@@ -46,7 +46,7 @@ then
     cd
     mkdir -p CVS
     cd CVS
-    if cvs -z3 co "${PROJECT}"; then
+    if cvs -z3 co -r beta1 "${PROJECT}"; then
 	cd "${PROJECT}"
 	./make_rpm.sh "$*"
     fi

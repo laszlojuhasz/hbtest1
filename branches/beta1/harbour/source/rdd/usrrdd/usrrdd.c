@@ -166,16 +166,9 @@ static ERRCODE hb_usrEvalAreaFunc( PHB_ITEM pMethods, USHORT uiMethod, AREAP pAr
 static AREAP hb_usrGetAreaPointer( int iArea )
 {
    if( iArea != 0 )
-   {
-      int iOldArea = hb_rddGetCurrentWorkAreaNumber();
-      AREAP pArea;
-
-      hb_rddSelectWorkAreaNumber( iArea );
-      pArea = ( AREAP ) hb_rddGetCurrentWorkAreaPointer();
-      hb_rddSelectWorkAreaNumber( iOldArea );
-      return pArea;
-   }
-   return NULL;
+      return ( AREAP ) hb_rddGetWorkAreaPointer( iArea );
+   else
+      return NULL;
 }
 
 

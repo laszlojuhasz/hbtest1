@@ -102,23 +102,40 @@ Local owndsets
    aadd(::aWindows,owndsets)
 
    nWidth := oWndSets:nRight - oWndSets:nLeft - 1
-
    oBrwSets:=TbrowseNew(owndsets:nTop+1, owndsets:nLeft+1, owndsets:nBottom-1, owndsets:nRight-1)
    oBrwSets:autolite:=.f.
    oBrwSets:ColorSpec := __Dbg():ClrModal()
    oBrwSets:Cargo :={ 1,{}} // Actual highligthed row
+   aadd(oBrwSets:Cargo[2],aarray)
+
    oBrwSets:AddColumn( ocol:=     TBColumnNew("", { || ::arrayName+"["+alltrim(str(oBrwSets:cargo[ 1 ],6))+"]"} ) )
    ocol:width:=len(::arrayName+"["+alltrim(str(len(aarray),6))+"]" )
    oCol:DefColor:={1,2}
    nColWidth = oCol:Width
+
    oBrwSets:AddColumn( ocol:=TBColumnNew( "" ,{ || PadR( ValToStr( aArray[oBrwSets:cargo[ 1 ] ] ), nWidth - nColWidth - 1 ) } ) )
-   aadd(oBrwSets:Cargo[2],aarray)
+
+   /* 09/08/2004 - <maurilio.longo@libero.it>
+                   Setting a fixed width like it is done in the next line of code wich I've
+                   commented exploits a bug of current tbrowse, that is, if every column is
+                   narrower than tbrowse but the sum of them is wider tbrowse paints
+                   one above the other if code like the one inside RefreshVarsS() is called.
+                   (That code is used to have current row fully highlighted and not only
+                   current cell). Reproducing this situation on a smaller sample with
+                   clipper causes that only column two is visible after first stabilization.
+
+                   I think tbrowse should trim columns up until the point where at leat
+                   two are visible in the same moment, I leave this fix to tbrowse for
+                   the reader ;)
    oCol:width:=50
+   */
+
    ocol:DefColor:={1,3}
+
    oBrwSets:GOTOPBLOCK := { || oBrwSets:cargo[ 1 ]:= 1 }
    oBrwSets:GoBottomBlock := { || oBrwSets:cargo[ 1 ]:= Len(oBrwSets:cargo[ 2 ][ 1 ])}
    oBrwSets:SKIPBLOCK := { |nPos| ( nPos:= ArrayBrowseSkip(nPos, oBrwSets), oBrwSets:cargo[ 1 ]:= ;
-   oBrwSets:cargo[ 1 ] + nPos,nPos ) }
+                                    oBrwSets:cargo[ 1 ] + nPos,nPos ) }
 
    ::aWindows[::nCurWindow]:bPainted    := { || (oBrwSets:forcestable(),RefreshVarsS(oBrwSets))}
    ::aWindows[::nCurWindow]:bKeyPressed := { | nKey | ::SetsKeyPressed( nKey, oBrwSets, Len( aArray ),;
@@ -129,11 +146,11 @@ Local owndsets
 
 return self
 
-method SetsKeyPressed( nKey, oBrwSets, nSets, oWnd, cName, LenArr, aArray ) Class TDBGArray
+method SetsKeyPressed( nKey, oBrwSets, nSets, oWnd ,cName,LenArr,aArray) Class TDBGArray
 
    local nSet := oBrwSets:cargo[1]
-   local cTemp := str(nSet, 4)
-   local cOldname := ::arrayName
+   local cTemp:=str(nSet,4)
+   local cOldname:= ::arrayName
 
    HB_SYMBOL_UNUSED( nSets )
 
@@ -157,31 +174,34 @@ method SetsKeyPressed( nKey, oBrwSets, nSets, oWnd, cName, LenArr, aArray ) Clas
               OBrwSets:PageUp()
 
       Case nKey == K_ENTER
-           if valtype(aArray[nSet])=="A"
+         if valtype(aArray[nSet])=="A"
             if Len( aArray[ nSet ] ) == 0
                Alert( "Array is empty" )
             else
-                  SetPos(ownd:nBottom,ownd:nLeft)
-                  ::aWindows[::nCurwindow]:lFocused:=.f.
-                  ::arrayname:= ::arrayname+"["+alltrim(cTemp)+"]"
-                  ::AddWindows(aArray[nSet],oBrwSets:RowPos+oBrwSets:nTop)
-                  ::arrayname:=coldname
+               SetPos(ownd:nBottom,ownd:nLeft)
+               ::aWindows[::nCurwindow]:lFocused:=.f.
+               ::arrayname:= ::arrayname+"["+alltrim(cTemp)+"]"
+               ::AddWindows(aArray[nSet],oBrwSets:RowPos+oBrwSets:nTop)
+               ::arrayname:=coldname
 
-                  adel(::aWindows,::nCurWindow)
-                  asize(::awindows,len(::awindows)-1)
-                  if ::nCurwindow==0
+               adel(::aWindows,::nCurWindow)
+               asize(::awindows,len(::awindows)-1)
+               if ::nCurwindow==0
                   ::ncurwindow:=1
-                  else
+               else
                   ::ncurwindow--
-                  endif
+               endif
             endif
-           elseif valtype(aArray[nSet])=="B"
+         elseif valtype(aArray[nSet])=="B" .or. valtype(aArray[nSet])=="P"
                   Alert("Value cannot be edited")
-           else
+         else
               if ::lEditable
                  oBrwSets:RefreshCurrent()
                  if ValType( aArray[ nSet ] ) == "O"
                     __DbgObject( aArray[ nSet ], cName + ;
+                                 "[" + AllTrim( Str( nSet ) ) + "]" )
+                 elseif ValType( aArray[ nSet ] ) == "H"
+                    __DbgHashes( aArray[ nSet ], cName + ;
                                  "[" + AllTrim( Str( nSet ) ) + "]" )
                  else
                     ::doget(oBrwsets,aarray,nSet)
@@ -192,7 +212,7 @@ method SetsKeyPressed( nKey, oBrwSets, nSets, oWnd, cName, LenArr, aArray ) Clas
                  Alert("Value cannot be edited")
               endif
 
-           endif
+         endif
 
    endcase
 
@@ -217,6 +237,9 @@ static function ValToStr( uVal )
       case cType == "A"
            cResult := "{ ... }"
 
+      case cType == "H"
+           cResult := "Hash of " + AllTrim( Str( Len( uVal ) ) ) + " elements"
+
       case cType $ "CM"
            cResult := '"' + uVal + '"'
 
@@ -231,11 +254,17 @@ static function ValToStr( uVal )
 
       case cType == "O"
            cResult := "Class " + uVal:ClassName() + " object"
+
+      case cType == "P"
+           cResult := "Pointer"
+
    endcase
 
 return cResult
 
 METHOD doGet( oBro, pItem, nSet ) Class TDBGArray
+
+#ifndef HB_NO_READDBG
 
     LOCAL nKey
     local getlist := {}
@@ -278,7 +307,15 @@ METHOD doGet( oBro, pItem, nSet ) Class TDBGArray
         KEYBOARD CHR( nKey )
     END
 
-RETURN  nil
+#else
+
+    HB_SYMBOL_UNUSED( oBro )
+    HB_SYMBOL_UNUSED( pItem )
+    HB_SYMBOL_UNUSED( nSet )
+
+#endif
+
+RETURN nil
 
 function __DbgArrays( aArray, cArrayName, lEditable )
 
@@ -296,7 +333,7 @@ return nReturn
 
 static procedure RefreshVarsS( oBrowse )
 
-   local nLen := Len(oBrowse:aColumns)
+   local nLen := oBrowse:ColCount
 
    if ( nLen == 2 )
       oBrowse:dehilite():colpos:=2

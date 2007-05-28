@@ -73,7 +73,6 @@
 #ifndef HB_CLASS_CH_
 #define HB_CLASS_CH_
 
-#include "hbsetup.ch"
 #include "hboo.ch"
 
 /* You can actually define one or all the syntax, they do not collide each other */
@@ -183,6 +182,9 @@
 #else
    #xtranslate __HB_CLS_ERR([<msg,...>]) => ;#error [ <msg>] ; #line
 #endif
+
+/* Please keep it synced with the similar #define in common.ch */
+#define __HB_CLS_SYMBOL_UNUSED( symbol )  ( symbol := ( symbol ) )
 
 #xtranslate __HB_CLS_VARERR(<var>) => __HB_CLS_ERR( Invalid instance variable name: <var> )
 
@@ -321,7 +323,7 @@ DECLARE HBClass ;
 
 /* Operator overloading */
 #xcommand OPERATOR <op> [<arg: ARG, ARGS> <Args,...>] [LOCAL <Locals,...>] INLINE <Code,...> [ <export: EXPORTED, VISIBLE>] [<protect: PROTECTED>] [<hidde: HIDDEN>] => ;
-   s_oClass:AddInline( <(op)>, {|Self [,<Args>] [,<Locals>]| <Code>}, __HB_CLS_SCOPE( <.export.>, <.protect.>, <.hidde.> ) )
+   s_oClass:AddInline( <(op)>, {|Self [,<Args>] [,<Locals>]| __HB_CLS_SYMBOL_UNUSED(Self), <Code>}, __HB_CLS_SCOPE( <.export.>, <.protect.>, <.hidde.> ) )
 
 #xcommand METHOD <MethodName> [ AS <type> ] OPERATOR <op> [ <export: EXPORTED, VISIBLE>] [<protect: PROTECTED>] [<hidde: HIDDEN>] => ;
    _HB_MEMBER __HB_CLS_ASFUNC(<MethodName>) [ AS <type> ];;
@@ -360,7 +362,7 @@ DECLARE HBClass ;
    s_oClass:AddInline( __HB_CLS_ASSTRING(<MessageName>), <CodeBlock>, __HB_CLS_SCOPE( <.export.>, <.protect.>, <.hidde.> ) + iif( <.ctor.>, HB_OO_CLSTP_CTOR, 0 ) + iif( <.persistent.>, HB_OO_CLSTP_PERSIST, 0 ) )
 
 #xcommand MESSAGE <MessageName> [ AS <type> ] [LOCAL <Locals,...>] INLINE <Code,...> [<ctor: CONSTRUCTOR>] [<export: EXPORTED, VISIBLE>] [<protect: PROTECTED>] [<hidde: HIDDEN>] [<persistent: PERSISTENT, PROPERTY>] => ;
-   MESSAGE <MessageName> [ AS <type> ] BLOCK {|Self __HB_CLS_ASARGSOPT(<MessageName>) [,<Locals>]| <Code>} <ctor> <export> <protect> <hidde> <persistent>
+   MESSAGE <MessageName> [ AS <type> ] BLOCK {|Self __HB_CLS_ASARGSOPT(<MessageName>) [,<Locals>]| __HB_CLS_SYMBOL_UNUSED(Self), <Code>} <ctor> <export> <protect> <hidde> <persistent>
 
 #xcommand MESSAGE <MessageName> [ AS <type> ] <arg: ARG, ARGS> <Args,...> [LOCAL <Locals,...>] INLINE <Code,...> [<ctor: CONSTRUCTOR>] [<export: EXPORTED, VISIBLE>] [<protect: PROTECTED>] [<hidde: HIDDEN>] [<persistent: PERSISTENT, PROPERTY>] => ;
    MESSAGE __HB_CLS_ASID(<MessageName>)([<Args>]) [ AS <type> ] [LOCAL <Locals>] INLINE <Code> <ctor> <export> <protect> <hidde> <persistent>
@@ -439,10 +441,10 @@ DECLARE HBClass ;
 
    // Classy compatibility... Added By JF Lefebvre (mafact) 2006/11/07
    #xcommand METHOD <MethodName> [ AS <type> ] INLINE [Local <v>,] <Code,...> [<other>] => ;
-             MESSAGE <MethodName> [ AS <type> ] BLOCK {|Self [,<v>] | <Code> } [<other>]
+             MESSAGE <MethodName> [ AS <type> ] BLOCK {|Self [,<v>] | __HB_CLS_SYMBOL_UNUSED(Self), <Code>} [<other>]
 
    #xcommand METHOD <MethodName>( [<params,...>] ) [ AS <type> ] INLINE [Local <v>,] <Code,...> [<other>] => ;
-             MESSAGE <MethodName> [ AS <type> ] BLOCK {|Self [,<params>] [,<v>] | <Code> } [<other>]
+             MESSAGE <MethodName> [ AS <type> ] BLOCK {|Self [,<params>] [,<v>] | __HB_CLS_SYMBOL_UNUSED(Self), <Code> } [<other>]
 
 
    /* This definitions are not Class(y) compatible - I'm leaving them as is now */

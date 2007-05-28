@@ -62,6 +62,7 @@ HB_EXTERN_BEGIN
 #define HB_BLOCK_MACRO     1
 #define HB_BLOCK_LATEEVAL  2
 #define HB_BLOCK_VPARAMS   4
+#define HB_BLOCK_EXT       8
 
 /* #pragma {__text,__stream,__cstream}|functionOut|functionEnd|functionStart */
 #define HB_PP_STREAM_OFF      0 /* standard preprocessing */
@@ -92,7 +93,7 @@ typedef HB_PP_CLOSE_FUNC_( HB_PP_CLOSE_FUNC );
 typedef HB_PP_CLOSE_FUNC * PHB_PP_CLOSE_FUNC;
 
 /* function to generate errors */
-#define HB_PP_ERROR_FUNC_( func ) void func( void *, char **, char, int, const char *, const char * )
+#define HB_PP_ERROR_FUNC_( func ) void func( void *, const char **, char, int, const char *, const char * )
 typedef HB_PP_ERROR_FUNC_( HB_PP_ERROR_FUNC );
 typedef HB_PP_ERROR_FUNC * PHB_PP_ERROR_FUNC;
 
@@ -401,6 +402,11 @@ HB_PP_TOKEN, * PHB_PP_TOKEN;
 /* Clipper allows only 16 nested includes */
 #define HB_PP_MAX_INCLUDED_FILES    64
 
+#define HB_PP_HASHID(t)       ( ( UCHAR ) HB_PP_UPPER( (t)->value[0] ) )
+#define HB_PP_HASHID_MAX      256
+#define HB_PP_DEFINE          1
+#define HB_PP_TRANSLATE       2
+#define HB_PP_COMMAND         4
 
 /* comparision modes */
 #define HB_PP_CMP_ADDR        0 /* compare token addresses */
@@ -447,7 +453,8 @@ HB_PP_TOKEN, * PHB_PP_TOKEN;
 #define HB_PP_ISFIRSTIDCHAR(c)   ( ( (c) >= 'A' && (c) <= 'Z' ) || \
                                    ( (c) >= 'a' && (c) <= 'z' ) || (c) == '_' )
 #define HB_PP_ISNEXTIDCHAR(c)    ( HB_PP_ISFIRSTIDCHAR(c) || HB_PP_ISDIGIT(c) )
-
+#define HB_PP_UPPER(c)           ( (c) >= 'a' && (c) <= 'z' ? \
+                                   (c) - ( 'a' - 'A' ) : (c) )
 typedef struct _HB_PP_RESULT
 {
    struct _HB_PP_RESULT * pNext;
@@ -553,6 +560,7 @@ typedef struct
    int            iDefinitions;  /* number of rules in pDefinitions */
    int            iTranslations; /* number of rules in pTranslations */
    int            iCommands;     /* number of rules in pCommands */
+   BYTE           pMap[ HB_PP_HASHID_MAX ]; /* translation map */
 
    PHB_PP_TOKEN   pTokenOut;     /* preprocessed tokens */
    PHB_PP_TOKEN * pNextTokenPtr; /* pointer to the last NULL pointer in token list */
@@ -577,6 +585,7 @@ typedef struct
 
    BOOL     fError;              /* error during preprocessing */
    BOOL     fQuiet;              /* do not show standard information */
+   BOOL     fEscStr;             /* use \ in strings as escape character */
    int      iCondCompile;        /* current conditional compilation flag, when not 0 disable preprocessing and output */
    int      iCondCount;          /* number of nested #if[n]def directive */
    int      iCondStackSize;      /* size of conditional compilation stack */
@@ -599,6 +608,8 @@ typedef struct
    int      iInLineCount;        /* number of hb_inLine() functions */
    int      iInLineState;        /* hb_inLine() state */
    int      iInLineBraces;       /* braces counter for hb_inLine() */
+   int      iNestedBlock;        /* nested extended block counter */
+   int      iBlockState;         /* state of extended block declaration */
 
    PHB_PP_FILE pFile;            /* currently preprocessed file structure */
    int      iFiles;              /* number of open files */

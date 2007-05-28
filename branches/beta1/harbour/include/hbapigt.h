@@ -149,6 +149,7 @@ extern HB_EXPORT ERRCODE hb_gtBoxD( SHORT uiTop, SHORT uiLeft, SHORT uiBottom, S
 extern HB_EXPORT ERRCODE hb_gtBoxS( SHORT uiTop, SHORT uiLeft, SHORT uiBottom, SHORT uiRight );
 extern HB_EXPORT ERRCODE hb_gtColorSelect( USHORT uiColorIndex );
 extern HB_EXPORT USHORT  hb_gtColorToN( char * szColorString );
+extern HB_EXPORT USHORT  hb_gtColorsToString( int * pColors, int iColorCount, char * pszColorString, int iBufSize );
 extern HB_EXPORT ERRCODE hb_gtDispBegin( void );
 extern HB_EXPORT USHORT  hb_gtDispCount( void );
 extern HB_EXPORT ERRCODE hb_gtDispEnd( void );
@@ -193,6 +194,7 @@ extern HB_EXPORT ERRCODE hb_gtOutErr( BYTE * pbyStr, ULONG ulLen );
 extern HB_EXPORT ERRCODE hb_gtSetDispCP( char * pszTermCDP, char * pszHostCDP, BOOL fBox );
 extern HB_EXPORT ERRCODE hb_gtSetKeyCP( char * pszTermCDP, char * pszHostCDP );
 extern HB_EXPORT ERRCODE hb_gtInfo( int iType, PHB_GT_INFO pInfo );
+extern HB_EXPORT int     hb_gtAlert( PHB_ITEM pMessage, PHB_ITEM pOptions, int iClrNorm, int iClrHigh, double dDelay );
 extern HB_EXPORT int     hb_gtSetFlag( int iType, int iNewValue );
 extern HB_EXPORT int     hb_gtGfxPrimitive( int iType, int iTop, int iLeft, int iBottom, int iRight, int iColor );
 extern HB_EXPORT ERRCODE hb_gtGfxText( int iTop, int iLeft, char * szText, int iColor, int iSize, int iWidth );

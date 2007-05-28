@@ -59,7 +59,7 @@
 
 %define name     harbour
 %define dname    Harbour
-%define version  0.99.2
+%define version  1.1.0
 %define releasen 0
 %define hb_pref  hb
 %define hb_arch  export HB_ARCHITECTURE=linux
@@ -97,7 +97,7 @@ Vendor:         %{hb_host}
 URL:            http://%{hb_host}/
 Source:         %{name}-%{version}.src.tar.gz
 Packager:       Przemysaw Czerpak <druzus@polbox.com> Luiz Rafael Culik Guimaraes <culikr@uol.com.br>
-BuildPrereq:    gcc binutils bison flex bash ncurses ncurses-devel %{!?_without_gpm: gpm-devel}
+BuildPrereq:    gcc binutils bash ncurses ncurses-devel %{!?_without_gpm: gpm-devel}
 Requires:       gcc binutils bash sh-utils %{name}-lib = %{version}
 Provides:       %{name} harbour
 BuildRoot:      /tmp/%{name}-%{version}-root
@@ -351,6 +351,7 @@ if [ "%{!?_with_static:1}" ]
 then
     unset HB_GTALLEG
     export L_USR="${CC_L_USR} -L${HB_LIB_INSTALL} -l%{name} -lncurses %{!?_without_gtsln:-lslang} %{!?_without_gpm:-lgpm} %{!?_without_x11:-L/usr/X11R6/%{_lib} -lX11}"
+    export PRG_USR="\"-D_DEFAULT_INC_DIR='${_DEFAULT_INC_DIR}'\" ${PRG_USR}"
 
     for utl in hbmake hbrun hbpp hbdoc
     do
@@ -363,7 +364,7 @@ then
 fi
 
 # remove unused files
-rm -f ${HB_BIN_INSTALL}/hbdoc ${HB_BIN_INSTALL}/hbtest
+rm -f ${HB_BIN_INSTALL}/{hbdoc,hbtest,hbverfix,pretest}
 
 # Create a README file for people using this RPM.
 cat > doc/%{readme} <<EOF
@@ -455,23 +456,25 @@ druzus@uran:~/tmp$ ls -l foo
 ----------------------------------------------------------------------
 
 
-In this RPM you will find additional wonderful tools: /usr/bin/pprun
+In this RPM you will find additional wonderful tools: /usr/bin/hbrun
 You can run clipper/xbase compatible source files with it if you only
 put in their first line:
-#!/usr/bin/pprun
+#!/usr/bin/hbrun
 
 For example:
 ----------------------------------------------------------------------
 druzus@uran:~/tmp$ cat foo.prg
-#!/usr/bin/pprun
+#!/usr/bin/hbrun
 function main()
 ? "Hello, World!, This is a script !!! :-)"
+?
 return nil
 
 druzus@uran:~/tmp$ chmod +x foo.prg
 
 druzus@uran:~/tmp$ ./foo.prg
 
+Hello, World!, This is a script !!! :-)
 
 I hope this RPM is useful. Have fun with %{dname}.
 
@@ -535,6 +538,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/%{name}
 %{_libdir}/%{name}/libcodepage.a
 %{_libdir}/%{name}/libcommon.a
+%{_libdir}/%{name}/libcompiler.a
 %{_libdir}/%{name}/libdb*.a
 %{_libdir}/%{name}/libdebug.a
 %{_libdir}/%{name}/libfm*.a
@@ -559,6 +563,7 @@ rm -rf $RPM_BUILD_ROOT
 %{!?_without_adsrdd: %{_libdir}/%{name}/librddads*.a}
 #%{?_with_mysql: %{_libdir}/%{name}/libmysql*.a}
 #%{?_with_pgsql: %{_libdir}/%{name}/libpgsql*.a}
+#%{_libdir}/%{name}/libtip.a
 %{_libdir}/%{name}/libhbbtree.a
 %{_libdir}/%{name}/libhtml.a
 %{_libdir}/%{name}/libmisc.a
@@ -581,6 +586,9 @@ rm -rf $RPM_BUILD_ROOT
 ######################################################################
 
 %changelog
+* Fri Mar 23 2005 Przemyslaw Czerpak <druzus@priv.onet.pl>
+- removed bison and flex from dependences list
+
 * Sat Aug 09 2003 Przemyslaw Czerpak <druzus@polbox.com>
 - removed ${RPM_OPT_FLAGS} from C_USR
 

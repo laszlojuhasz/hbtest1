@@ -110,6 +110,7 @@
 #include 'inkey.ch'
 #include 'setcurs.ch'
 #include 'achoice.ch'
+#include 'common.ch'
 
 // Set up manifest constants to access the window colors in the array aWinColor
 #define W_BORDER 1
@@ -1400,6 +1401,10 @@ RETURN xVarVal
 FUNCTION _ftAdderTapeUDF(mode,cur_elem,rel_pos)
   LOCAL nKey,nRtnVal
   STATIC ac_exit_ok := .F.
+
+  HB_SYMBOL_UNUSED( cur_elem )
+  HB_SYMBOL_UNUSED( rel_pos )
+
   DO CASE
     CASE mode == AC_EXCEPT
       nKey := LASTKEY()

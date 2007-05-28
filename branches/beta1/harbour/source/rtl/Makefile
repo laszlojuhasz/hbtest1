@@ -48,13 +48,20 @@ C_SOURCES=\
 	gtfunc.c     \
 	gx.c         \
 	hardcr.c     \
+	hbadler.c    \
+	hbcrc.c      \
+	hbmd5.c      \
 	hbffind.c    \
 	hbgtcore.c   \
+	hbinet.c     \
 	hbrandom.c   \
+	hbregex.c    \
+	hbtoken.c    \
 	idle.c       \
 	inkey.c      \
 	is.c         \
 	isprint.c    \
+	itemseri.c   \
 	langapi.c    \
 	left.c       \
 	len.c        \
@@ -108,7 +115,6 @@ C_SOURCES=\
 	strzero.c    \
 	stuff.c      \
 	substr.c     \
-	teditorl.c   \
 	tone.c       \
 	trace.c      \
 	transfrm.c   \
@@ -184,6 +190,7 @@ PRG_SOURCES=\
 	ttextlin.prg \
 	ttopbar.prg  \
 	typefile.prg \
+	valtoexp.prg \
 	wait.prg     \
 
 LIBNAME=rtl

@@ -10,12 +10,14 @@ C_HEADERS=\
 	hbapi.h      \
 	hbapicdp.h   \
 	hbapicls.h   \
+	hbapidbg.h   \
 	hbapierr.h   \
 	hbapifs.h    \
 	hbapigt.h    \
 	hbapiitm.h   \
 	hbapilng.h   \
 	hbapirdd.h   \
+	hbchksum.h   \
 	hbcomp.h     \
 	hbcompdf.h   \
 	hbdate.h     \
@@ -40,7 +42,7 @@ C_HEADERS=\
 	hbrdddel.h   \
 	hbrddntx.h   \
 	hbrddsdf.h   \
-	hbrddwrk.h   \
+	hbregex.h    \
 	hbset.h      \
 	hbsetup.h    \
 	hbstack.h    \
@@ -71,6 +73,7 @@ PRG_HEADERS=\
 	getexit.ch   \
 	hbclass.ch   \
 	hbcommon.ch  \
+	hbcompat.ch  \
 	hbdebug.ch   \
 	hbextern.ch  \
 	hbgetcmt.ch  \
@@ -97,7 +100,7 @@ PRG_HEADERS=\
 	setcurs.ch   \
 	simpleio.ch  \
 	std.ch       \
-	tbrowse.ch   \
+	tbrowse.ch
 
 API_HEADERS=\
 	error.api    \

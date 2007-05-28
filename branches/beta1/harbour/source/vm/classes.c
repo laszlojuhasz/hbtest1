@@ -323,10 +323,13 @@ static HB_SYMB s___msgName       = { "NAME",            {HB_FS_MESSAGE}, {hb___m
 static HB_SYMB s___msgClsParent  = { "ISDERIVEDFROM",   {HB_FS_MESSAGE}, {hb___msgClassParent},NULL };
 static HB_SYMB s___msgClass      = { "CLASS",           {HB_FS_MESSAGE}, {hb___msgClass},      NULL };
 */
+static HB_SYMB s___msgKeys       = { "KEYS",            {HB_FS_MESSAGE}, {hb___msgNull},       NULL };
+static HB_SYMB s___msgValues     = { "VALUES",          {HB_FS_MESSAGE}, {hb___msgNull},       NULL };
 
 /* Default enumerator methods (FOR EACH) */
 static HB_SYMB s___msgEnumIndex  = { "__ENUMINDEX",     {HB_FS_MESSAGE}, {hb___msgNull},       NULL };
 static HB_SYMB s___msgEnumBase   = { "__ENUMBASE",      {HB_FS_MESSAGE}, {hb___msgNull},       NULL };
+static HB_SYMB s___msgEnumKey    = { "__ENUMKEY",       {HB_FS_MESSAGE}, {hb___msgNull},       NULL };
 static HB_SYMB s___msgEnumValue  = { "__ENUMVALUE",     {HB_FS_MESSAGE}, {hb___msgNull},       NULL };
 
 /* WITH OBJECT base value access/asign methods (:__withobject) */
@@ -965,12 +968,15 @@ void hb_clsInit( void )
    s___msgName.pDynSym        = hb_dynsymGetCase( s___msgName.szName );
    s___msgNew.pDynSym         = hb_dynsymGetCase( s___msgNew.szName );
    s___msgSymbol.pDynSym      = hb_dynsymGetCase( s___msgSymbol.szName );
+   s___msgKeys.pDynSym        = hb_dynsymGetCase( s___msgKeys.szName );
+   s___msgValues.pDynSym      = hb_dynsymGetCase( s___msgValues.szName );
 /*
    s___msgClsParent.pDynSym   = hb_dynsymGetCase( s___msgClsParent.szName );
    s___msgClass.pDynSym       = hb_dynsymGetCase( s___msgClass.szName );
 */
    s___msgEnumIndex.pDynSym   = hb_dynsymGetCase( s___msgEnumIndex.szName );
    s___msgEnumBase.pDynSym    = hb_dynsymGetCase( s___msgEnumBase.szName );
+   s___msgEnumKey.pDynSym     = hb_dynsymGetCase( s___msgEnumKey.szName );
    s___msgEnumValue.pDynSym   = hb_dynsymGetCase( s___msgEnumValue.szName );
 
    s___msgWithObjectPush.pDynSym = hb_dynsymGetCase( s___msgWithObjectPush.szName );
@@ -1120,6 +1126,20 @@ HB_EXPORT USHORT hb_objGetClass( PHB_ITEM pItem )
       return 0;
 }
 
+/* get object class handle using class name and class function name */
+HB_EXPORT USHORT hb_objSetClass( PHB_ITEM pItem, const char * szClass, const char * szFunc )
+{
+   USHORT uiClass = 0;
+
+   if( pItem && HB_IS_ARRAY( pItem ) &&
+       pItem->item.asArray.value->uiClass == 0 )
+   {
+      uiClass = pItem->item.asArray.value->uiClass =
+                                          hb_clsFindClass( szClass, szFunc );
+   }
+   return uiClass;
+}
+
 /* ================================================ */
 
 /*
@@ -1155,6 +1175,9 @@ HB_EXPORT const char * hb_objGetClsName( PHB_ITEM pObject )
    else if( HB_IS_BLOCK( pObject ) )
       return "BLOCK";
 
+   else if( HB_IS_HASH( pObject ) )
+      return "HASH";
+
    else if( HB_IS_POINTER( pObject ) )
       return "POINTER";
 
@@ -1171,6 +1194,32 @@ HB_EXPORT const char * hb_clsName( USHORT uiClass )
       return s_pClasses[ uiClass ].szName;
    else
       return NULL;
+}
+
+HB_EXPORT const char * hb_clsFuncName( USHORT uiClass )
+{
+   if( uiClass && uiClass <= s_uiClasses )
+      return s_pClasses[ uiClass ].pClassFuncSym ?
+             s_pClasses[ uiClass ].pClassFuncSym->szName :
+             "";
+   else
+      return NULL;
+}
+
+HB_EXPORT USHORT hb_clsFindClass( const char * szClass, const char * szFunc )
+{
+   USHORT uiClass;
+
+   for( uiClass = 1; uiClass <= s_uiClasses; uiClass++ )
+   {
+      if( strcmp( szClass, s_pClasses[ uiClass ].szName ) == 0 &&
+          ( !szFunc || ( !s_pClasses[ uiClass ].pClassFuncSym ? !*szFunc :
+            strcmp( szFunc, s_pClasses[ uiClass ].pClassFuncSym->szName ) == 0 ) ) )
+      {
+         return uiClass;
+      }
+   }
+   return 0;
 }
 
 /*
@@ -1472,6 +1521,19 @@ PHB_SYMB hb_objGetMethod( PHB_ITEM pObject, PHB_SYMB pMessage,
                   pEnum->item.asEnum.offset = hb_itemGetNL( hb_param( 1, HB_IT_ANY ) );
                return &s___msgEnumIndex;
             }
+            else if( pMsg == s___msgEnumKey.pDynSym )
+            {
+               PHB_ITEM pBase = HB_IS_BYREF( pEnum->item.asEnum.basePtr ) ?
+                                hb_itemUnRef( pEnum->item.asEnum.basePtr ) :
+                                pEnum->item.asEnum.basePtr;
+               if( HB_IS_HASH( pBase ) )
+               {
+                  pBase = hb_hashGetKeyAt( pBase, pEnum->item.asEnum.offset );
+                  if( pBase )
+                     hb_itemCopy( hb_stackReturnItem(), pBase );
+               }
+               return &s___msgEnumKey;
+            }
             else if( pMsg == s___msgEnumBase.pDynSym )
             {
                if( HB_IS_BYREF( pEnum->item.asEnum.basePtr ) )
@@ -1512,6 +1574,48 @@ PHB_SYMB hb_objGetMethod( PHB_ITEM pObject, PHB_SYMB pMessage,
                       pObject->item.asSymbol.value->szName );
          return &s___msgName;
       }
+   }
+   else if( HB_IS_HASH( pObject ) )
+   {
+      if( pMsg == s___msgKeys.pDynSym )
+      {
+         hb_itemRelease( hb_itemReturnForward( hb_hashGetKeys( pObject ) ) );
+         return &s___msgKeys;
+      }
+      else if( pMsg == s___msgValues.pDynSym )
+      {
+         hb_itemRelease( hb_itemReturnForward( hb_hashGetValues( pObject ) ) );
+         return &s___msgValues;
+      }
+#if defined( HB_HASH_MSG_ITEMS )
+      else
+      {
+         if( hb_pcount() == 1 && pMessage->szName[ 0 ] == '_' )
+         {  /* ASSIGN */
+            PHB_ITEM pIndex = hb_itemPutCConst( hb_stackAllocItem(), pMessage->szName + 1 );
+            PHB_ITEM pDest = hb_hashGetItemPtr( pObject, pIndex, HB_HASH_AUTOADD_ASSIGN );
+            hb_stackPop();
+            if( pDest )
+            {
+               PHB_ITEM pValue = hb_param( 1, HB_IT_ANY );
+               hb_itemCopyFromRef( pDest, pValue );
+               hb_itemReturn( pValue );
+               return &s___msgVirtual;
+            }
+         }
+         else if( hb_pcount() == 0 )
+         {  /* ACCESS */
+            PHB_ITEM pIndex = hb_itemPutCConst( hb_stackAllocItem(), pMessage->szName );
+            PHB_ITEM pValue = hb_hashGetItemPtr( pObject, pIndex, HB_HASH_AUTOADD_ACCESS );
+            hb_stackPop();
+            if( pValue )
+            {
+               hb_itemReturn( pValue );
+               return &s___msgVirtual;
+            }
+         }
+      }
+#endif
    }
 
    /* Default messages here */
@@ -1582,8 +1686,19 @@ BOOL hb_objGetVarRef( PHB_ITEM pObject, PHB_SYMB pMessage,
 {
    PHB_SYMB pExecSym;
 
-   pExecSym = hb_objGetMethod( pObject, pMessage, pStack );
+#if defined( HB_HASH_MSG_ITEMS )
+   if( HB_IS_HASH( pObject ) )
+   {
+      PHB_ITEM pIndex = hb_itemPutCConst( hb_stackAllocItem(), pMessage->szName + 1 );
+      PHB_ITEM pValue = hb_hashGetItemRefPtr( pObject, pIndex );
+      hb_stackPop();
+      if( pValue )
+         hb_itemReturn( pValue );
+      return pValue != NULL;
+   }
+#endif
 
+   pExecSym = hb_objGetMethod( pObject, pMessage, pStack );
    if( pExecSym )
    {
       if( pExecSym->value.pFunPtr == hb___msgSetData )
@@ -1906,6 +2021,10 @@ static HB_TYPE hb_clsGetItemType( PHB_ITEM pItem )
             case 'P':
             case 'p':
                return HB_IT_POINTER;
+
+            case 'H':
+            case 'h':
+               return HB_IT_HASH;
          }
       }
       else if( HB_IS_ARRAY( pItem ) )
@@ -2393,10 +2512,37 @@ HB_FUNC( __CLSADDMSG )
       {
          nType = szMessage[ 0 ] == '_' ? HB_OO_MSG_ASSIGN : HB_OO_MSG_ACCESS;
       }
-      if( nType == HB_OO_MSG_CLASSDATA )
+      else if( nType == HB_OO_MSG_CLASSDATA )
       {
             nType = szMessage[ 0 ] == '_' ? HB_OO_MSG_CLSASSIGN :
                                             HB_OO_MSG_CLSACCESS;
+      }
+      /* to make xHarbour users happy ;-) */
+      else if( nType == HB_OO_MSG_PROPERTY ||
+               nType == HB_OO_MSG_CLASSPROPERTY )
+      {
+         char szAssign[ HB_SYMBOL_NAME_LEN + 1 ];
+         int iLen = ( int ) hb_parclen( 1 );
+         if( iLen >= HB_SYMBOL_NAME_LEN )
+            iLen = HB_SYMBOL_NAME_LEN - 1;
+         szAssign[ 0 ] = '_';
+         memcpy( szAssign + 1, szMessage, iLen );
+         szAssign[ iLen ] = '\0';
+
+         uiScope = ( uiScope | HB_OO_CLSTP_EXPORTED ) &
+                  ~( HB_OO_CLSTP_PROTECTED | HB_OO_CLSTP_HIDDEN );
+         if( nType == HB_OO_MSG_PROPERTY )
+         {
+            hb_clsAddMsg( uiClass, szAssign, HB_OO_MSG_ASSIGN,
+                          uiScope & ~HB_OO_CLSTP_PERSIST, pFunction, pInit );
+            nType = HB_OO_MSG_ACCESS;
+         }
+         else
+         {
+            hb_clsAddMsg( uiClass, szAssign, HB_OO_MSG_CLSASSIGN,
+                          uiScope & ~HB_OO_CLSTP_PERSIST, pFunction, pInit );
+            nType = HB_OO_MSG_CLSACCESS;
+         }
       }
 
       hb_clsAddMsg( uiClass, szMessage, nType, uiScope, pFunction, pInit );
@@ -3754,7 +3900,6 @@ static HARBOUR hb___msgNull( void )
 {
    ;
 }
-
 
 #ifndef HB_NO_PROFILER
 void hb_mthAddTime( ULONG ulClockTicks )

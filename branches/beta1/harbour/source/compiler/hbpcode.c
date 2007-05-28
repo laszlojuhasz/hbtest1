@@ -290,7 +290,19 @@ const BYTE hb_comp_pcode_len[] = {
    0,        /* HB_P_PUSHSTRLARGE          */
    2,        /* HB_P_SWAP                  */
    1,        /* HB_P_PUSHVPARAMS           */
-   1         /* HB_P_PUSHUNREF             */
+   1,        /* HB_P_PUSHUNREF             */
+   4,        /* HB_P_SEQALWAYS             */
+   4,        /* HB_P_ALWAYSBEGIN           */
+   1,        /* HB_P_ALWAYSEND             */
+   1,        /* HB_P_DECEQPOP              */
+   1,        /* HB_P_INCEQPOP              */
+   1,        /* HB_P_DECEQ                 */
+   1,        /* HB_P_INCEQ                 */
+   3,        /* HB_P_LOCALDEC              */
+   3,        /* HB_P_LOCALINC              */
+   3,        /* HB_P_LOCALINCPUSH          */
+   3,        /* HB_P_PUSHFUNCSYM           */
+   3         /* HB_P_HASHGEN               */
 };
 
 /*
@@ -467,7 +479,19 @@ static HB_PCODE_FUNC_PTR s_psize_table[] =
    hb_p_pushstrlarge,          /* HB_P_PUSHSTRLARGE          */
    NULL,                       /* HB_P_SWAP                  */
    NULL,                       /* HB_P_PUSHVPARAMS           */
-   NULL                        /* HB_P_PUSHUNREF             */
+   NULL,                       /* HB_P_PUSHUNREF             */
+   NULL,                       /* HB_P_SEQALWAYS             */
+   NULL,                       /* HB_P_ALWAYSBEGIN           */
+   NULL,                       /* HB_P_ALWAYSEND             */
+   NULL,                       /* HB_P_DECEQPOP              */
+   NULL,                       /* HB_P_INCEQPOP              */
+   NULL,                       /* HB_P_DECEQ                 */
+   NULL,                       /* HB_P_INCEQ                 */
+   NULL,                       /* HB_P_LOCALDEC              */
+   NULL,                       /* HB_P_LOCALINC              */
+   NULL,                       /* HB_P_LOCALINCPUSH          */
+   NULL,                       /* HB_P_PUSHFUNCSYM           */
+   NULL                        /* HB_P_HASHGEN               */
 };
 
 LONG hb_compPCodeSize( PFUNCTION pFunc, ULONG ulOffset )
@@ -522,7 +546,9 @@ void hb_compPCodeEval( PFUNCTION pFunc, const HB_PCODE_FUNC_PTR * pFunctions, vo
 
          if( ulSkip == 0 )
          {
-            fprintf( hb_comp_errFile, "--- Invalid (zero) opcode %i size in hb_compPCodeEval() ---\n", opcode );
+            char szOpcode[ 16 ];
+            snprintf( szOpcode, sizeof( szOpcode ), "%i", opcode );
+            hb_errInternal( HB_EI_COMPBADOPSIZE, "Invalid (zero) opcode %s size in hb_compPCodeEval()", szOpcode, NULL );
             ++ulPos;
          }
 #if 0
@@ -533,15 +559,18 @@ void hb_compPCodeEval( PFUNCTION pFunc, const HB_PCODE_FUNC_PTR * pFunctions, vo
           */
          if( hb_comp_pcode_len[ opcode ] != 0 && hb_comp_pcode_len[ opcode ] != ulSkip )
          {
-            fprintf( stderr, "Wrong PCODE (%d) size (%ld!=%d)\n", opcode, ulSkip, hb_comp_pcode_len[ opcode ] );
-            fflush(stderr);
+            char szMsg[ 100 ];
+            snprintf( szMsg, sizeof( szMsg ), "Wrong PCODE (%d) size (%ld!=%d)", opcode, ulSkip, hb_comp_pcode_len[ opcode ] );
+            hb_errInternal( HB_EI_COMPBADOPSIZE, szMsg, NULL, NULL );
          }
 #endif
          ulPos += ulSkip;
       }
       else
       {
-         fprintf( hb_comp_errFile, "--- Invalid opcode %i in hb_compPCodeEval() ---\n", opcode );
+         char szOpcode[ 16 ];
+         snprintf( szOpcode, sizeof( szOpcode ), "%i", opcode );
+         hb_errInternal( HB_EI_COMPBADOPCODE, "Invalid opcode: %s in hb_compPCodeEval()", szOpcode, NULL );
          ++ulPos;
       }
    }
@@ -569,7 +598,9 @@ void hb_compPCodeTrace( PFUNCTION pFunc, const HB_PCODE_FUNC_PTR * pFunctions, v
       }
       else
       {
-         fprintf( hb_comp_errFile, "--- Invalid opcode %i in hb_compPCodeTrace() ---\n", opcode );
+         char szOpcode[ 16 ];
+         snprintf( szOpcode, sizeof( szOpcode ), "%i", opcode );
+         hb_errInternal( HB_EI_COMPBADOPCODE, "Invalid opcode: %s in hb_compPCodeTrace()", szOpcode, NULL );
          ++ulPos;
       }
    }

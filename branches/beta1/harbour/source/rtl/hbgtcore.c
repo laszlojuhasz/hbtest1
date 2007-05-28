@@ -318,7 +318,7 @@ static int  hb_gt_def_ColorNum( const char * szColorString )
 
    while( ( c = *szColorString++ ) != 0 )
    {
-      switch( toupper( ( BYTE ) c ) )
+      switch( toupper( ( UCHAR ) c ) )
       {
          case '*':
             nColor |= 0x80;
@@ -405,7 +405,7 @@ static void hb_gt_def_StringToColors( const char * szColorString, int ** pColors
 
       ++nCount;
 
-      switch( toupper( c ) )
+      switch( toupper( ( UCHAR ) c ) )
       {
          case 'B':
             nColor |= 1;
@@ -682,11 +682,7 @@ static BOOL hb_gt_def_Resume( void )
 
 static void hb_gt_def_OutFile( FHANDLE hFile, BYTE * pbyStr, ULONG ulLen )
 {
-   USHORT uiErrorOld;
-
-   uiErrorOld = hb_fsError();
    hb_fsWriteLarge( hFile, pbyStr, ulLen );
-   hb_fsSetError( uiErrorOld );
 }
 
 static void hb_gt_def_OutStd( BYTE * pbyStr, ULONG ulLen )
@@ -1451,6 +1447,7 @@ static BOOL hb_gt_def_Info( int iType, PHB_GT_INFO pInfo )
       case GTI_FULLSCREEN:
       case GTI_KBDSUPPORT:
       case GTI_ISCTWIN:
+      case GTI_ISMULTIWIN:
          pInfo->pResult = hb_itemPutL( pInfo->pResult, FALSE );
          break;
 
@@ -1480,11 +1477,401 @@ static BOOL hb_gt_def_Info( int iType, PHB_GT_INFO pInfo )
          pInfo->pResult = hb_itemPutNInt( pInfo->pResult, hb_gt_MaxRow() );
          break;
 
+      case GTI_NEWWIN:  /* clear screen area, set default cursor shape and position */
+      {
+         /* Clear screen */
+         hb_gt_DispBegin();
+         hb_gt_Scroll( 0, 0, hb_gt_MaxRow(), hb_gt_MaxCol(), ( BYTE ) hb_gt_GetColor(), hb_gt_GetClearChar(), 0, 0 );
+         hb_gt_SetPos( 0, 0 );
+         hb_gt_SetCursorStyle( SC_NORMAL );
+         hb_gt_DispEnd();
+         hb_gt_Flush();
+         /* no break; */
+      }
+      case GTI_GETWIN:  /* save screen buffer, cursor shape and possition */
+      {
+         int iRow, iCol;
+         ULONG ulSize;
+
+         if( !pInfo->pResult )
+            pInfo->pResult = hb_itemNew( NULL );
+         hb_arrayNew( pInfo->pResult, 8 );
+         hb_gt_GetPos( &iRow, &iCol );
+         hb_itemPutNI( hb_arrayGetItemPtr( pInfo->pResult, 1 ), iRow );
+         hb_itemPutNI( hb_arrayGetItemPtr( pInfo->pResult, 2 ), iCol );
+         hb_itemPutNI( hb_arrayGetItemPtr( pInfo->pResult, 3 ), hb_gt_GetCursorStyle() );
+         hb_itemPutC( hb_arrayGetItemPtr( pInfo->pResult, 4 ), hb_conSetColor( NULL ) );
+
+         iRow = hb_gt_MaxRow();
+         iCol = hb_gt_MaxCol();
+         hb_itemPutNI( hb_arrayGetItemPtr( pInfo->pResult, 5 ), iRow );
+         hb_itemPutNI( hb_arrayGetItemPtr( pInfo->pResult, 6 ), iCol );
+
+         ulSize = hb_gt_RectSize( 0, 0, iRow, iCol );
+         if( ulSize )
+         {
+            BYTE * pBuffer = ( BYTE * ) hb_xgrab( ulSize + 1 );
+            hb_gt_Save( 0, 0, iRow, iCol, pBuffer );
+            hb_itemPutCPtr( hb_arrayGetItemPtr( pInfo->pResult, 7 ),
+                            ( char * ) pBuffer, ulSize );
+         }
+         break;
+      }
+      case GTI_SETWIN:  /* restore screen buffer, cursor shape and possition */
+         if( hb_arrayLen( pInfo->pNewVal ) == 8 )
+         {
+            hb_gt_DispBegin();
+            if( hb_arrayGetCLen( pInfo->pNewVal, 7 ) > 0 )
+            {
+               hb_gt_Rest( 0, 0, hb_arrayGetNI( pInfo->pNewVal, 5 ),
+                           hb_arrayGetNI( pInfo->pNewVal, 6 ),
+                           ( BYTE * ) hb_arrayGetCPtr( pInfo->pNewVal, 7 ) );
+            }
+            hb_gt_SetPos( hb_arrayGetNI( pInfo->pNewVal, 1 ),
+                          hb_arrayGetNI( pInfo->pNewVal, 2 ) );
+            hb_gt_SetCursorStyle( hb_arrayGetNI( pInfo->pNewVal, 3 ) );
+            hb_conSetColor( hb_arrayGetCPtr( pInfo->pNewVal, 4 ) );
+            hb_gt_DispEnd();
+            hb_gt_Flush();
+         }
+         break;
+
       default:
          return FALSE;
    }
 
    return TRUE;
+}
+
+static int hb_gt_def_Alert( PHB_ITEM pMessage, PHB_ITEM pOptions,
+                            int iClrNorm, int iClrHigh, double dDelay )
+{
+   int iOptions = ( int ) hb_arrayLen( pOptions );
+   int iRet = 0;
+
+   if( HB_IS_STRING( pMessage ) && iOptions > 0 )
+   {
+      char * szMessage = hb_itemGetCPtr( pMessage );
+      ULONG ulLen = hb_itemGetCLen( pMessage );
+      BOOL fScreen = FALSE, fKeyBoard = FALSE;
+      int iKey = 0, i, iDspCount, iStyle, iRows, iCols,
+          iRow, iCol, iTop, iLeft, iBottom, iRight, iMnuCol, iPos, iClr;
+      BYTE * pBuffer = NULL;
+      HB_GT_INFO gtInfo;
+
+      gtInfo.pNewVal = gtInfo.pResult = NULL;
+
+      hb_gt_Info( GTI_FULLSCREEN, &gtInfo );
+      if( gtInfo.pResult )
+      {
+         fScreen = hb_itemGetL( gtInfo.pResult );
+      }
+      hb_gt_Info( GTI_KBDSUPPORT, &gtInfo );
+      if( gtInfo.pResult )
+      {
+         fKeyBoard = hb_itemGetL( gtInfo.pResult );
+         hb_itemRelease( gtInfo.pResult );
+      }
+      hb_gt_GetSize( &iRows, &iCols );
+      if( iCols <= 4 || iRows <= 4 )
+         fScreen = FALSE;
+
+      if( fScreen )
+      {
+         ULONG ulLines = 0, ulWidth = 0, ulCurrWidth = 0, ul = 0, ulDst = 0,
+               ulLast = 0, ulSpace1 = 0, ulSpace2 = 0, ulDefWidth, ulMaxWidth;
+         char * szMsgDsp;
+
+         ulMaxWidth = iCols - 4;
+         ulDefWidth = ( ulMaxWidth >> 2 ) * 3;
+         szMsgDsp = ( char * ) hb_xgrab( ulLen + ( ulLen / ulDefWidth ) + 1 );
+
+         while( ul < ulLen )
+         {
+            if( szMessage[ ul ] == '\n' )
+            {
+               if( ulCurrWidth > ulMaxWidth )
+               {
+                  ulDst = ulLast;
+               }
+               else
+               {
+                  ++ulLines;
+                  if( ulCurrWidth > ulWidth )
+                     ulWidth = ulCurrWidth;
+                  ulCurrWidth = ulSpace1 = ulSpace2 = 0;
+                  szMsgDsp[ ulDst++ ] = '\n';
+                  ulLast = ulDst;
+               }
+            }
+            else
+            {
+               if( szMessage[ ul ] == ' ' )
+               {
+                  if( ulCurrWidth <= ulDefWidth )
+                     ulSpace1 = ul;
+                  else if( ulCurrWidth <= ulMaxWidth && !ulSpace2 )
+                     ulSpace2 = ul;
+               }
+               szMsgDsp[ ulDst++ ] = szMessage[ ul ];
+               ++ulCurrWidth;
+               if( ulCurrWidth > ulDefWidth && ulSpace1 )
+               {
+                  ulCurrWidth -= ul - ulSpace1 + 1;
+                  ulDst -= ul - ulSpace1 + 1;
+                  ul = ulSpace1;
+                  ++ulLines;
+                  if( ulCurrWidth > ulWidth )
+                     ulWidth = ulCurrWidth;
+                  ulCurrWidth = ulSpace1 = ulSpace2 = 0;
+                  szMsgDsp[ ulDst++ ] = '\n';
+                  ulLast = ulDst;
+               }
+               else if( ulCurrWidth > ulMaxWidth )
+               {
+                  if( ulSpace2 )
+                  {
+                     ulCurrWidth -= ul - ulSpace2 + 1;
+                     ulDst -= ul - ulSpace2 + 1;
+                     ul = ulSpace2;
+                     ++ulLines;
+                     if( ulCurrWidth > ulWidth )
+                        ulWidth = ulCurrWidth;
+                     ulCurrWidth = ulSpace1 = ulSpace2 = 0;
+                     szMsgDsp[ ulDst++ ] = '\n';
+                     ulLast = ulDst;
+                  }
+#ifndef HB_C52_STRICT
+                  else
+                  {
+                     ulCurrWidth--;
+                     ulDst--;
+                     ul--;
+                     szMsgDsp[ ulDst++ ] = '\n';
+                     ulLast = ulDst;
+                     ++ulLines;
+                     if( ulCurrWidth > ulWidth )
+                        ulWidth = ulCurrWidth;
+                     ulCurrWidth = ulSpace1 = ulSpace2 = 0;
+                  }
+#endif
+               }
+            }
+            ++ul;
+         }
+         ulLines++;
+         if( ulCurrWidth > ulWidth )
+            ulWidth = ulCurrWidth;
+         if( ulLines == 1 && ulWidth < ulDefWidth )
+            ulWidth += HB_MIN( 4, ulDefWidth - ulWidth );
+
+         ulCurrWidth = 0;
+         for( i = 1; i <= iOptions; ++i )
+         {
+            ulCurrWidth += hb_arrayGetCLen( pOptions, i ) + 4;
+         }
+         if( ulCurrWidth > ulMaxWidth )
+            ulCurrWidth = ulMaxWidth;
+         if( ulCurrWidth > ulWidth )
+            ulWidth = ulCurrWidth;
+         if( ( ULONG ) iRows < ulLines + 4 )
+            ulLines = iRows - 4;
+         iTop = ( iRows - ulLines - 4 ) >> 1;
+         iLeft = ( iCols - ulWidth - 4 ) >> 1;
+         iBottom = iTop + ulLines + 3;
+         iRight = iLeft + ulWidth + 3;
+
+         if( iClrNorm == 0 )
+            iClrNorm = 79;
+         if( iClrHigh == 0 )
+            iClrHigh = 31;
+         iDspCount = hb_gt_DispCount();
+         if( iDspCount == 0 )
+            hb_gt_DispBegin();
+         hb_gt_GetPos( &iRow, &iCol );
+         iStyle = hb_gt_GetCursorStyle();
+         hb_gt_SetCursorStyle( SC_NONE );
+         ulLen = hb_gt_RectSize( iTop, iLeft, iBottom, iRight );
+         if( ulLen )
+         {
+            pBuffer = ( BYTE * ) hb_xgrab( ulLen );
+            hb_gt_Save( iTop, iLeft, iBottom, iRight, pBuffer );
+         }
+         hb_gt_BoxS( iTop, iLeft, iBottom, iRight, NULL, iClrNorm );
+         hb_gt_Box( iTop + 1, iLeft + 1, iBottom - 1, iRight - 1, ( BYTE * ) "         ", iClrNorm );
+         ulLast = 0;
+         i = iTop + 1;
+         for( ul = 0; ul < ulDst; ++ul )
+         {
+            if( szMsgDsp[ ul ] == '\n' )
+            {
+               if( ul > ulLast )
+               {
+                  ulLen = ul - ulLast;
+                  if( ulLen > ulWidth )
+                     ulLen = ulWidth;
+                  hb_gt_PutText( i, iLeft + ( ( ulWidth - ulLen + 1 ) >> 1 ) + 2,
+                                 iClrNorm, ( BYTE * ) szMsgDsp + ulLast, ulLen );
+               }
+               ulLast = ul + 1;
+               if( ++i >= iBottom - 1 )
+                  break;
+            }
+         }
+         if( ul > ulLast && i < iBottom - 1 )
+         {
+            ulLen = ul - ulLast;
+            if( ulLen > ulWidth )
+               ulLen = ulWidth;
+            hb_gt_PutText( i, iLeft + ( ( ulWidth - ulLen + 1 ) >> 1 ) + 2,
+                           iClrNorm, ( BYTE * ) szMsgDsp + ulLast, ulLen );
+         }
+
+         iPos = 1;
+         while( iRet == 0 )
+         {
+            hb_gt_DispBegin();
+            iMnuCol = iLeft + ( ( ulWidth - ulCurrWidth ) >> 1 ) + 3;
+            for( i = 1; i <= iOptions; ++i )
+            {
+               iClr = i == iPos ? iClrHigh : iClrNorm;
+               ulLen = hb_arrayGetCLen( pOptions, i );
+               hb_gt_PutText( iBottom - 1, iMnuCol, iClr, ( BYTE * ) " ", 1 );
+               hb_gt_PutText( iBottom - 1, iMnuCol + 1, iClr,
+                              ( BYTE * ) hb_arrayGetCPtr( pOptions, i ), ulLen );
+               hb_gt_PutText( iBottom - 1, iMnuCol + 1 + ulLen, iClr, ( BYTE * ) " ", 1 );
+               iMnuCol += ulLen + 4;
+            }
+            while( hb_gt_DispCount() )
+               hb_gt_DispEnd();
+            hb_gt_Refresh();
+
+            iKey = fKeyBoard ? hb_inkey( TRUE, dDelay, INKEY_ALL ) : 0;
+
+            if( iKey == K_ESC )
+               break;
+            else if( iKey == K_ENTER || iKey == K_SPACE || iKey == 0 )
+            {
+               iRet = iPos;
+            }
+            else if( iKey == K_LEFT || iKey == K_SH_TAB )
+            {
+               if( --iPos == 0 )
+                  iPos = iOptions;
+               dDelay = 0.0;
+            }
+            else if( iKey == K_RIGHT || iKey == K_TAB )
+            {
+               if( ++iPos > iOptions )
+                  iPos = 1;
+               dDelay = 0.0;
+            }
+#ifdef HB_COMPAT_C53
+            else if( iKey == K_LBUTTONDOWN )
+            {
+               int iMRow, iMCol;
+               hb_mouse_GetPos( &iMRow, &iMCol );
+               if( iMRow == iBottom - 1 )
+               {
+                  iMnuCol = iLeft + ( ( ulWidth - ulCurrWidth ) >> 1 ) + 4;
+                  for( i = 1; i <= iOptions; ++i )
+                  {
+                     ulLen = hb_arrayGetCLen( pOptions, i );
+                     if( iMCol >= iMnuCol && iMCol < iMnuCol + ( int ) ulLen )
+                     {
+                        iRet = i;
+                        break;
+                     }
+                     iMnuCol += ulLen + 4;
+                  }
+               }
+            }
+#endif
+            else if( iKey >= 32 && iKey <= 255 )
+            {
+               int iUp = hb_charUpper( iKey );
+               for( i = 1; i <= iOptions; ++i )
+               {
+                  char *szValue = hb_arrayGetCPtr( pOptions, i );
+                  if( szValue && iUp == hb_charUpper( *szValue ) )
+                  {
+                     iRet = i;
+                     break;
+                  }
+               }
+            }
+         }
+
+         hb_xfree( szMsgDsp );
+         if( pBuffer )
+         {
+            hb_gt_Rest( iTop, iLeft, iBottom, iRight, pBuffer );
+            hb_xfree( pBuffer );
+         }
+         hb_gt_SetPos( iRow, iCol );
+         hb_gt_SetCursorStyle( iStyle );
+         hb_gt_Refresh();
+         while( hb_gt_DispCount() < iDspCount )
+            hb_gt_DispBegin();
+      }
+      else
+      {
+         ULONG ul, ulStart = 0;
+         char *szEol = hb_conNewLine();
+
+         for( ul = 0; ul < ulLen; ++ul )
+         {
+            if( szMessage[ ul ] == '\n' )
+            {
+               if( ul > ulStart )
+                  hb_gt_WriteCon( ( BYTE * ) szMessage + ulStart, ul - ulStart );
+               hb_gt_WriteCon( ( BYTE * ) szEol, strlen( szEol ) );
+               ulStart = ul + 1;
+            }
+         }
+         if( ul > ulStart )
+            hb_gt_WriteCon( ( BYTE * ) szMessage + ulStart, ul - ulStart );
+         hb_gt_WriteCon( ( BYTE * ) " (", 2 );
+         for( i = 1; i <= iOptions; ++i )
+         {
+            if( i > 1 )
+               hb_gt_WriteCon( ( BYTE * ) ", ", 2 );
+            hb_gt_WriteCon( ( BYTE * ) hb_arrayGetCPtr( pOptions, i ),
+                            hb_arrayGetCLen( pOptions, i ) );
+         }
+         hb_gt_WriteCon( ( BYTE * ) ") ", 2 );
+         while( iRet == 0 )
+         {
+            iKey = fKeyBoard ? hb_inkey( TRUE, dDelay, INKEY_ALL ) : 0;
+            if( iKey == 0 )
+               iRet = 1;
+            else if( iKey == K_ESC )
+               break;
+            else if( iKey >= 32 && iKey <= 255 )
+            {
+               int iUp = hb_charUpper( iKey );
+               for( i = 1; i <= iOptions; ++i )
+               {
+                  char *szValue = hb_arrayGetCPtr( pOptions, i );
+                  if( szValue && iUp == hb_charUpper( *szValue ) )
+                  {
+                     iRet = i;
+                     break;
+                  }
+               }
+            }
+         }
+         if( iKey >= 32 && iKey <= 255 )
+         {
+            char szVal[2]; 
+            szVal[ 0 ] = ( char ) iKey;
+            szVal[ 1 ] = '\0';
+            hb_gt_WriteCon( ( BYTE * ) szVal, 1 );
+         }
+      }
+   }
+
+   return iRet;
 }
 
 static int hb_gt_def_SetFlag( int iType, int iNewValue )
@@ -2084,6 +2471,7 @@ static HB_GT_FUNCS gtCoreFunc =
    Tone                       : hb_gt_def_Tone                          ,
    Bell                       : hb_gt_def_Bell                          ,
    Info                       : hb_gt_def_Info                          ,
+   Alert                      : hb_gt_def_Alert                         ,
    SetFlag                    : hb_gt_def_SetFlag                       ,
    SetDispCP                  : hb_gt_def_SetDispCP                     ,
    SetKeyCP                   : hb_gt_def_SetKeyCP                      ,
@@ -2190,6 +2578,7 @@ static HB_GT_FUNCS gtCoreFunc =
    hb_gt_def_Tone                         ,
    hb_gt_def_Bell                         ,
    hb_gt_def_Info                         ,
+   hb_gt_def_Alert                        ,
    hb_gt_def_SetFlag                      ,
    hb_gt_def_SetDispCP                    ,
    hb_gt_def_SetKeyCP                     ,
@@ -2592,6 +2981,12 @@ BOOL   hb_gt_SetKeyCP( char * pszTermCDP, char * pszHostCDP )
 BOOL   hb_gt_Info( int iType, PHB_GT_INFO pInfo )
 {
    return gtCoreFunc.Info( iType, pInfo );
+}
+
+int    hb_gt_Alert( PHB_ITEM pMessage, PHB_ITEM pOptions,
+                    int iClrNorm, int iClrHigh, double dDelay )
+{
+   return gtCoreFunc.Alert( pMessage, pOptions, iClrNorm, iClrHigh, dDelay );
 }
 
 int    hb_gt_SetFlag( int iType, int iNewValue )

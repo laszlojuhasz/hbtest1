@@ -116,13 +116,13 @@ static BOOL set_logical( PHB_ITEM pItem, BOOL bDefault )
       ULONG ulLen = hb_itemGetCLen( pItem );
 
       if( ulLen >= 2
-       && toupper( szString[ 0 ] ) == 'O'
-       && toupper( szString[ 1 ] ) == 'N' )
+       && toupper( ( UCHAR ) szString[ 0 ] ) == 'O'
+       && toupper( ( UCHAR ) szString[ 1 ] ) == 'N' )
          bLogical = TRUE;
       else if( ulLen >= 3
-       && toupper( szString[ 0 ] ) == 'O'
-       && toupper( szString[ 1 ] ) == 'F'
-       && toupper( szString[ 2 ] ) == 'F' )
+       && toupper( ( UCHAR ) szString[ 0 ] ) == 'O'
+       && toupper( ( UCHAR ) szString[ 1 ] ) == 'F'
+       && toupper( ( UCHAR ) szString[ 2 ] ) == 'F' )
          bLogical = FALSE;
    }
 
@@ -181,9 +181,7 @@ static void close_binary( FHANDLE handle )
    {
       /* Close the file handle without disrupting the current
          user file error value */
-      USHORT user_ferror = hb_fsError();
       hb_fsClose( handle );
-      hb_fsSetError( user_ferror );
    }
 }
 
@@ -195,28 +193,21 @@ static void close_text( FHANDLE handle )
    {
       /* Close the file handle without disrupting the current
          user file error value */
-      USHORT user_ferror = hb_fsError();
       if( hb_set.HB_SET_EOF )
-      {
          hb_fsWrite( handle, ( BYTE * ) "\x1A", 1 );
-      }
       hb_fsClose( handle );
-      hb_fsSetError( user_ferror );
    }
 }
 
 static FHANDLE open_handle( char * file_name, BOOL bAppend, char * def_ext, HB_set_enum set_specifier )
 {
-   USHORT user_ferror;
    FHANDLE handle;
    PHB_FNAME pFilename;
    char path[ _POSIX_PATH_MAX + 1 ];
    BOOL bPipe = FALSE;
    HB_TRACE(HB_TR_DEBUG, ("open_handle(%s, %d, %s, %d)", file_name, (int) bAppend, def_ext, (int) set_specifier));
 
-   user_ferror = hb_fsError(); /* Save the current user file error code */
    /* Create full filename */
-
 #if defined(OS_UNIX_COMPATIBLE)
    bPipe = set_specifier == HB_SET_PRINTFILE && file_name[ 0 ] == '|';
    if( bPipe )
@@ -307,7 +298,6 @@ static FHANDLE open_handle( char * file_name, BOOL bAppend, char * def_ext, HB_s
             break;
       }
    }
-   hb_fsSetError( user_ferror ); /* Restore the current user file error code */
    return handle;
 }
 
@@ -335,13 +325,13 @@ HB_FUNC( __SETCENTURY )
       ULONG ulLen = hb_parclen( 1 );
 
       if( ulLen >= 2
-       && toupper( szString[ 0 ] ) == 'O'
-       && toupper( szString[ 1 ] ) == 'N' )
+       && toupper( ( UCHAR ) szString[ 0 ] ) == 'O'
+       && toupper( ( UCHAR ) szString[ 1 ] ) == 'N' )
          hb_set.hb_set_century = TRUE;
       else if( ulLen >= 3
-       && toupper( szString[ 0 ] ) == 'O'
-       && toupper( szString[ 1 ] ) == 'F'
-       && toupper( szString[ 2 ] ) == 'F' )
+       && toupper( ( UCHAR ) szString[ 0 ] ) == 'O'
+       && toupper( ( UCHAR ) szString[ 1 ] ) == 'F'
+       && toupper( ( UCHAR ) szString[ 2 ] ) == 'F' )
          hb_set.hb_set_century = FALSE;
    }
 
@@ -360,7 +350,7 @@ HB_FUNC( __SETCENTURY )
       size = strlen( szDateFormat );
       for( count = 0; count < size; count++ )
       {
-         digit = toupper( szDateFormat[ count ] );
+         digit = toupper( ( UCHAR ) szDateFormat[ count ] );
          if( digit == 'Y' )
          {
             if( y_start == -1 ) y_start = count;
@@ -460,7 +450,7 @@ HB_FUNC( SET )
          if( args > 1 )
          {
             if( set_number( pArg2, hb_set.HB_SET_AUTORDER ) < 0 )
-               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", 2, hb_paramError( 1 ), hb_paramError( 2 ) );
+               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", HB_ERR_ARGS_BASEPARAMS );
             else
                hb_set.HB_SET_AUTORDER = set_number( pArg2, hb_set.HB_SET_AUTORDER );
          }
@@ -470,7 +460,7 @@ HB_FUNC( SET )
          if( args > 1 )
          {
             if( set_number( pArg2, hb_set.HB_SET_AUTOSHARE ) < 0 )
-               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", 2, hb_paramError( 1 ), hb_paramError( 2 ) );
+               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", HB_ERR_ARGS_BASEPARAMS );
             else
                hb_set.HB_SET_MARGIN = set_number( pArg2, hb_set.HB_SET_AUTOSHARE );
          }
@@ -542,7 +532,7 @@ HB_FUNC( SET )
          if( args > 1 )
          {
             if( set_number( pArg2, hb_set.HB_SET_DECIMALS ) < 0 )
-               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", 2, hb_paramError( 1 ), hb_paramError( 2 ) );
+               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", HB_ERR_ARGS_BASEPARAMS );
             else
                hb_set.HB_SET_DECIMALS = set_number( pArg2, hb_set.HB_SET_DECIMALS );
          }
@@ -586,7 +576,7 @@ HB_FUNC( SET )
          if( args > 1 )
          {
             if( set_number( pArg2, hb_set.HB_SET_EPOCH ) < 0 )
-               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", 2, hb_paramError( 1 ), hb_paramError( 2 ) );
+               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", HB_ERR_ARGS_BASEPARAMS );
             else
                hb_set.HB_SET_EPOCH = set_number( pArg2, hb_set.HB_SET_EPOCH );
          }
@@ -662,7 +652,7 @@ HB_FUNC( SET )
          if( args > 1 )
          {
             if( set_number( pArg2, hb_set.HB_SET_MARGIN ) < 0 )
-               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", 2, hb_paramError( 1 ), hb_paramError( 2 ) );
+               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", HB_ERR_ARGS_BASEPARAMS );
             else
                hb_set.HB_SET_MARGIN = set_number( pArg2, hb_set.HB_SET_MARGIN );
          }
@@ -672,7 +662,7 @@ HB_FUNC( SET )
          if( args > 1 )
          {
             if( set_number( pArg2, hb_set.HB_SET_MBLOCKSIZE ) < 0 )
-               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", 2, hb_paramError( 1 ), hb_paramError( 2 ) );
+               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", HB_ERR_ARGS_BASEPARAMS );
             else
                hb_set.HB_SET_MBLOCKSIZE = set_number( pArg2, hb_set.HB_SET_MBLOCKSIZE );
          }
@@ -686,7 +676,7 @@ HB_FUNC( SET )
          if( args > 1 )
          {
             if( set_number( pArg2, hb_set.HB_SET_MESSAGE ) < 0 )
-               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", 2, hb_paramError( 1 ), hb_paramError( 2 ) );
+               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", HB_ERR_ARGS_BASEPARAMS );
             else
                hb_set.HB_SET_MESSAGE = set_number( pArg2, hb_set.HB_SET_MESSAGE );
          }
@@ -774,7 +764,7 @@ HB_FUNC( SET )
          if( args > 1 )
          {
             if( set_number( pArg2, hb_set.HB_SET_VIDEOMODE ) < 0 )
-               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", 2, hb_paramError( 1 ), hb_paramError( 2 ) );
+               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", HB_ERR_ARGS_BASEPARAMS );
             else
                hb_set.HB_SET_VIDEOMODE = set_number( pArg2, hb_set.HB_SET_VIDEOMODE );
          }
@@ -807,17 +797,17 @@ HB_FUNC( SET )
                else if( ! hb_stricmp( hb_itemGetCPtr( pArg2 ), "MIXED" ) )
                   hb_set.HB_SET_FILECASE = HB_SET_CASE_MIXED;
                else
-                  hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", 2, hb_paramError( 1 ), hb_paramError( 2 ) );
+                  hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", HB_ERR_ARGS_BASEPARAMS );
             }
             else if( HB_IS_NUMERIC( pArg2 ) )
             {
                if( set_number( pArg2, hb_set.HB_SET_FILECASE ) < 0 )
-                  hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", 2, hb_paramError( 1 ), hb_paramError( 2 ) );
+                  hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", HB_ERR_ARGS_BASEPARAMS );
                else
                   hb_set.HB_SET_FILECASE = set_number( pArg2, hb_set.HB_SET_FILECASE );
             }
             else
-               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", 2, hb_paramError( 1 ), hb_paramError( 2 ) );
+               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", HB_ERR_ARGS_BASEPARAMS );
          }
          /*
          if( hb_set.HB_SET_FILECASE )
@@ -841,17 +831,17 @@ HB_FUNC( SET )
                else if( ! hb_stricmp( hb_itemGetCPtr( pArg2 ), "MIXED" ) )
                   hb_set.HB_SET_DIRCASE = HB_SET_CASE_MIXED;
                else
-                  hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", 2, hb_paramError( 1 ), hb_paramError( 2 ) );
+                  hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", HB_ERR_ARGS_BASEPARAMS );
             }
             else if( HB_IS_NUMERIC( pArg2 ) )
             {
                if( set_number( pArg2, hb_set.HB_SET_DIRCASE ) < 0 )
-                  hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", 2, hb_paramError( 1 ), hb_paramError( 2 ) );
+                  hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", HB_ERR_ARGS_BASEPARAMS );
                else
                   hb_set.HB_SET_DIRCASE = set_number( pArg2, hb_set.HB_SET_DIRCASE );
             }
             else
-               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", 2, hb_paramError( 1 ), hb_paramError( 2 ) );
+               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", HB_ERR_ARGS_BASEPARAMS );
          }
          break;
       case HB_SET_DIRSEPARATOR :
@@ -869,7 +859,7 @@ HB_FUNC( SET )
          {
             if( set_number( pArg2, hb_set.HB_SET_DBFLOCKSCHEME ) < 0 )
             {
-               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", 2, hb_paramError( 1 ), hb_paramError( 2 ) );
+               hb_errRT_BASE( EG_ARG, 2020, NULL, "SET", HB_ERR_ARGS_BASEPARAMS );
             }
             else
             {
@@ -880,6 +870,11 @@ HB_FUNC( SET )
       case HB_SET_DEFEXTENSIONS:
          hb_retl( hb_set.HB_SET_DEFEXTENSIONS );
          if( args > 1 ) hb_set.HB_SET_DEFEXTENSIONS = set_logical( pArg2, hb_set.HB_SET_DEFEXTENSIONS );
+         break;
+      case HB_SET_EOL :
+         if( hb_set.HB_SET_EOL ) hb_retc( hb_set.HB_SET_EOL );
+         else hb_retc( NULL );
+         if( args > 1 ) hb_set.HB_SET_EOL = set_string( pArg2, hb_set.HB_SET_EOL );
          break;
       case HB_SET_INVALID_:
          /* Return NIL if called with invalid SET specifier */
@@ -999,6 +994,7 @@ void hb_setInitialize( void )
    hb_set.HB_SET_WRAP = FALSE;
    hb_set.HB_SET_DBFLOCKSCHEME = 0;
    hb_set.HB_SET_DEFEXTENSIONS = TRUE;
+   hb_set.HB_SET_EOL = hb_strdup( hb_conNewLine() );
 
    sp_sl_first = sp_sl_last = NULL;
    s_next_listener = 1;
@@ -1035,6 +1031,7 @@ void hb_setRelease( void )
    if( hb_set.HB_SET_PATH )       hb_xfree( hb_set.HB_SET_PATH );
    if( hb_set.HB_SET_PRINTFILE )  hb_xfree( hb_set.HB_SET_PRINTFILE );
    if( hb_set.HB_SET_COLOR )      hb_xfree( hb_set.HB_SET_COLOR );
+   if( hb_set.HB_SET_EOL )        hb_xfree( hb_set.HB_SET_EOL );
 
    hb_set.HB_SET_TYPEAHEAD = 0;   hb_inkeyReset(); /* reset keyboard buffer */
 

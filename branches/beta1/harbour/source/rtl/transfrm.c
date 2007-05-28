@@ -86,9 +86,6 @@
 #define PF_WIDTH      0x0800   /* @S */
 #define PF_PARNEGWOS  0x1000   /* @) Similar to PF_PARNEG but without leading spaces */
 
-extern PHB_CODEPAGE hb_cdp_page;
-#define TOUPPER(c)    ((hb_cdp_page->nChars)? (char)hb_cdp_page->s_upper[(UCHAR)c] : (char)toupper((UCHAR)(c)))
-
 HB_FUNC( TRANSFORM )
 {
    PHB_ITEM pValue = hb_param( 1, HB_IT_ANY ); /* Input parameter */
@@ -132,7 +129,7 @@ HB_FUNC( TRANSFORM )
 
          while( ulPicLen && ! bDone )
          {
-            switch( toupper( ( UCHAR ) *szPic ) )
+            switch( hb_charUpper( *szPic ) )
             {
                case HB_CHAR_HT:
                case '9':
@@ -235,7 +232,7 @@ HB_FUNC( TRANSFORM )
                      /* Upper */
                      case '!':
                      {
-                        szResult[ ulResultPos++ ] = TOUPPER( szExp[ ulExpPos ] );
+                        szResult[ ulResultPos++ ] = hb_charUpper( szExp[ ulExpPos ] );
                         ulExpPos++;
                         bAnyPic = TRUE;
                         break;
@@ -253,7 +250,7 @@ HB_FUNC( TRANSFORM )
                      case 'x':
                      case 'X':
                      {
-                        szResult[ ulResultPos++ ] = ( uiPicFlags & PF_UPPER ) ? TOUPPER( szExp[ ulExpPos ] ) : szExp[ ulExpPos ];
+                        szResult[ ulResultPos++ ] = ( uiPicFlags & PF_UPPER ) ? hb_charUpper( szExp[ ulExpPos ] ) : szExp[ ulExpPos ];
                         ulExpPos++;
                         bAnyPic = TRUE;
                         break;
@@ -340,12 +337,12 @@ HB_FUNC( TRANSFORM )
                         break;
                      }
                      default:
-                        szResult[ ulResultPos++ ] = ( uiPicFlags & PF_UPPER ) ? TOUPPER( *szExp ) : *szExp;
+                        szResult[ ulResultPos++ ] = ( uiPicFlags & PF_UPPER ) ? hb_charUpper( *szExp ) : *szExp;
                   }
                }
                else
                {
-                  szResult[ ulResultPos++ ] = ( uiPicFlags & PF_UPPER ) ? TOUPPER( *szExp ) : *szExp;
+                  szResult[ ulResultPos++ ] = ( uiPicFlags & PF_UPPER ) ? hb_charUpper( *szExp ) : *szExp;
                }
                szExp++;
             }
@@ -355,7 +352,7 @@ HB_FUNC( TRANSFORM )
          {
             while( ulExpPos++ < ulExpLen )
             {
-               szResult[ ulResultPos++ ] = ( uiPicFlags & PF_UPPER ) ? TOUPPER( *szExp ) : *szExp;
+               szResult[ ulResultPos++ ] = ( uiPicFlags & PF_UPPER ) ? hb_charUpper( *szExp ) : *szExp;
                szExp++;
             }
          }
@@ -855,5 +852,5 @@ HB_FUNC( TRANSFORM )
    /* If there was any parameter error, launch a runtime error */
 
    if( bError )
-      hb_errRT_BASE_SubstR( EG_ARG, 1122, NULL, "TRANSFORM", 2, pValue, hb_paramError( 2 ) );
+      hb_errRT_BASE_SubstR( EG_ARG, 1122, NULL, "TRANSFORM", HB_ERR_ARGS_BASEPARAMS );
 }

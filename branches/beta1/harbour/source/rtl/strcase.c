@@ -57,8 +57,6 @@
 #include "hbapierr.h"
 #include "hbapicdp.h"
 
-extern PHB_CODEPAGE hb_cdp_page;
-
 /* converts szText to lower case. Does not create a new string! */
 char * hb_strLower( char * szText, ULONG ulLen )
 {
@@ -93,6 +91,24 @@ char * hb_strUpper( char * szText, ULONG ulLen )
    return szText;
 }
 
+/* converts iChar to upper case */
+int hb_charUpper( int iChar )
+{
+   if( hb_cdp_page->nChars )
+      return (unsigned char) hb_cdp_page->s_upper[ (unsigned char) iChar ];
+   else
+      return toupper( (unsigned char) iChar );
+}
+
+/* converts iChar to lower case */
+int hb_charLower( int iChar )
+{
+   if( hb_cdp_page->nChars )
+      return (unsigned char) hb_cdp_page->s_lower[ (unsigned char) iChar ];
+   else
+      return tolower( (unsigned char) iChar );
+}
+
 /* converts string to lower case */
 HB_FUNC( LOWER )
 {
@@ -106,7 +122,7 @@ HB_FUNC( LOWER )
       hb_retclen_buffer( hb_strLower( pszBuffer, ulLen ), ulLen );
    }
    else
-      hb_errRT_BASE_SubstR( EG_ARG, 1103, NULL, "LOWER", 1, hb_paramError( 1 ) );
+      hb_errRT_BASE_SubstR( EG_ARG, 1103, NULL, "LOWER", HB_ERR_ARGS_BASEPARAMS );
 }
 
 /* converts string to upper case */
@@ -122,5 +138,5 @@ HB_FUNC( UPPER )
       hb_retclen_buffer( hb_strUpper( pszBuffer, ulLen ), ulLen );
    }
    else
-      hb_errRT_BASE_SubstR( EG_ARG, 1102, NULL, "UPPER", 1, hb_paramError( 1 ) );
+      hb_errRT_BASE_SubstR( EG_ARG, 1102, NULL, "UPPER", HB_ERR_ARGS_BASEPARAMS );
 }

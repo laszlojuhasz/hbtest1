@@ -87,9 +87,19 @@
 #include "hbmemory.ch"
 #include "hbdate.h"
 
+/* #define HB_FM_WIN32_ALLOC */
 /* #define HB_PARANOID_MEM_CHECK */
 
-/*#undef HB_FM_STATISTICS*/
+#ifndef HB_OS_WIN_32
+#  undef HB_FM_WIN32_ALLOC
+#endif
+
+#ifdef HB_FM_WIN32_ALLOC
+#  define malloc( n )         (void *) LocalAlloc( LMEM_FIXED, ( n ) )
+#  define realloc( p, n )     (void *) LocalReAlloc( (HLOCAL) ( p ), ( n ), LMEM_MOVEABLE )
+#  define free( p )           LocalFree( (HLOCAL) ( p ) )
+#endif
+
 #ifndef HB_FM_STATISTICS
 #  undef HB_PARANOID_MEM_CHECK
 #endif
@@ -577,7 +587,7 @@ HB_EXPORT void hb_xexit( void ) /* Deinitialize fixed memory subsystem */
       hb_conOutErr( hb_conNewLine(), 0 );
       hb_conOutErr( "----------------------------------------", 0 );
       hb_conOutErr( hb_conNewLine(), 0 );
-      snprintf( buffer, sizeof( buffer ), "Total memory allocated: %li bytes (%li blocks)", s_lMemoryMaxConsumed, s_lMemoryMaxBlocks );
+      snprintf( buffer, sizeof( buffer ), "Total memory allocated: %li bytes (%li block(s))", s_lMemoryMaxConsumed, s_lMemoryMaxBlocks );
       hb_conOutErr( buffer, 0 );
 
       if ( hLog )
@@ -596,7 +606,7 @@ HB_EXPORT void hb_xexit( void ) /* Deinitialize fixed memory subsystem */
       if( s_lMemoryBlocks )
       {
          hb_conOutErr( hb_conNewLine(), 0 );
-         snprintf( buffer, sizeof( buffer ), "WARNING! Memory allocated but not released: %li bytes (%li blocks)", s_lMemoryConsumed, s_lMemoryBlocks );
+         snprintf( buffer, sizeof( buffer ), "WARNING! Memory allocated but not released: %li bytes (%li block(s))", s_lMemoryConsumed, s_lMemoryBlocks );
          hb_conOutErr( buffer, 0 );
 
          if ( hLog ) fprintf( hLog, "%s\n", buffer );

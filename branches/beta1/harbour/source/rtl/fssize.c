@@ -51,6 +51,10 @@
  *
  */
 
+#if defined(HB_OS_LINUX)
+#  define _LARGEFILE64_SOURCE
+#endif
+
 #include "hbapi.h"
 #include "hbapifs.h"
 
@@ -58,19 +62,26 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-ULONG hb_fsFSize( BYTE * pszFileName, BOOL bUseDirEntry )
+HB_FOFFSET hb_fsFSize( BYTE * pszFileName, BOOL bUseDirEntry )
 {
    if( bUseDirEntry )
    {
+      BOOL fResult;
+#if defined(HB_OS_LINUX) && defined(__USE_LARGEFILE64)
+         /*
+          * The macro: __USE_LARGEFILE64 is set when _LARGEFILE64_SOURCE is
+          * define and efectively enables lseek64/flock64/ftruncate64 functions
+          * on 32bit machines.
+          */
+      struct stat64 statbuf;
+      fResult = stat64( ( char * ) pszFileName, &statbuf ) == 0;
+#else
       struct stat statbuf;
-
-      if( stat( ( char * ) pszFileName, &statbuf ) == 0 )
-      {
-         errno = 0;
-
-         hb_fsSetError( 0 );
-         return ( ULONG ) statbuf.st_size;
-      }
+      fResult = stat( ( char * ) pszFileName, &statbuf ) == 0;
+#endif
+      hb_fsSetIOError( fResult, 0 );
+      if( fResult )
+         return ( HB_FOFFSET ) statbuf.st_size;
    }
    else
    {
@@ -78,19 +89,13 @@ ULONG hb_fsFSize( BYTE * pszFileName, BOOL bUseDirEntry )
 
       if( hFileHandle != FS_ERROR )
       {
-         ULONG ulPos;
+         HB_FOFFSET ulPos;
 
-         ulPos = hb_fsSeek( hFileHandle, 0, SEEK_END );
+         ulPos = hb_fsSeekLarge( hFileHandle, 0, SEEK_END );
          hb_fsClose( hFileHandle );
-
-         errno = 0;
-
-         hb_fsSetError( 0 );
          return ulPos;
       }
    }
-
-   hb_fsSetError( ( USHORT ) FS_ERROR );
    return 0;
 }
 
@@ -98,8 +103,8 @@ ULONG hb_fsFSize( BYTE * pszFileName, BOOL bUseDirEntry )
 
 HB_FUNC( HB_FSIZE )
 {
-   hb_retnl( ISCHAR( 1 ) ? hb_fsFSize( ( BYTE * ) hb_parc( 1 ),
-                                       ISLOG( 2 ) ? hb_parl( 2 ) : TRUE ) : 0 );
+   hb_retnint( ISCHAR( 1 ) ? hb_fsFSize( ( BYTE * ) hb_parc( 1 ),
+                                    ISLOG( 2 ) ? hb_parl( 2 ) : TRUE ) : 0 );
 }
 
 #endif

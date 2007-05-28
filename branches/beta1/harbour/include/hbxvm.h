@@ -74,10 +74,14 @@ HB_EXTERN_BEGIN
  */
 
 extern HB_EXPORT void   hb_xvmExitProc( void );
+extern HB_EXPORT void   hb_xvmEndProc( void );
 extern HB_EXPORT void   hb_xvmSeqBegin( void );
 extern HB_EXPORT BOOL   hb_xvmSeqEnd( void );
 extern HB_EXPORT BOOL   hb_xvmSeqEndTest( void );
 extern HB_EXPORT BOOL   hb_xvmSeqRecover( void );
+extern HB_EXPORT void   hb_xvmSeqAlways( void );
+extern HB_EXPORT BOOL   hb_xvmAlwaysBegin( void );
+extern HB_EXPORT BOOL   hb_xvmAlwaysEnd( void );
 
 extern HB_EXPORT BOOL   hb_xvmEnumStart( BYTE, BYTE );            /* prepare FOR EACH loop */
 extern HB_EXPORT BOOL   hb_xvmEnumNext( void );                   /* increment FOR EACH loop counter */
@@ -127,6 +131,9 @@ extern HB_EXPORT BOOL   hb_xvmPopAlias( void );                   /* select the 
 extern HB_EXPORT BOOL   hb_xvmPopLogical( BOOL * );               /* pops the stack latest value and returns its logical value */
 extern HB_EXPORT BOOL   hb_xvmSwapAlias( void );                  /* swaps items on the eval stack and pops the workarea number */
 extern HB_EXPORT BOOL   hb_xvmLocalAddInt( int iLocal, LONG lAdd ); /* add integer to given local variable */
+extern HB_EXPORT BOOL   hb_xvmLocalInc( int iLocal );             /* increment given local variable */
+extern HB_EXPORT BOOL   hb_xvmLocalDec( int iLocal );             /* decrement given local variable */
+extern HB_EXPORT BOOL   hb_xvmLocalIncPush( int iLocal );         /* increment given local variable and pussh it on HVM stack */
 
 extern HB_EXPORT BOOL   hb_xvmAnd( void );
 extern HB_EXPORT BOOL   hb_xvmOr( void );
@@ -139,7 +146,8 @@ extern HB_EXPORT void   hb_xvmPushUnRef( void );
 extern HB_EXPORT void   hb_xvmSwap( int iCount );
 extern HB_EXPORT BOOL   hb_xvmForTest( void );
 extern HB_EXPORT void   hb_xvmFuncPtr( void );
-extern HB_EXPORT BOOL   hb_xvmEqual( BOOL fExact );               /* checks if the two latest values on the stack are equal, removes both and leaves result */
+extern HB_EXPORT BOOL   hb_xvmEqual( void );                      /* checks if the two latest values on the stack are equal, removes both and leaves result */
+extern HB_EXPORT BOOL   hb_xvmExactlyEqual( void );               /* checks if the two latest values on the stack are exactly equal, removes both and leaves result */
 extern HB_EXPORT BOOL   hb_xvmNotEqual( void );                   /* checks if the two latest values on the stack are not equal, removes both and leaves result */
 extern HB_EXPORT BOOL   hb_xvmLess( void );                       /* checks if the latest - 1 value is less than the latest, removes both and leaves result */
 extern HB_EXPORT BOOL   hb_xvmLessEqual( void );                  /* checks if the latest - 1 value is less than or equal the latest, removes both and leaves result */
@@ -165,13 +173,18 @@ extern HB_EXPORT BOOL   hb_xvmPower( void );
 extern HB_EXPORT BOOL   hb_xvmExpEq( void );
 extern HB_EXPORT BOOL   hb_xvmExpEqPop( void );
 extern HB_EXPORT BOOL   hb_xvmInc( void );
+extern HB_EXPORT BOOL   hb_xvmIncEq( void );
+extern HB_EXPORT BOOL   hb_xvmIncEqPop( void );
 extern HB_EXPORT BOOL   hb_xvmDec( void );
+extern HB_EXPORT BOOL   hb_xvmDecEq( void );
+extern HB_EXPORT BOOL   hb_xvmDecEqPop( void );
 
 extern HB_EXPORT void   hb_xvmArrayDim( USHORT uiDimensions );    /* generates an uiDimensions Array and initialize those dimensions from the stack values */
 extern HB_EXPORT void   hb_xvmArrayGen( ULONG ulElements );       /* generates an ulElements Array and fills it from the stack values */
 extern HB_EXPORT BOOL   hb_xvmArrayPush( void );                  /* pushes an array element to the stack, removing the array and the index from the stack */
 extern HB_EXPORT BOOL   hb_xvmArrayPushRef( void );               /* pushes a reference to an array element to the stack, removing the array and the index from the stack */
 extern HB_EXPORT BOOL   hb_xvmArrayPop( void );                   /* pops a value from the stack */
+extern HB_EXPORT void   hb_xvmHashGen( ULONG ulElements );        /* generates an ulElements Hash and fills it from the stack values */
 
 extern HB_EXPORT void   hb_xvmLocalName( USHORT uiLocal, char * szLocalName );
 extern HB_EXPORT void   hb_xvmStaticName( BYTE bIsGlobal, USHORT uiStatic, char * szStaticName );
@@ -238,6 +251,10 @@ extern HB_EXPORT BOOL hb_xvmNotEqualIntIs( LONG lValue, BOOL *fValue );
 extern HB_EXPORT BOOL hb_xvmLocalAdd( int iLocal );
 extern HB_EXPORT BOOL hb_xvmStaticAdd( USHORT uiStatic );
 extern HB_EXPORT BOOL hb_xvmMemvarAdd( PHB_SYMB pSymbol );
+
+extern HB_EXPORT PHB_ITEM hb_xvmStaticPtr( int iStatic );
+extern HB_EXPORT PHB_ITEM hb_xvmLocalPtr( int iLocal );
+extern HB_EXPORT void hb_xvmCopyLocals( int iDest, int iSource );
 
 HB_EXTERN_END
 

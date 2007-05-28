@@ -11,9 +11,7 @@ C_SOURCES = \
 	atadjust.c \
 	atnum.c \
 	atrepl.c \
-	bit1.c \
-	bit2.c \
-	bit3.c \
+	bitnum.c \
 	charevod.c \
 	charlist.c \
 	charmirr.c \
@@ -27,6 +25,8 @@ C_SOURCES = \
 	count.c \
 	ctc.c \
 	ctmath.c \
+	ctmath2.c \
+	ctnet.c \
 	ctset.c \
 	ctstr.c \
 	ctchksum.c \
@@ -39,7 +39,6 @@ C_SOURCES = \
 	ftoc.c \
 	justify.c \
 	keyset.c \
-	math.c \
 	misc1.c \
 	num1.c \
 	numat.c \

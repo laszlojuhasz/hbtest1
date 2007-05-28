@@ -80,7 +80,8 @@
 
 /* To suppress unused variable -w2 warnings. The code snippet will be 
    optimized out by the compiler, so it won't cause any overhead. 
-   It can be used in codeblocks, too. Don't remove any parentheses. */
-#define HB_SYMBOL_UNUSED( symbol )  iif( !((.T.)), symbol, .T. )
+   It can be used in codeblocks, too. */
+/* Please keep it synced with the similar #define in hbclass.ch */
+#define HB_SYMBOL_UNUSED( symbol )  ( symbol := ( symbol ) )
 
 #endif /* HB_COMMON_CH_ */

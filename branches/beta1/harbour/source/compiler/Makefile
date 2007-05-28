@@ -31,27 +31,24 @@ C_SOURCES=\
 	genjava.c  \
 	genobj32.c \
 	gencli.c   \
+	hbcmplib.c \
 	hbcomp.c   \
+	hbdbginf.c \
 	hbfunchk.c \
 	hbgenerr.c \
 	hbpcode.c  \
 	hbfix.c    \
 	hbdead.c   \
 	hblbl.c    \
+	hbopt.c    \
 	hbstripl.c \
 	hbusage.c  \
 	hbident.c  \
 	ppcomp.c   \
 	expropta.c \
 	exproptb.c \
-	exproptc.c \
 	complex.c  \
+	hbmain.c \
 
-
-C_MAIN=harbour.c
-
-LIBS=\
-	pp     \
-	common \
-
-include $(TOP)$(ROOT)config/bin.cf
+LIBNAME=compiler
+include $(TOP)$(ROOT)config/lib.cf

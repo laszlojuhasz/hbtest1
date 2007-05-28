@@ -58,7 +58,7 @@
 #include "hbapierr.h"
 #include "hbvm.h"
 
-static void hb_pp_ErrorMessage( void * cargo, char * szMsgTable[],
+static void hb_pp_ErrorMessage( void * cargo, const char * szMsgTable[],
                                 char cPrefix, int iCode,
                                 const char * szParam1, const char * szParam2 )
 {
@@ -99,7 +99,7 @@ static HB_GARBAGE_FUNC( hb_pp_Destructor )
    }
 }
 
-static void hb_pp_StdRules( PHB_PP_STATE pState )
+static void hb_pp_StdRules( PHB_ITEM ppItem )
 {
    static BOOL s_fInit = TRUE;
    static PHB_DYNS s_pDynSym;
@@ -114,14 +114,15 @@ static void hb_pp_StdRules( PHB_PP_STATE pState )
    {
       hb_vmPushDynSym( s_pDynSym );
       hb_vmPushNil();
-      hb_vmPushPointer( ( void * ) &pState );
+      hb_vmPush( ppItem );
       hb_vmDo( 1 );
    }
 }
 
-static PHB_PP_STATE hb_pp_Param( int iParam )
+PHB_PP_STATE hb_pp_Param( int iParam )
 {
-   PHB_PP_STATE * pStatePtr = ( PHB_PP_STATE * ) hb_parptr( iParam );
+   PHB_PP_STATE * pStatePtr =
+                  ( PHB_PP_STATE * ) hb_parptrGC( hb_pp_Destructor, iParam );
 
    if( pStatePtr )
       return * pStatePtr;
@@ -142,6 +143,12 @@ HB_FUNC( __PP_INIT )
    if( pState )
    {
       char * szPath = hb_parc( 1 ), * szStdCh = hb_parc( 2 );
+      PHB_ITEM ppItem;
+
+      pStatePtr = ( PHB_PP_STATE * ) hb_gcAlloc( sizeof( PHB_PP_STATE ),
+                                                 hb_pp_Destructor );
+      * pStatePtr = pState;
+      ppItem = hb_itemPutPtrGC( NULL, ( void * ) pStatePtr );
 
       hb_pp_init( pState, TRUE, 0, NULL, NULL, NULL,
                   hb_pp_ErrorMessage, hb_pp_Disp, NULL, NULL, NULL );
@@ -150,17 +157,14 @@ HB_FUNC( __PP_INIT )
          hb_pp_addSearchPath( pState, szPath, TRUE );
 
       if( !szStdCh )
-         hb_pp_StdRules( pState );
+         hb_pp_StdRules( ppItem );
       else if( *szStdCh )
          hb_pp_readRules( pState, szStdCh );
 
       hb_pp_initDynDefines( pState );
       hb_pp_setStdBase( pState );
 
-      pStatePtr = ( PHB_PP_STATE * ) hb_gcAlloc( sizeof( PHB_PP_STATE ),
-                                                 hb_pp_Destructor );
-      * pStatePtr = pState;
-      hb_retptrGC( pStatePtr );
+      hb_itemRelease( hb_itemReturnForward( ppItem ) );
    }
    else
       hb_ret();

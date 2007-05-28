@@ -1846,6 +1846,11 @@ static void hb_gt_xwc_ProcessKey( PXWND_DEF wnd, XKeyEvent *evt)
          buf[0] = (BYTE) (outISO & 0xff);
          n = 1;
       }
+      if ( outISO == 0x20ac )
+      {
+         buf[0] = (BYTE) 0x80;
+         n = 1;
+      }
    }
    if( n > 0 )
    {
@@ -3447,8 +3452,8 @@ static void hb_gt_xwc_mouse_GetPos( int * piRow, int * piCol )
    HB_TRACE(HB_TR_DEBUG, ("hb_gt_xwc_mouse_GetPos(%p,%p)", piRow, piCol));
 
    hb_gt_xwc_LateRefresh();
-   *piRow = s_wnd->mouseGotoRow;
-   *piCol = s_wnd->mouseGotoCol;
+   *piRow = s_wnd->mouseRow;
+   *piCol = s_wnd->mouseCol;
 }
 
 /* *********************************************************************** */

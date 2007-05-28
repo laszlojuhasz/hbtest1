@@ -50,6 +50,8 @@
  *
  */
 
+#include "common.ch"
+
 #include "rt_main.ch"
 
 /* Don't change the position of this #include. */
@@ -57,6 +59,9 @@
 
 FUNCTION Main_MISC()
    LOCAL oError
+#ifdef __HARBOUR__
+   LOCAL cEOL
+#endif
 
    /* Some random error object tests taken from the separate test source */
 
@@ -240,7 +245,11 @@ FUNCTION Main_MISC()
    TEST_LINE( Eval( @sbBlock )                , "E BASE 1004 No exported method EVAL A:1:B:{||...} F:S" ) /* CA-Cl*pper returns "E BASE 1004 No exported method EVAL A:1:U:{||...} F:S" */
    TEST_LINE( Eval( {|p1| p1 },"A","B")       , "A"                                       )
    TEST_LINE( Eval( {|p1,p2| p1+p2 },"A","B") , "AB"                                      )
+#ifdef __HARBOUR__
+   TEST_LINE( Eval( {|p1,p2,p3| HB_SYMBOL_UNUSED(p2), HB_SYMBOL_UNUSED(p3), p1 },"A","B") , "A"                                       )
+#else
    TEST_LINE( Eval( {|p1,p2,p3| p1 },"A","B") , "A"                                       )
+#endif
    TEST_LINE( suNIL:Eval()                    , "E BASE 1004 No exported method EVAL A:1:U:NIL F:S" )
    TEST_LINE( scString:Eval()                 , "E BASE 1004 No exported method EVAL A:1:C:HELLO F:S"    )
    TEST_LINE( snIntP:Eval()                   , "E BASE 1004 No exported method EVAL A:1:N:10 F:S"       )
@@ -708,6 +717,62 @@ FUNCTION Main_MISC()
 
 #endif
 
+   /* MLCTOPOS() */
+
+#ifdef __HARBOUR__
+   cEOL := Set( _SET_EOL, CHR(13) + CHR( 10 ) )
+#endif
+
+   TEST_LINE( MLCTOPOS( 'A message from me', 10, 2, 0 )                                , 11 )
+   TEST_LINE( MLCTOPOS( 'A message from me', 5, 2, 0, 4, .F. )                         ,  6 )
+   TEST_LINE( MLCTOPOS( 'A'+CHR(9)+'message'+CHR(9)+'from'+CHR(9)+'me', 10, 2, 0, 8 )  ,  3 )
+   TEST_LINE( MLCTOPOS( 'abcd efg hijk lm nopqr stu vwxyz', 5, 3, 0 )                  , 10 )
+   TEST_LINE( MLCTOPOS( 'abcd efg hijk lm nopqr stu vwxyz', 8, 2, 0 )                  , 10 )
+   TEST_LINE( MLCTOPOS( 'abcd efg hijk lm nopqr stu vwxyz', 8, 2, 0,, .F. )            ,  9 )
+   TEST_LINE( MLCTOPOS( 'A message from our me', 9, 2, 0 )                             , 11 )
+   TEST_LINE( MLCTOPOS( 'A message  from our me', 9, 2, 0 )                            , 11 )
+   TEST_LINE( MLCTOPOS( 'A message'+CHR(9)+'from me', 10, 2, 0 )                       , 11 )
+   TEST_LINE( MLCTOPOS( 'A message from me', 9, 2, 0,, .F. )                           , 10 )
+   TEST_LINE( MLCTOPOS( 'A message  from me', 9, 2, 0,, .F. )                          , 10 )
+   TEST_LINE( MLCTOPOS( 'A message'+CHR(141)+'from me', 10, 2, 0 )                     ,  3 )
+   TEST_LINE( MLCTOPOS( 'A message'+CHR(141)+'from me', 9, 2, 0 )                      ,  3 )
+   TEST_LINE( MLCTOPOS( 'A message'+CHR(141)+'from me', 10, 2, 0,, .F. )               , 11 )
+   TEST_LINE( MLCTOPOS( 'A message'+CHR(141)+'from me', 9, 2, 0,, .F. )                , 10 )
+   TEST_LINE( MLCTOPOS( ' message from me', 10, 1, 0 )                                 ,  1 )
+   TEST_LINE( MLCTOPOS( ' message from me', 10, 1, 8 )                                 ,  9 )
+   TEST_LINE( MLCTOPOS( ' message from me', 10, 1, 9 )                                 , 10 )
+   TEST_LINE( MLCTOPOS( ' message from me', 10, 1, 10 )                                , 11 )
+   TEST_LINE( MLCTOPOS( ' message from me', 10, 1, 11 )                                , 12 )
+   TEST_LINE( MLCTOPOS( ' message from me', 10, 1, 360 )                               , 17 )
+   TEST_LINE( MLCTOPOS( ' message from me', 10, 1, 0,, .F. )                           ,  1 )
+   TEST_LINE( MLCTOPOS( ' message from me', 10, 1, 8,, .F. )                           ,  9 )
+   TEST_LINE( MLCTOPOS( ' message from me', 10, 1, 9,, .F. )                           , 10 )
+   TEST_LINE( MLCTOPOS( ' message from me', 10, 1, 10,, .F. )                          , 11 )
+   TEST_LINE( MLCTOPOS( ' message from me', 10, 1, 11,, .F. )                          , 12 )
+   TEST_LINE( MLCTOPOS( ' message from me', 10, 1, 360,, .F. )                         , 17 )
+   TEST_LINE( MLCTOPOS( ' message'+CHR(9)+'from me', 10, 1, 11,, .T. )                 ,  9 )
+   TEST_LINE( MLCTOPOS( ' message'+CHR(9)+'from me', 10, 1, 11,, .F. )                 ,  9 )
+   TEST_LINE( MLCTOPOS( ' message'+CHR(9)+'from me', 10, 2, 11 )                       , 17 )
+   TEST_LINE( MLCTOPOS( ' message'+CHR(9)+'from me', 10, 1, 15,, .T. )                 , 13 )
+   TEST_LINE( MLCTOPOS( ' message'+CHR(9)+'from me', 10, 1, 15,, .F. )                 , 13 )
+   TEST_LINE( MLCTOPOS( CHR(13)+CHR(10)+' message'+CHR(9)+'from me', 10, 1, 15,, .F. ) ,  1 )
+   TEST_LINE( MLCTOPOS( CHR(13)+CHR(10)+' message'+CHR(9)+'from me', 10, 1, 15,, .T. ) ,  1 )
+   TEST_LINE( MLCTOPOS( 'A '+CHR(13)+CHR(10)+'message from me', 9, 2, 0 )              ,  5 )
+   TEST_LINE( MLCTOPOS( 'A '+CHR(141)+CHR(10)+'message from me', 9, 2, 0 )             , 13 )
+   TEST_LINE( MLCTOPOS( 'A'+CHR(141)+CHR(10)+'message from me', 9, 2, 0 )              , 12 )
+   TEST_LINE( MLCTOPOS( 'A'+CHR(141)+'message from me', 9, 2, 0 )                      , 11 )
+   TEST_LINE( MLCTOPOS( 'A'+CHR(13)+'message from me', 9, 2, 0 )                       , 11 )
+   TEST_LINE( MLCTOPOS( 'A'+CHR(10)+'message from me', 9, 2, 0 )                       , 11 )
+   TEST_LINE( MLCTOPOS( 'A '+CHR(13)+'message from me', 9, 2, 0 )                      ,  3 )
+   TEST_LINE( MLCTOPOS( 'A '+CHR(10)+'message from me', 9, 2, 0 )                      ,  3 )
+   TEST_LINE( MLCTOPOS( 'A message from me', 10, 7, 0 )                                , 18 )
+   TEST_LINE( MLCTOPOS( , , ,  )                                                       ,  1 )
+   TEST_LINE( MLCTOPOS( , .T., ,  )                                                    ,  1 )
+
+#ifdef __HARBOUR__
+   Set( _SET_EOL, cEOL )
+#endif
+
    RETURN NIL
 
 #ifdef __HARBOUR__
@@ -766,7 +831,7 @@ STATIC FUNCTION HB_TString()
       oClass:AddInline( "+"    , {| self, cTest | ::cValue +  cTest } )
       oClass:AddInline( "-"    , {| self, cTest | ::cValue -  cTest } )
       oClass:AddInline( "++"   , {| self        | ::cValue += " ", self } )
-      oClass:AddInline( "--"   , {| self        | iif( Len( ::cValue ) > 0, ::cValue := Left( ::cValue, Len( ::cValue ) - 1 ), ::cValue ), self } )
+      oClass:AddInline( "--"   , {| self        | iif( Len( ::cValue ) > 0, ::cValue := Left( ::cValue, Len( ::cValue ) - 1 ), ), self } )
       oClass:AddInline( "$"    , {| self, cTest | ::cValue $  cTest } )
       oClass:AddInline( "*"    , {| self, nVal  | Replicate( ::cValue, nVal ) } )
       oClass:AddInline( "/"    , {| self, nVal  | Left( ::cValue, Len( ::cValue ) / nVal ) } )
@@ -778,7 +843,7 @@ STATIC FUNCTION HB_TString()
       oClass:AddInline( ".AND.", {| self, cTest | ::cValue + " AND " + cTest } )
       oClass:AddInline( ".OR." , {| self, cTest | ::cValue + " OR " + cTest } )
 
-      oClass:AddInline( "HasMsg", {| self, cMsg | __ObjHasMsg( QSelf(), cMsg ) } )
+      oClass:AddInline( "HasMsg", {| self, cMsg | HB_SYMBOL_UNUSED( self ), __ObjHasMsg( QSelf(), cMsg ) } )
 
       oClass:Create()
    ENDIF

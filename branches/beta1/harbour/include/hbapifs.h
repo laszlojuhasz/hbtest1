@@ -120,7 +120,7 @@ extern HB_EXPORT BOOL     hb_fsEof        ( FHANDLE hFileHandle ); /* determine 
 extern HB_EXPORT USHORT   hb_fsError      ( void ); /* retrieve file system error */
 extern HB_EXPORT USHORT   hb_fsOsError    ( void ); /* retrieve system dependant file system error */
 extern HB_EXPORT BOOL     hb_fsFile       ( BYTE * pszFileName ); /* determine if a file exists */
-extern HB_EXPORT ULONG    hb_fsFSize      ( BYTE * pszFileName, BOOL bUseDirEntry ); /* determine the size of a file */
+extern HB_EXPORT HB_FOFFSET hb_fsFSize    ( BYTE * pszFileName, BOOL bUseDirEntry ); /* determine the size of a file */
 extern HB_EXPORT FHANDLE  hb_fsExtOpen    ( BYTE * pszFileName, BYTE * pDefExt,
                                             USHORT uiFlags, BYTE * pPaths, PHB_ITEM pError ); /* open a file using default extension and a list of paths */
 extern HB_EXPORT USHORT   hb_fsIsDrv      ( BYTE nDrive ); /* determine if a drive number is a valid drive */
@@ -144,6 +144,8 @@ extern HB_EXPORT USHORT   hb_fsWrite      ( FHANDLE hFileHandle, const BYTE * pB
 extern HB_EXPORT ULONG    hb_fsWriteLarge ( FHANDLE hFileHandle, const BYTE * pBuff, ULONG ulCount ); /* write to an open file from a buffer (>64K) */
 extern HB_EXPORT FHANDLE  hb_fsPOpen( BYTE * pFilename, BYTE * pMode );
 extern HB_EXPORT FHANDLE  hb_fsGetOsHandle( FHANDLE hFileHandle );
+extern HB_EXPORT USHORT   hb_getFError( void ); /* get FERROR() flag */
+extern HB_EXPORT void     hb_setFError( USHORT uiError ); /* set FERROR() flag */
 
 #define hb_fsFLock( h, s, l )   hb_fsLock( h, s, l, FL_LOCK )
 #define hb_fsFUnlock( h, s, l ) hb_fsLock( h, s, l, FL_UNLOCK )
@@ -152,6 +154,12 @@ extern HB_EXPORT FHANDLE  hb_fsGetOsHandle( FHANDLE hFileHandle );
 #  define HB_USE_SHARELOCKS
 #  define HB_SHARELOCK_POS          0x7fffffffUL
 #  define HB_SHARELOCK_SIZE         0x1UL
+#  if defined( HB_USE_BSDLOCKS_OFF )
+#     undef HB_USE_BSDLOCKS
+#  elif ( defined( HB_OS_LINUX ) || defined( HB_OS_BSD ) ) && \
+        !defined( __WATCOMC__ ) && !defined( HB_USE_BSDLOCKS )
+#     define HB_USE_BSDLOCKS
+#  endif
 #endif
 
 #define HB_MAX_DRIVE_LENGTH   10

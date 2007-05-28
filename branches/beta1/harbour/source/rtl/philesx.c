@@ -62,7 +62,6 @@
 
 HB_FUNC( CURDRIVE )
 {
-   USHORT uiErrorOld = hb_fsError();
    char szDrive[ 1 ];
 
    szDrive[ 0 ] = ( ( char ) hb_fsCurDrv() ) + 'A';
@@ -72,14 +71,12 @@ HB_FUNC( CURDRIVE )
    {
       while( hb_fsChDrv( ( BYTE )( toupper( *hb_parc( 1 ) ) - 'A' ) ) != 0 )
       {
-         USHORT uiAction = hb_errRT_BASE_Ext1( EG_OPEN, 9999, "Operating system error", "CURDRIVE", 0, EF_CANDEFAULT | EF_CANRETRY, 1, hb_paramError( 1 ) );
+         USHORT uiAction = hb_errRT_BASE_Ext1( EG_OPEN, 9999, "Operating system error", "CURDRIVE", 0, EF_CANDEFAULT | EF_CANRETRY, HB_ERR_ARGS_BASEPARAMS );
 
          if( uiAction != E_RETRY )
             break;
       }
    }
-
-   hb_fsSetError( uiErrorOld );
 }
 
 #endif

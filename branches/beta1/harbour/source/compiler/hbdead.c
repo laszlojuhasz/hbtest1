@@ -218,6 +218,28 @@ static HB_CODETRACE_FUNC( hb_p_jumptruefar )
    return hb_compCodeTraceNextPos( cargo, lPCodePos + 4 );
 }
 
+static HB_CODETRACE_FUNC( hb_p_seqalways )
+{
+   BYTE * pAddr = &pFunc->pCode[ lPCodePos + 1 ];
+   ULONG ulAlwaysPos = lPCodePos + HB_PCODE_MKINT24( pAddr );
+
+   hb_compCodeTraceMark( cargo, lPCodePos, 4 );
+   hb_compCodeTraceAddJump( cargo, ulAlwaysPos );
+
+   return hb_compCodeTraceNextPos( cargo, lPCodePos + 4 );
+}
+
+static HB_CODETRACE_FUNC( hb_p_alwaysbegin )
+{
+   BYTE * pAddr = &pFunc->pCode[ lPCodePos + 1 ];
+   ULONG ulAlwaysEndPos = lPCodePos + HB_PCODE_MKINT24( pAddr );
+
+   hb_compCodeTraceMark( cargo, lPCodePos, 4 );
+   hb_compCodeTraceAddJump( cargo, ulAlwaysEndPos );
+
+   return hb_compCodeTraceNextPos( cargo, lPCodePos + 4 );
+}
+
 static HB_CODETRACE_FUNC( hb_p_seqbegin )
 {
    BYTE * pAddr = &pFunc->pCode[ lPCodePos + 1 ];
@@ -501,7 +523,19 @@ static const PHB_CODETRACE_FUNC s_codeTraceFuncTable[ HB_P_LAST_PCODE ] =
    hb_p_default,               /* HB_P_PUSHSTRLARGE          */
    hb_p_default,               /* HB_P_SWAP                  */
    hb_p_default,               /* HB_P_PUSHVPARAMS           */
-   hb_p_default                /* HB_P_PUSHUNREF             */
+   hb_p_default,               /* HB_P_PUSHUNREF             */
+   hb_p_seqalways,             /* HB_P_SEQALWAYS             */
+   hb_p_alwaysbegin,           /* HB_P_ALWAYSBEGIN           */
+   hb_p_default,               /* HB_P_ALWAYSEND             */
+   hb_p_default,               /* HB_P_DECEQPOP              */
+   hb_p_default,               /* HB_P_INCEQPOP              */
+   hb_p_default,               /* HB_P_DECEQ                 */
+   hb_p_default,               /* HB_P_INCEQ                 */
+   hb_p_default,               /* HB_P_LOCALDEC              */
+   hb_p_default,               /* HB_P_LOCALINC              */
+   hb_p_default,               /* HB_P_LOCALINCPUSH          */
+   hb_p_default,               /* HB_P_PUSHFUNCSYM           */
+   hb_p_default                /* HB_P_HASHGEN               */
 };
 
 void hb_compCodeTraceMarkDead( HB_COMP_DECL, PFUNCTION pFunc )

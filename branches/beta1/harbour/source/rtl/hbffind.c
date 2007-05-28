@@ -150,9 +150,6 @@ HB_FILE_VER( "$Id$" )
    #include <errno.h>
    #include <dirent.h>
    #include <time.h>
-#if !defined( __WATCOMC__ )
-   #include <fnmatch.h>
-#endif
 
    typedef struct
    {
@@ -471,8 +468,7 @@ static BOOL hb_fsFindNextLow( PHB_FFIND ffind )
             nSec   = ft->tm_sec;
          }
       }
-
-      if( !bFound ) hb_fsSetIOError( bFound, 0 );
+      hb_fsSetIOError( bFound, 0 );
    }
 
 #elif defined(HB_OS_OS2)
@@ -534,8 +530,7 @@ static BOOL hb_fsFindNextLow( PHB_FFIND ffind )
             nSec   = ft->tm_sec;
          }
       }
-
-      if( !bFound ) hb_fsSetIOError( bFound, 0 );
+      hb_fsSetIOError( bFound, 0 );
    }
 
 #elif defined(HB_OS_WIN_32)
@@ -614,8 +609,7 @@ static BOOL hb_fsFindNextLow( PHB_FFIND ffind )
             }
          }
       }
-
-      if( !bFound ) hb_fsSetIOError( bFound, 0 );
+      hb_fsSetIOError( bFound, 0 );
    }
 
 #elif defined(HB_OS_UNIX)
@@ -668,12 +662,7 @@ static BOOL hb_fsFindNextLow( PHB_FFIND ffind )
          while( ( info->entry = readdir( info->dir ) ) != NULL )
          {
             hb_strncpy( string, info->entry->d_name, sizeof( string ) - 1 );
-
-#if defined( __WATCOMC__ )
-            if( hb_strMatchWild( string, info->pattern ) )
-#else
-            if( fnmatch( info->pattern, string, FNM_PERIOD | FNM_PATHNAME ) == 0 )
-#endif
+            if( hb_strMatchFile( string, info->pattern ) )
             {
                bFound = TRUE;
                break;
@@ -722,9 +711,7 @@ static BOOL hb_fsFindNextLow( PHB_FFIND ffind )
                bFound = FALSE;
          }
       }
-
-      if( ! bFound )
-         hb_fsSetIOError( bFound, 0 );
+      hb_fsSetIOError( bFound, 0 );
    }
 
 #else

@@ -81,7 +81,7 @@ static USHORT s_uiRddIdBLOB = ( USHORT ) -1;
 static USHORT s_uiRddIdFPT  = ( USHORT ) -1;
 
 static RDDFUNCS fptSuper;
-static RDDFUNCS fptTable =
+static const RDDFUNCS fptTable =
 {
 
    /* Movement and positioning methods */

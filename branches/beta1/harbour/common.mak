@@ -37,7 +37,9 @@ HB_DEST_DIRS = \
     $(DLL_ROOTDIR)  \
     $(DLL_OBJ_DIR)
 
+MAIN_DIR     = source\main
 COMMON_DIR   = source\common
+COMPILER_DIR = source\compiler
 PP_DIR       = source\pp
 VM_DIR       = source\vm
 RTL_DIR      = source\rtl
@@ -80,7 +82,9 @@ HBPDF_DIR   = contrib\pdflib
 # Where Bcc-Make should look for C and PRG sources
 ALL_LIB_SRC_DIRS_TMP=\
 $(OBJ_DIR);\
+$(MAIN_DIR);\
 $(COMMON_DIR);\
+$(COMPILER_DIR);\
 $(PP_DIR);\
 $(VM_DIR);\
 $(RTL_DIR);\
@@ -130,6 +134,7 @@ ALL_SRC_DIRS     = $(ALL_SRC_DIRS_TMP: =)
 #
 
 COMMON_LIB   = $(LIB_DIR)\common.lib
+COMPILER_LIB = $(LIB_DIR)\compiler.lib
 PP_LIB       = $(LIB_DIR)\pp.lib
 VM_LIB       = $(LIB_DIR)\vm.lib
 RTL_LIB      = $(LIB_DIR)\rtl.lib
@@ -196,6 +201,7 @@ HB_GT_LIB = $(LIB_DIR)\$(HB_GT_LIB).lib
 # Standard Libs for HB-based executables
 STANDARD_STATIC_HBLIBS = \
     $(COMMON_LIB)     \
+    $(COMPILER_LIB)   \
     $(PP_LIB)         \
     $(VM_LIB)         \
     $(RTL_LIB)        \
@@ -245,6 +251,37 @@ PP_LIB_OBJS = \
 
 #**********************************************************
 
+COMPILER_LIB_OBJS = \
+    $(OBJ_DIR)\hbmain.obj   \
+    $(OBJ_DIR)\harboury.obj \
+    $(OBJ_DIR)\complex.obj  \
+    $(OBJ_DIR)\cmdcheck.obj \
+    $(OBJ_DIR)\hbcomp.obj   \
+    $(OBJ_DIR)\hbcmplib.obj \
+    $(OBJ_DIR)\hbdbginf.obj \
+    $(OBJ_DIR)\hbdead.obj   \
+    $(OBJ_DIR)\hbstripl.obj \
+    $(OBJ_DIR)\hbusage.obj  \
+    $(OBJ_DIR)\hbident.obj  \
+    $(OBJ_DIR)\hbgenerr.obj \
+    $(OBJ_DIR)\hblbl.obj    \
+    $(OBJ_DIR)\hbpcode.obj  \
+    $(OBJ_DIR)\hbfunchk.obj \
+    $(OBJ_DIR)\hbfix.obj    \
+    $(OBJ_DIR)\hbopt.obj    \
+    $(OBJ_DIR)\ppcomp.obj   \
+    $(OBJ_DIR)\genc.obj     \
+    $(OBJ_DIR)\gencc.obj    \
+    $(OBJ_DIR)\gencli.obj   \
+    $(OBJ_DIR)\gencobj.obj  \
+    $(OBJ_DIR)\genobj32.obj \
+    $(OBJ_DIR)\genjava.obj  \
+    $(OBJ_DIR)\genhrb.obj   \
+    $(OBJ_DIR)\expropta.obj \
+    $(OBJ_DIR)\exproptb.obj \
+
+#**********************************************************
+
 # VM Objects common for STATIC and SHARED library
 VM_COMMON_LIB_OBJS = \
     $(OBJ_DIR)\arrays.obj   \
@@ -263,6 +300,8 @@ VM_COMMON_LIB_OBJS = \
     $(OBJ_DIR)\extend.obj   \
     $(OBJ_DIR)\fm.obj       \
     $(OBJ_DIR)\garbage.obj  \
+    $(OBJ_DIR)\hashes.obj   \
+    $(OBJ_DIR)\hashfunc.obj \
     $(OBJ_DIR)\hvm.obj      \
     $(OBJ_DIR)\initexit.obj \
     $(OBJ_DIR)\initsymb.obj \
@@ -342,13 +381,19 @@ RTL_LIB_OBJS = \
     $(OBJ_DIR)\gttone.obj   \
     $(OBJ_DIR)\gx.obj       \
     $(OBJ_DIR)\hardcr.obj   \
+    $(OBJ_DIR)\hbcrc.obj    \
+    $(OBJ_DIR)\hbmd5.obj    \
     $(OBJ_DIR)\hbffind.obj  \
     $(OBJ_DIR)\hbgtcore.obj \
+    $(OBJ_DIR)\hbinet.obj   \
     $(OBJ_DIR)\hbrandom.obj \
+    $(OBJ_DIR)\hbregex.obj  \
+    $(OBJ_DIR)\hbtoken.obj  \
     $(OBJ_DIR)\idle.obj     \
     $(OBJ_DIR)\inkey.obj    \
     $(OBJ_DIR)\is.obj       \
     $(OBJ_DIR)\isprint.obj  \
+    $(OBJ_DIR)\itemseri.obj \
     $(OBJ_DIR)\langapi.obj  \
     $(OBJ_DIR)\left.obj     \
     $(OBJ_DIR)\len.obj      \
@@ -402,7 +447,6 @@ RTL_LIB_OBJS = \
     $(OBJ_DIR)\strzero.obj  \
     $(OBJ_DIR)\stuff.obj    \
     $(OBJ_DIR)\substr.obj   \
-    $(OBJ_DIR)\teditorl.obj \
     $(OBJ_DIR)\tone.obj     \
     $(OBJ_DIR)\trace.obj    \
     $(OBJ_DIR)\transfrm.obj \
@@ -476,6 +520,7 @@ RTL_LIB_OBJS = \
     $(OBJ_DIR)\ttextlin.obj \
     $(OBJ_DIR)\ttopbar.obj  \
     $(OBJ_DIR)\typefile.obj \
+    $(OBJ_DIR)\valtoexp.obj \
     $(OBJ_DIR)\wait.obj     \
 
 #**********************************************************
@@ -484,12 +529,12 @@ MACRO_LIB_OBJS = \
     $(OBJ_DIR)\macroy.obj   \
     $(OBJ_DIR)\macroa.obj   \
     $(OBJ_DIR)\macrob.obj   \
-    $(OBJ_DIR)\macroc.obj   \
     $(OBJ_DIR)\macrolex.obj \
 
 #**********************************************************
 
 DEBUG_LIB_OBJS = \
+    $(OBJ_DIR)\dbgentry.obj \
     $(OBJ_DIR)\dbgbrwsr.obj \
     $(OBJ_DIR)\dbghelp.obj  \
     $(OBJ_DIR)\dbgmenu.obj  \
@@ -499,6 +544,8 @@ DEBUG_LIB_OBJS = \
     $(OBJ_DIR)\debugger.obj \
     $(OBJ_DIR)\dbgtarr.obj  \
     $(OBJ_DIR)\dbgtobj.obj  \
+    $(OBJ_DIR)\dbgthsh.obj  \
+    $(OBJ_DIR)\dbgaltd.obj  \
     $(OBJ_DIR)\tbrwtext.obj \
     $(OBJ_DIR)\dbgwa.obj    \
 
@@ -535,6 +582,7 @@ LANG_LIB_OBJS = \
     $(OBJ_DIR)\msgis850.obj \
     $(OBJ_DIR)\msgit.obj    \
     $(OBJ_DIR)\msgko.obj    \
+    $(OBJ_DIR)\msgnl.obj    \
     $(OBJ_DIR)\msgpl852.obj \
     $(OBJ_DIR)\msgpliso.obj \
     $(OBJ_DIR)\msgplmaz.obj \
@@ -578,8 +626,11 @@ CODEPAGE_LIB_OBJS = \
     $(OBJ_DIR)\cphr437.obj  \
     $(OBJ_DIR)\cphr852.obj  \
     $(OBJ_DIR)\cphu852.obj  \
+    $(OBJ_DIR)\cphu852s.obj \
     $(OBJ_DIR)\cphuiso.obj  \
+    $(OBJ_DIR)\cphuisos.obj \
     $(OBJ_DIR)\cphuwin.obj  \
+    $(OBJ_DIR)\cphuwins.obj \
     $(OBJ_DIR)\cpit437.obj  \
     $(OBJ_DIR)\cpit850.obj  \
     $(OBJ_DIR)\cpitisb.obj  \
@@ -628,6 +679,8 @@ CODEPAGE_LIB_OBJS = \
 RDD_LIB_OBJS = \
     $(OBJ_DIR)\dbcmd.obj    \
     $(OBJ_DIR)\workarea.obj \
+    $(OBJ_DIR)\wacore.obj   \
+    $(OBJ_DIR)\wafunc.obj   \
     $(OBJ_DIR)\dbf1.obj     \
     $(OBJ_DIR)\dbnubs.obj   \
     $(OBJ_DIR)\delim1.obj   \
@@ -735,30 +788,6 @@ GTGUI_DLL_OBJS = $(GTGUI_LIB_COMMON_OBJS) $(GTGUI_LIB_SHARED_OBJS)
 
 HARBOUR_EXE_OBJS = \
     $(OBJ_DIR)\harbour.obj  \
-    $(OBJ_DIR)\harboury.obj \
-    $(OBJ_DIR)\complex.obj  \
-    $(OBJ_DIR)\cmdcheck.obj \
-    $(OBJ_DIR)\hbcomp.obj   \
-    $(OBJ_DIR)\hbdead.obj   \
-    $(OBJ_DIR)\hbstripl.obj \
-    $(OBJ_DIR)\hbusage.obj  \
-    $(OBJ_DIR)\hbident.obj  \
-    $(OBJ_DIR)\hbgenerr.obj \
-    $(OBJ_DIR)\hblbl.obj    \
-    $(OBJ_DIR)\hbpcode.obj  \
-    $(OBJ_DIR)\hbfunchk.obj \
-    $(OBJ_DIR)\hbfix.obj    \
-    $(OBJ_DIR)\ppcomp.obj   \
-    $(OBJ_DIR)\genc.obj     \
-    $(OBJ_DIR)\gencc.obj    \
-    $(OBJ_DIR)\gencli.obj   \
-    $(OBJ_DIR)\gencobj.obj  \
-    $(OBJ_DIR)\genobj32.obj \
-    $(OBJ_DIR)\genjava.obj  \
-    $(OBJ_DIR)\genhrb.obj   \
-    $(OBJ_DIR)\expropta.obj \
-    $(OBJ_DIR)\exproptb.obj \
-    $(OBJ_DIR)\exproptc.obj \
 
 #**********************************************************
 
@@ -902,6 +931,7 @@ HB_BUILD_TARGETS = \
     $(HBPPGEN_EXE)          \
     $(PP_LIB)               \
     \
+    $(COMPILER_LIB)         \
     $(HARBOUR_EXE)          \
     $(HBPP_EXE)             \
     \

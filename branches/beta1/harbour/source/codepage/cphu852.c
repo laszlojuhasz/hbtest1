@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * National Collation Support Module (HU852)
  *
- * Copyright 1999-2005 Viktor Szakats <viktor.szakats@syenar.hu>
+ * Copyright 1999-2007 Viktor Szakats <viktor.szakats@syenar.hu>
  * www - http://www.harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -52,13 +52,13 @@
 
 /* Language name: Hungarian */
 /* ISO language code (2 chars): HU */
-/* Codepage: 852 */
+/* Codepage: 852 (ntxhu852 compatible) */
 
 #include <ctype.h>
 #include "hbapi.h"
 #include "hbapicdp.h"
 
-#define NUMBER_OF_CHARACTERS  36    /* The number of single characters in the
+#define NUMBER_OF_CHARACTERS  42    /* The number of single characters in the
                                        alphabet, two-as-one aren't considered
                                        here, accented - are considered. */
 #define IS_LATIN               1    /* Should be 1, if the national alphabet
@@ -83,13 +83,23 @@
    same excepting the characters case, of course.
  */
 
-/* NOTE: é/Ñ has been added to make it more compatible with sixhu852 for C52 
-         [vszakats] */
+/* NOTE: Several chars have been added above the standard 852 Hungarian 
+         ones to make it 100% compatible with ntxhu852.obj for CA-Cl*pper 5.x.
+         Moreover the extra chars had to be replicated in the alternative 
+         codepages (WIN, ISO) too, to keep the Harbour codepage translation 
+         work. [vszakats] */
+
+/* NOTE: Since there is no possibility in Harbour to have different number 
+         of uppercase and lowercase accented chars, a simple workaround 
+         was used to solve the problem; notice that some uppercase chars 
+         have the same lowercase values. Testing showed that both the 
+         ordering and Lower()/Upper() functions worked alright.
+         [20070410] [vszakats] */
 
 static HB_CODEPAGE s_codepage = { "HU852",
-    CPID_852, UNITB_852, NUMBER_OF_CHARACTERS,
-    "AµéBCDEêFGHI÷JKLMNO‡ôäPQRSTUÈöÎVWXYZ",
-    "a†ÑbcdeÇfghi°jklmno¢îãpqrstu£Å˚vwxyz",
+    HB_CPID_852, HB_UNITB_852, NUMBER_OF_CHARACTERS,
+    "AèµéBCDEêFGHIç÷JKLMNOï‡ôßäPQRSTUóÈöòÎVWXYZ",
+    "a††ÑbcdeÇfghi°°jklmno¢¢îìãpqrstu££Åñ˚vwxyz",
     IS_LATIN, ACCENTED_EQUAL, ACCENTED_INTERLEAVED, 0, 0, NULL, NULL, NULL, NULL, 0, NULL };
 
 HB_CODEPAGE_INIT( HU852 )

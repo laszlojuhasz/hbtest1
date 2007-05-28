@@ -64,7 +64,7 @@ HB_FUNC( HB_SETDISPCP )
          hb_gtSetDispCP( hb_parc( 1 ), hb_parc( 2 ), hb_parl( 3 ) );
    }
    else
-      hb_errRT_BASE_SubstR( EG_ARG, 1089, NULL, "HB_SETDISPCP", 1, hb_paramError( 1 ) );
+      hb_errRT_BASE_SubstR( EG_ARG, 1089, NULL, "HB_SETDISPCP", HB_ERR_ARGS_BASEPARAMS );
 
    hb_ret();  /* return NIL */
 }
@@ -76,7 +76,7 @@ HB_FUNC( HB_SETKEYCP )
       hb_gtSetKeyCP( hb_parc( 1 ), hb_parc( 2 ) );
    }
    else
-      hb_errRT_BASE_SubstR( EG_ARG, 1089, NULL, "HB_SETKEYCP", 1, hb_paramError( 1 ) );
+      hb_errRT_BASE_SubstR( EG_ARG, 1089, NULL, "HB_SETKEYCP", HB_ERR_ARGS_BASEPARAMS );
 
    hb_ret();  /* return NIL */
 }
@@ -97,7 +97,7 @@ HB_FUNC( HB_SETTERMCP )
       }
    }
    else
-      hb_errRT_BASE_SubstR( EG_ARG, 1089, NULL, "HB_SETTERMCP", 1, hb_paramError( 1 ) );
+      hb_errRT_BASE_SubstR( EG_ARG, 1089, NULL, "HB_SETTERMCP", HB_ERR_ARGS_BASEPARAMS );
 
    hb_ret();  /* return NIL */
 }
@@ -118,13 +118,21 @@ HB_FUNC( HB_GTINFO )
          hb_ret();
    }
    else
-      hb_errRT_BASE_SubstR( EG_ARG, 3012, NULL, "HB_GTINFO", 2,
-                            hb_paramError( 1 ), hb_paramError( 2 ) );
+      hb_errRT_BASE_SubstR( EG_ARG, 3012, NULL, "HB_GTINFO", HB_ERR_ARGS_BASEPARAMS );
 }
 
 HB_FUNC( HB_GTVERSION )
 {
    hb_retc( hb_gtVersion( hb_parni( 1 ) ) );
+}
+
+HB_FUNC( HB_GTALERT )
+{
+   int iClrNorm = ISCHAR( 3 ) ? hb_gtColorToN( hb_parc( 3 ) ) : hb_parni( 3 ),
+       iClrHigh = ISCHAR( 4 ) ? hb_gtColorToN( hb_parc( 4 ) ) : hb_parni( 4 );
+
+   hb_retni( hb_gtAlert( hb_param( 1, HB_IT_ANY ), hb_param( 2, HB_IT_ANY ),
+                         iClrNorm, iClrHigh, hb_parnd( 5 ) ) );
 }
 
 HB_FUNC( HB_GFXPRIMITIVE )

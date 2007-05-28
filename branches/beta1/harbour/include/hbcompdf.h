@@ -70,6 +70,7 @@ typedef enum
    LANG_OBJ32,                  /* DOS/Windows 32 bits <file.obj> */
    LANG_JAVA,                   /* Java <file.java> */
    LANG_PORT_OBJ,               /* Portable objects <file.hrb> */
+   LANG_PORT_OBJ_BUF,           /* Portable objects in memory buffer */
    LANG_OBJ_MODULE              /* Platform dependant object module <file.obj> */
 } LANGUAGES;                    /* supported Harbour output languages */
 
@@ -136,6 +137,7 @@ typedef struct __FUNC
    PVAR         pStatics;                 /* pointer to static variables list */
    PVAR         pFields;                  /* pointer to fields variables list */
    PVAR         pMemvars;                 /* pointer to memvar variables list */
+   PVAR         pDetached;                /* pointer to detached local variables list */
    PVAR         pPrivates;                /* pointer to private variables list */
    BYTE *       pCode;                    /* pointer to a memory block where pcode is stored */
    ULONG        lPCodeSize;               /* total memory size for pcode */
@@ -164,6 +166,13 @@ typedef struct __INLINE
    struct __INLINE * pNext;               /* pointer to the next defined inline */
 } _INLINE, * PINLINE;
 
+/* structure to hold a called functions */
+typedef struct __FUNCALL
+{
+   char *       szName;                   /* name of a called function */
+   struct __FUNCALL * pNext;              /* pointer to the next called function */
+} _FUNCALL, * PFUNCALL;
+
 /* structure to control all Clipper defined functions */
 typedef struct
 {
@@ -179,6 +188,14 @@ typedef struct
    PINLINE pLast;             /* pointer to the last defined inline */
    int     iCount;            /* number of defined inlines */
 } INLINES;
+
+/* structure to control all Clipper defined functions */
+typedef struct
+{
+   PFUNCALL  pFirst;            /* pointer to the first called funtion */
+   PFUNCALL  pLast;             /* pointer to the last called function */
+   int       iCount;            /* number of defined functions */
+} FUNCALLS;
 
 /* compiler symbol support structure */
 typedef struct _COMSYMBOL
@@ -201,7 +218,8 @@ typedef struct
 
 typedef struct __EXTERN
 {
-   char * szName;
+   char * szName;               /* name of the extern function */
+   HB_SYMBOLSCOPE cScope;       /* the scope of the function */
    struct __EXTERN * pNext;
 } _EXTERN, * PEXTERN;      /* support structure for extern symbols */
 /* as they have to be placed on the symbol table later than the first public symbol */
@@ -214,18 +232,19 @@ typedef struct _AUTOOPEN
 
 /* value types seen at language level
  */
-#define  HB_EV_UNKNOWN     0
-#define  HB_EV_NIL         1
-#define  HB_EV_NUMERIC     2
-#define  HB_EV_STRING      4
-#define  HB_EV_CODEBLOCK   8
-#define  HB_EV_LOGICAL     16
-#define  HB_EV_OBJECT      32
-#define  HB_EV_ARRAY       64
-#define  HB_EV_SYMBOL      128
-#define  HB_EV_VARREF      256
-#define  HB_EV_FUNREF      512
-#define  HB_EV_DATE        1024
+#define  HB_EV_UNKNOWN     0x0000
+#define  HB_EV_NIL         0x0001
+#define  HB_EV_NUMERIC     0x0002
+#define  HB_EV_STRING      0x0004
+#define  HB_EV_CODEBLOCK   0x0008
+#define  HB_EV_LOGICAL     0x0010
+#define  HB_EV_OBJECT      0x0020
+#define  HB_EV_ARRAY       0x0040
+#define  HB_EV_SYMBOL      0x0080
+#define  HB_EV_VARREF      0x0100
+#define  HB_EV_FUNREF      0x0200
+#define  HB_EV_DATE        0x0400
+#define  HB_EV_HASH        0x0800
 
 /* messages sent to expressions
  */
@@ -275,6 +294,7 @@ typedef enum
    HB_ET_LOGICAL,
    HB_ET_SELF,
    HB_ET_ARRAY,
+   HB_ET_HASH,
    HB_ET_VARREF,
    HB_ET_REFERENCE,
    HB_ET_FUNREF,
@@ -368,11 +388,10 @@ typedef struct HB_EXPR_
       } asList;
       struct
       {
-         char     *string;             /* source code of a codeblock */
-         USHORT   length;
-         USHORT   flags;               /* HB_BLOCK_MACRO, HB_BLOCK_LATEEVAL, HB_BLOCK_VPARAMS */
          struct HB_EXPR_ *pExprList;   /* list elements */
          HB_CBVAR_PTR pLocals;         /* list of local variables */
+         char     *string;             /* source code of a codeblock */
+         USHORT   flags;               /* HB_BLOCK_MACRO, HB_BLOCK_LATEEVAL, HB_BLOCK_VPARAMS */
       } asCodeblock;
       struct
       {
@@ -451,17 +470,30 @@ typedef struct HB_RTVAR_
    struct HB_RTVAR_ *pPrev;
 } HB_RTVAR, *HB_RTVAR_PTR;
 
+typedef struct _HB_DEBUGINFO
+{
+   char *   pszModuleName;
+   ULONG    ulFirstLine;
+   ULONG    ulLastLine;
+   ULONG    ulAllocated;
+   BYTE *   pLineMap;
+   struct _HB_DEBUGINFO * pNext;
+} HB_DEBUGINFO, * PHB_DEBUGINFO;
+
 typedef struct _HB_LABEL_INFO
 {
    FILE *   yyc;
    BOOL     fVerbose;
    BOOL     fSetSeqBegin;
    BOOL     fCondJump;
+   int      iNestedBlock;
    ULONG *  pulLabels;
 } HB_LABEL_INFO, * PHB_LABEL_INFO;
 
 #define HB_MODE_COMPILER      1
 #define HB_MODE_MACRO         2
+
+struct _HB_COMP_FUNCS;
 
 #if defined( HB_COMMON_SUPPORT )
 
@@ -470,6 +502,7 @@ typedef struct _HB_COMMON
    /* common to macro compiler members */
    int    mode;               /* HB_MODE_* */
    ULONG  supported;          /* various flags for supported capabilities */
+   const struct _HB_COMP_FUNCS * funcs;
 }
 HB_COMMON, * HB_COMMON_PTR;
 
@@ -496,6 +529,7 @@ typedef struct HB_MACRO_    /* a macro compiled pcode container */
    /* common to compiler members */
    int    mode;
    ULONG  supported;       /* various flags for supported capabilities */
+   const struct _HB_COMP_FUNCS * funcs;
 
    /* macro compiler only members */
    char * string;          /* compiled string */
@@ -539,6 +573,7 @@ typedef struct _HB_COMP
    /* common to macro compiler members */
    int    mode;
    ULONG  supported;       /* various flags for supported capabilities */
+   const struct _HB_COMP_FUNCS * funcs;
 
    /* compiler only members */
    PHB_COMP_LEX      pLex;
@@ -546,7 +581,7 @@ typedef struct _HB_COMP
 
    HB_HASH_TABLE_PTR pIdentifiers;
    FUNCTIONS         functions;
-   FUNCTIONS         funcalls;
+   FUNCALLS          funcalls;
    HB_LOOPEXIT_PTR   pLoops;
    HB_SWITCHCMD_PTR  pSwitch;
    HB_ELSEIF_PTR     elseif;
@@ -564,10 +599,14 @@ typedef struct _HB_COMP
    PCOMCLASS         pLastClass;
    PCOMCLASS         pReleaseClass;
    PFUNCTION         pInitFunc;
+   PFUNCTION         pLineFunc;
    PHB_FNAME         pMainFileName;
    PHB_FNAME         pFileName;
    PHB_FNAME         pOutPath;
    PHB_FNAME         pPpoPath;
+
+   ULONG             ulOutBufSize;        /* memory output buffer size */
+   BYTE *            pOutBuf;             /* memory output buffer address */
 
    ULONG             lastLinePos;         /* position of last opcode with line number */
    int               lastLine;            /* last generated in PCODE line number */
@@ -599,8 +638,8 @@ typedef struct _HB_COMP
    int               iGenCOutput;         /* C code generation should be verbose (use comments) or not */
    int               ilastLineErr;        /* line numer with last syntax error */
 
-   BOOL              fExit;               /* force breaking compilation process */
    BOOL              fQuiet;              /* be quiet during compilation (-q) */
+   BOOL              fExit;               /* force breaking compilation process */
    BOOL              fPPO;                /* flag indicating, is ppo output needed */
    BOOL              fPPT;                /* flag indicating, is ppt output needed */
    BOOL              fStartProc;          /* holds if we need to create the starting procedure */
@@ -635,6 +674,19 @@ extern HB_COMP_PTR hb_comp_new( void );
 extern void hb_comp_free( HB_COMP_PTR );
 
 #endif /* !HB_MACRO_SUPPORT  */
+
+typedef struct _HB_COMP_FUNCS
+{
+   HB_EXPR_PTR ( * ExprNew )        ( HB_COMP_DECL, HB_EXPRTYPE iType );
+   void        ( * ExprClear )      ( HB_COMP_DECL, HB_EXPR_PTR pExpr );
+   void        ( * ExprFree )       ( HB_COMP_DECL, HB_EXPR_PTR pExpr );
+   void        ( * ExprDelete )     ( HB_COMP_DECL, HB_EXPR_PTR pExpr );
+
+   HB_EXPR_PTR ( * ErrorType )      ( HB_COMP_DECL, HB_EXPR_PTR );
+   HB_EXPR_PTR ( * ErrorSyntax )    ( HB_COMP_DECL, HB_EXPR_PTR );
+   void        ( * ErrorDuplVar )   ( HB_COMP_DECL, const char* );
+} HB_COMP_FUNCS, * PHB_COMP_FUNCS;
+
 
 #define HB_MACRO_DATA         HB_COMP_PARAM
 #define HB_PCODE_DATA         ( HB_MACRO_DATA->pCodeInfo )

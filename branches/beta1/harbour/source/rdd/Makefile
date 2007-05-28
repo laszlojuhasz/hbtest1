@@ -7,10 +7,13 @@ ROOT = ../../
 C_SOURCES=\
 	dbcmd.c \
 	workarea.c \
+	wacore.c \
+	wafunc.c \
 	dbf1.c \
 	dbnubs.c \
-	sdf1.c \
+	dbsql.c \
 	delim1.c \
+	sdf1.c \
 	hbdbsort.c \
 
 PRG_SOURCES=\

@@ -109,13 +109,7 @@ HB_FUNC( DISKSPACE )
       /* Get the default drive */
 
       if( uiDrive == 0 )
-      {
-         USHORT uiErrorOld = hb_fsError();
-
          uiDrive = hb_fsCurDrv() + 1;
-
-         hb_fsSetError( uiErrorOld );
-      }
 
       szPath[ 0 ] = uiDrive + 'A' - 1;
       szPath[ 1 ] = ':';
@@ -209,10 +203,10 @@ HB_FUNC( DISKSPACE )
       char *szName = ISCHAR( 1 ) ? hb_parc( 1 ) : ( char * ) "/";
 #if defined(HB_OS_SUNOS)
       struct statvfs st;
-      if ( statvfs( szName, &st) == 0 )
+      if ( statvfs( szName, &st ) == 0 )
 #else
       struct statfs st;
-      if ( statfs( szName, &st) == 0 )
+      if ( statfs( szName, &st ) == 0 )
 #endif
          dSpace = ( double ) st.f_bfree * ( double ) st.f_bsize;
       else
@@ -230,7 +224,7 @@ HB_FUNC( DISKSPACE )
 #endif
 
    if( bError )
-      hb_errRT_BASE_Ext1( EG_OPEN, 2018, NULL, NULL, 0, EF_CANDEFAULT, 1, hb_paramError( 1 ) );
+      hb_errRT_BASE_Ext1( EG_OPEN, 2018, NULL, NULL, 0, EF_CANDEFAULT, HB_ERR_ARGS_BASEPARAMS );
 
    hb_retnlen( dSpace, -1, 0 );
 }

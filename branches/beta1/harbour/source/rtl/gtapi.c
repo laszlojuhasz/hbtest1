@@ -240,6 +240,15 @@ HB_EXPORT USHORT hb_gtColorToN( char * szColorString )
    return hb_gt_ColorNum( szColorString );
 }
 
+HB_EXPORT USHORT hb_gtColorsToString( int * pColors, int iColorCount, char * pszColorString, int iBufSize )
+{
+   HB_TRACE(HB_TR_DEBUG, ("hb_gtColorsToString(%p, %d, %p, %d)", pColors, iColorCount, pszColorString, iBufSize));
+
+   hb_gt_ColorsToString( pColors, iColorCount, pszColorString, iBufSize );
+
+   return SUCCESS;
+}
+
 HB_EXPORT ERRCODE hb_gtSetColorStr( const char * szColorString )
 {
    HB_TRACE(HB_TR_DEBUG, ("hb_gtSetColorStr(%s)", szColorString));
@@ -597,6 +606,12 @@ ERRCODE hb_gtInfo( int iType, PHB_GT_INFO pInfo )
       return SUCCESS;
    else
       return FAILURE;
+}
+
+int hb_gtAlert( PHB_ITEM pMessage, PHB_ITEM pOptions,
+                int iClrNorm, int iClrHigh, double dDelay )
+{
+   return hb_gt_Alert( pMessage, pOptions, iClrNorm, iClrHigh, dDelay );
 }
 
 int hb_gtSetFlag( int iType, int iNewValue )

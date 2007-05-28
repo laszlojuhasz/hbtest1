@@ -56,12 +56,12 @@
 #include "hbpp.h"
 #include "hbapi.h"
 
+extern PHB_PP_STATE hb_pp_Param( int iParam );
+
 HB_FUNC( __PP_STDRULES )
 {
-   PHB_PP_STATE * pStatePtr = ( PHB_PP_STATE * ) hb_parptr( 1 );
+   PHB_PP_STATE pState = hb_pp_Param( 1 );
 
-   if( pStatePtr && * pStatePtr )
-   {
-      hb_pp_setStdRules( * pStatePtr );
-   }
+   if( pState )
+      hb_pp_setStdRules( pState );
 }

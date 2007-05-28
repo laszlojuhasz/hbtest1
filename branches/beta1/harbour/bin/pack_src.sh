@@ -33,6 +33,7 @@ hb_collect="echo"
 $hb_collect *.bat
 $hb_collect *.sh
 $hb_collect *.cmd
+$hb_collect *.mak
 $hb_collect *.spec
 $hb_collect [Mm]akefile*
 $hb_collect Change[Ll]og*
@@ -40,6 +41,7 @@ $hb_collect COPYING TODO ERRATA
 
 # BIN
 $hb_collect bin/*.bat
+$hb_collect bin/*.cmd
 $hb_collect bin/*.sh
 
 # CONFIG
@@ -48,6 +50,7 @@ $hb_collect config/dos/*.cf
 $hb_collect config/linux/*.cf
 $hb_collect config/bsd/*.cf
 $hb_collect config/darwin/*.cf
+$hb_collect config/hpux/*.cf
 $hb_collect config/sunos/*.cf
 $hb_collect config/os2/*.cf
 $hb_collect config/w32/*.cf
@@ -55,6 +58,7 @@ $hb_collect config/w32/*.cf
 # DOC
 $hb_collect doc/[Mm]akefile*
 $hb_collect doc/*.txt
+$hb_collect doc/genhtm.*
 $hb_collect doc/en/[Mm]akefile*
 $hb_collect doc/en/*.txt
 $hb_collect doc/es/[Mm]akefile*
@@ -66,20 +70,29 @@ $hb_collect include/*.[ch]
 $hb_collect include/*.api
 $hb_collect include/*.ch
 
-# SOURCE\COMMON
-$hb_collect source/common/Makefile
-$hb_collect source/common/*.[ch]
-
 # SOURCE
 $hb_collect source/Makefile
+
+# SOURCE\MAIN
+$hb_collect source/main/Makefile
+$hb_collect source/main/*.[ch]
 
 # SOURCE\COMPILER
 $hb_collect source/compiler/Makefile
 $hb_collect source/compiler/*.[cylh]
 $hb_collect source/compiler/*.yy[ch]
 
+# SOURCE\COMMON
+$hb_collect source/common/Makefile
+$hb_collect source/common/*.[ch]
+
+# SOURCE\PP
+$hb_collect source/pp/Makefile
+$hb_collect source/pp/*.[ch]
+
 # SOURCE\DEBUG
 $hb_collect source/debug/Makefile
+$hb_collect source/debug/*.[ch]
 $hb_collect source/debug/*.prg
 
 # SOURCE\LANG
@@ -94,10 +107,6 @@ $hb_collect source/codepage/*.[ch]
 $hb_collect source/macro/Makefile
 $hb_collect source/macro/*.[cylh]
 $hb_collect source/macro/*.yy[ch]
-
-# SOURCE\PP
-$hb_collect source/pp/Makefile
-$hb_collect source/pp/*.[ch]
 
 # SOURCE\RDD
 $hb_collect source/rdd/Makefile
@@ -179,6 +188,10 @@ $hb_collect source/rtl/gtcrs/*.prg
 $hb_collect source/rtl/gtdos/Makefile
 $hb_collect source/rtl/gtdos/*.[ch]
 
+# SOURCE\RTL\GTGUI
+$hb_collect source/rtl/gtgui/Makefile
+$hb_collect source/rtl/gtgui/*.[ch]
+
 # SOURCE\RTL\GTOS2
 $hb_collect source/rtl/gtos2/Makefile
 $hb_collect source/rtl/gtos2/*.[ch]
@@ -221,14 +234,23 @@ $hb_collect source/vm/Makefile
 $hb_collect source/vm/*.[ch]
 $hb_collect source/vm/*.prg
 
+# SOURCE\VM\MAINSTD
+$hb_collect source/vm/mainstd/Makefile
+
 # TESTS
+$hb_collect tests/Makefile
 $hb_collect tests/*.bat
 $hb_collect tests/*.ch
+$hb_collect tests/*.cfm
+$hb_collect tests/*.ini
 $hb_collect tests/*.dbf
 $hb_collect tests/*.fpt
+$hb_collect tests/*.frm
+$hb_collect tests/*.lbl
 $hb_collect tests/*.prg
 $hb_collect tests/*.src
 $hb_collect tests/*.txt
+$hb_collect tests/*.[ch]
 
 # TESTS\BLDTEST
 $hb_collect tests/bldtest/Makefile
@@ -257,6 +279,11 @@ $hb_collect utils/hbmake/*.[ch]
 $hb_collect utils/hbpp/Makefile
 $hb_collect utils/hbpp/*.[ch]
 
+# UTILS\HBPPTEST
+$hb_collect utils/hbpptest/Makefile
+$hb_collect utils/hbpptest/*.bat
+$hb_collect utils/hbpptest/*.prg
+
 # UTILS\HBRUN
 $hb_collect utils/hbrun/Makefile
 $hb_collect utils/hbrun/*.prg
@@ -266,6 +293,10 @@ $hb_collect utils/hbtest/Makefile
 $hb_collect utils/hbtest/*.ch
 $hb_collect utils/hbtest/*.cmd
 $hb_collect utils/hbtest/*.prg
+
+# UTILS\HBVER
+$hb_collect utils/hbver/Makefile
+$hb_collect utils/hbver/*.[ch]
 
 # CONTRIB
 $hb_collect contrib/Makefile
@@ -293,12 +324,38 @@ $hb_collect contrib/dot/*.prg
 $hb_collect contrib/dot/*.ch
 $hb_collect contrib/dot/*.txt
 
+# CONTRIB\TIP
+$hb_collect contrib/tip/Makefile
+$hb_collect contrib/tip/Changelog
+$hb_collect contrib/tip/*.[ch]
+$hb_collect contrib/tip/*.prg
+$hb_collect contrib/tip/*.ch
+$hb_collect contrib/tip/*.txt
+
 # CONTRIB\ODBC
 $hb_collect contrib/odbc/Makefile
 $hb_collect contrib/odbc/*.[ch]
 $hb_collect contrib/odbc/*.ch
 $hb_collect contrib/odbc/*.prg
 $hb_collect contrib/odbc/*.txt
+
+# CONTRIB\PGSQL
+$hb_collect contrib/pgsql/[mM]akefile*
+$hb_collect contrib/pgsql/Changelog
+$hb_collect contrib/pgsql/README
+$hb_collect contrib/pgsql/*.[ch]
+$hb_collect contrib/pgsql/*.ch
+$hb_collect contrib/pgsql/*.prg
+$hb_collect contrib/pgsql/*.txt
+$hb_collect contrib/pgsql/*.bat
+
+# CONTRIB\MYSQL
+$hb_collect contrib/mysql/[mM]akefile*
+$hb_collect contrib/mysql/*.[ch]
+$hb_collect contrib/mysql/*.ch
+$hb_collect contrib/mysql/*.prg
+$hb_collect contrib/mysql/*.txt
+$hb_collect contrib/mysql/*.bat
 
 # CONTRIB\BTREE
 $hb_collect contrib/btree/[mM]akefile*

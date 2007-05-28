@@ -74,6 +74,8 @@ extern HB_EXPORT void       hb_evalBlock( PHB_ITEM pCodeBlock, ... );
 extern HB_EXPORT void       hb_evalBlock0( PHB_ITEM pCodeBlock );
 extern HB_EXPORT void       hb_evalBlock1( PHB_ITEM pCodeBlock, PHB_ITEM pParam );
 
+extern HB_EXPORT BOOL       hb_execFromArray( PHB_ITEM pParam );
+
 extern HB_EXPORT PHB_ITEM   hb_itemDo       ( PHB_ITEM pItem, ULONG ulPCount, ... );
 extern HB_EXPORT PHB_ITEM   hb_itemDoC      ( char * szFunc, ULONG ulPCount, ... );
 
@@ -95,6 +97,7 @@ extern HB_EXPORT long       hb_itemGetNL    ( PHB_ITEM pItem );
 extern HB_EXPORT HB_LONG    hb_itemGetNInt  ( PHB_ITEM pItem );
 extern HB_EXPORT void       hb_itemGetNLen  ( PHB_ITEM pItem, int * piWidth, int * piDec );
 extern HB_EXPORT void *     hb_itemGetPtr   ( PHB_ITEM pItem );
+extern HB_EXPORT void *     hb_itemGetPtrGC ( PHB_ITEM pItem, HB_GARBAGE_FUNC_PTR pFunc );
 extern HB_EXPORT PHB_SYMB   hb_itemGetSymbol( PHB_ITEM pItem );
 extern HB_EXPORT PHB_ITEM   hb_itemNew      ( PHB_ITEM pNull );
 extern HB_EXPORT void       hb_itemInit     ( PHB_ITEM pItem );
@@ -139,11 +142,14 @@ extern HB_EXPORT PHB_ITEM   hb_itemPutNLLLen( PHB_ITEM pItem, LONGLONG lNumber, 
 
 extern HB_EXPORT PHB_ITEM   hb_itemParamPtr ( USHORT uiParam, long lMask );
 extern HB_EXPORT int        hb_itemStrCmp   ( PHB_ITEM pFirst, PHB_ITEM pSecond, BOOL bForceExact ); /* our string compare */
+extern HB_EXPORT int        hb_itemStrICmp  ( PHB_ITEM pFirst, PHB_ITEM pSecond, BOOL bForceExact ); /* our string compare */
 extern HB_EXPORT void       hb_itemCopy     ( PHB_ITEM pDest, PHB_ITEM pSource ); /* copies an item to one place to another respecting its containts */
 extern HB_EXPORT void       hb_itemCopyToRef( PHB_ITEM pDest, PHB_ITEM pSource );
+extern HB_EXPORT void       hb_itemCopyFromRef( PHB_ITEM pDest, PHB_ITEM pSource );
 extern HB_EXPORT void       hb_itemMove     ( PHB_ITEM pDest, PHB_ITEM pSource ); /* moves the value of an item without incrementing of reference counters, source is cleared */
 extern HB_EXPORT void       hb_itemMoveRef  ( PHB_ITEM pDest, PHB_ITEM pSource );
 extern HB_EXPORT void       hb_itemMoveToRef( PHB_ITEM pDest, PHB_ITEM pSource );
+extern HB_EXPORT void       hb_itemMoveFromRef( PHB_ITEM pDest, PHB_ITEM pSource );
 extern HB_EXPORT void       hb_itemClear    ( PHB_ITEM pItem );
 extern HB_EXPORT PHB_ITEM   hb_itemUnRef    ( PHB_ITEM pItem ); /* de-references passed variable */
 extern HB_EXPORT PHB_ITEM   hb_itemUnRefOnce( PHB_ITEM pItem ); /* de-references passed variable, one step*/

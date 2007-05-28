@@ -107,6 +107,7 @@ HB_LEX_KEY, * PHB_LEX_KEY;
 
 static const HB_LEX_KEY s_keytable[] = 
 {
+   { "ALWAYS",      4,  6, ALWAYS         },
    { "ANNOUNCE",    4,  8, ANNOUNCE       },
    { "AS",          2,  2, AS_TYPE        },
    { "BEGIN",       4,  5, BEGINSEQ       },
@@ -115,6 +116,7 @@ static const HB_LEX_KEY s_keytable[] =
    { "DECLARE",     4,  7, DECLARE        },
    { "DESCEND",     7,  7, DESCEND        },
    { "DO",          2,  2, DO             },
+   { "DYNAMIC",     7,  7, DYNAMIC        },
    { "ELSE",        4,  4, ELSE           },
    { "ELSEIF",      5,  6, ELSEIF         },
    { "END",         3,  3, END            },
@@ -504,10 +506,21 @@ int hb_complex( YYSTYPE *yylval_ptr, HB_COMP_DECL )
          if( HB_PP_LEX_SELF( pToken ) )
          {
             pLex->lasttok = yylval_ptr->string = "SELF";
+            pLex->iState = IDENTIFIER;
             return IDENTIFIER;
          }
-         /* no break */
+         pLex->iState = OPERATOR;
+         return pToken->value[ 0 ];
+
       case HB_PP_TOKEN_EQ:
+         if( HB_SUPPORT_HARBOUR && pToken->pNext && pToken->pNext->spaces == 0 &&
+             HB_PP_TOKEN_TYPE( pToken->pNext->type ) == HB_PP_TOKEN_GT )
+         {
+            hb_pp_tokenGet( pLex->pPP );
+            pLex->iState = OPERATOR;
+            return HASHOP;
+         }
+         /* no break */
       case HB_PP_TOKEN_PLUS:
       case HB_PP_TOKEN_MINUS:
       case HB_PP_TOKEN_MULT:
@@ -560,12 +573,14 @@ int hb_complex( YYSTYPE *yylval_ptr, HB_COMP_DECL )
 
             case BEGINSEQ:
                if( pLex->iState == LOOKUP && pToken->pNext &&
-                   HB_PP_TOKEN_TYPE( pToken->pNext->type ) == HB_PP_TOKEN_KEYWORD &&
-                   pToken->pNext->len >= 4 && pToken->pNext->len <= 8 &&
-                   hb_strnicmp( "SEQUENCE", pToken->pNext->value, pToken->pNext->len ) == 0 )
+                   HB_PP_TOKEN_TYPE( pToken->pNext->type ) == HB_PP_TOKEN_KEYWORD )
                {
-                  hb_pp_tokenGet( pLex->pPP );
-                  break;
+                  if( pToken->pNext->len >= 4 && pToken->pNext->len <= 8 &&
+                      hb_strnicmp( "SEQUENCE", pToken->pNext->value, pToken->pNext->len ) == 0 )
+                  {
+                     hb_pp_tokenGet( pLex->pPP );
+                     break;
+                  }
                }
                iType = IDENTIFIER;
                break;
@@ -587,6 +602,15 @@ int hb_complex( YYSTYPE *yylval_ptr, HB_COMP_DECL )
                      pLex->iState = RECOVERUSING;
                      return RECOVERUSING;
                   }
+               }
+               iType = IDENTIFIER;
+               break;
+
+            case ALWAYS:
+               if( pLex->iState == LOOKUP && HB_PP_TOKEN_ISEOC( pToken->pNext ) )
+               {
+                  pLex->iState = ALWAYS;
+                  return ALWAYS;
                }
                iType = IDENTIFIER;
                break;
@@ -1074,6 +1098,7 @@ int hb_complex( YYSTYPE *yylval_ptr, HB_COMP_DECL )
             case ANNOUNCE:
             case OPTIONAL:
             case DESCEND:
+            case DYNAMIC:
             case EXTERN:
             case LOCAL:
             case MEMVAR:

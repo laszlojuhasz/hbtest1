@@ -75,6 +75,7 @@ HB_EXTERN_BEGIN
 #define HB_IT_NIL       ( ( HB_TYPE ) 0x00000 )
 #define HB_IT_POINTER   ( ( HB_TYPE ) 0x00001 )
 #define HB_IT_INTEGER   ( ( HB_TYPE ) 0x00002 )
+#define HB_IT_HASH      ( ( HB_TYPE ) 0x00004 )
 #define HB_IT_LONG      ( ( HB_TYPE ) 0x00008 )
 #define HB_IT_DOUBLE    ( ( HB_TYPE ) 0x00010 )
 #define HB_IT_DATE      ( ( HB_TYPE ) 0x00020 )
@@ -93,8 +94,9 @@ HB_EXTERN_BEGIN
 #define HB_IT_NUMERIC   ( ( HB_TYPE ) ( HB_IT_INTEGER | HB_IT_LONG | HB_IT_DOUBLE ) )
 #define HB_IT_NUMINT    ( ( HB_TYPE ) ( HB_IT_INTEGER | HB_IT_LONG ) )
 #define HB_IT_ANY       ( ( HB_TYPE ) 0xFFFFFFFF )
-#define HB_IT_COMPLEX   ( ( HB_TYPE ) ( HB_IT_BLOCK | HB_IT_ARRAY | HB_IT_POINTER | HB_IT_MEMVAR | HB_IT_ENUM | HB_IT_BYREF | HB_IT_STRING ) )
-#define HB_IT_GCITEM    ( ( HB_TYPE ) ( HB_IT_BLOCK | HB_IT_ARRAY | HB_IT_POINTER | HB_IT_BYREF ) )
+#define HB_IT_COMPLEX   ( ( HB_TYPE ) ( HB_IT_BLOCK | HB_IT_ARRAY | HB_IT_HASH | HB_IT_POINTER | /* HB_IT_MEMVAR | HB_IT_ENUM |*/ HB_IT_BYREF | HB_IT_STRING ) )
+#define HB_IT_GCITEM    ( ( HB_TYPE ) ( HB_IT_BLOCK | HB_IT_ARRAY | HB_IT_HASH | HB_IT_POINTER | HB_IT_BYREF ) )
+#define HB_IT_HASHKEY   ( ( HB_TYPE ) ( HB_IT_INTEGER | HB_IT_LONG | HB_IT_DOUBLE | HB_IT_DATE | HB_IT_STRING ) )
 
 #if 0
 
@@ -128,6 +130,7 @@ HB_EXTERN_BEGIN
 #define HB_IS_LONG( p )       HB_IS_OF_TYPE( p, HB_IT_LONG )
 #define HB_IS_SYMBOL( p )     HB_IS_OF_TYPE( p, HB_IT_SYMBOL )
 #define HB_IS_POINTER( p )    HB_IS_OF_TYPE( p, HB_IT_POINTER )
+#define HB_IS_HASH( p )       HB_IS_OF_TYPE( p, HB_IT_HASH )
 #define HB_IS_MEMVAR( p )     HB_IS_OF_TYPE( p, HB_IT_MEMVAR )
 #define HB_IS_MEMO( p )       HB_IS_OF_TYPE( p, HB_IT_MEMO )
 #define HB_IS_ENUM( p )       HB_IS_OF_TYPE( p, HB_IT_ENUM )
@@ -138,6 +141,7 @@ HB_EXTERN_BEGIN
 #define HB_IS_COMPLEX( p )    ( ( HB_ITEM_TYPE( p ) & HB_IT_COMPLEX ) != 0 )
 #define HB_IS_GCITEM( p )     ( ( HB_ITEM_TYPE( p ) & HB_IT_GCITEM ) != 0 )
 #define HB_IS_BADITEM( p )    ( ( HB_ITEM_TYPE( p ) & HB_IT_COMPLEX ) != 0 && ( HB_ITEM_TYPE( p ) & ~( HB_IT_COMPLEX | HB_IT_MEMOFLAG ) ) != 0 )
+#define HB_IS_HASHKEY( p )    ( ( HB_ITEM_TYPE( p ) & HB_IT_HASHKEY ) != 0 )
 #define HB_IS_OBJECT( p )     ( HB_IS_ARRAY( p ) && HB_ARRAY_OBJ( p ) )
 #define HB_IS_NUMBER( p )     HB_IS_NUMERIC( p )
 
@@ -158,6 +162,7 @@ HB_EXTERN_BEGIN
 #define HB_IS_LONG( p )       ( HB_ITEM_TYPE( p ) == HB_IT_LONG )
 #define HB_IS_SYMBOL( p )     ( HB_ITEM_TYPE( p ) == HB_IT_SYMBOL )
 #define HB_IS_POINTER( p )    ( HB_ITEM_TYPE( p ) == HB_IT_POINTER )
+#define HB_IS_HASH( p )       ( HB_ITEM_TYPE( p ) == HB_IT_HASH )
 #define HB_IS_MEMO( p )       ( HB_ITEM_TYPE( p ) == HB_IT_MEMO )
 #define HB_IS_MEMVAR( p )     ( HB_ITEM_TYPE( p ) == ( HB_IT_MEMVAR | HB_IT_BYREF ) )
 #define HB_IS_ENUM( p )       ( HB_ITEM_TYPE( p ) == ( HB_IT_ENUM | HB_IT_BYREF ) )
@@ -167,6 +172,7 @@ HB_EXTERN_BEGIN
 #define HB_IS_NUMINT( p )     ( ( HB_ITEM_TYPE( p ) & HB_IT_NUMINT ) != 0 )
 #define HB_IS_COMPLEX( p )    ( ( HB_ITEM_TYPE( p ) & HB_IT_COMPLEX ) != 0 )
 #define HB_IS_GCITEM( p )     ( ( HB_ITEM_TYPE( p ) & HB_IT_GCITEM ) != 0 )
+#define HB_IS_HASHKEY( p )    ( ( HB_ITEM_TYPE( p ) & HB_IT_HASHKEY ) != 0 )
 #define HB_IS_BADITEM( p )    ( ( HB_ITEM_TYPE( p ) & HB_IT_COMPLEX ) != 0 && ( HB_ITEM_TYPE( p ) & ~( HB_IT_COMPLEX | HB_IT_MEMOFLAG ) ) != 0 )
 #define HB_IS_OBJECT( p )     ( HB_IS_ARRAY( p ) && HB_ARRAY_OBJ( p ) )
 #define HB_IS_NUMBER( p )     HB_IS_NUMERIC( p )
@@ -186,6 +192,7 @@ HB_EXTERN_BEGIN
 #define HB_IS_LONG( p )       ( ( HB_ITEM_TYPE( p ) & HB_IT_LONG ) != 0 )
 #define HB_IS_SYMBOL( p )     ( ( HB_ITEM_TYPE( p ) & HB_IT_SYMBOL ) != 0 )
 #define HB_IS_POINTER( p )    ( ( HB_ITEM_TYPE( p ) & HB_IT_POINTER ) != 0 )
+#define HB_IS_HASH( p )       ( ( HB_ITEM_TYPE( p ) & HB_IT_HASH ) != 0 )
 #define HB_IS_MEMO( p )       ( ( HB_ITEM_TYPE( p ) & HB_IT_MEMOFLAG ) != 0 )
 #define HB_IS_STRING( p )     ( ( HB_ITEM_TYPE( p ) & HB_IT_STRING ) != 0 )
 #define HB_IS_MEMVAR( p )     ( ( HB_ITEM_TYPE( p ) & HB_IT_MEMVAR ) != 0 )
@@ -195,6 +202,7 @@ HB_EXTERN_BEGIN
 #define HB_IS_NUMINT( p )     ( ( HB_ITEM_TYPE( p ) & HB_IT_NUMINT ) != 0 )
 #define HB_IS_COMPLEX( p )    ( ( HB_ITEM_TYPE( p ) & HB_IT_COMPLEX ) != 0 )
 #define HB_IS_GCITEM( p )     ( ( HB_ITEM_TYPE( p ) & HB_IT_GCITEM ) != 0 )
+#define HB_IS_HASHKEY( p )    ( ( HB_ITEM_TYPE( p ) & HB_IT_HASHKEY ) != 0 )
 #define HB_IS_BADITEM( p )    ( ( HB_ITEM_TYPE( p ) & HB_IT_COMPLEX ) != 0 && ( HB_ITEM_TYPE( p ) & ~( HB_IT_COMPLEX | HB_IT_MEMOFLAG ) ) != 0 )
 #define HB_IS_OBJECT( p )     ( HB_IS_ARRAY( p ) && HB_ARRAY_OBJ( p ) )
 #define HB_IS_NUMBER( p )     HB_IS_NUMERIC( p )
@@ -211,9 +219,10 @@ HB_EXTERN_BEGIN
 #define ISBYREF( n )       ( ( hb_parinfo( n ) & HB_IT_BYREF ) != 0 ) /* NOTE: Intentionally using a different method */
 #define ISARRAY( n )       ( hb_param( n, HB_IT_ARRAY ) != NULL )
 #define ISOBJECT( n )      ( hb_extIsObject( n ) )
-#define ISBLOCK( n )       ( hb_param( n, HB_IT_BLOCK ) != NULL ) /* Not available in CA-Cl*pper. */
-#define ISPOINTER( n )     ( hb_param( n, HB_IT_POINTER ) != NULL ) /* Not available in CA-Cl*pper. */
-#define ISSYMBOL( n )      ( hb_param( n, HB_IT_SYMBOL ) != NULL ) /* Not available in CA-Cl*pper. */
+#define ISBLOCK( n )       ( hb_param( n, HB_IT_BLOCK ) != NULL )    /* Not available in CA-Cl*pper. */
+#define ISPOINTER( n )     ( hb_param( n, HB_IT_POINTER ) != NULL )  /* Not available in CA-Cl*pper. */
+#define ISHASH( n )        ( hb_param( n, HB_IT_HASH ) != NULL )     /* Not available in CA-Cl*pper. */
+#define ISSYMBOL( n )      ( hb_param( n, HB_IT_SYMBOL ) != NULL )   /* Not available in CA-Cl*pper. */
 
 
 #ifdef _HB_API_INTERNAL_
@@ -221,6 +230,7 @@ HB_EXTERN_BEGIN
 /* forward declarations */
 struct _HB_CODEBLOCK;
 struct _HB_BASEARRAY;
+struct _HB_BASEHASH;
 struct _HB_ITEM;
 struct _HB_VALUE;
 
@@ -239,6 +249,11 @@ typedef struct _HB_STACK_STATE
 struct hb_struArray
 {
    struct _HB_BASEARRAY * value;
+};
+
+struct hb_struHash
+{
+   struct _HB_BASEHASH * value;
 };
 
 struct hb_struBlock
@@ -326,6 +341,14 @@ struct hb_struSymbol
    USHORT          paramdeclcnt;    /* number of declared parameters in function definition */
 };
 
+struct hb_struRecover
+{
+   ULONG    recover;    /* address of recover code */
+   ULONG    base;       /* previous recover base */
+   USHORT   flags;      /* previous recovery state and recover type */
+   USHORT   request;    /* requested action */
+};
+
 /* items hold at the virtual machine stack */
 typedef struct _HB_ITEM
 {
@@ -340,14 +363,17 @@ typedef struct _HB_ITEM
       struct hb_struLogical   asLogical;
       struct hb_struLong      asLong;
       struct hb_struPointer   asPointer;
+      struct hb_struHash      asHash;
       struct hb_struMemvar    asMemvar;
       struct hb_struRefer     asRefer;
       struct hb_struEnum      asEnum;
       struct hb_struString    asString;
       struct hb_struSymbol    asSymbol;
+      struct hb_struRecover   asRecover;
    } item;
 } HB_ITEM, * PHB_ITEM, * HB_ITEM_PTR;
 
+/* internal structure for arrays */
 typedef struct _HB_BASEARRAY
 {
    PHB_ITEM    pItems;       /* pointer to the array items */
@@ -355,6 +381,14 @@ typedef struct _HB_BASEARRAY
    USHORT      uiClass;      /* offset to the classes base if it is an object */
    USHORT      uiPrevCls;    /* for fixing after access super */
 } HB_BASEARRAY, * PHB_BASEARRAY, * HB_BASEARRAY_PTR;
+
+#ifndef _HB_HASH_INTERNAL_
+/* internal structure for hashes */
+typedef struct _HB_BASEHASH
+{
+   void *      value;
+} HB_BASEHASH, * PHB_BASEHASH;
+#endif
 
 /* internal structure for codeblocks */
 typedef struct _HB_CODEBLOCK
@@ -377,10 +411,17 @@ typedef struct _HB_VALUE
 
 typedef struct _HB_NESTED_CLONED
 {
-   PHB_BASEARRAY            pSrcBaseArray;
-   PHB_ITEM                 pDest;
+   void *   value;
+   PHB_ITEM pDest;
    struct _HB_NESTED_CLONED * pNext;
 } HB_NESTED_CLONED, * PHB_NESTED_CLONED;
+
+typedef struct _HB_GRIP
+{
+   HB_ITEM     value;
+   HB_COUNTER  counter;
+} HB_GRIP, * PHB_GRIP, * HB_GRIP_PTR;
+
 
 #endif
 
@@ -391,6 +432,101 @@ typedef USHORT ERRCODE;
 #define FAILURE            1
 
 extern HB_SYMB  hb_symEval;
+
+extern HB_EXPORT void   hb_xinit( void );                           /* Initialize fixed memory subsystem */
+extern HB_EXPORT void   hb_xexit( void );                           /* Deinitialize fixed memory subsystem */
+extern HB_EXPORT void * hb_xalloc( ULONG ulSize );                  /* allocates memory, returns NULL on failure */
+extern HB_EXPORT void * hb_xgrab( ULONG ulSize );                   /* allocates memory, exits on failure */
+extern HB_EXPORT void   hb_xfree( void * pMem );                    /* frees memory */
+extern HB_EXPORT void * hb_xrealloc( void * pMem, ULONG ulSize );   /* reallocates memory */
+extern HB_EXPORT ULONG  hb_xsize( void * pMem );                    /* returns the size of an allocated memory block */
+extern HB_EXPORT ULONG  hb_xquery( USHORT uiMode );                 /* Query different types of memory information */
+
+#ifdef _HB_API_INTERNAL_
+extern void       hb_xRefInc( void * pMem );    /* increment reference counter */
+extern BOOL       hb_xRefDec( void * pMem );    /* decrement reference counter, return TRUE when 0 reached */
+extern void       hb_xRefFree( void * pMem );   /* decrement reference counter and free the block when 0 reached */
+extern HB_COUNTER hb_xRefCount( void * pMem );  /* return number of references */
+extern void *     hb_xRefResize( void * pMem, ULONG ulSave, ULONG ulSize );   /* reallocates memory, create copy if reference counter greater then 1 */
+
+#if 0
+
+/*
+ * I used this macros only to test some speed overhead,
+ * They may not be supported in the future so please do
+ * not create any code which needs them. [druzus]
+ */
+
+#define hb_xRefInc( p )             (++(*HB_COUNTER_PTR( p )))
+#define hb_xRefDec( p )             (--(*HB_COUNTER_PTR( p ))==0)
+#define hb_xRefFree( p )            do { \
+                                       if( hb_xRefDec( p ) ) \
+                                          hb_xfree( p ); \
+                                    } while( 0 )
+#define hb_xRefCount( p )           (*HB_COUNTER_PTR( p ))
+
+#endif
+
+#endif /* _HB_API_INTERNAL_ */
+
+/* #if UINT_MAX == ULONG_MAX */
+/* it fails on 64bit platforms where int has 32 bit and long has 64 bit.
+   we need these functions only when max(size_t) < max(long)
+   and only on 16bit platforms, so the below condition seems to be
+   more reasonable. */
+#if UINT_MAX > USHRT_MAX
+   /* NOTE: memcpy/memset can work with ULONG data blocks */
+   #define  hb_xmemcpy  memcpy
+   #define  hb_xmemset  memset
+#else
+   /* NOTE: otherwise, the hb_xmemcpy and hb_xmemset functions
+            will be used to copy and/or set ULONG data blocks */
+extern HB_EXPORT void * hb_xmemcpy( void * pDestArg, void * pSourceArg, ULONG ulLen ); /* copy more than memcpy() can */
+extern HB_EXPORT void * hb_xmemset( void * pDestArg, int iFill, ULONG ulLen ); /* set more than memset() can */
+#endif
+
+/* garbage collector */
+#define HB_GARBAGE_FUNC( hbfunc )   void hbfunc( void * Cargo ) /* callback function for cleaning garbage memory pointer */
+typedef HB_GARBAGE_FUNC( HB_GARBAGE_FUNC_ );
+typedef HB_GARBAGE_FUNC_ * HB_GARBAGE_FUNC_PTR;
+
+#define HB_GARBAGE_SWEEPER( hbfunc )   BOOL hbfunc( void * Cargo ) /* callback function for cleaning garbage memory pointer */
+typedef HB_GARBAGE_SWEEPER( HB_GARBAGE_SWEEPER_ );
+typedef HB_GARBAGE_SWEEPER_ * HB_GARBAGE_SWEEPER_PTR;
+
+extern void  hb_gcRegisterSweep( HB_GARBAGE_SWEEPER_PTR pSweep, void * Cargo );
+
+extern PHB_ITEM   hb_gcGripGet( HB_ITEM_PTR pItem );
+extern void       hb_gcGripDrop( HB_ITEM_PTR pItem );
+
+extern HB_EXPORT void *hb_gcAlloc( ULONG ulSize, HB_GARBAGE_FUNC_PTR pFunc ); /* allocates a memory controlled by the garbage collector */
+extern void       hb_gcFree( void *pAlloc ); /* deallocates a memory allocated by the garbage collector */
+extern void *     hb_gcLock( void *pAlloc ); /* do not release passed memory block */
+extern void *     hb_gcUnlock( void *pAlloc ); /* passed block is allowed to be released */
+#ifdef _HB_API_INTERNAL_
+HB_GARBAGE_FUNC_PTR hb_gcFunc( void *pBlock );  /* return cleanup function pointer */
+extern void       hb_gcItemRef( HB_ITEM_PTR pItem ); /* checks if passed item refers passed memory block pointer */
+extern void       hb_vmIsLocalRef( void ); /* hvm.c - mark all local variables as used */
+extern void       hb_vmIsStaticRef( void ); /* hvm.c - mark all static variables as used */
+extern void       hb_memvarsIsMemvarRef( void ); /* memvars.c - mark all memvar variables as used */
+extern void       hb_gcReleaseAll( void ); /* release all memory blocks unconditionally */
+
+extern void       hb_gcRefCheck( void * pBlock ); /* Check if block still cannot be access after destructor execution */
+extern void       hb_gcRefInc( void * pAlloc );  /* increment reference counter */
+extern BOOL       hb_gcRefDec( void * pAlloc );  /* decrement reference counter, return TRUE when 0 reached */
+extern void       hb_gcRefFree( void * pAlloc ); /* decrement reference counter and free the block when 0 reached */
+extern HB_COUNTER hb_gcRefCount( void * pAlloc );  /* return number of references */
+
+#if 0
+#define hb_gcRefInc( p )      hb_xRefInc( HB_GC_PTR( p ) )
+#define hb_gcRefDec( p )      hb_xRefDec( HB_GC_PTR( p ) )
+#define hb_gcRefCount( p )    hb_xRefCount( HB_GC_PTR( p ) )
+#define hb_gcFunc( p )        ( HB_GC_PTR( p )->pFunc )
+#endif
+
+#endif /* _HB_API_INTERNAL_ */
+extern void       hb_gcCollect( void ); /* checks if a single memory block can be released */
+extern void       hb_gcCollectAll( void ); /* checks if all memory blocks can be released */
 
 /* Extend API */
 extern HB_EXPORT char *     hb_parc( int iParam, ... );  /* retrieve a string parameter */
@@ -408,6 +544,7 @@ extern HB_EXPORT int        hb_parni( int iParam, ... ); /* retrieve a numeric p
 extern HB_EXPORT long       hb_parnl( int iParam, ... ); /* retrieve a numeric parameter as a long */
 extern HB_EXPORT HB_LONG    hb_parnint( int iParam, ... ); /* retrieve a numeric parameter as a HB_LONG */
 extern HB_EXPORT void *     hb_parptr( int iParam, ... ); /* retrieve a parameter as a pointer */
+extern HB_EXPORT void *     hb_parptrGC( HB_GARBAGE_FUNC_PTR pFunc, int iParam, ... ); /* retrieve a parameter as a pointer if it's a pointer to GC allocated block */
 extern HB_EXPORT PHB_ITEM   hb_param( int iParam, long lMask ); /* retrieve a generic parameter */
 extern HB_EXPORT PHB_ITEM   hb_paramError( int iParam ); /* Returns either the generic parameter or a NIL item if param not provided */
 extern HB_EXPORT BOOL       hb_extIsArray( int iParam );
@@ -509,145 +646,103 @@ extern HB_EXPORT int    hb_storptrGC( void * pointer, int iParam, ... ); /* stor
 extern HB_EXPORT int    hb_stornll( LONGLONG lValue, int iParam, ... ); /* stores a long long on a variable by reference */
 #endif
 
-extern HB_EXPORT void   hb_xinit( void );                           /* Initialize fixed memory subsystem */
-extern HB_EXPORT void   hb_xexit( void );                           /* Deinitialize fixed memory subsystem */
-extern HB_EXPORT void * hb_xalloc( ULONG ulSize );                  /* allocates memory, returns NULL on failure */
-extern HB_EXPORT void * hb_xgrab( ULONG ulSize );                   /* allocates memory, exits on failure */
-extern HB_EXPORT void   hb_xfree( void * pMem );                    /* frees memory */
-extern HB_EXPORT void * hb_xrealloc( void * pMem, ULONG ulSize );   /* reallocates memory */
-extern HB_EXPORT ULONG  hb_xsize( void * pMem );                    /* returns the size of an allocated memory block */
-extern HB_EXPORT ULONG  hb_xquery( USHORT uiMode );                 /* Query different types of memory information */
-
-#ifdef _HB_API_INTERNAL_
-extern void       hb_xRefInc( void * pMem );    /* increment reference counter */
-extern BOOL       hb_xRefDec( void * pMem );    /* decrement reference counter, return TRUE when 0 reached */
-extern void       hb_xRefFree( void * pMem );   /* decrement reference counter and free the block when 0 reached */
-extern HB_COUNTER hb_xRefCount( void * pMem );  /* return number of references */
-extern void *     hb_xRefResize( void * pMem, ULONG ulSave, ULONG ulSize );   /* reallocates memory, create copy if reference counter greater then 1 */
-
-#if 0
-
-/*
- * I used this macros only to test some speed overhead,
- * They may not be supported in the future so please do
- * not create any code which needs them. [druzus]
- */
-
-#define hb_xRefInc( p )             (++(*HB_COUNTER_PTR( p )))
-#define hb_xRefDec( p )             (--(*HB_COUNTER_PTR( p ))==0)
-#define hb_xRefFree( p )            do { \
-                                       if( hb_xRefDec( p ) ) \
-                                          hb_xfree( p ); \
-                                    } while( 0 )
-#define hb_xRefCount( p )           (*HB_COUNTER_PTR( p ))
-
-#endif
-
-#endif /* _HB_API_INTERNAL_ */
-
-/* #if UINT_MAX == ULONG_MAX */
-/* it fails on 64bit platforms where int has 32 bit and long has 64 bit.
-   we need these functions only when max(size_t) < max(long)
-   and only on 16bit platforms, so the below condition seems to be
-   more reasonable. */
-#if UINT_MAX > USHRT_MAX
-   /* NOTE: memcpy/memset can work with ULONG data blocks */
-   #define  hb_xmemcpy  memcpy
-   #define  hb_xmemset  memset
-#else
-   /* NOTE: otherwise, the hb_xmemcpy and hb_xmemset functions
-            will be used to copy and/or set ULONG data blocks */
-extern HB_EXPORT void * hb_xmemcpy( void * pDestArg, void * pSourceArg, ULONG ulLen ); /* copy more than memcpy() can */
-extern HB_EXPORT void * hb_xmemset( void * pDestArg, int iFill, ULONG ulLen ); /* set more than memset() can */
-#endif
-
-/* garbage collector */
-#define HB_GARBAGE_FUNC( hbfunc )   void hbfunc( void * Cargo ) /* callback function for cleaning garbage memory pointer */
-typedef HB_GARBAGE_FUNC( HB_GARBAGE_FUNC_ );
-typedef HB_GARBAGE_FUNC_ * HB_GARBAGE_FUNC_PTR;
-
-#define HB_GARBAGE_SWEEPER( hbfunc )   BOOL hbfunc( void * Cargo ) /* callback function for cleaning garbage memory pointer */
-typedef HB_GARBAGE_SWEEPER( HB_GARBAGE_SWEEPER_ );
-typedef HB_GARBAGE_SWEEPER_ * HB_GARBAGE_SWEEPER_PTR;
-
-extern void  hb_gcRegisterSweep( HB_GARBAGE_SWEEPER_PTR pSweep, void * Cargo );
-
-extern PHB_ITEM   hb_gcGripGet( HB_ITEM_PTR pItem );
-extern void       hb_gcGripDrop( HB_ITEM_PTR pItem );
-
-extern HB_EXPORT void *hb_gcAlloc( ULONG ulSize, HB_GARBAGE_FUNC_PTR pFunc ); /* allocates a memory controlled by the garbage collector */
-extern void       hb_gcFree( void *pAlloc ); /* deallocates a memory allocated by the garbage collector */
-extern void *     hb_gcLock( void *pAlloc ); /* do not release passed memory block */
-extern void *     hb_gcUnlock( void *pAlloc ); /* passed block is allowed to be released */
-#ifdef _HB_API_INTERNAL_
-extern void       hb_gcItemRef( HB_ITEM_PTR pItem ); /* checks if passed item refers passed memory block pointer */
-extern void       hb_vmIsLocalRef( void ); /* hvm.c - mark all local variables as used */
-extern void       hb_vmIsStaticRef( void ); /* hvm.c - mark all static variables as used */
-extern void       hb_memvarsIsMemvarRef( void ); /* memvars.c - mark all memvar variables as used */
-extern void       hb_gcReleaseAll( void ); /* release all memory blocks unconditionally */
-
-extern void       hb_gcRefCheck( void * pBlock ); /* Check if block still cannot be access after destructor execution */
-extern void       hb_gcRefInc( void * pAlloc );  /* increment reference counter */
-extern BOOL       hb_gcRefDec( void * pAlloc );  /* decrement reference counter, return TRUE when 0 reached */
-extern void       hb_gcRefFree( void * pAlloc ); /* decrement reference counter and free the block when 0 reached */
-extern HB_COUNTER hb_gcRefCount( void * pAlloc );  /* return number of references */
-
-#if 0
-#define hb_gcRefInc( p )      hb_xRefInc( HB_GC_PTR( p ) )
-#define hb_gcRefDec( p )      hb_xRefDec( HB_GC_PTR( p ) )
-#define hb_gcRefCount( p )    hb_xRefCount( HB_GC_PTR( p ) )
-#endif
-
-#endif /* _HB_API_INTERNAL_ */
-extern void       hb_gcCollect( void ); /* checks if a single memory block can be released */
-extern void       hb_gcCollectAll( void ); /* checks if all memory blocks can be released */
-
 /* array management */
-extern HB_EXPORT BOOL       hb_arrayNew( PHB_ITEM pItem, ULONG ulLen ); /* creates a new array */
-extern HB_EXPORT ULONG      hb_arrayLen( PHB_ITEM pArray ); /* retrieves the array len */
-extern HB_EXPORT BOOL       hb_arrayIsObject( PHB_ITEM pArray ); /* retrieves if the array is an object */
-extern HB_EXPORT void *     hb_arrayId( PHB_ITEM pArray ); /* retrieves the array unique ID */
-extern HB_EXPORT BOOL       hb_arrayAdd( PHB_ITEM pArray, PHB_ITEM pItemValue ); /* add a new item to the end of an array item */
-extern HB_EXPORT BOOL       hb_arrayAddForward( PHB_ITEM pArray, PHB_ITEM pValue ); /* add a new item to the end of an array item with no incrementing of reference counters */
-extern HB_EXPORT BOOL       hb_arrayIns( PHB_ITEM pArray, ULONG ulIndex ); /* insert a nil item into an array, without changing the length */
-extern HB_EXPORT BOOL       hb_arrayDel( PHB_ITEM pArray, ULONG ulIndex ); /* delete an array item, without changing length */
-extern HB_EXPORT BOOL       hb_arraySize( PHB_ITEM pArray, ULONG ulLen ); /* sets the array total length */
-extern HB_EXPORT BOOL       hb_arrayLast( PHB_ITEM pArray, PHB_ITEM pResult ); /* retrieve last item in an array */
-extern HB_EXPORT BOOL       hb_arraySet( PHB_ITEM pArray, ULONG ulIndex, PHB_ITEM pItem ); /* sets an array element */
-extern HB_EXPORT BOOL       hb_arrayGet( PHB_ITEM pArray, ULONG ulIndex, PHB_ITEM pItem ); /* retrieves an item */
-extern HB_EXPORT BOOL       hb_arrayGetItemRef( PHB_ITEM pArray, ULONG ulIndex, PHB_ITEM pItem ); /* create a reference to an array element */
+extern HB_EXPORT BOOL      hb_arrayNew( PHB_ITEM pItem, ULONG ulLen ); /* creates a new array */
+extern HB_EXPORT ULONG     hb_arrayLen( PHB_ITEM pArray ); /* retrieves the array len */
+extern HB_EXPORT BOOL      hb_arrayIsObject( PHB_ITEM pArray ); /* retrieves if the array is an object */
+extern HB_EXPORT void *    hb_arrayId( PHB_ITEM pArray ); /* retrieves the array unique ID */
+extern HB_EXPORT BOOL      hb_arrayAdd( PHB_ITEM pArray, PHB_ITEM pItemValue ); /* add a new item to the end of an array item */
+extern HB_EXPORT BOOL      hb_arrayAddForward( PHB_ITEM pArray, PHB_ITEM pValue ); /* add a new item to the end of an array item with no incrementing of reference counters */
+extern HB_EXPORT BOOL      hb_arrayIns( PHB_ITEM pArray, ULONG ulIndex ); /* insert a nil item into an array, without changing the length */
+extern HB_EXPORT BOOL      hb_arrayDel( PHB_ITEM pArray, ULONG ulIndex ); /* delete an array item, without changing length */
+extern HB_EXPORT BOOL      hb_arraySize( PHB_ITEM pArray, ULONG ulLen ); /* sets the array total length */
+extern HB_EXPORT BOOL      hb_arrayLast( PHB_ITEM pArray, PHB_ITEM pResult ); /* retrieve last item in an array */
+extern HB_EXPORT BOOL      hb_arraySet( PHB_ITEM pArray, ULONG ulIndex, PHB_ITEM pItem ); /* sets an array element */
+extern HB_EXPORT BOOL      hb_arraySetForward( PHB_ITEM pArray, ULONG ulIndex, PHB_ITEM pItem ); /* sets an array element by forwarding it's value */
+extern HB_EXPORT BOOL      hb_arrayGet( PHB_ITEM pArray, ULONG ulIndex, PHB_ITEM pItem ); /* retrieves an item */
+extern HB_EXPORT BOOL      hb_arrayGetItemRef( PHB_ITEM pArray, ULONG ulIndex, PHB_ITEM pItem ); /* create a reference to an array element */
 /* hb_arrayGetItemPtr() is dangerous */
-extern HB_EXPORT PHB_ITEM   hb_arrayGetItemPtr( PHB_ITEM pArray, ULONG ulIndex ); /* returns pointer to specified element of the array */
-extern HB_EXPORT ULONG      hb_arrayCopyC( PHB_ITEM pArray, ULONG ulIndex, char * szBuffer, ULONG ulLen ); /* copy a string into an array item */
-extern HB_EXPORT char *     hb_arrayGetC( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the string contained on an array element */
-extern HB_EXPORT char *     hb_arrayGetCPtr( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the string pointer on an array element */
-extern HB_EXPORT ULONG      hb_arrayGetCLen( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the string length contained on an array element */
-extern HB_EXPORT void *     hb_arrayGetPtr( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the pointer contained on an array element */
-extern HB_EXPORT BOOL       hb_arrayGetL( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the logical value contained on an array element */
-extern HB_EXPORT int        hb_arrayGetNI( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the int value contained on an array element */
-extern HB_EXPORT long       hb_arrayGetNL( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the long numeric value contained on an array element */
-extern HB_EXPORT HB_LONG    hb_arrayGetNInt( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the HB_LONG value contained on an array element */
-extern HB_EXPORT double     hb_arrayGetND( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the double value contained on an array element */
-extern HB_EXPORT char *     hb_arrayGetDS( PHB_ITEM pArray, ULONG ulIndex, char * szDate ); /* retrieves the date value contained in an array element */
-extern HB_EXPORT long       hb_arrayGetDL( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the date value contained in an array element, as a long integer */
-extern HB_EXPORT HB_TYPE    hb_arrayGetType( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the type of an array item */
-extern HB_EXPORT BOOL       hb_arrayFill( PHB_ITEM pArray, PHB_ITEM pValue, ULONG * pulStart, ULONG * pulCount ); /* fill an array with a given item */
-extern HB_EXPORT ULONG      hb_arrayScan( PHB_ITEM pArray, PHB_ITEM pValue, ULONG * pulStart, ULONG * pulCount, BOOL fExact ); /* scan an array for a given item, or until code-block item returns TRUE */
-extern HB_EXPORT BOOL       hb_arrayEval( PHB_ITEM pArray, PHB_ITEM bBlock, ULONG * pulStart, ULONG * pulCount ); /* execute a code-block for every element of an array item */
-extern HB_EXPORT BOOL       hb_arrayCopy( PHB_ITEM pSrcArray, PHB_ITEM pDstArray, ULONG * pulStart, ULONG * pulCount, ULONG * pulTarget ); /* copy items from one array to another */
-extern HB_EXPORT PHB_ITEM   hb_arrayClone( PHB_ITEM pArray ); /* returns a duplicate of an existing array, including all nested items */
-extern HB_EXPORT BOOL       hb_arraySort( PHB_ITEM pArray, ULONG * pulStart, ULONG * pulCount, PHB_ITEM pBlock ); /* sorts an array item */
-extern HB_EXPORT PHB_ITEM   hb_arrayFromStack( USHORT uiLen ); /* Creates and returns an Array of n Elements from the Eval Stack - Does NOT pop the items. */
-extern HB_EXPORT PHB_ITEM   hb_arrayFromParams( int iLevel ); /* Creates and returns an Array of Generic Parameters for a given call level */
-extern HB_EXPORT PHB_ITEM   hb_arrayBaseParams( void ); /* Creates and returns an Array of Generic Parameters for current base symbol. */
-extern HB_EXPORT PHB_ITEM   hb_arraySelfParams( void ); /* Creates and returns an Array of Generic Parameters for current base symbol with self item */
+extern HB_EXPORT PHB_ITEM  hb_arrayGetItemPtr( PHB_ITEM pArray, ULONG ulIndex ); /* returns pointer to specified element of the array */
+extern HB_EXPORT ULONG     hb_arrayCopyC( PHB_ITEM pArray, ULONG ulIndex, char * szBuffer, ULONG ulLen ); /* copy a string into an array item */
+extern HB_EXPORT char *    hb_arrayGetC( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the string contained on an array element */
+extern HB_EXPORT char *    hb_arrayGetCPtr( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the string pointer on an array element */
+extern HB_EXPORT ULONG     hb_arrayGetCLen( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the string length contained on an array element */
+extern HB_EXPORT void *    hb_arrayGetPtr( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the pointer contained on an array element */
+extern HB_EXPORT BOOL      hb_arrayGetL( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the logical value contained on an array element */
+extern HB_EXPORT int       hb_arrayGetNI( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the int value contained on an array element */
+extern HB_EXPORT long      hb_arrayGetNL( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the long numeric value contained on an array element */
+extern HB_EXPORT HB_LONG   hb_arrayGetNInt( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the HB_LONG value contained on an array element */
+extern HB_EXPORT double    hb_arrayGetND( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the double value contained on an array element */
+extern HB_EXPORT char *    hb_arrayGetDS( PHB_ITEM pArray, ULONG ulIndex, char * szDate ); /* retrieves the date value contained in an array element */
+extern HB_EXPORT long      hb_arrayGetDL( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the date value contained in an array element, as a long integer */
+extern HB_EXPORT HB_TYPE   hb_arrayGetType( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the type of an array item */
+extern HB_EXPORT BOOL      hb_arrayFill( PHB_ITEM pArray, PHB_ITEM pValue, ULONG * pulStart, ULONG * pulCount ); /* fill an array with a given item */
+extern HB_EXPORT ULONG     hb_arrayScan( PHB_ITEM pArray, PHB_ITEM pValue, ULONG * pulStart, ULONG * pulCount, BOOL fExact ); /* scan an array for a given item, or until code-block item returns TRUE */
+extern HB_EXPORT ULONG     hb_arrayRevScan( PHB_ITEM pArray, PHB_ITEM pValue, ULONG * pulStart, ULONG * pulCount, BOOL fExact ); /* scan an array for a given item, or until code-block item returns TRUE in reverted order */
+extern HB_EXPORT BOOL      hb_arrayEval( PHB_ITEM pArray, PHB_ITEM bBlock, ULONG * pulStart, ULONG * pulCount ); /* execute a code-block for every element of an array item */
+extern HB_EXPORT BOOL      hb_arrayCopy( PHB_ITEM pSrcArray, PHB_ITEM pDstArray, ULONG * pulStart, ULONG * pulCount, ULONG * pulTarget ); /* copy items from one array to another */
+extern HB_EXPORT PHB_ITEM  hb_arrayClone( PHB_ITEM pArray ); /* returns a duplicate of an existing array, including all nested items */
+extern HB_EXPORT BOOL      hb_arraySort( PHB_ITEM pArray, ULONG * pulStart, ULONG * pulCount, PHB_ITEM pBlock ); /* sorts an array item */
+extern HB_EXPORT PHB_ITEM  hb_arrayFromStack( USHORT uiLen ); /* Creates and returns an Array of n Elements from the Eval Stack - Does NOT pop the items. */
+extern HB_EXPORT PHB_ITEM  hb_arrayFromParams( int iLevel ); /* Creates and returns an Array of Generic Parameters for a given call level */
+extern HB_EXPORT PHB_ITEM  hb_arrayBaseParams( void ); /* Creates and returns an Array of Generic Parameters for current base symbol. */
+extern HB_EXPORT PHB_ITEM  hb_arraySelfParams( void ); /* Creates and returns an Array of Generic Parameters for current base symbol with self item */
 #ifndef HB_LONG_LONG_OFF
-extern HB_EXPORT LONGLONG   hb_arrayGetNLL( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the long long numeric value contained on an array element */
+extern HB_EXPORT LONGLONG  hb_arrayGetNLL( PHB_ITEM pArray, ULONG ulIndex ); /* retrieves the long long numeric value contained on an array element */
 #endif
 #ifdef _HB_API_INTERNAL_
 /* internal array API not exported */
 extern void hb_arrayPushBase( PHB_BASEARRAY pBaseArray );
+extern void hb_cloneNested( PHB_ITEM pDstItem, PHB_ITEM pSrcItem, PHB_NESTED_CLONED pClonedList );
+extern void hb_hashCloneBody( PHB_ITEM pHash, PHB_ITEM pDest, PHB_NESTED_CLONED pClonedList );
 #endif
+
+
+/* hash management */
+extern HB_EXPORT PHB_ITEM  hb_hashNew( PHB_ITEM pItem );
+extern HB_EXPORT ULONG     hb_hashLen( PHB_ITEM pHash );
+extern HB_EXPORT BOOL      hb_hashDel( PHB_ITEM pHash, PHB_ITEM pKey );
+extern HB_EXPORT BOOL      hb_hashAdd( PHB_ITEM pHash, PHB_ITEM pKey, PHB_ITEM pValue );
+extern HB_EXPORT BOOL      hb_hashRemove( PHB_ITEM pHash, PHB_ITEM pItem );
+extern HB_EXPORT PHB_ITEM  hb_hashClone( PHB_ITEM pSource );
+extern HB_EXPORT void      hb_hashJoin( PHB_ITEM pDest, PHB_ITEM pSource, int iType );
+extern HB_EXPORT BOOL      hb_hashScan( PHB_ITEM pHash, PHB_ITEM pKey, ULONG * pulPos );
+extern HB_EXPORT void      hb_hashPreallocate( PHB_ITEM pHash, ULONG ulNewSize );
+extern HB_EXPORT PHB_ITEM  hb_hashGetKeys( PHB_ITEM pHash );
+extern HB_EXPORT PHB_ITEM  hb_hashGetValues( PHB_ITEM pHash );
+extern HB_EXPORT void      hb_hashSetDefault( PHB_ITEM pHash, PHB_ITEM pValue );
+extern HB_EXPORT PHB_ITEM  hb_hashGetDefault( PHB_ITEM pHash );
+extern HB_EXPORT void      hb_hashSetFlags( PHB_ITEM pHash, int iFlags );
+extern HB_EXPORT void      hb_hashClearFlags( PHB_ITEM pHash, int iFlags );
+extern HB_EXPORT int       hb_hashGetFlags( PHB_ITEM pHash );
+extern HB_EXPORT void *    hb_hashId( PHB_ITEM pHash ); /* retrieves the hash unique ID */
+
+extern HB_EXPORT PHB_ITEM  hb_hashGetItemPtr( PHB_ITEM pHash, PHB_ITEM pKey, int iFlags );
+extern HB_EXPORT PHB_ITEM  hb_hashGetItemRefPtr( PHB_ITEM pHash, PHB_ITEM pKey );
+extern HB_EXPORT PHB_ITEM  hb_hashGetKeyAt( PHB_ITEM pHash, ULONG ulPos );
+extern HB_EXPORT PHB_ITEM  hb_hashGetValueAt( PHB_ITEM pHash, ULONG ulPos );
+extern HB_EXPORT BOOL      hb_hashDelAt( PHB_ITEM pHash, ULONG ulPos );
+
+/* hash item flags */
+#define HB_HASH_AUTOADD_NEVER       0x00
+#define HB_HASH_AUTOADD_ACCESS      0x01
+#define HB_HASH_AUTOADD_ASSIGN      0x02
+#define HB_HASH_AUTOADD_ALWAYS      ( HB_HASH_AUTOADD_ACCESS | HB_HASH_AUTOADD_ASSIGN )
+#define HB_HASH_AUTOADD_REFERENCE   HB_HASH_AUTOADD_ALWAYS
+#define HB_HASH_AUTOADD_MASK        0x03
+
+#define HB_HASH_IGNORECASE          0x10
+
+#ifdef _HB_API_INTERNAL_
+/* internal hash API not exported */
+extern void hb_hashRefGrabage( PHB_ITEM pHash );
+#endif
+
+#define HB_HASH_UNION      0  /* logical OR  on items in two hash tables */
+#define HB_HASH_INTERSECT  1  /* logical AND on items in two hash tables */
+#define HB_HASH_DIFFERENCE 2  /* logical XOR on items in two hash tables */
+#define HB_HASH_REMOVE     3  /* h1 & ( h1 ^ h2 ) */
+
 
 /* string management */
 
@@ -656,64 +751,70 @@ extern void hb_arrayPushBase( PHB_BASEARRAY pBaseArray );
                           ( c ) == HB_CHAR_LF || \
                           ( c ) == HB_CHAR_CR )
 
-extern HB_EXPORT int      hb_stricmp( const char * s1, const char * s2 ); /* compare two strings without regards to case */
-extern HB_EXPORT int      hb_strnicmp( const char * s1, const char * s2, ULONG ulLen ); /* compare two string without regards to case, limited by length */
-extern HB_EXPORT char *   hb_strupr( char * pszText ); /* convert a string in-place to upper-case */
-extern HB_EXPORT char *   hb_strdup( const char * pszText ); /* returns a pointer to a newly allocated copy of the source string */
-extern HB_EXPORT char *   hb_strndup( const char * pszText, ULONG ulLen ); /* returns a pointer to a newly allocated copy of the source string not longer then ulLen */
-extern HB_EXPORT ULONG    hb_strnlen( const char * pszText, ULONG ulLen ); /* like strlen() but result is limited to ulLen */
-extern HB_EXPORT char *   hb_xstrcat( char *dest, const char *src, ... ); /* Concatenates multiple strings into a single result */
-extern HB_EXPORT char *   hb_xstrcpy( char *szDest, const char *szSrc, ...); /* Concatenates multiple strings into a single result */
-extern HB_EXPORT BOOL     hb_compStrToNum( const char* szNum, ULONG ulLen, HB_LONG * plVal, double * pdVal, int * piDec, int * piWidth );  /* converts string to number, sets iDec, iWidth and returns TRUE if results is double, used by compiler */
-extern HB_EXPORT BOOL     hb_valStrnToNum( const char* szNum, ULONG ulLen, HB_LONG * plVal, double * pdVal, int * piDec, int * piWidth );  /* converts string to number, sets iDec, iWidth and returns TRUE if results is double, used by VAL() */
-extern HB_EXPORT BOOL     hb_strToNum( const char* szNum, HB_LONG * plVal, double * pdVal ); /* converts string to number, returns TRUE if results is double */
-extern HB_EXPORT BOOL     hb_strnToNum( const char* szNum, ULONG ulLen, HB_LONG * plVal, double * pdVal ); /* converts string to number, returns TRUE if results is double */
+extern const char * hb_szAscii[256];      /* array of 1 character length strings */
 
-extern HB_EXPORT BOOL     hb_strMatchRegExp( const char * szString, const char * szMask ); /* compare two strings using a regular expression pattern */
-extern HB_EXPORT BOOL     hb_strMatchWild(const char *szString, const char *szPattern ); /* compare two strings using pattern with wildcard (?*) - patern have to be prefix of given string */
-extern HB_EXPORT BOOL     hb_strMatchWildExact( const char *szString, const char *szPattern ); /* compare two strings using pattern with wildcard (?*) - patern have to cover whole string */
-extern HB_EXPORT BOOL     hb_strEmpty( const char * szText, ULONG ulLen ); /* returns whether a string contains only white space */
-extern HB_EXPORT void     hb_strDescend( char * szStringTo, const char * szStringFrom, ULONG ulLen ); /* copy a string to a buffer, inverting each character */
-extern HB_EXPORT ULONG    hb_strAt( const char * szSub, ULONG ulSubLen, const char * szText, ULONG ulLen ); /* returns an index to a sub-string within another string */
-extern HB_EXPORT char *   hb_strUpper( char * szText, ULONG ulLen ); /* convert an existing string buffer to upper case */
-extern HB_EXPORT char *   hb_strUpperCopy( char * szText, ULONG ulLen );
-extern HB_EXPORT char *   hb_strLower( char * szText, ULONG ulLen ); /* convert an existing string buffer to lower case */
-extern HB_EXPORT char *   hb_strncpy( char * pDest, const char * pSource, ULONG ulLen ); /* copy at most ulLen bytes from string buffer to another buffer and _always_ set 0 in destin buffer */
-extern HB_EXPORT char *   hb_strncat( char * pDest, const char * pSource, ULONG ulLen ); /* copy at most ulLen-strlen(pDest) bytes from string buffer to another buffer and _always_ set 0 in destin buffer */
-extern HB_EXPORT char *   hb_strncpyTrim( char * pDest, const char * pSource, ULONG ulLen );
-extern HB_EXPORT char *   hb_strncpyUpper( char * pDest, const char * pSource, ULONG ulLen ); /* copy an existing string buffer to another buffer, as upper case */
-extern HB_EXPORT char *   hb_strncpyUpperTrim( char * pDest, const char * pSource, ULONG ulLen );
-extern HB_EXPORT double   hb_strVal( const char * szText, ULONG ulLen ); /* return the numeric value of a character string representation of a number */
-extern HB_EXPORT char *   hb_strLTrim( const char * szText, ULONG * ulLen ); /* return a pointer to the first non-white space character */
-extern HB_EXPORT ULONG    hb_strRTrimLen( const char * szText, ULONG ulLen, BOOL bAnySpace ); /* return length of a string, ignoring trailing white space (or true spaces) */
-extern HB_EXPORT double   hb_strVal( const char * szText, ULONG ulLen );
-extern HB_EXPORT HB_LONG  hb_strValInt( const char * szText, int * iOverflow );
-extern HB_EXPORT char *   hb_strRemEscSeq( char * szText, ULONG * ulLen ); /* remove C ESC sequences and converts them to Clipper chars */
-
-extern HB_EXPORT double   hb_numRound( double dResult, int iDec ); /* round a number to a specific number of digits */
-extern HB_EXPORT double   hb_numInt( double dNum ); /* take the integer part of the number */
-extern HB_EXPORT double   hb_numDecConv( double dNum, int iDec );
+extern HB_EXPORT int       hb_stricmp( const char * s1, const char * s2 ); /* compare two strings without regards to case */
+extern HB_EXPORT int       hb_strnicmp( const char * s1, const char * s2, ULONG ulLen ); /* compare two string without regards to case, limited by length */
+extern HB_EXPORT char *    hb_strupr( char * pszText ); /* convert a string in-place to upper-case */
+extern HB_EXPORT char *    hb_strdup( const char * pszText ); /* returns a pointer to a newly allocated copy of the source string */
+extern HB_EXPORT char *    hb_strndup( const char * pszText, ULONG ulLen ); /* returns a pointer to a newly allocated copy of the source string not longer then ulLen */
+extern HB_EXPORT ULONG     hb_strnlen( const char * pszText, ULONG ulLen ); /* like strlen() but result is limited to ulLen */
+extern HB_EXPORT char *    hb_xstrcat( char *dest, const char *src, ... ); /* Concatenates multiple strings into a single result */
+extern HB_EXPORT char *    hb_xstrcpy( char *szDest, const char *szSrc, ...); /* Concatenates multiple strings into a single result */
+extern HB_EXPORT BOOL      hb_compStrToNum( const char* szNum, ULONG ulLen, HB_LONG * plVal, double * pdVal, int * piDec, int * piWidth );  /* converts string to number, sets iDec, iWidth and returns TRUE if results is double, used by compiler */
+extern HB_EXPORT BOOL      hb_valStrnToNum( const char* szNum, ULONG ulLen, HB_LONG * plVal, double * pdVal, int * piDec, int * piWidth );  /* converts string to number, sets iDec, iWidth and returns TRUE if results is double, used by VAL() */
+extern HB_EXPORT BOOL      hb_strToNum( const char* szNum, HB_LONG * plVal, double * pdVal ); /* converts string to number, returns TRUE if results is double */
+extern HB_EXPORT BOOL      hb_strnToNum( const char* szNum, ULONG ulLen, HB_LONG * plVal, double * pdVal ); /* converts string to number, returns TRUE if results is double */
+                          
+extern HB_EXPORT BOOL      hb_strMatchFile( const char * pszString, const char * szPattern ); /* compare two strings using platform dependent rules for file matching */
+extern HB_EXPORT BOOL      hb_strMatchRegExp( const char * szString, const char * szPattern ); /* compare two strings using a regular expression pattern */
+extern HB_EXPORT BOOL      hb_strMatchWild(const char *szString, const char *szPattern ); /* compare two strings using pattern with wildcard (?*) - patern have to be prefix of given string */
+extern HB_EXPORT BOOL      hb_strMatchWildExact( const char *szString, const char *szPattern ); /* compare two strings using pattern with wildcard (?*) - patern have to cover whole string */
+extern HB_EXPORT BOOL      hb_strMatchCaseWildExact( const char *szString, const char *szPattern ); /* compare two strings using pattern with wildcard (?*) ignoring the case of the characters - patern have to cover whole string */
+extern HB_EXPORT BOOL      hb_strEmpty( const char * szText, ULONG ulLen ); /* returns whether a string contains only white space */
+extern HB_EXPORT void      hb_strDescend( char * szStringTo, const char * szStringFrom, ULONG ulLen ); /* copy a string to a buffer, inverting each character */
+extern HB_EXPORT ULONG     hb_strAt( const char * szSub, ULONG ulSubLen, const char * szText, ULONG ulLen ); /* returns an index to a sub-string within another string */
+extern HB_EXPORT char *    hb_strUpper( char * szText, ULONG ulLen ); /* convert an existing string buffer to upper case */
+extern HB_EXPORT char *    hb_strUpperCopy( char * szText, ULONG ulLen );
+extern HB_EXPORT char *    hb_strLower( char * szText, ULONG ulLen ); /* convert an existing string buffer to lower case */
+extern HB_EXPORT int       hb_charUpper( int iChar );  /* converts iChar to upper case */
+extern HB_EXPORT int       hb_charLower( int iChar );  /* converts iChar to lower case */
+extern HB_EXPORT char *    hb_strncpy( char * pDest, const char * pSource, ULONG ulLen ); /* copy at most ulLen bytes from string buffer to another buffer and _always_ set 0 in destin buffer */
+extern HB_EXPORT char *    hb_strncat( char * pDest, const char * pSource, ULONG ulLen ); /* copy at most ulLen-strlen(pDest) bytes from string buffer to another buffer and _always_ set 0 in destin buffer */
+extern HB_EXPORT char *    hb_strncpyTrim( char * pDest, const char * pSource, ULONG ulLen );
+extern HB_EXPORT char *    hb_strncpyUpper( char * pDest, const char * pSource, ULONG ulLen ); /* copy an existing string buffer to another buffer, as upper case */
+extern HB_EXPORT char *    hb_strncpyUpperTrim( char * pDest, const char * pSource, ULONG ulLen );
+extern HB_EXPORT double    hb_strVal( const char * szText, ULONG ulLen ); /* return the numeric value of a character string representation of a number */
+extern HB_EXPORT char *    hb_strLTrim( const char * szText, ULONG * ulLen ); /* return a pointer to the first non-white space character */
+extern HB_EXPORT ULONG     hb_strRTrimLen( const char * szText, ULONG ulLen, BOOL bAnySpace ); /* return length of a string, ignoring trailing white space (or true spaces) */
+extern HB_EXPORT double    hb_strVal( const char * szText, ULONG ulLen );
+extern HB_EXPORT HB_LONG   hb_strValInt( const char * szText, int * iOverflow );
+extern HB_EXPORT char *    hb_strRemEscSeq( char * szText, ULONG * ulLen ); /* remove C ESC sequences and converts them to Clipper chars */
+                          
+extern HB_EXPORT double    hb_numRound( double dResult, int iDec ); /* round a number to a specific number of digits */
+extern HB_EXPORT double    hb_numInt( double dNum ); /* take the integer part of the number */
+extern HB_EXPORT double    hb_numDecConv( double dNum, int iDec );
 
 
 /* architecture dependent number conversions */
-extern HB_EXPORT void     hb_put_ieee754( BYTE * ptr, double d );
-extern HB_EXPORT double   hb_get_ieee754( BYTE * ptr );
-extern HB_EXPORT void     hb_put_ord_ieee754( BYTE * ptr, double d );
-extern HB_EXPORT double   hb_get_ord_ieee754( BYTE * ptr );
-extern HB_EXPORT double   hb_get_rev_double( BYTE * ptr );
-extern HB_EXPORT double   hb_get_std_double( BYTE * ptr );
+extern HB_EXPORT void      hb_put_ieee754( BYTE * ptr, double d );
+extern HB_EXPORT double    hb_get_ieee754( BYTE * ptr );
+extern HB_EXPORT void      hb_put_ord_ieee754( BYTE * ptr, double d );
+extern HB_EXPORT double    hb_get_ord_ieee754( BYTE * ptr );
+extern HB_EXPORT double    hb_get_rev_double( BYTE * ptr );
+extern HB_EXPORT double    hb_get_std_double( BYTE * ptr );
 
 #if defined( HB_LONG_LONG_OFF )
-extern HB_EXPORT double   hb_get_le_int64( BYTE * ptr );
-extern HB_EXPORT double   hb_get_le_uint64( BYTE * ptr );
-extern HB_EXPORT void     hb_put_le_uint64( BYTE * ptr, double d );
+extern HB_EXPORT double    hb_get_le_int64( BYTE * ptr );
+extern HB_EXPORT double    hb_get_le_uint64( BYTE * ptr );
+extern HB_EXPORT void      hb_put_le_uint64( BYTE * ptr, double d );
 #endif
 
 /* dynamic symbol table management */
-extern HB_EXPORT PHB_DYNS  hb_dynsymGet( const char * szName );   /* finds and creates a dynamic symbol if not found */
-extern HB_EXPORT PHB_DYNS  hb_dynsymGetCase( const char * szName );  /* finds and creates a dynamic symbol if not found - case sensitive */
+extern HB_EXPORT PHB_DYNS  hb_dynsymGet( const char * szName );    /* finds and creates a dynamic symbol if not found */
+extern HB_EXPORT PHB_DYNS  hb_dynsymGetCase( const char * szName );    /* finds and creates a dynamic symbol if not found - case sensitive */
 extern HB_EXPORT PHB_DYNS  hb_dynsymNew( PHB_SYMB pSymbol ); /* creates a new dynamic symbol based on a local one */
-extern HB_EXPORT PHB_DYNS  hb_dynsymFind( const char * szName );  /* finds a dynamic symbol */
+extern HB_EXPORT PHB_DYNS  hb_dynsymFind( const char * szName );   /* finds a dynamic symbol */
 extern HB_EXPORT PHB_DYNS  hb_dynsymFindName( const char * szName ); /* converts to uppercase and finds a dynamic symbol */
 extern HB_EXPORT void      hb_dynsymLog( void );             /* displays all dynamic symbols */
 extern HB_EXPORT void      hb_dynsymRelease( void );         /* releases the memory of the dynamic symbol table */
@@ -727,7 +828,7 @@ extern HB_EXPORT int       hb_dynsymAreaHandle( PHB_DYNS pDynSym ); /* return wo
 extern HB_EXPORT void      hb_dynsymSetAreaHandle( PHB_DYNS pDynSym, int iArea ); /* set work area number for a given dynamic symbol */
 
 /* Symbol management */
-extern HB_EXPORT PHB_SYMB hb_symbolNew( const char * szName ); /* create a new symbol */
+extern HB_EXPORT PHB_SYMB  hb_symbolNew( const char * szName ); /* create a new symbol */
 
 /* Command line and environment argument management */
 extern HB_EXPORT void hb_cmdargInit( int argc, char * argv[] ); /* initialize command line argument API's */
@@ -755,8 +856,6 @@ extern void             hb_codeblockEvaluate( HB_ITEM_PTR pItem ); /* evaluate a
 extern void       hb_memvarsInit( void ); /* initialize the memvar API system */
 extern void       hb_memvarsClear( void ); /* clear all PUBLIC and PRIVATE variables */
 extern void       hb_memvarsFree( void ); /* release the memvar API system */
-extern void       hb_memvarValueIncRef( HB_HANDLE hValue ); /* increase the reference count of a global value */
-extern void       hb_memvarValueDecRef( HB_HANDLE hValue ); /* decrease the reference count of a global value */
 extern void       hb_memvarSetValue( PHB_SYMB pMemvarSymb, HB_ITEM_PTR pItem ); /* copy an item into a symbol */
 extern ERRCODE    hb_memvarGet( HB_ITEM_PTR pItem, PHB_SYMB pMemvarSymb ); /* copy an symbol value into an item */
 extern void       hb_memvarGetValue( HB_ITEM_PTR pItem, PHB_SYMB pMemvarSymb ); /* copy an symbol value into an item, with error trapping */
@@ -770,8 +869,12 @@ extern void       hb_memvarCreateFromItem( PHB_ITEM pMemvar, BYTE bScope, PHB_IT
 extern int        hb_memvarScope( char * szVarName, ULONG ulLength ); /* retrieve scope of a dynamic variable symbol */
 extern PHB_ITEM   hb_memvarDetachLocal( HB_ITEM_PTR pLocal ); /* Detach a local variable from the eval stack */
 #ifdef _HB_API_INTERNAL_
+extern void       hb_memvarValueIncRef( HB_HANDLE hValue ); /* increase the reference count of a global value */
+extern void       hb_memvarValueDecRef( HB_HANDLE hValue ); /* decrease the reference count of a global value */
 extern PHB_ITEM   hb_memvarGetItem( PHB_SYMB pMemvarSymb );
 #endif
+extern HB_HANDLE  hb_memvarGetVarHandle( char *szName );
+extern PHB_ITEM   hb_memvarGetValueByHandle( HB_HANDLE hMemvar );
 
 /* console I/O subsystem */
 extern void     hb_conInit( void ); /* initialize the console API system */
@@ -806,12 +909,11 @@ extern void   hb_macroPushSymbol( HB_ITEM_PTR pItem ); /* handle a macro functio
 extern void   hb_macroRun( HB_MACRO_PTR pMacro ); /* executes pcode compiled by macro compiler */
 extern HB_MACRO_PTR hb_macroCompile( char * szString ); /* compile a string and return a pcode buffer */
 extern void   hb_macroDelete( HB_MACRO_PTR pMacro ); /* release all memory allocated for macro evaluation */
-extern char * hb_macroTextSubst( char * szString, ULONG *pulStringLen ); /* substitute macro variables occurences within a given string */
-extern BOOL   hb_macroIsIdent( char * szString ); /* determine if a string is a valid function or variable name */
+extern char * hb_macroTextSymbol( char *szString, ULONG ulLength, BOOL *pfNewString ); /* substitute macro variables occurences within a given string and check if result is a valid function or variable name */
+extern char * hb_macroExpandString( char *szString, ULONG ulLength, BOOL *pfNewString ); /* expands valid '&' operator */
 extern void   hb_macroPopAliasedValue( HB_ITEM_PTR pAlias, HB_ITEM_PTR pVar, BYTE flags ); /* compiles and evaluates an aliased macro expression */
 extern void   hb_macroPushAliasedValue( HB_ITEM_PTR pAlias, HB_ITEM_PTR pVar, BYTE flags ); /* compiles and evaluates an aliased macro expression */
 extern char * hb_macroGetType( HB_ITEM_PTR pItem ); /* determine the type of an expression */
-extern char * hb_macroExpandString( char *szString, ULONG ulLength, BOOL *pbNewString ); /* expands valid '&' operator */
 
 /* idle states */
 extern void   hb_releaseCPU( void );
@@ -827,7 +929,8 @@ extern char * hb_verHarbour( void ); /* retrieves a newly allocated buffer conta
 extern char * hb_verPCode( void ); /* retrieves a newly allocated buffer containing PCode version */
 extern void   hb_verBuildInfo( void ); /* display harbour, compiler, and platform versions to standard console */
 
-extern HB_EXPORT BOOL   hb_iswinnt(void); /* return .T. if OS == WinNt, 2000, XP */
+extern HB_EXPORT BOOL   hb_iswinnt( void ); /* return .T. if OS == WinNt, 2000, XP */
+extern HB_EXPORT BOOL   hb_printerIsReady( char * pszPrinterName );
 
 /* environment variables access */
 /* WARNING: This returned pointer must be freed if not NULL using hb_xfree( ( void * ) ptr ); */

@@ -405,11 +405,11 @@ HB_FUNC( HB_FORNEXT ) /* nStart, nEnd | bEnd, bCode, nStep */
  */
 HB_FUNC( HB_EXECFROMARRAY )
 {
+   PHB_SYMB pExecSym = NULL;
    PHB_ITEM pFunc = NULL;
    PHB_ITEM pSelf = NULL;
    PHB_ITEM pArray = NULL;
    PHB_ITEM pItem;
-   PHB_SYMB pExecSym = NULL;
    ULONG ulParamOffset = 0;
    USHORT usPCount = hb_pcount();
 
@@ -473,6 +473,7 @@ HB_FUNC( HB_EXECFROMARRAY )
          hb_vmPush( pSelf );
       else
          hb_vmPushNil();
+
       if( pArray )
       {
          pItem = hb_arrayGetItemPtr( pArray, ++ulParamOffset );
@@ -490,8 +491,71 @@ HB_FUNC( HB_EXECFROMARRAY )
          hb_vmDo( usPCount );
    }
    else
-   {
       hb_errRT_BASE_SubstR( EG_ARG, 1099, NULL, "HB_EXECFROMARRAY", HB_ERR_ARGS_BASEPARAMS );
-      return;
+}
+
+BOOL hb_execFromArray( PHB_ITEM pParam )
+{
+   PHB_SYMB pExecSym = NULL;
+   PHB_ITEM pArray = NULL;
+   PHB_ITEM pSelf = NULL;
+   ULONG ulParamOffset = 0;
+   USHORT usPCount = 0;
+
+   if( pParam && HB_IS_ARRAY( pParam ) && !HB_IS_OBJECT( pParam ) )
+   {
+      pArray = pParam;
+      pParam = hb_arrayGetItemPtr( pArray, 1 );
+      if( HB_IS_OBJECT( pParam ) )
+      {
+         pSelf = pParam;
+         pParam = hb_arrayGetItemPtr( pArray, 2 );
+         ulParamOffset = 2;
+      }
+      else
+         ulParamOffset = 1;
    }
+
+   if( pParam )
+   {
+      if( HB_IS_SYMBOL( pParam ) )
+         pExecSym = hb_itemGetSymbol( pParam );
+      else if( HB_IS_STRING( pParam ) )
+         pExecSym = hb_dynsymGet( hb_itemGetCPtr( pParam ) )->pSymbol;
+      else if( HB_IS_BLOCK( pParam ) && !pSelf )
+      {
+         pSelf = pParam;
+         pExecSym = &hb_symEval;
+      }
+
+      if( pExecSym )
+      {
+         hb_vmPushSymbol( pExecSym );
+         if( pSelf )
+            hb_vmPush( pSelf );
+         else
+            hb_vmPushNil();
+
+         if( pArray )
+         {
+            pParam = hb_arrayGetItemPtr( pArray, ++ulParamOffset );
+            while( pParam && usPCount < 255 )
+            {
+               hb_vmPush( pParam );
+               ++usPCount;
+               pParam = hb_arrayGetItemPtr( pArray, ++ulParamOffset );
+            }
+         }
+
+         if( pSelf )
+            hb_vmSend( usPCount );
+         else
+            hb_vmDo( usPCount );
+
+         return TRUE;
+      }
+   }
+
+   hb_errRT_BASE_SubstR( EG_ARG, 1099, NULL, "HB_EXECFROMARRAY", HB_ERR_ARGS_BASEPARAMS );
+   return FALSE;
 }

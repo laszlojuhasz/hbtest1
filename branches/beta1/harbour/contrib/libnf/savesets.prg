@@ -53,6 +53,7 @@
 
 
 #include "set.ch"
+#include "common.ch"
 
 #Define FT_EXTRA_SETS    2
 #DEFINE FT_SET_CENTURY   _SET_COUNT + 1
@@ -70,7 +71,7 @@ FUNCTION  FT_SAVESETS()
    LOCAL aOldSets := ARRAY(_SET_COUNT + FT_EXTRA_SETS)
 
    AEVAL(aOldSets, ;
-         { | xElement, nElementNo | ;
+         { | xElement, nElementNo | HB_SYMBOL_UNUSED( xElement ), ;
            aOldSets[nElementNo] := SET(nElementNo) } )
 
    aOldSets[FT_SET_CENTURY] := FT_SETCENTURY()

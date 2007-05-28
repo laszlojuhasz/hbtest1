@@ -206,6 +206,12 @@ void hb_gcFree( void *pBlock )
    }
 }
 
+/* return cleanup function pointer */
+HB_GARBAGE_FUNC_PTR hb_gcFunc( void *pBlock )
+{
+   return HB_GC_PTR( pBlock )->pFunc;
+}
+
 /* increment reference counter */
 #undef hb_gcRefInc
 void hb_gcRefInc( void * pBlock )
@@ -427,6 +433,22 @@ void hb_gcItemRef( HB_ITEM_PTR pItem )
             hb_gcItemRef( pItem++ );
             --ulSize;
          }
+      }
+   }
+   else if( HB_IS_HASH( pItem ) )
+   {
+      HB_GARBAGE_PTR pAlloc = HB_GC_PTR( pItem->item.asHash.value );
+
+      /* Check this hash table only if it was not checked yet */
+      if( pAlloc->used == s_uUsedFlag )
+      {
+         /* mark this block as used so it will be no re-checked from
+          * other references
+          */
+         pAlloc->used ^= HB_GC_USED_FLAG;
+
+         /* mark also all hash elements */
+         hb_hashRefGrabage( pItem );
       }
    }
    else if( HB_IS_BLOCK( pItem ) )
