@@ -8,6 +8,14 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-05-29 10:30 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/contrib/ole2/w32ole.c
+    * warning fixes
+  * harbour/include/hbregex.h
+    + added REGEX support for DJGPP build
+  * harbour/source/rtl/net.c
+    * warning cleanup
+
 2007-05-28 23:01 UTC+0100 JF Lefebvre (Mafact) (jfl/at/mafact.com)
   + harbour/Makefile.vc
     Adding 2 missing libs to HBRUN for msvc compiler
