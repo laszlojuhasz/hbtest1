@@ -13,13 +13,18 @@
 ######################################################################
 # Conditional build:
 # --with static      - link all binaries with static libs
-# --with mysql       - build mysql lib (unused)
-# --with pgsql       - build pgsql lib (unused)
-# --with odbc        - build build odbc lib
+# --with mysql       - build mysql lib
+# --with pgsql       - build pgsql lib 
+# --with pgsql4      - build pgsql4 lib
+# --with gd          - build gd lib 
+# --with tip         - build tip lib (needs --withxhb)
+# --with odbc        - build odbc lib
+# --with allegro     - build GTALLEG - Allegro based GT driver
+# --with xhb         - build with xHarbour compatible extensions
 # --without adsrdd   - do not build ADS RDD
 # --without gpl      - do not build libs which needs GPL 3-rd party code
 # --without nf       - do not build nanforum lib
-# --without x11      - do not build GTXVT and GTXWC (unused)
+# --without x11      - do not build GTXWC
 # --without gpm      - build GTSLN and GTCRS without GPM support
 # --without gtsln    - do not build GTSLN
 ######################################################################
@@ -64,10 +69,11 @@
 %define hb_pref  hb
 %define hb_arch  export HB_ARCHITECTURE=linux
 %define hb_cc    export HB_COMPILER=gcc
-%define hb_cflag export C_USR="-DHB_FM_STATISTICS_OFF -O3"
+%define hb_cflag export C_USR="-O3 -DHB_FM_STATISTICS_OFF"
 %define hb_lflag export L_USR="${CC_L_USR} %{?_with_static:-static}"
 %define hb_mt    export HB_MT=no
 %define hb_gt    export HB_GT_LIB=gtcrs
+%define hb_defgt export HB_GT_DEFAULT="${HB_GT_DEFAULT}"
 %define hb_gpm   export HB_GPM_MOUSE=%{!?_without_gpm:yes}
 %define hb_sln   export HB_WITHOUT_GTSLN=%{?_without_gtsln:yes}
 %define hb_x11   export HB_WITHOUT_X11=%{?_without_x11:yes}
@@ -76,7 +82,8 @@
 %define hb_ldir  export HB_LIB_INSTALL=%{_libdir}/%{name}
 %define hb_opt   export HB_GTALLEG=%{?_with_allegro:yes}
 %define hb_cmrc  export HB_COMMERCE=%{?_without_gpl:yes}
-%define hb_env   %{hb_arch} ; %{hb_cc} ; %{hb_cflag} ; %{hb_lflag} ; %{hb_mt} ; %{hb_gt} ; %{hb_gpm} ; %{hb_sln} ; %{hb_x11} ; %{hb_bdir} ; %{hb_idir} ; %{hb_ldir} ; %{hb_opt} ; %{hb_cmrc}
+%define hb_ctrb  export HB_CONTRIBLIBS="%{?_with_gd:gd} %{?_with_tip:tip} %{?_with_pgsql:pgsql} %{?_with_mysql:mysql}"
+%define hb_env   %{hb_arch} ; %{hb_cc} ; %{hb_cflag} ; %{hb_lflag} ; %{hb_mt} ; %{hb_gt} ; %{hb_defgt} ; %{hb_gpm} ; %{hb_sln} ; %{hb_x11} ; %{hb_bdir} ; %{hb_idir} ; %{hb_ldir} ; %{hb_opt} ; %{hb_ctrb} ; %{hb_cmrc}
 
 %define hb_host  www.harbour-project.org
 %define readme   README.RPM
@@ -289,8 +296,12 @@ case "`uname -m`" in
         export C_USR="$C_USR -fPIC"
         ;;
 esac
-
-[ "%{?_with_odbc:1}" ]     || rm -fR contrib/odbc
+if [ "%{?_with_xhb:1}" ]; then
+    sed -e "s!/\* #define HB_COMPAT_XHB \*/!#define HB_COMPAT_XHB      !g" \
+        include/hbsetup.ch > include/hbsetup.ch-new && \
+    mv include/hbsetup.ch-new include/hbsetup.ch
+fi
+[ "%{?_with_odbc:1}" ] || rm -fR contrib/odbc
 
 make -r
 
@@ -323,7 +334,6 @@ mkdir -p $HB_LIB_INSTALL
 make -r -i install
 
 [ "%{?_without_gtsln:1}" ] && rm -f $HB_LIB_INSTALL/libgtsln.a
-[ "%{?_without_tip:1}" ]   && rm -f $HB_LIB_INSTALL/libtip.a
 [ "%{?_with_odbc:1}" ]     || rm -f $HB_LIB_INSTALL/libhbodbc.a
 [ "%{?_with_allegro:1}" ]  || rm -f $HB_LIB_INSTALL/libgtalleg.a
 
@@ -336,14 +346,14 @@ mkdir -p $RPM_BUILD_ROOT/etc/harbour
 install -m644 source/rtl/gtcrs/hb-charmap.def $RPM_BUILD_ROOT/etc/harbour/hb-charmap.def
 cat > $RPM_BUILD_ROOT/etc/harbour.cfg <<EOF
 CC=gcc
-CFLAGS=-c -I$_DEFAULT_INC_DIR -O2
+CFLAGS=-c -I$_DEFAULT_INC_DIR -O3
 VERBOSE=YES
 DELTMP=YES
 EOF
 
 # Create PP
 pushd contrib/dot
-$HB_BIN_INSTALL/%{hb_pref}mk pp -n -w -D_DEFAULT_INC_DIR=\"$_DEFAULT_INC_DIR\"
+$HB_BIN_INSTALL/%{hb_pref}mk pp -q0 -n -w %{?_with_pgsql:-lpq} %{?_with_gd:-lgd} -D_DEFAULT_INC_DIR=\"$_DEFAULT_INC_DIR\"
 install -m755 -s pp $HB_BIN_INSTALL/pp
 ln -s pp $HB_BIN_INSTALL/pprun
 install -m644 rp_dot.ch $HB_INC_INSTALL/
@@ -353,7 +363,7 @@ popd
 if [ "%{!?_with_static:1}" ]
 then
     unset HB_GTALLEG
-    export L_USR="${CC_L_USR} -L${HB_LIB_INSTALL} -l%{name} -lncurses %{!?_without_gtsln:-lslang} %{!?_without_gpm:-lgpm} %{!?_without_x11:-L/usr/X11R6/%{_lib} -lX11}"
+    export L_USR="${CC_L_USR} -L${HB_LIB_INSTALL} -l%{name} -lncurses %{!?_without_gtsln:-lslang} %{!?_without_gpm:-lgpm} %{!?_without_x11:-L/usr/X11R6/%{_lib} -lX11} %{?_with_pgsql4:/usr/lib/libpq.so.4} %{?_with_pgsql:-lpq} %{?_with_gd:-lgd}"
     export PRG_USR="\"-D_DEFAULT_INC_DIR='${_DEFAULT_INC_DIR}'\" ${PRG_USR}"
 
     for utl in hbmake hbrun hbpp hbdoc
@@ -534,7 +544,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/hbpp
 %{_bindir}/hbmake
 %dir %{_includedir}/%{name}
-%attr(644,root,root,755) %{_includedir}/%{name}/*
+%attr(644,root,root) %{_includedir}/%{name}/*
 
 %files static
 %defattr(644,root,root,755)
@@ -547,7 +557,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{name}/libdb*.a
 %{_libdir}/%{name}/libgt*.a
 %{_libdir}/%{name}/liblang.a
-%{_libdir}/%{name}/libmacro*.a
+%{_libdir}/%{name}/libmacro.a
 %{_libdir}/%{name}/libhbpcre.a
 %{_libdir}/%{name}/libnulsys.a
 %{_libdir}/%{name}/libpp.a
@@ -563,11 +573,14 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %dir %{_libdir}/%{name}
 %{?_with_odbc: %{_libdir}/%{name}/libhbodbc.a}
-%{!?_without_nf: %{_libdir}/%{name}/libnf*.a}
-%{!?_without_adsrdd: %{_libdir}/%{name}/librddads*.a}
-#%{?_with_mysql: %{_libdir}/%{name}/libmysql*.a}
-#%{?_with_pgsql: %{_libdir}/%{name}/libpgsql*.a}
-#%{_libdir}/%{name}/libtip.a
+%{!?_without_nf: %{_libdir}/%{name}/libnf.a}
+%{!?_without_adsrdd: %{_libdir}/%{name}/librddads.a}
+%{?_with_mysql: %{_libdir}/%{name}/libhbmysql.a}
+%{?_with_pgsql: %{_libdir}/%{name}/libhbpg.a}
+%{?_with_pgsql4: %{_libdir}/%{name}/libhbpg.a}
+%{?_with_gd: %{_libdir}/%{name}/libhbgd.a}
+%{?_with_tip: %{_libdir}/%{name}/libtip.a}
+
 %{_libdir}/%{name}/libhbbtree.a
 %{_libdir}/%{name}/libhtml.a
 %{_libdir}/%{name}/libmisc.a
