@@ -37,7 +37,8 @@ bool ZipPlatform::ForceDirectory(LPCTSTR lpDirectory)
 	CZipString szDirectory = lpDirectory;
 	szDirectory.TrimRight(CZipPathComponent::m_cSeparator);
 	CZipPathComponent zpc(szDirectory);
-	if ((zpc.GetFilePath() == szDirectory) ||
+
+	if ((zpc.GetFilePath() == (LPCTSTR) szDirectory) ||
 		(FileExists(szDirectory) == -1))
 		return true;
 	if (!ForceDirectory(zpc.GetFilePath()))

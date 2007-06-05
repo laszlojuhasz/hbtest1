@@ -85,6 +85,40 @@ static HB_EXPR_PTR hb_compExprReducePlusStrings( HB_EXPR_PTR pLeft, HB_EXPR_PTR 
    return pLeft;
 }
 
+static HB_EXPR_PTR hb_compExprReduceMinusStrings( HB_EXPR_PTR pLeft, HB_EXPR_PTR pRight, HB_COMP_DECL )
+{
+   char * szText = pLeft->value.asString.string;
+   ULONG ulLen = pLeft->ulLength;
+
+   while( ulLen && szText[ ulLen - 1 ] == ' ' )
+      --ulLen;
+
+   if( pLeft->value.asString.dealloc )
+   {
+      pLeft->value.asString.string = (char *) hb_xrealloc( pLeft->value.asString.string, pLeft->ulLength + pRight->ulLength + 1 );
+      memcpy( pLeft->value.asString.string + ulLen,
+              pRight->value.asString.string, pRight->ulLength );
+      memset( pLeft->value.asString.string + ulLen + pRight->ulLength, ' ',
+              pLeft->ulLength - ulLen );
+      pLeft->ulLength += pRight->ulLength;
+      pLeft->value.asString.string[ pLeft->ulLength ] = '\0';
+   }
+   else
+   {
+      char *szString;
+      szString = (char *) hb_xgrab( pLeft->ulLength + pRight->ulLength + 1 );
+      memcpy( szString, pLeft->value.asString.string, ulLen );
+      memcpy( szString + ulLen, pRight->value.asString.string, pRight->ulLength );
+      memset( szString + ulLen + pRight->ulLength, ' ', pLeft->ulLength - ulLen );
+      pLeft->ulLength += pRight->ulLength;
+      szString[ pLeft->ulLength ] = '\0';
+      pLeft->value.asString.string = szString;
+      pLeft->value.asString.dealloc = TRUE;
+   }
+   HB_COMP_EXPR_FREE( pRight );
+   return pLeft;
+}
+
 HB_EXPR_PTR hb_compExprReduceMod( HB_EXPR_PTR pSelf, HB_COMP_DECL )
 {
    HB_EXPR_PTR pLeft, pRight;
@@ -378,8 +412,53 @@ HB_EXPR_PTR hb_compExprReduceMinus( HB_EXPR_PTR pSelf, HB_COMP_DECL )
    }
    else if( pLeft->ExprType == HB_ET_STRING && pRight->ExprType == HB_ET_STRING )
    {
-      /* TODO:
-       */
+      if( pRight->ulLength == 0 )
+      {
+         pSelf->ExprType = HB_ET_NONE; /* suppress deletion of operator components */
+         HB_COMP_EXPR_FREE( pSelf );
+         pSelf = pLeft;
+         HB_COMP_EXPR_FREE( pRight );
+      }
+      else if( pLeft->ulLength == 0 )
+      {
+         pSelf->ExprType = HB_ET_NONE; /* suppress deletion of operator components */
+         HB_COMP_EXPR_FREE( pSelf );
+         pSelf = pRight;
+         HB_COMP_EXPR_FREE( pLeft );
+      }
+      else
+      {
+         /* Do not reduce strings with the macro operator '&'
+         */
+         char * szText = pLeft->value.asString.string;
+         ULONG ulLen = pLeft->ulLength;
+         BOOL fReduce = TRUE;
+
+         while( ulLen && szText[ ulLen - 1 ] == ' ' )
+            --ulLen;
+
+         while( ulLen-- )
+         {
+            if( *szText++ == '&' )
+            {
+               char ch = ulLen ? *szText : *pRight->value.asString.string;
+               if( ( ch >= 'A' && ch <= 'Z' ) ||
+                   ( ch >= 'a' && ch <= 'z' ) || ch == '_' ||
+                   ! HB_SUPPORT_HARBOUR )
+               {
+                  fReduce = FALSE;
+                  break;
+               }
+            }
+         }
+
+         if( fReduce )
+         {
+            pSelf->ExprType = HB_ET_NONE; /* suppress deletion of operator components */
+            HB_COMP_EXPR_FREE( pSelf );
+         	pSelf = hb_compExprReduceMinusStrings( pLeft, pRight, HB_COMP_PARAM );
+         }
+      }
    }
    else
    {
@@ -548,7 +627,10 @@ HB_EXPR_PTR hb_compExprReducePlus( HB_EXPR_PTR pSelf, HB_COMP_DECL )
                if( ( ch >= 'A' && ch <= 'Z' ) ||
                    ( ch >= 'a' && ch <= 'z' ) || ch == '_' ||
                    ! HB_SUPPORT_HARBOUR )
+               {
                   fReduce = FALSE;
+                  break;
+               }
             }
          }
 
@@ -1340,19 +1422,15 @@ BOOL hb_compExprReduceCHR( HB_EXPR_PTR pSelf, HB_COMP_DECL )
          }
          else
          {
-            pExpr->value.asString.string = ( char * ) hb_xgrab( 2 );
-            pExpr->value.asString.string[ 0 ] = ( char ) pArg->value.asNum.val.l;
-            pExpr->value.asString.string[ 1 ] = '\0';
-            pExpr->value.asString.dealloc = TRUE;
+            pExpr->value.asString.string = ( char * ) hb_szAscii[ ( int ) pArg->value.asNum.val.l & 0xff ];
+            pExpr->value.asString.dealloc = FALSE;
             pExpr->ulLength = 1;
          }
       }
       else
       {
-         pExpr->value.asString.string = ( char * ) hb_xgrab( 2 );
-         pExpr->value.asString.string[ 0 ] = ( char ) ( ( unsigned int ) pArg->value.asNum.val.d & 0xff );
-         pExpr->value.asString.string[ 1 ] = '\0';
-         pExpr->value.asString.dealloc = TRUE;
+         pExpr->value.asString.string = ( char * ) hb_szAscii[ ( unsigned int ) pArg->value.asNum.val.d & 0xff ];
+         pExpr->value.asString.dealloc = FALSE;
          pExpr->ulLength = 1;
       }
       
@@ -1409,7 +1487,7 @@ BOOL hb_compExprReduceSTOD( HB_EXPR_PTR pSelf, USHORT usCount, HB_COMP_DECL )
    {
       HB_EXPR_PTR pParms = pSelf->value.asFunCall.pParms;
       HB_EXPR_PTR pArg = pParms->value.asList.pExprList;
-      
+
       if( pArg->ExprType == HB_ET_STRING && ( pArg->ulLength == 8 || pArg->ulLength == 0 ) )
       {
          HB_EXPR_PTR pExpr = hb_compExprNewDate( pArg->ulLength == 0 ? 0 :
@@ -1426,12 +1504,114 @@ BOOL hb_compExprReduceSTOD( HB_EXPR_PTR pSelf, USHORT usCount, HB_COMP_DECL )
    else
    {
       HB_EXPR_PTR pExpr = hb_compExprNewDate( 0, HB_COMP_PARAM );
-      
+
       HB_COMP_EXPR_FREE( pSelf->value.asFunCall.pParms );
       HB_COMP_EXPR_FREE( pSelf->value.asFunCall.pFunName );
       memcpy( pSelf, pExpr, sizeof( HB_EXPR ) );
       HB_COMP_EXPR_CLEAR( pExpr );
       return TRUE;
+   }
+
+   return FALSE;
+}
+
+BOOL hb_compExprReduceCTOD( HB_EXPR_PTR pSelf, HB_COMP_DECL )
+{
+   HB_EXPR_PTR pParms = pSelf->value.asFunCall.pParms;
+   HB_EXPR_PTR pArg = pParms->value.asList.pExprList;
+
+   if( pArg->ExprType == HB_ET_STRING && pArg->ulLength == 0 )
+   {
+      HB_EXPR_PTR pExpr = hb_compExprNewDate( 0, HB_COMP_PARAM );
+
+      HB_COMP_EXPR_FREE( pParms );
+      HB_COMP_EXPR_FREE( pSelf->value.asFunCall.pFunName );
+      memcpy( pSelf, pExpr, sizeof( HB_EXPR ) );
+      HB_COMP_EXPR_CLEAR( pExpr );
+      return TRUE;
+   }
+
+   return FALSE;
+}
+
+BOOL hb_compExprReduceUPPER( HB_EXPR_PTR pSelf, HB_COMP_DECL )
+{
+   HB_EXPR_PTR pParms = pSelf->value.asFunCall.pParms;
+   HB_EXPR_PTR pArg = pParms->value.asList.pExprList;
+      
+   if( pArg->ExprType == HB_ET_STRING )
+   {
+      ULONG ulLen = pArg->ulLength;
+      BOOL fLower = FALSE;
+
+      if( ulLen )
+      {
+         char * szValue = pArg->value.asString.string;
+         do
+         {
+            char c = * szValue++;
+            if( c >= 'a' && c <= 'z' )
+               fLower = TRUE;
+            else if( !( ( c >= 'A' && c <= 'Z' ) ||
+                        ( c >= '0' && c <= '9' ) || c == ' ' ) )
+               break;
+         }
+         while( --ulLen );
+      }
+
+      if( ulLen == 0 )
+      {
+         HB_EXPR_PTR pExpr;
+         char * szValue;
+         BOOL fDealloc;
+
+         if( fLower )
+         {
+            if( pArg->ulLength == 1 )
+            {
+               szValue = ( char * ) hb_szAscii[ toupper( (unsigned char)
+                                          pArg->value.asString.string[ 0 ] ) ];
+               fDealloc = FALSE;
+            }
+            else
+            {
+               if( pArg->value.asString.dealloc )
+               {
+                  szValue = pArg->value.asString.string;
+                  pArg->value.asString.dealloc = FALSE;
+                  fDealloc = TRUE;
+               }
+               else
+               {
+                  szValue = ( char * ) hb_xgrab( pArg->ulLength + 1 );
+                  memcpy( szValue, pArg->value.asString.string, pArg->ulLength + 1 );
+                  fDealloc = TRUE;
+               }
+               do
+                  szValue[ ulLen ] = toupper( (unsigned char) szValue[ ulLen ] );
+               while( ++ulLen < pArg->ulLength );
+            }
+         }
+         else
+         {
+            szValue = pArg->value.asString.string;
+            fDealloc = pArg->value.asString.dealloc;
+            pArg->value.asString.dealloc = FALSE;
+         }
+
+         pExpr = HB_COMP_EXPR_NEW( HB_ET_STRING );
+         pExpr->ValType = HB_EV_STRING;
+         pExpr->value.asString.string = szValue;
+         pExpr->value.asString.dealloc = fDealloc;
+         pExpr->ulLength = pArg->ulLength;
+
+         HB_COMP_EXPR_FREE( pParms );
+         HB_COMP_EXPR_FREE( pSelf->value.asFunCall.pFunName );
+         memcpy( pSelf, pExpr, sizeof( HB_EXPR ) );
+         HB_COMP_EXPR_CLEAR( pExpr );
+
+         return TRUE;
+      }
    }
 
    return FALSE;

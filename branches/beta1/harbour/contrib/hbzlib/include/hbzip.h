@@ -54,7 +54,6 @@
 #ifndef HB_APIZLIB_H_
 #define HB_APIZLIB_H_
 #include <hbsetup.h>
-#include <hbapi.h>
 #include <hbapiitm.h>
 #include <hbapifs.h>
 #include <hbapigt.h>
@@ -82,8 +81,8 @@ extern BOOL hb___unZipFiles(char *szFile,PHB_ITEM pBlock,BOOL bExtractPath);
 extern int hb___ExtractCurrentFile(unzFile uf,BOOL popt_extract_without_path,BOOL popt_overwrite,PHB_ITEM pBlock);
 extern void hb____ChangeFileDate(char *filename,uLong dosdate,tm_unz tmu_date);
 extern int hb___MakeDir(char *szNewDirectory);
-extern int hb___GetNumbersofFilestoUnzip(char *szFile);
-extern PHB_ITEM hb___GetFilesNamesFromZip(char *szFile,BOOL iMode);
+extern int hb___GetNumberofFilestoUnzip(char *szFile);
+extern PHB_ITEM hb___GetFileNamesFromZip(char *szFile,BOOL iMode);
 
 HB_EXTERN_END
 

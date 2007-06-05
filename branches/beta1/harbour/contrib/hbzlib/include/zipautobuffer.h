@@ -76,4 +76,3 @@ protected:
 };
 
 #endif // !defined(AFX_ZIPAUTOBUFFER_H__DEC28C20_83FE_11D3_B7C3_EDEC47A8A86C__INCLUDED_)
-	

@@ -8,6 +8,68 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-06-05 10:50 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * synced with modifications in DEVEL branch:
+    * source/rtl/achoice.prg
+      ! Fix bug#1729881 by <sokaxa@telenet.be>
+        ACHOICE() was not handling AC_GOTO when user function was used.
+    * harbour/contrib/ole2/w32ole.c
+    * harbour/contrib/ole2/win32ole.prg
+      * changed deinitialization code to allow using OLE in .prg object
+        destructors and user EXIT functions
+      * added support for FOR EACH overloading - not tested please check
+      % use BEGIN SEQUENCE WITH as TRY / CATCH replacement
+    * harbour/include/hbexprb.c
+    * harbour/include/hbexprop.h
+    * harbour/source/common/expropt2.c
+      * restored Mindaugas code for UPPER optimization and added logic to
+        optimize UPPER for strings with only Latin letters, digit and spaces
+        just like in Clipper. Now code like:
+           ? Upper( chr(65)+chr(66)+chr(67)+"0123 QWE asd " ) + "ZXC"
+        is fully optimized at compile time to single string expression.
+      % optimized hb_compExprReduceCHR() by eliminating memory allocation
+        for new string
+      ! fixed typo in my previous commit
+    * harbour/include/hbexprb.c
+    * harbour/include/hbexprop.h
+    * harbour/source/common/expropt2.c
+      % added compile time optimization for CTOD("")
+      % added compile time optimization for - used forconstant string values,
+        f.e.:
+           ? "Harbour   " - " Compiler"
+    * harbour/source/vm/hvm.c
+      % added optimization for string resizing in cVal1 - cVal2
+    * harbour/source/rtl/dateshb.c
+      % minor optimization - removed one not necessary ISCHAR()
+    * harbour/make_gnu.sh
+    * harbour/make_tgz.sh
+    * harbour/bin/hb-func.sh
+    * harbour/bin/postinst.sh
+      * HPUX build cleanup
+    * harbour/source/debug/dbgentry.c
+      * cast isalpha() and isdigit() parameters to unsigned char
+    * harbour/source/rtl/hbinet.c
+    * harbour/source/rtl/gtstd/gtstd.c
+      * HPUX build cleanup
+    + harbour/contrib/tip/make_b32.bat
+    + harbour/contrib/tip/makefile.bc
+    * harbour/contrib/hbzlib
+      * replaced with the one borrowed from xharbour, source modifications by Przemek
+    * harbour/contrib/hbzlib/makefile
+    * harbour/contrib/hbzlib/makefile.bc
+    * harbour/contrib/hbzlib/makefile.vc
+    * harbour/contrib/hbzlib/zip.c
+    * harbour/contrib/hbzlib/include/zipfilemapping.h
+    * harbour/contrib/hbzlib/include/zipautobuffer.h
+    * harbour/contrib/hbzlib/include/hbzip2.h
+      * changed to make contrib/hbzlib working with harbour
+    + harbour/contrib/hbzlib/hbcomprs.c
+    + harbour/contrib/hbzlib/include/hbcomprs.h
+      + added to make contrib/hbzlib working with harbour
+    + harbour/contrib/hbzlib/doc
+    + harbour/contrib/hbzlib/doc/zipnew.txt
+      + added documentation borrowed from xharbour/doc/en
+
 2007-06-01 21:25 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   * harbour/contrib/pgsql/postgres.c
     * cover PQescapeByteaConn() by #if HB_PGVERSION >= 0x0800

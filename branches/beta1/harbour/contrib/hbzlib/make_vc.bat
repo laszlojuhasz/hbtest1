@@ -4,6 +4,7 @@ rem $Id$
 rem
 
 if not exist obj md obj
+if not exist obj\vc md obj\vc
 
 :BUILD
 

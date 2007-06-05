@@ -16,15 +16,65 @@
 // Check the site http://www.artpol-software.com for the updated version of the library.
 ////////////////////////////////////////////////////////////////////////////////
 
+#include "hbapi.h"
 
 #if !defined(AFX_AUTOHANDLE_H__D68326EA_D7FA_4792_AB1F_68D09533E399__INCLUDED_)
 #define AFX_AUTOHANDLE_H__D68326EA_D7FA_4792_AB1F_68D09533E399__INCLUDED_
+
+#ifdef HB_OS_LINUX
+
+#include <sys/mman.h>
+
+namespace ziparchv
+{
+	
+
+	struct CZipFileMapping
+	{
+		CZipFileMapping()
+		{
+			m_iSize = 0;
+			m_pFileMap = NULL;
+		}
+		bool CreateMapping(CZipFile* pFile)
+		{
+			if (!pFile)
+				return false;
+			m_iSize = pFile->GetLength();
+			m_pFileMap = mmap(0, m_iSize, PROT_READ|PROT_WRITE, MAP_SHARED, pFile->m_hFile, 0);
+			return (m_pFileMap != NULL);
+		}
+		void RemoveMapping()
+		{
+                
+			if (m_pFileMap)
+			{
+				munmap(m_pFileMap, m_iSize);
+				m_pFileMap = NULL;
+			}
+		}
+		~CZipFileMapping()
+		{
+			RemoveMapping();
+		}
+		char* GetMappedMemory()
+		{
+			return reinterpret_cast<char*> (m_pFileMap);
+		}
+	protected:
+		void* m_pFileMap;
+		size_t m_iSize;
+
+	};
+}
+
+#else /* HB_OS_LINUX */
 
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "ZipFile.h"
+#include "zipfile.h"
 namespace ziparchv
 {
 	
@@ -76,5 +126,7 @@ namespace ziparchv
 
 	};
 }
+
+#endif /* HB_OS_LINUX */
 
 #endif // !defined(AFX_AUTOHANDLE_H__D68326EA_D7FA_4792_AB1F_68D09533E399__INCLUDED_)

@@ -88,8 +88,8 @@
 
 
 #else
-  	#include <TCHAR.H>
-       	#include <windows.H>
+  	#include <tchar.h>
+       	#include <windows.h>
       	#ifndef STRICT
 		#define STRICT
 	#endif
@@ -109,7 +109,7 @@
 
 
 #ifndef TRACE
-	#define TRACE
+	#define TRACE(a,b,c)
 #endif
 
 #if _MSC_VER >= 1300

@@ -36,6 +36,10 @@
 
 const TCHAR CZipPathComponent::m_cSeparator = _T('\\');
 
+#if defined(__MINGW32__)
+#define _UTIMBUF_DEFINED
+#endif
+
 
 #ifndef _UTIMBUF_DEFINED
 #define _utimbuf utimbuf
@@ -176,7 +180,11 @@ bool ZipPlatform::ChangeDirectory(LPCTSTR lpDirectory)
 }
 int ZipPlatform::FileExists(LPCTSTR lpszName)
 {
-	if (_taccess(lpszName, 0) == 0)
+#if defined(__BORLANDC__)
+    if (_access(lpszName, 0) == 0)
+#else
+    if (_taccess(lpszName, 0) == 0)
+#endif
 	{
 		if (DirectoryExists(lpszName))
 			return -1;
