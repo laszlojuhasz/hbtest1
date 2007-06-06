@@ -8,6 +8,32 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-06-06 16:10 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * synced with modifications in DEVEL branch:
+    * harbour/include/hbregex.h
+    * harbour/source/rtl/hbregex.c
+      ! fixed GPF
+    * harbour/include/hbapicls.h
+      * changed extern hb_bProfiler to local HVM static variable
+    * harbour/source/vm/hvm.c
+      + added two macros HB_NO_TRACE and HB_NO_DEBUG for these people
+        who needs/wants to test HVM speed without debugger support
+        and PRG call tracing - the difference is rather small
+    * harbour/contrib/hbzlib/zip.c
+      * cleaned a couple of warnings
+    * harbour/include/hbcompdf.h
+    * harbour/include/hbexpra.c
+    * harbour/source/common/expropt2.c
+      + added optimization for <constValue> == NIL, <constValue> = NIL,
+        <constValue> != NIL
+      ! disabled in macro compiler buggy Clipper compiler optimization
+        for expressions like: AT( "", "" ), "" $ "", CHR(256)
+     * harbour/doc/linux1st.txt
+       + Added info about required Ubuntu packages.
+     * harbour/utils/hbtest/rt_hvma.prg
+     * harbour/utils/hbtest/rt_str.prg
+       + Added two more tests for "" $ "" / At( "", "" ) combinations.
+
 2007-06-05 10:50 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   * synced with modifications in DEVEL branch:
     * source/rtl/achoice.prg
