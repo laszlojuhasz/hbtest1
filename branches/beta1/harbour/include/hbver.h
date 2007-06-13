@@ -57,7 +57,7 @@
 
 #define HB_VER_MAJOR    0       /* Major version number */
 #define HB_VER_MINOR    99      /* Minor version number */
-#define HB_VER_REVISION 2       /* Revision number */
+#define HB_VER_REVISION 3       /* Revision number */
 #define HB_VER_STATUS   "Beta"  /* Build status */
 
 /* NOTE: The next two fields are automatically updated by the hbverfix program */
