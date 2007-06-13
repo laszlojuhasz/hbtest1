@@ -1,0 +1,69 @@
+/*
+ * $Id$
+ */
+
+/* Use this format for the entry headers:
+   YYYY-MM-DD HH:MM UTC[-|+]hhmm Your Full Name <your_email@address>
+   For example:
+   2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
+*/
+
+2007-06-14 00:20 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/doc/whatsnew.txt
+  * harbour/harbour.spec
+  * harbour/include/hbver.h
+    * small information about new release
+    * updated version number to 1.1.1
+    * tagged as build48
+
+2007-06-14 00:10 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/rtl/tclass.prg
+    * initialize date members to ctod("")
+
+2007-06-14 00:05 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbcompat.ch
+    + added translation rules for extended code blocks
+
+  * harbour/source/compiler/gencc.c
+    * cleaned C compiler warnings in -gc3 output and SWITCH <exp>
+      statement
+
+  * harbour/source/compiler/complex.c
+  * harbour/source/compiler/harbour.y
+  * harbour/source/compiler/harbour.yyc
+    * allow to use 0d0 and 0d00000000 as empty date value
+
+  * harbour/source/pp/Makefile
+    * workaround for problems with some GNU make  versions,
+      f.e. 3.76.1 on OS2
+
+2007-06-12 23:40 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/contrib/rdd_ads/ads1.c
+    * cleaned BCC warning 
+
+  * harbour/include/hbapi.h
+  * harbour/source/vm/arrays.c
+    + added set of hb_arraySet*() functions - I hope they will help 3-rd
+      party developers to eliminate using C stack level HB_ITEM and
+      reduce usage of potentially danger function like hb_arrayGetItemPtr()
+
+  * harbour/include/hbapiitm.h
+  * harbour/source/vm/itemapi.c
+    + added hb_itemReturnRelease()
+
+  * harbour/include/hbcompat.ch
+    + added hb_pvalue() <-> pvalue() translations
+
+  * harbour/source/vm/pvalue.c
+    + added support for 2-nd parameter for assugb operation, f.e. now
+         hb_pvalue( 3, "abc" )
+      sets "abc" to 3-rd function parameter
+
+  * harbour/source/compiler/gencc.c
+  * harbour/source/compiler/hbopt.c
+    ! fixed two buggy optimizations
+
+2007-06-11 16:28 UTC+0100 Viktor Szakats (harbour.01 syenar.hu)
+   * harbour/ChangeLog
+   + harbour/ChangeLog.018
+     * ChangeLog archived.
