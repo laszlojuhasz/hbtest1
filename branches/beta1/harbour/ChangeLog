@@ -8,6 +8,31 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-08-14 02:32 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/bldcmncf.sh
+  * harbour/debian/control
+  * harbour/debian/harbour.cfg
+  * harbour/debian/dirs
+  * harbour/debian/harbour.1
+  * harbour/debian/compat
+  * harbour/debian/hbmake.1
+  * harbour/debian/changelog
+  * harbour/debian/copyright
+  * harbour/debian/hbpp.1
+  * harbour/debian/hbtest.1
+  * harbour/debian/rules
+  * harbour/debian/hbrun.1
+  * harbour/debian/hbdoc.1
+  * harbour/make_deb.sh
+  * harbour/make_gcc.sh
+  * harbour/makefile.gc
+  * harbour/doc/howtosvn.txt
+  * harbour/contrib/libnf/makefile.bc
+  * harbour/contrib/tip/thtml.ch
+  * harbour/contrib/libct/ctdisk.ch
+  * harbour/contrib/libct/ctvideo.ch
+    * set some SVN attributes
+
 2007-08-14 02:10 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   + harbour/bldcmncf.sh
   + harbour/debian
