@@ -206,6 +206,8 @@ static BOOL hb_gt_cgi_SetDispCP( char *pszTermCDP, char *pszHostCDP, BOOL fBox )
 {
    HB_TRACE( HB_TR_DEBUG, ( "hb_gt_cgi_SetDispCP(%s,%s,%d)", pszTermCDP, pszHostCDP, (int) fBox ) );
 
+   HB_GTSUPER_SETDISPCP( pszTermCDP, pszHostCDP, fBox );
+
 #ifndef HB_CDP_SUPPORT_OFF
    if( !pszHostCDP )
       pszHostCDP = hb_cdp_page->id;
@@ -219,11 +221,7 @@ static BOOL hb_gt_cgi_SetDispCP( char *pszTermCDP, char *pszHostCDP, BOOL fBox )
       s_fDispTrans = s_cdpTerm && s_cdpHost && s_cdpTerm != s_cdpHost;
       return TRUE;
    }
-#else
-   HB_SYMBOL_UNUSED( pszTermCDP );
-   HB_SYMBOL_UNUSED( pszHostCDP );
 #endif
-   HB_SYMBOL_UNUSED( fBox );
 
    return FALSE;
 }
@@ -234,6 +232,7 @@ static void hb_gt_cgi_WriteCon( BYTE * pText, ULONG ulLength )
 {
    BYTE * buffer = NULL;
 
+#ifndef HB_CDP_SUPPORT_OFF
    if( s_fDispTrans )
    {
       buffer = ( BYTE * ) hb_xgrab( ulLength );
@@ -241,6 +240,7 @@ static void hb_gt_cgi_WriteCon( BYTE * pText, ULONG ulLength )
       hb_cdpnTranslate( ( char * ) buffer, s_cdpHost, s_cdpTerm, ulLength );
       pText = buffer;
    }
+#endif
 
    hb_gt_cgi_termOut( pText, ulLength );
    while( ulLength-- )
@@ -360,8 +360,10 @@ static void hb_gt_cgi_Redraw( int iRow, int iCol, int iSize )
       }
       if( iLen )
       {
+#ifndef HB_CDP_SUPPORT_OFF
          if( s_fDispTrans )
             hb_cdpnTranslate( ( char * ) s_sLineBuf, s_cdpHost, s_cdpTerm, iLen );
+#endif
          hb_gt_cgi_termOut( s_sLineBuf, iLen );
          s_iCol = iCol;
          if( s_iCol > s_iLastCol )

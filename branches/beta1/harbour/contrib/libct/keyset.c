@@ -54,22 +54,37 @@
  */
 
 #include "ct.h"
+#include "hbapigt.h"
 
-#if defined (HB_OS_DOS)
+static void SetGet( int iFlag )
+{
+   int iState = 0, iNewState;
+   HB_GT_INFO gtInfo;
 
-#if defined(__DJGPP__)
-    #include "pc.h"
-    #include "sys\exceptn.h"
-    #include "sys\farptr.h"
-#elif defined(__MSC_VER)
-    #include "signal.h"
-#elif defined(__BORLANDC__)
-   #ifndef FAR
-      #define FAR far /* Because FAR is not defined for Borland C 3.x */
-   #endif
-#endif
+   gtInfo.pNewVal = gtInfo.pResult = NULL;
 
-static void SetGet( char cKey );
+   hb_gtInfo( GTI_KBDSHIFTS, &gtInfo );
+   if( gtInfo.pResult )
+   {
+      iState = hb_itemGetNI( gtInfo.pResult );
+      gtInfo.pNewVal = gtInfo.pResult;
+      gtInfo.pResult = NULL;
+   }
+
+   if( ISLOG( 1 ) )
+   {
+      iNewState = hb_parl( 1 ) ? ( iState | iFlag ) : ( iState & ~iFlag );
+      gtInfo.pNewVal = hb_itemPutNI( gtInfo.pNewVal, iNewState );
+      hb_gtInfo( GTI_KBDSHIFTS, &gtInfo );
+   }
+
+   if( gtInfo.pNewVal )
+      hb_itemRelease( gtInfo.pNewVal );
+   if( gtInfo.pResult )
+      hb_itemRelease( gtInfo.pResult );
+
+   hb_retl( ( iState & iFlag ) != 0 );
+}
 
 
 /*  $DOC$
@@ -97,13 +112,9 @@ static void SetGet( char cKey );
  *  $END$
  */
 
-HB_FUNC (KSETINS)
+HB_FUNC( KSETINS )
 {
-
-char cKey = 0x80;
-
-   SetGet( cKey );
-
+   SetGet( GTI_KBD_INSERT );
 }
 
 
@@ -132,13 +143,9 @@ char cKey = 0x80;
  *  $END$
  */
 
-HB_FUNC (KSETCAPS)
+HB_FUNC( KSETCAPS )
 {
-
-char cKey = 0x40;
-
-   SetGet( cKey );
-
+   SetGet( GTI_KBD_CAPSLOCK );
 }
 
 
@@ -167,13 +174,9 @@ char cKey = 0x40;
  *  $END$
  */
 
-HB_FUNC (KSETNUM)
+HB_FUNC( KSETNUM )
 {
-
-char cKey = 0x20;
-
-   SetGet( cKey );
-
+   SetGet( GTI_KBD_NUMLOCK );
 }
 
 
@@ -202,52 +205,7 @@ char cKey = 0x20;
  *  $END$
  */
 
-HB_FUNC (KSETSCROLL)
+HB_FUNC( KSETSCROLL )
 {
-
-char cKey = 0x10;
-
-   SetGet( cKey );
-
+   SetGet( GTI_KBD_SCROLOCK );
 }
-
-
-static void SetGet( char cKey )
-{
-
-#if defined(__WATCOMC__) && defined(__386__)
-
-   hb_retl( *( ( char * ) 0x0417 ) & cKey );
-
-#elif defined(__DJGPP__)
-
-   hb_retl( _farpeekb( 0x0040, 0x0017 ) & cKey );
-
-#else
-
-   hb_retl( *( ( char FAR * ) MK_FP( 0x0040, 0x0017 ) ) & cKey );
-
-#endif
-
-   if ( hb_pcount() >= 1 )
-   {
-      cKey = hb_parl( 1 ) * cKey;
-      
-   #if defined(__WATCOMC__) && defined(__386__)
-
-      *( ( char * ) 0x0417 ) = ( *( ( char * ) 0x0417 ) & ( !cKey ) ) | cKey;
-
-   #elif defined(__DJGPP__)
-
-      _farpokeb( 0x0040, 0x0017, ( _farpeekb( 0x0040, 0x0017 ) & ( !cKey ) ) | cKey );
-
-   #else
-
-      *( ( char FAR * ) MK_FP( 0x0040, 0x0017 ) ) = ( *( ( char FAR * ) MK_FP( 0x0040, 0x0017 ) ) & ( !cKey ) ) | cKey;
-
-   #endif
-   }   
-
-}
-
-#endif /* #if defined (HB_OS_DOS) */

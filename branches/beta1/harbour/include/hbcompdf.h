@@ -428,16 +428,19 @@ typedef struct HB_EXPR_
 /* support structure for else if pcode fixups */
 typedef struct HB_ELSEIF_
 {
-   ULONG ulOffset;
-   struct HB_ELSEIF_ * pElseif; /* next ELSEIF in the current IF statement */
-   struct HB_ELSEIF_ * pPrev;   /* previous IF statement */
+   ULONG    ulOffset;
+   struct   HB_ELSEIF_ * pElseif;   /* next ELSEIF in the current IF statement */
+   struct   HB_ELSEIF_ * pPrev;     /* previous IF statement */
 } HB_ELSEIF, * HB_ELSEIF_PTR;      
 
 /* support structure for EXIT and LOOP statements */
 typedef struct HB_LOOPEXIT_
 {
-   ULONG ulOffset;
-   USHORT wSeqCounter;
+   ULONG    ulOffset;
+   BOOL     fCanLoop;
+   USHORT   wSeqCounter;
+   USHORT   wAlwaysCounter;
+   USHORT   wWithObjectCnt;
    struct HB_LOOPEXIT_ * pLoopList;
    struct HB_LOOPEXIT_ * pExitList;
    struct HB_LOOPEXIT_ * pNext;
@@ -660,13 +663,13 @@ typedef struct _HB_COMP
    BOOL              fMeaningful;         /* do not generate warnings about meaningless expression usage */
 
    USHORT            wSeqCounter;
+   USHORT            wAlwaysCounter;
    USHORT            wForCounter;
    USHORT            wIfCounter;
    USHORT            wWhileCounter;
    USHORT            wCaseCounter;
    USHORT            wSwitchCounter;
    USHORT            wWithObjectCnt;
-
 }
 HB_COMP, * HB_COMP_PTR;
 

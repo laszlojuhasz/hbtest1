@@ -1098,7 +1098,7 @@ static void set_tmevt( unsigned char *cMBuf, mouseEvent * mEvt )
       mEvt->col = col;
    }
 
-   switch ( cMBuf[0] & 0xC3 )
+   switch( cMBuf[0] & 0xC3 )
    {
       case 0x0:
          mEvt->buttonstate |= M_BUTTON_LEFT;
@@ -1113,10 +1113,12 @@ static void set_tmevt( unsigned char *cMBuf, mouseEvent * mEvt )
          mEvt->buttonstate &= ~(M_BUTTON_KEYMASK|M_BUTTON_DBLMASK);
          break;
       case 0x40:
-         mEvt->buttonstate |= M_BUTTON_WHEELUP;
+         if( cMBuf[0] & 0x20 )
+            mEvt->buttonstate |= M_BUTTON_WHEELUP;
          break;
       case 0x41:
-         mEvt->buttonstate |= M_BUTTON_WHEELDOWN;
+         if( cMBuf[0] & 0x20 )
+            mEvt->buttonstate |= M_BUTTON_WHEELDOWN;
          break;
    }
    chk_mevtdblck( mEvt );
@@ -1307,9 +1309,8 @@ static void disp_cursor( InOutBase * ioBase )
       {
          if ( ioBase->terminal_type == TERM_LINUX )
          {
-            snprintf( escseq, sizeof( escseq ) - 1, "\033[?25%c\033[?%hdc",
+            snprintf( escseq, sizeof( escseq ), "\033[?25%c\033[?%hdc",
                       ioBase->cursor == SC_NONE ? 'l' : 'h', lcurs );
-            escseq[sizeof( escseq ) - 1] = '\0';
             write_ttyseq( ioBase, escseq );
          }
          else if ( cv != NULL )
@@ -1669,10 +1670,9 @@ static void gt_tone( InOutBase * ioBase, double dFrequency, double dDuration )
 
    if ( ioBase->terminal_type == TERM_LINUX && ioBase->beep != NULL )
    {
-      snprintf( escseq, sizeof( escseq ) - 1, "\033[10;%hd]\033[11;%hd]%s",
+      snprintf( escseq, sizeof( escseq ), "\033[10;%hd]\033[11;%hd]%s",
                 ( int ) dFrequency,
                 ( int ) ( dDuration * 1000.0 / 18.2 ), ioBase->beep );
-      escseq[sizeof( escseq ) - 1] = '\0';
       write_ttyseq( ioBase, escseq );
    }
    else
@@ -1778,8 +1778,7 @@ static int gt_setsize( InOutBase * ioBase, int rows, int cols )
 
    if ( ioBase->terminal_type == TERM_XTERM )
    {
-      snprintf( escseq, sizeof( escseq ) - 1, "\033[8;%hd;%hdt", rows, cols );
-      escseq[sizeof( escseq ) - 1] = '\0';
+      snprintf( escseq, sizeof( escseq ), "\033[8;%hd;%hdt", rows, cols );
       write_ttyseq( ioBase, escseq );
       /* dirty hack - wait for SIGWINCH */
       if ( gt_getsize( ioBase, &r, &c ) > 0 )
@@ -2012,7 +2011,7 @@ static InOutBase *create_ioBase( char *term, int infd, int outfd, int errfd,
    ioBase->acsc = tiGetS( "acsc" );
 
    ioBase->charmap = ( int * ) hb_xgrab( 256 * sizeof( int ) );
-   hb_gt_crs_chrmapinit( ioBase->charmap, term );
+   hb_gt_chrmapinit( ioBase->charmap, term, ioBase->terminal_type == TERM_XTERM );
    setDispTrans( ioBase, NULL, NULL, 0 );
 
    ioBase->attr_mask = ( chtype ) -1;
@@ -2227,7 +2226,6 @@ static InOutBase *create_newXterm( void )
       else
          ptr = ptyname;
       snprintf( buf, sizeof( buf ), "-S%s/%d", ptr, masterfd );
-      buf[sizeof( buf ) - 1] = '\0';
 /*
       close(0);
       close(1);
@@ -2646,7 +2644,7 @@ static BOOL hb_gt_crs_mouse_IsPresent( void )
 {
    HB_TRACE( HB_TR_DEBUG, ( "hb_gt_crs_mouse_IsPresent()" ) );
 
-   return s_ioBase->mouse_type != 0;
+   return s_ioBase->mouse_type != MOUSE_NONE;
 }
 
 /* *********************************************************************** */
@@ -2768,6 +2766,8 @@ static BOOL hb_gt_crs_SetDispCP( char *pszTermCDP, char *pszHostCDP, BOOL fBox )
 {
    HB_TRACE( HB_TR_DEBUG, ( "hb_gt_crs_SetDispCP(%s,%s,%d)", pszTermCDP, pszHostCDP, (int) fBox ) );
 
+   HB_GTSUPER_SETDISPCP( pszTermCDP, pszHostCDP, fBox );
+
 #ifndef HB_CDP_SUPPORT_OFF
    if( !pszHostCDP || !*pszHostCDP )
    {
@@ -2804,10 +2804,6 @@ static BOOL hb_gt_crs_SetDispCP( char *pszTermCDP, char *pszHostCDP, BOOL fBox )
             setDispTrans( s_ioBase, "", "", fBox ? 1 : 0 );
       }
    }
-#else
-   HB_SYMBOL_UNUSED( pszTermCDP );
-   HB_SYMBOL_UNUSED( pszHostCDP );
-   HB_SYMBOL_UNUSED( fBox );
 #endif
 
    return FALSE;

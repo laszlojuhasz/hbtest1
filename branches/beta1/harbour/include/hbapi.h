@@ -597,7 +597,6 @@ extern HB_EXPORT void   hb_retnlllen( LONGLONG lNumber, int iWidth ); /* returns
 /* xHarbour compatible function */
 #define hb_retcAdopt( szText )               hb_retc_buffer( (szText) )
 #define hb_retclenAdopt( szText, ulLen )     hb_retclen_buffer( (szText), (ulLen) )
-#define hb_retclenAdoptRaw( szText, ulLen )  hb_retclen_buffer( (szText), (ulLen) )
 #define hb_retcStatic( szText )              hb_retc_const( (szText) )
 
 #ifdef HB_API_MACROS
@@ -729,11 +728,12 @@ extern HB_EXPORT void      hb_hashClearFlags( PHB_ITEM pHash, int iFlags );
 extern HB_EXPORT int       hb_hashGetFlags( PHB_ITEM pHash );
 extern HB_EXPORT void *    hb_hashId( PHB_ITEM pHash ); /* retrieves the hash unique ID */
 
-/* hb_hashGetItem*() are dangerous, be sure that base HASH value will not be changed */
+/* these hb_hashGet*() functions are dangerous, be sure that base HASH value will not be changed */
 extern HB_EXPORT PHB_ITEM  hb_hashGetItemPtr( PHB_ITEM pHash, PHB_ITEM pKey, int iFlags );
 extern HB_EXPORT PHB_ITEM  hb_hashGetItemRefPtr( PHB_ITEM pHash, PHB_ITEM pKey );
 extern HB_EXPORT PHB_ITEM  hb_hashGetKeyAt( PHB_ITEM pHash, ULONG ulPos );
 extern HB_EXPORT PHB_ITEM  hb_hashGetValueAt( PHB_ITEM pHash, ULONG ulPos );
+
 extern HB_EXPORT BOOL      hb_hashDelAt( PHB_ITEM pHash, ULONG ulPos );
 
 /* hash item flags */

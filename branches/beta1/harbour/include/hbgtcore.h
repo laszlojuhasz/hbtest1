@@ -63,6 +63,7 @@
 /* extended attributes used by core screen buffer */
 #define HB_GT_ATTR_BOX        0x01
 #define HB_GT_ATTR_SHADOW     0x02
+#define HB_GT_ATTR_UNDEF      0x40
 #define HB_GT_ATTR_REFRESH    0x80
 
 /* convert lower case suffixes to upper */
@@ -77,6 +78,7 @@
 #define HB_GT_dos    HB_GT_DOS
 #define HB_GT_os2    HB_GT_OS2
 #define HB_GT_tpl    HB_GT_TPL
+#define HB_GT_trm    HB_GT_TRM
 #define HB_GT_QTc    HB_GT_QTC
 #define HB_GT_xvt    HB_GT_XVT
 #define HB_GT_xwc    HB_GT_XWC
@@ -519,10 +521,13 @@ extern HB_EXPORT void hb_gtStartupInit( void );
 
 
 /* low level GT functions common to different GTs supported by RTL */
+extern int  hb_gt_chrmapinit( int *piTransTbl, const char *pszTerm, BOOL fSetACSC );
 #if defined( HB_OS_WIN_32 )
-void hb_gt_w32_Tone( double dFrequency, double dDuration );
-void hb_gt_w32_SetClipboard( UINT uFormat, char * szClipData, ULONG ulLen );
-BOOL hb_gt_w32_GetClipboard( UINT uFormat, char ** pszClipData, ULONG *pulLen );
+extern void hb_gt_w32_Tone( double dFrequency, double dDuration );
+extern void hb_gt_w32_SetClipboard( UINT uFormat, char * szClipData, ULONG ulLen );
+extern BOOL hb_gt_w32_GetClipboard( UINT uFormat, char ** pszClipData, ULONG *pulLen );
+extern int  hb_gt_w32_getKbdState( void );
+extern void hb_gt_w32_setKbdState( int kbdShifts );
 #endif /* HB_OS_WIN_32 */
 
 

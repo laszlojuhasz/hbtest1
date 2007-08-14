@@ -15,8 +15,6 @@
 # See doc/license.txt for licensing terms.
 # ---------------------------------------------------------------
 
-name="harbour"
-
 if [ -z "$HB_ARCHITECTURE" ]; then
     if [ "$OSTYPE" = "msdosdjgpp" ]; then
         hb_arch="dos"
@@ -60,6 +58,22 @@ if [ -z "$HB_GPM_MOUSE" ]; then
     export HB_GPM_MOUSE
 fi
 
+if [ -z "${HB_WITHOUT_GTSLN}" ]; then
+    HB_WITHOUT_GTSLN=yes
+    case "$HB_ARCHITECTURE" in
+        linux|bsd|darwin|hpux|sunos)
+            for dir in /usr /usr/local /sw /opt/local
+            do
+                if [ -f ${dir}/include/slang.h ] || \
+                   [ -f ${dir}/include/slang/slang.h ]; then
+                    HB_WITHOUT_GTSLN=no
+                fi
+            done
+            ;;
+    esac
+    export HB_WITHOUT_GTSLN
+fi
+
 if [ -z "$HB_COMMERCE" ]; then export HB_COMMERCE=no; fi
 
 if [ "$HB_COMMERCE" = yes ]
@@ -95,7 +109,7 @@ fi
 
 case "$HB_INSTALL_PREFIX" in
     /usr|/usr/local|/opt)
-        hb_instsubdir="/$name"
+        hb_instsubdir="/harbour"
         ;;
     *)
         hb_instsubdir=""
@@ -105,7 +119,6 @@ esac
 if [ -z "$HB_BIN_INSTALL" ]; then export HB_BIN_INSTALL=$HB_INSTALL_PREFIX/bin; fi
 if [ -z "$HB_LIB_INSTALL" ]; then export HB_LIB_INSTALL=$HB_INSTALL_PREFIX/lib$hb_instsubdir; fi
 if [ -z "$HB_INC_INSTALL" ]; then export HB_INC_INSTALL=$HB_INSTALL_PREFIX/include$hb_instsubdir; fi
-
 
 
 if [ -z "$HB_ARCHITECTURE" ]; then
@@ -185,8 +198,7 @@ else
    # ---------------------------------------------------------------
    # Start the GNU make system
 
-   if [ "$HB_ARCHITECTURE" = "bsd" ] || [ "$HB_ARCHITECTURE" = "hpux" ] || \
-      uname|grep "BSD$" &> /dev/null
+   if [ "$HB_ARCHITECTURE" = "bsd" ] || [ "$HB_ARCHITECTURE" = "hpux" ]
    then
       gmake $*
    else

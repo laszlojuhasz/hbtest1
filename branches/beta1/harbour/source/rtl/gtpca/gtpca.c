@@ -672,15 +672,15 @@ static int hb_gt_pca_ReadKey( int iEventMask )
       if( _read( s_hFilenoStdin, &bChar, 1 ) == 1 )
          ch = s_keyTransTbl[ bChar ];
    }
-#elif defined( HB_WIN32_IO )
-   if( !s_bStdinConsole ||
-       WaitForSingleObject( ( HANDLE ) hb_fsGetOsHandle( s_hFilenoStdin ), 0 ) == 0x0000 )
+#elif defined( OS_UNIX_COMPATIBLE )
    {
       BYTE bChar;
       if( hb_fsRead( s_hFilenoStdin, &bChar, 1 ) == 1 )
          ch = s_keyTransTbl[ bChar ];
    }
-#elif defined( OS_UNIX_COMPATIBLE )
+#elif defined( HB_WIN32_IO )
+   if( !s_bStdinConsole ||
+       WaitForSingleObject( ( HANDLE ) hb_fsGetOsHandle( s_hFilenoStdin ), 0 ) == 0x0000 )
    {
       BYTE bChar;
       if( hb_fsRead( s_hFilenoStdin, &bChar, 1 ) == 1 )
@@ -772,6 +772,8 @@ static BOOL hb_gt_pca_SetDispCP( char *pszTermCDP, char *pszHostCDP, BOOL fBox )
 {
    HB_TRACE( HB_TR_DEBUG, ( "hb_gt_pca_SetDispCP(%s,%s,%d)", pszTermCDP, pszHostCDP, (int) fBox ) );
 
+   HB_GTSUPER_SETDISPCP( pszTermCDP, pszHostCDP, fBox );
+
 #ifndef HB_CDP_SUPPORT_OFF
    if( !pszHostCDP )
       pszHostCDP = hb_cdp_page->id;
@@ -785,11 +787,7 @@ static BOOL hb_gt_pca_SetDispCP( char *pszTermCDP, char *pszHostCDP, BOOL fBox )
       s_fDispTrans = s_cdpTerm && s_cdpHost && s_cdpTerm != s_cdpHost;
       return TRUE;
    }
-#else
-   HB_SYMBOL_UNUSED( pszTermCDP );
-   HB_SYMBOL_UNUSED( pszHostCDP );
 #endif
-   HB_SYMBOL_UNUSED( fBox );
 
    return FALSE;
 }
@@ -854,8 +852,10 @@ static void hb_gt_pca_Redraw( int iRow, int iCol, int iSize )
          iColor = bColor;
       else if( iColor != bColor )
       {
+#ifndef HB_CDP_SUPPORT_OFF
          if( s_fDispTrans )
             hb_cdpnTranslate( ( char * ) s_sLineBuf, s_cdpHost, s_cdpTerm, iLen );
+#endif
          hb_gt_pca_AnsiPutStr( iRow, iCol, iColor, s_sLineBuf, iLen );
          iCol += iLen;
          iLen = 0;
@@ -867,8 +867,10 @@ static void hb_gt_pca_Redraw( int iRow, int iCol, int iSize )
    }
    if( iLen )
    {
+#ifndef HB_CDP_SUPPORT_OFF
       if( s_fDispTrans )
          hb_cdpnTranslate( ( char * ) s_sLineBuf, s_cdpHost, s_cdpTerm, iLen );
+#endif
       hb_gt_pca_AnsiPutStr( iRow, iCol, iColor, s_sLineBuf, iLen );
    }
 }

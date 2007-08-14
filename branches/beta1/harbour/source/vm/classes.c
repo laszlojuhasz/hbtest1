@@ -278,7 +278,7 @@ static HB_SYMB s_opSymbols[ HB_OO_MAX_OPERATOR + 1 ] = {
    { "__OPLESSEQUAL",         {HB_FS_MESSAGE}, {NULL}, NULL },  /* 12 */
    { "__OPGREATER",           {HB_FS_MESSAGE}, {NULL}, NULL },  /* 13 */
    { "__OPGREATEREQUAL",      {HB_FS_MESSAGE}, {NULL}, NULL },  /* 14 */
-   { "__OPADDIGN",            {HB_FS_MESSAGE}, {NULL}, NULL },  /* 15 */
+   { "__OPASSIGN",            {HB_FS_MESSAGE}, {NULL}, NULL },  /* 15 */
    { "__OPINSTRING",          {HB_FS_MESSAGE}, {NULL}, NULL },  /* 16 */
    { "__OPNOT",               {HB_FS_MESSAGE}, {NULL}, NULL },  /* 17 */
    { "__OPAND",               {HB_FS_MESSAGE}, {NULL}, NULL },  /* 18 */
@@ -625,6 +625,7 @@ static void hb_clsFreeMsg( PCLASS pClass, PHB_DYNS pMsg )
          if( hb_clsCanClearMethod( &pClass->pMethods[ * puiMsgIdx ], TRUE ) )
          {
             memset( &pClass->pMethods[ * puiMsgIdx ], 0, sizeof( METHOD ) );
+            * puiMsgIdx = 0;
             pClass->uiMethods--;       /* Decrease number of messages */
          }
          return;
@@ -1755,6 +1756,51 @@ BOOL hb_clsHasDestructor( USHORT uiClass )
 }
 
 /*
+ * Call all known supper destructors
+ */
+static void hb_objSupperDestructorCall( PHB_ITEM pObject, PCLASS pClass )
+{
+   PMETHOD pMethod = pClass->pMethods;
+   ULONG   ulLimit = hb_clsMthNum( pClass );
+   BYTE * pbClasses;
+   USHORT uiClass;
+
+   pbClasses = ( BYTE * ) hb_xgrab( s_uiClasses + 1 );
+   memset( pbClasses, 0, s_uiClasses + 1 );
+
+   do
+   {
+      if( pMethod->pMessage )
+      {
+         if( pMethod->pFuncSym == &s___msgSuper )
+         {
+            PCLASS pSupperClass = &s_pClasses[ pMethod->uiSprClass ];
+            if( pSupperClass->fHasDestructor && pSupperClass != pClass )
+               pbClasses[ pMethod->uiSprClass ] |= 1;
+         }
+         else if( pMethod->pMessage == s___msgDestructor.pDynSym )
+            pbClasses[ pMethod->uiSprClass ] |= 2;
+      }
+      ++pMethod;
+   }
+   while( --ulLimit );
+
+   for( uiClass = s_uiClasses; uiClass; --uiClass )
+   {
+      if( pbClasses[ uiClass ] == 1 )
+      {
+         hb_vmPushSymbol( &s___msgDestructor );
+         hb_clsMakeSuperObject( hb_stackAllocItem(), pObject, uiClass );
+         hb_vmSend( 0 );
+         if( hb_vmRequestQuery() != 0 )
+            break;
+      }
+   }
+
+   hb_xfree( pbClasses );
+}
+
+/*
  * Call object destructor
  */
 void hb_objDestructorCall( PHB_ITEM pObject )
@@ -1771,6 +1817,8 @@ void hb_objDestructorCall( PHB_ITEM pObject )
             hb_vmPushSymbol( &s___msgDestructor );
             hb_vmPush( pObject );
             hb_vmSend( 0 );
+            if( hb_vmRequestQuery() == 0 )
+               hb_objSupperDestructorCall( pObject, pClass );
             hb_vmRequestRestore();
          }
       }
@@ -1861,7 +1909,7 @@ HB_EXPORT BOOL hb_objHasMsg( PHB_ITEM pObject, const char *szString )
    }
 }
 
-HB_EXPORT void hb_objSendMessage( PHB_ITEM pObject, PHB_DYNS pMsgSym, ULONG ulArg, ... )
+HB_EXPORT PHB_ITEM hb_objSendMessage( PHB_ITEM pObject, PHB_DYNS pMsgSym, ULONG ulArg, ... )
 {
    if( pObject && pMsgSym )
    {
@@ -1886,9 +1934,11 @@ HB_EXPORT void hb_objSendMessage( PHB_ITEM pObject, PHB_DYNS pMsgSym, ULONG ulAr
    {
       hb_errRT_BASE( EG_ARG, 3000, NULL, "__ObjSendMessage()", 0 );
    }
+
+   return hb_stackReturnItem();
 }
 
-HB_EXPORT void hb_objSendMsg( PHB_ITEM pObject, const char *sMsg, ULONG ulArg, ... )
+HB_EXPORT PHB_ITEM hb_objSendMsg( PHB_ITEM pObject, const char *sMsg, ULONG ulArg, ... )
 {
    hb_vmPushSymbol( hb_dynsymGet( sMsg )->pSymbol );
    hb_vmPush( pObject );
@@ -1905,6 +1955,8 @@ HB_EXPORT void hb_objSendMsg( PHB_ITEM pObject, const char *sMsg, ULONG ulArg, .
       va_end( ap );
    }
    hb_vmSend( (USHORT) ulArg );
+
+   return hb_stackReturnItem();
 }
 
 static PHB_DYNS hb_objGetMsgSym( PHB_ITEM pMessage )
@@ -2522,12 +2574,12 @@ HB_FUNC( __CLSADDMSG )
                nType == HB_OO_MSG_CLASSPROPERTY )
       {
          char szAssign[ HB_SYMBOL_NAME_LEN + 1 ];
-         int iLen = ( int ) hb_parclen( 1 );
+         int iLen = ( int ) hb_parclen( 2 );
          if( iLen >= HB_SYMBOL_NAME_LEN )
             iLen = HB_SYMBOL_NAME_LEN - 1;
          szAssign[ 0 ] = '_';
          memcpy( szAssign + 1, szMessage, iLen );
-         szAssign[ iLen ] = '\0';
+         szAssign[ iLen + 1 ] = '\0';
 
          uiScope = ( uiScope | HB_OO_CLSTP_EXPORTED ) &
                   ~( HB_OO_CLSTP_PROTECTED | HB_OO_CLSTP_HIDDEN );
@@ -2761,19 +2813,21 @@ static USHORT hb_clsNew( const char * szClassName, USHORT uiDatas,
    }
 
    /* add self class casting */
-   pMethod = hb_clsAllocMsg( pNewCls, pNewCls->pClassSym );
-   if( ! pMethod )
-      return 0;
-   if( pMethod->pMessage == NULL )
+   if( hb_stricmp( pNewCls->szName, pNewCls->pClassSym->pSymbol->szName ) == 0 )
    {
-      pNewCls->uiMethods++;
-      pMethod->pMessage = pNewCls->pClassSym;
-      pMethod->uiSprClass = s_uiClasses;
-      pMethod->uiScope = HB_OO_CLSTP_EXPORTED;
-      pMethod->pFuncSym = &s___msgSuper;
-      pMethod->uiOffset = pNewCls->uiDatas;
+      pMethod = hb_clsAllocMsg( pNewCls, pNewCls->pClassSym );
+      if( ! pMethod )
+         return 0;
+      if( pMethod->pMessage == NULL )
+      {
+         pNewCls->uiMethods++;
+         pMethod->pMessage = pNewCls->pClassSym;
+         pMethod->uiSprClass = s_uiClasses;
+         pMethod->uiScope = HB_OO_CLSTP_EXPORTED;
+         pMethod->pFuncSym = &s___msgSuper;
+         pMethod->uiOffset = pNewCls->uiDatas;
+      }
    }
-
    pNewCls->uiDataFirst = pNewCls->uiDatas;
    pNewCls->uiDatas += uiDatas;
 

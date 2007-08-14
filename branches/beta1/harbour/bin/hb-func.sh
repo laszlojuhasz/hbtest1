@@ -64,7 +64,7 @@ mk_hbgetlibs()
 {
     if [ -z "$@" ]
     then
-        echo -n "vm pp rtl rdd dbffpt dbfcdx dbfntx hsx hbsix usrrdd ${HB_DB_DRVEXT} macro common lang codepage gtcrs gtsln gtxvt gtxwc gtalleg gtcgi gtstd gtpca gtwin gtwvt gtdos gtos2 debug profiler compiler hbpcre"
+        echo -n "vm pp rtl rdd dbffpt dbfcdx dbfntx hsx hbsix usrrdd ${HB_DB_DRVEXT} macro common lang codepage gtcrs gtsln gtxvt gtxwc gtalleg gtcgi gtstd gtpca gttrm gtwin gtwvt gtdos gtos2 debug profiler compiler hbpcre"
     else
         echo -n "$@"
     fi
@@ -190,6 +190,7 @@ if [ \$# = 0 ]; then
     -xbgtk              # link with xbgtk library (xBase GTK+ interface)
     -hwgui              # link with HWGUI library (GTK+ interface)
     -l<libname>         # link with <libname> library
+    -L<libpath>         # additional path to search for libraries
     -fmstat             # link with the memory statistics lib
     -nofmstat           # do not link with the memory statistics lib (default)
     -[no]strip          # strip (no strip) binaries

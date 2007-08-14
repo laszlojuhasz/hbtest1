@@ -122,6 +122,12 @@ static BOOL hb_gt_gui_Info( int iType, PHB_GT_INFO pInfo )
             }
          }
          break;
+
+      case GTI_KBDSHIFTS:
+         pInfo->pResult = hb_itemPutNI( pInfo->pResult, hb_gt_w32_getKbdState() );
+         if( hb_itemType( pInfo->pNewVal ) & HB_IT_NUMERIC )
+            hb_gt_w32_setKbdState( hb_itemGetNI( pInfo->pNewVal ) );
+         break;
 #endif
       default:
          return HB_GTSUPER_INFO( iType, pInfo );

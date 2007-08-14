@@ -3,7 +3,7 @@
  */
 
 ----------------------------------------------------------------------
-Version 0.99.3 Beta Build 3 (2007-06-13) tag: beta3
+Version 1.1.1 Devel Build (2007-06-14) tag: build48
 
 - added support for writable string enumerators (s:="abc";for each c in @s;...)
 - cleaned the syntax and strange unsupported but accepted by [macro]compiler
@@ -27,12 +27,6 @@ Version 0.99.3 Beta Build 3 (2007-06-13) tag: beta3
   libraries
 - cleaned some possible bad side effects in cross references
 - many other fixes, improvements and extensions - see ChangeLog for details
-
-----------------------------------------------------------------------
-Version 0.99.2 Beta Build 2 (2007-03-08) tag: beta2
-
-- fixed all problems reported after Beta1 relese - see ChangeLog
-  for details
 
 ----------------------------------------------------------------------
 Version 0.47 Alpha Build 47 (2007-01-09) tag: build47

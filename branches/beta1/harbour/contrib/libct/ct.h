@@ -61,6 +61,7 @@
 
 #include "hbapi.h"
 #include "hbapiitm.h"
+#include "hbapicdp.h"
 #include "hbapierr.h"
 #include "error.ch"
 #include "hbmath.h"
@@ -73,23 +74,25 @@
 
 #define CT_SUBSYSTEM "CT"
 
-/* CT subsystem error throwing functions */
-extern USHORT ct_error (USHORT uiSeverity, ULONG ulGenCode, ULONG ulSubCode,
-                        const char * szDescription, const char * szOperation,
-                        USHORT uiOsCode, USHORT uiFlags, ULONG uiArgCount, ...);
-
-extern PHB_ITEM ct_error_subst (USHORT uiSeverity, ULONG ulGenCode, ULONG ulSubCode,
-                                const char * szDescription, const char * szOperation,
-                                USHORT uiOsCode, USHORT uiFlags, ULONG uiArgCount, ...);
-
-/* set argument error behaviour */
-extern void ct_setargerrormode (int iMode);
-extern int ct_getargerrormode (void);
-
 #define CT_ARGERR_WHOCARES      ES_WHOCARES
 #define CT_ARGERR_WARNING       ES_WARNING
 #define CT_ARGERR_ERROR         ES_ERROR
 #define CT_ARGERR_CATASTROPHIC  ES_CATASTROPHIC
 #define CT_ARGERR_IGNORE        -1
+
+HB_EXTERN_BEGIN
+
+/* CT subsystem error throwing functions */
+extern USHORT ct_error( USHORT uiSeverity, ULONG ulGenCode, ULONG ulSubCode,
+                        const char *szDescription, const char *szOperation, USHORT uiOsCode, USHORT uiFlags, ULONG uiArgCount, ... );
+
+extern PHB_ITEM ct_error_subst( USHORT uiSeverity, ULONG ulGenCode, ULONG ulSubCode,
+                                const char *szDescription, const char *szOperation, USHORT uiOsCode, USHORT uiFlags, ULONG uiArgCount, ... );
+
+/* set argument error behaviour */
+extern void ct_setargerrormode( int iMode );
+extern int ct_getargerrormode( void );
+
+HB_EXTERN_END
 
 #endif

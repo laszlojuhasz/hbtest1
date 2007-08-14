@@ -63,6 +63,7 @@
 #include "hbapiitm.h"
 #include "hbapifs.h"
 #include "hbapierr.h"
+#include "hbapicdp.h"
 
 #include <time.h>
 
@@ -78,6 +79,10 @@ static USHORT        s_uiExtCount = 0;
 static USHORT        s_uiClearChar = ' ';
 static BYTE          s_bClearColor = 0x07;
 static FHANDLE       s_hStdIn = 0, s_hStdOut = 1, s_hStdErr = 2;
+
+static BOOL          s_fDispTrans = FALSE;
+static PHB_CODEPAGE  s_cdpTerm = NULL;
+static PHB_CODEPAGE  s_cdpHost = NULL;
 
 static int           s_iColorIndex;
 static int           s_iColorCount;
@@ -347,6 +352,38 @@ static int  hb_gt_def_ColorNum( const char * szColorString )
          case 'W':
             nColor |= bFore ? 0x07: 0x70;
             break;
+
+         case 'N':
+            nColor &= bFore ? 0xF8: 0x8F;
+            break;
+
+         case 'I':
+            nColor |= 0x70;
+            break;
+
+         case 'U':
+            nColor |= 0x01;
+            break;
+
+         case ' ':
+            break;
+
+         case ',':
+            return nColor;
+
+         default:
+            if( c >= '0' && c <= '9' &&
+                ( nColor & ( bFore ? 0xFF : 0xF0 ) ) == 0 )
+            {
+               int iColor = c - '0';
+               while( *szColorString >= '0' && *szColorString <= '9' )
+                  iColor = iColor * 10 + ( *szColorString++ - '0' );
+               if( !bFore )
+                  iColor <<= 4;
+               nColor |= iColor & 0xff;
+            }
+            else
+               return 0;
       }
    }
 
@@ -493,7 +530,7 @@ static void hb_gt_def_StringToColors( const char * szColorString, int ** pColors
                   nFore &= 0x888F;
                }
             }
-            if( ( nFore & 0x8800 ) != 0 && ( ( nFore | nColor ) & 0x0077 ) == 0)
+            if( ( nFore & 0x8800 ) != 0 && ( ( nFore | nColor ) & 0x0077 ) == 0 )
                nFore |= 1;
 
             if( bSlash )
@@ -696,7 +733,16 @@ static void hb_gt_def_OutStd( BYTE * pbyStr, ULONG ulLen )
          else
          {
             hb_gt_PreExt();
-            hb_gt_def_OutFile( s_hStdOut, pbyStr, ulLen );
+            if( s_fDispTrans )
+            {
+               BYTE * pbyStrBuff = ( BYTE * ) hb_xgrab( ulLen );
+               memcpy( pbyStrBuff, pbyStr, ulLen );
+               hb_cdpnTranslate( ( char * ) pbyStrBuff, s_cdpHost, s_cdpTerm, ulLen );
+               hb_gt_def_OutFile( s_hStdOut, pbyStrBuff, ulLen );
+               hb_xfree( pbyStrBuff );
+            }
+            else
+               hb_gt_def_OutFile( s_hStdOut, pbyStr, ulLen );
             hb_gt_PostExt();
          }
       }
@@ -716,7 +762,16 @@ static void hb_gt_def_OutErr( BYTE * pbyStr, ULONG ulLen )
          else
          {
             hb_gt_PreExt();
-            hb_gt_def_OutFile( s_hStdErr, pbyStr, ulLen );
+            if( s_fDispTrans )
+            {
+               BYTE * pbyStrBuff = ( BYTE * ) hb_xgrab( ulLen );
+               memcpy( pbyStrBuff, pbyStr, ulLen );
+               hb_cdpnTranslate( ( char * ) pbyStrBuff, s_cdpHost, s_cdpTerm, ulLen );
+               hb_gt_def_OutFile( s_hStdErr, pbyStrBuff, ulLen );
+               hb_xfree( pbyStrBuff );
+            }
+            else
+               hb_gt_def_OutFile( s_hStdErr, pbyStr, ulLen );
             hb_gt_PostExt();
          }
       }
@@ -1424,8 +1479,23 @@ static void hb_gt_def_VertLine( int iCol, int iTop, int iBottom,
 
 static BOOL hb_gt_def_SetDispCP( char * pszTermCDP, char * pszHostCDP, BOOL fBox )
 {
+#ifndef HB_CDP_SUPPORT_OFF
+   if( !pszHostCDP )
+      pszHostCDP = hb_cdp_page->id;
+   if( !pszTermCDP )
+      pszTermCDP = pszHostCDP;
+
+   if( pszTermCDP && pszHostCDP )
+   {
+      s_cdpTerm = hb_cdpFind( pszTermCDP );
+      s_cdpHost = hb_cdpFind( pszHostCDP );
+      s_fDispTrans = s_cdpTerm && s_cdpHost && s_cdpTerm != s_cdpHost;
+      return TRUE;
+   }
+#else
    HB_SYMBOL_UNUSED( pszTermCDP );
    HB_SYMBOL_UNUSED( pszHostCDP );
+#endif
    HB_SYMBOL_UNUSED( fBox );
 
    return FALSE;
@@ -2006,7 +2076,8 @@ static void hb_gt_def_ColdArea( int iTop, int iLeft, int iBottom, int iRight )
             if( hb_gt_CheckPos( iTop, i, &lIndex ) )
             {
                s_curGT->prevBuffer[ lIndex ].uiValue =
-                     s_curGT->screenBuffer[ lIndex ].uiValue;
+                  ( s_curGT->screenBuffer[ lIndex ].uiValue &=
+                                                   ~HB_GT_ATTR_REFRESH );
             }
          }
          ++iTop;

@@ -64,59 +64,79 @@
 #ifdef __XHARBOUR__
 
    #xtranslate hb_gtSys                => gtSys
-   #xtranslate hb_gtInfo([<x,...>])    => gtInfo([<x>])
-   #xtranslate hb_gtVersion([<x>])     => hb_gt_Version([<x>])
+   #xtranslate hb_gtInfo([<x,...>])    => gtInfo(<x>)
+   #xtranslate hb_gtVersion([<x>])     => hb_gt_Version(<x>)
 
-   #xtranslate hb_isregex([<x>])       => hb_isregexstring([<x>])
-   #xtranslate hb_pvalue([<x,...>])    => pvalue([<x>])
+   #xtranslate hb_isregex([<x>])       => hb_isregexstring(<x>)
+   #xtranslate hb_pvalue([<x,...>])    => pvalue(<x>)
+
+   #xtranslate hb_libLoad([<x,...>])   => libLoad(<x>)
+   #xtranslate hb_libFree([<x,...>])   => libFree(<x>)
+
+   #xtranslate hb_CStr([<x,...>])      => CStr(<x>)
+   #xtranslate hb_adler32([<x,...>])   => hb_checksum(<x>)
 
 #else
 
    #xtranslate gtSys                   => hb_gtSys
-   #xtranslate gtInfo([<x,...>])       => hb_gtInfo([<x>])
-   #xtranslate hb_gt_Version([<x>])    => hb_gtVersion([<x>])
+   #xtranslate gtInfo([<x,...>])       => hb_gtInfo(<x>)
+   #xtranslate hb_gt_Version([<x>])    => hb_gtVersion(<x>)
    #xtranslate gtSetClipboard(<x>)     => hb_gtInfo( GTI_CLIPBOARDDATA, <x> )
    #xtranslate gtGetClipboard()        => hb_gtInfo( GTI_CLIPBOARDDATA )
    #xtranslate gtGetClipBoardSize()    => len( hb_gtInfo( GTI_CLIPBOARDDATA ) )
    #xtranslate gtPasteClipBoard([<n>]) => hb_gtInfo( GTI_CLIPBOARDPAST )
    #xtranslate gtProcessMessages()     => nextkey()
-   #xtranslate gfxPrimitive([<x,...>]) => hb_gfxPrimitive([<x>])
-   #xtranslate gfxText([<x,...>])      => hb_gfxText([<x>])
+   #xtranslate gfxPrimitive([<x,...>]) => hb_gfxPrimitive(<x>)
+   #xtranslate gfxText([<x,...>])      => hb_gfxText(<x>)
 
-   #xtranslate hb_isregexstring([<x>]) => hb_isregex([<x>])
+   #xtranslate hb_isregexstring([<x>]) => hb_isregex(<x>)
 
-   #xtranslate pvalue([<x,...>])       => hb_pvalue([<x>])
+   #xtranslate pvalue([<x,...>])       => hb_pvalue(<x>)
 
-   #xtranslate HASH([<x,...>])         => HB_HASH([<x>])
-   #xtranslate HHASKEY([<x,...>])      => HB_HHASKEY([<x>])
-   #xtranslate HGETPOS([<x,...>])      => HB_HPOS([<x>])
-   #xtranslate HGET([<x,...>])         => HB_HGET([<x>])
-   #xtranslate HSET([<x,...>])         => HB_HSET([<x>])
-   #xtranslate HDEL([<x,...>])         => HB_HDEL([<x>])
-   #xtranslate HGETKEYAT([<x,...>])    => HB_HKEYAT([<x>])
-   #xtranslate HGETVALUEAT([<x,...>])  => HB_HVALUEAT([<x>])
-   #xtranslate HSETVALUEAT([<x,...>])  => HB_HVALUEAT([<x>])
-   #xtranslate HGETPAIRAT([<x,...>])   => HB_HPAIRAT([<x>])
-   #xtranslate HDELAT([<x,...>])       => HB_HDELAT([<x>])
-   #xtranslate HGETKEYS([<x,...>])     => HB_HKEYS([<x>])
-   #xtranslate HGETVALUES([<x,...>])   => HB_HVALUES([<x>])
-   #xtranslate HFILL([<x,...>])        => HB_HFILL([<x>])
-   #xtranslate HCLONE([<x,...>])       => HB_HCLONE([<x>])
-   #xtranslate HCOPY([<x,...>])        => HB_HCOPY([<x>])
-   #xtranslate HMERGE([<x,...>])       => HB_HMERGE([<x>])
-   #xtranslate HEVAL([<x,...>])        => HB_HEVAL([<x>])
-   #xtranslate HSCAN([<x,...>])        => HB_HSCAN([<x>])
-   #xtranslate HSETCASEMATCH( <h>,<l> )=> ( HB_HCASEMATCH( <h>,<l> ), <h> )
-   #xtranslate HGETCASEMATCH([<x,...>])=> HB_HCASEMATCH([<x>])
-   #xtranslate HSETAUTOADD( <h>,<l> )  => ( HB_HAUTOADD( <h>,<l> ), <h> )
-   #xtranslate HGETAUTOADD([<x,...>])  => HB_HAUTOADD([<x>])
-   #xtranslate HALLOCATE([<x,...>])    => HB_HALLOCATE([<x>])
-   #xtranslate HDEFAULT([<x,...>])     => HB_HDEFAULT([<x>])
+   #xtranslate libLoad([<x,...>])      => hb_libLoad(<x>)
+   #xtranslate libFree([<x,...>])      => hb_libFree(<x>)
 
-   #xtranslate NUMTOHEX(<n>)           => NTOC(<n>, 16)
-   #xtranslate HEXTONUM(<c>)           => CTON(<c>, 16)
+   #xtranslate hb_checksum([<x,...>])  => hb_adler32(<x>)
+
+   #xtranslate CStr([<x,...>])         => hb_CStr(<x>)
+   #xtranslate str(<x>,[<y>],[<y>],<z>)=> iif(<z>, ltrim(str(<x>)), str(<x>))
+
+   #xtranslate HASH([<x,...>])         => HB_HASH(<x>)
+   #xtranslate HHASKEY([<x,...>])      => HB_HHASKEY(<x>)
+   #xtranslate HGETPOS([<x,...>])      => HB_HPOS(<x>)
+   #xtranslate HGET([<x,...>])         => HB_HGET(<x>)
+   #xtranslate HSET([<x,...>])         => HB_HSET(<x>)
+   #xtranslate HDEL([<x,...>])         => HB_HDEL(<x>)
+   #xtranslate HGETKEYAT([<x,...>])    => HB_HKEYAT(<x>)
+   #xtranslate HGETVALUEAT([<x,...>])  => HB_HVALUEAT(<x>)
+   #xtranslate HSETVALUEAT([<x,...>])  => HB_HVALUEAT(<x>)
+   #xtranslate HGETPAIRAT([<x,...>])   => HB_HPAIRAT(<x>)
+   #xtranslate HDELAT([<x,...>])       => HB_HDELAT(<x>)
+   #xtranslate HGETKEYS([<x,...>])     => HB_HKEYS(<x>)
+   #xtranslate HGETVALUES([<x,...>])   => HB_HVALUES(<x>)
+   #xtranslate HFILL([<x,...>])        => HB_HFILL(<x>)
+   #xtranslate HCLONE([<x,...>])       => HB_HCLONE(<x>)
+   #xtranslate HCOPY([<x,...>])        => HB_HCOPY(<x>)
+   #xtranslate HMERGE([<x,...>])       => HB_HMERGE(<x>)
+   #xtranslate HEVAL([<x,...>])        => HB_HEVAL(<x>)
+   #xtranslate HSCAN([<x,...>])        => HB_HSCAN(<x>)
+   #xtranslate HSETCASEMATCH([<x,...>])=> HB_HSETCASEMATCH(<x>)
+   #xtranslate HGETCASEMATCH([<x,...>])=> HB_HCASEMATCH(<x>)
+   #xtranslate HSETAUTOADD([<x,...>])  => HB_HSETAUTOADD(<x>)
+   #xtranslate HGETAUTOADD([<x,...>])  => HB_HAUTOADD(<x>)
+   #xtranslate HALLOCATE([<x,...>])    => HB_HALLOCATE(<x>)
+   #xtranslate HDEFAULT([<x,...>])     => HB_HDEFAULT(<x>)
+
+   #xtranslate HEXTONUM([<c,...>])     => HB_HEXTONUM(<c>)
+   #xtranslate NUMTOHEX([<n,...>])     => HB_NUMTOHEX(<n>)
+   #xtranslate RASCAN([<x,...>])       => HB_RASCAN(<x>)
+
+
+   #xtranslate ISPOINTER( <xValue> )   => HB_ISPOINTER( <xValue> )
+
 
    #xcommand TEXT INTO <v> => #pragma __text|<v>+=%s+HB_OSNEWLINE();<v>:=""
+
 
    /* SWITCH ... ; case ... ; DEFAULT ; ... ; END */
    #xcommand DEFAULT => OTHERWISE
@@ -129,6 +149,16 @@
    /* EXTENDED CODEBLOCKs */
    #xtranslate \<|[<x,...>]| => {|<x>|
    #xcommand > [<*x*>]       => } <x>
+
+   /* xHarbour operators: IN, HAS, LIKE, >>, <<, |, &, ^^ */
+   #translate ( <exp1> IN <exp2> )    => ( (<exp1>) $ (<exp2>) )
+   #translate ( <exp1> HAS <exp2> )   => ( HB_REGEXHAS( (<exp2>), (<exp1>) ) )
+   #translate ( <exp1> LIKE <exp2> )  => ( HB_REGEXLIKE( (<exp2>), (<exp1>) ) )
+   #translate ( <exp1> \<\< <exp2> )  => ( HB_BITSHIFT( (<exp1>), (<exp2>) ) )
+   #translate ( <exp1> >> <exp2> )    => ( HB_BITSHIFT( (<exp1>), -(<exp2>) ) )
+   #translate ( <exp1> | <exp2> )     => ( HB_BITOR( (<exp1>), (<exp2>) ) )
+   #translate ( <exp1> & <exp2> )     => ( HB_BITAND( (<exp1>), (<exp2>) ) )
+   #translate ( <exp1> ^^ <exp2> )    => ( HB_BITXOR( (<exp1>), (<exp2>) ) )
 
 #endif
 

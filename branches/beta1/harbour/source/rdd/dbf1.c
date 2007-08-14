@@ -924,6 +924,8 @@ static ERRCODE hb_dbfLockData( DBFAREAP pArea,
          break;
 #endif
       default:
+         *ulPos = *ulFlSize = *ulRlSize = 0;
+         *iDir = 0;
          return FAILURE;
    }
    return SUCCESS;
@@ -1468,10 +1470,7 @@ static ERRCODE hb_dbfGetValue( DBFAREAP pArea, USHORT uiIndex, PHB_ITEM pItem )
          }
          else
          {
-            char szBuffer[ 9 ];
-            memcpy( szBuffer, pArea->pRecord + pArea->pFieldOffset[ uiIndex ], 8 );
-            szBuffer[ 8 ] = 0;
-            hb_itemPutDS( pItem, szBuffer );
+            hb_itemPutDS( pItem, ( char * ) pArea->pRecord + pArea->pFieldOffset[ uiIndex ] );
          }
          break;
 
@@ -2291,6 +2290,19 @@ static ERRCODE hb_dbfCreate( DBFAREAP pArea, LPDBOPENINFO pCreateInfo )
       hb_itemRelease( pItem );
    }
 
+   if( pArea->uiFieldCount * sizeof( DBFFIELD ) + sizeof( DBFHEADER ) +
+       ( pArea->bTableType == DB_DBF_VFP ? 1 : 2 ) > UINT16_MAX )
+   {
+      pError = hb_errNew();
+      hb_errPutGenCode( pError, EG_CREATE );
+      hb_errPutSubCode( pError, EDBF_DATAWIDTH );
+      hb_errPutDescription( pError, hb_langDGetErrorDesc( EG_CREATE ) );
+      hb_errPutFileName( pError, ( char * ) pCreateInfo->abName );
+      SELF_ERROR( ( AREAP ) pArea, pError );
+      hb_itemRelease( pError );
+      return FAILURE;
+   }
+
    if( !fRawBlob )
    {
       pError = NULL;
@@ -2656,8 +2668,7 @@ static ERRCODE hb_dbfInfo( DBFAREAP pArea, USHORT uiIndex, PHB_ITEM pItem )
          HB_FOFFSET ulPos, ulFlSize, ulRlSize;
          int iDir;
 
-         if( hb_dbfLockData( pArea, &ulPos, &ulFlSize, &ulRlSize, &iDir ) == FAILURE )
-            ulPos = 0;
+         hb_dbfLockData( pArea, &ulPos, &ulFlSize, &ulRlSize, &iDir );
          hb_itemPutNInt( pItem, ulPos );
          break;
       }

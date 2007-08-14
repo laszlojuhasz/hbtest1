@@ -8,6 +8,7 @@ ROOT = ../../
 C_SOURCES=\
 	cpbg866.c     \
 	cpbgiso.c     \
+	cpbgmik.c     \
 	cpbgwin.c     \
 	cpcs852.c     \
 	cpcsiso.c     \
@@ -44,11 +45,18 @@ C_SOURCES=\
 	cpru866.c     \
 	cprukoi.c     \
 	cpruwin.c     \
+	cpsk852.c     \
+	cpskiso.c     \
+	cpskkam.c     \
+	cpskwin.c     \
 	cpsl437.c     \
 	cpsl852.c     \
 	cpsliso.c     \
 	cpslwin.c     \
 	cpsrwin.c     \
+	cpsv850.c     \
+	cpsvclip.c    \
+	cpsvwin.c     \
 	cptrdos.c     \
 	cptrwin.c     \
 	cpua866.c     \
@@ -72,6 +80,7 @@ C_SOURCES=\
 	uckoi8.c      \
 	uckoi8u.c     \
 	ucmaz.c       \
+	ucmik.c       \
 
 LIBNAME=codepage
 

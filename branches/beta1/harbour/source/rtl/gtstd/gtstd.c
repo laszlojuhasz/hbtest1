@@ -83,6 +83,10 @@
 static HB_GT_FUNCS SuperTable;
 #define HB_GTSUPER (&SuperTable)
 
+static const BYTE s_szBell[] = { HB_CHAR_BEL, 0 };
+static const BYTE * s_szCrLf;
+static ULONG   s_ulCrLf;
+
 static FHANDLE s_hFilenoStdin;
 static FHANDLE s_hFilenoStdout;
 static FHANDLE s_hFilenoStderr;
@@ -91,9 +95,6 @@ static int     s_iCol;
 static int     s_iLastCol;
 static int     s_iLineBufSize;
 static BYTE *  s_sLineBuf;
-static BYTE *  s_szCrLf;
-static ULONG   s_ulCrLf;
-static BYTE    s_szBell[] = { HB_CHAR_BEL, 0 };
 static BOOL    s_bFullRedraw;
 static BOOL    s_bStdinConsole;
 static BOOL    s_bStdoutConsole;
@@ -154,7 +155,7 @@ static void hb_gt_std_setKeyTrans( char * pSrcChars, char * pDstChars )
    }
 }
 
-static void hb_gt_std_termOut( BYTE * pStr, ULONG ulLen )
+static void hb_gt_std_termOut( const BYTE * pStr, ULONG ulLen )
 {
    hb_fsWriteLarge( s_hFilenoStdout, pStr, ulLen );
 }
@@ -182,8 +183,8 @@ static void hb_gt_std_Init( FHANDLE hFilenoStdin, FHANDLE hFilenoStdout, FHANDLE
    s_fDispTrans = FALSE;
    hb_gt_std_setKeyTrans( NULL, NULL );
 
-   s_szCrLf = (BYTE *) hb_conNewLine();
-   s_ulCrLf = strlen( (char *) s_szCrLf );
+   s_szCrLf = ( BYTE * ) hb_conNewLine();
+   s_ulCrLf = strlen( ( char * ) s_szCrLf );
 
    hb_fsSetDevMode( s_hFilenoStdout, FD_BINARY );
    HB_GTSUPER_INIT( hFilenoStdin, hFilenoStdout, hFilenoStderr );
@@ -296,14 +297,6 @@ static int hb_gt_std_ReadKey( int iEventMask )
       if( _read( s_hFilenoStdin, &bChar, 1 ) == 1 )
          ch = s_keyTransTbl[ bChar ];
    }
-#elif defined( HB_WIN32_IO )
-   if( !s_bStdinConsole ||
-       WaitForSingleObject( ( HANDLE ) hb_fsGetOsHandle( s_hFilenoStdin ), 0 ) == 0x0000 )
-   {
-      BYTE bChar;
-      if( hb_fsRead( s_hFilenoStdin, &bChar, 1 ) == 1 )
-         ch = s_keyTransTbl[ bChar ];
-   }
 #elif defined( OS_UNIX_COMPATIBLE )
    {
       struct timeval tv;
@@ -318,6 +311,14 @@ static int hb_gt_std_ReadKey( int iEventMask )
          if( hb_fsRead( s_hFilenoStdin, &bChar, 1 ) == 1 )
             ch = s_keyTransTbl[ bChar ];
       }
+   }
+#elif defined( HB_WIN32_IO )
+   if( !s_bStdinConsole ||
+       WaitForSingleObject( ( HANDLE ) hb_fsGetOsHandle( s_hFilenoStdin ), 0 ) == 0x0000 )
+   {
+      BYTE bChar;
+      if( hb_fsRead( s_hFilenoStdin, &bChar, 1 ) == 1 )
+         ch = s_keyTransTbl[ bChar ];
    }
 #else
 
@@ -430,6 +431,8 @@ static BOOL hb_gt_std_SetDispCP( char *pszTermCDP, char *pszHostCDP, BOOL fBox )
 {
    HB_TRACE( HB_TR_DEBUG, ( "hb_gt_std_SetDispCP(%s,%s,%d)", pszTermCDP, pszHostCDP, (int) fBox ) );
 
+   HB_GTSUPER_SETDISPCP( pszTermCDP, pszHostCDP, fBox );
+
 #ifndef HB_CDP_SUPPORT_OFF
    if( !pszHostCDP )
       pszHostCDP = hb_cdp_page->id;
@@ -443,11 +446,7 @@ static BOOL hb_gt_std_SetDispCP( char *pszTermCDP, char *pszHostCDP, BOOL fBox )
       s_fDispTrans = s_cdpTerm && s_cdpHost && s_cdpTerm != s_cdpHost;
       return TRUE;
    }
-#else
-   HB_SYMBOL_UNUSED( pszTermCDP );
-   HB_SYMBOL_UNUSED( pszHostCDP );
 #endif
-   HB_SYMBOL_UNUSED( fBox );
 
    return FALSE;
 }
@@ -610,8 +609,10 @@ static void hb_gt_std_Redraw( int iRow, int iCol, int iSize )
 
       if( iLen )
       {
+#ifndef HB_CDP_SUPPORT_OFF
          if( s_fDispTrans )
             hb_cdpnTranslate( ( char * ) s_sLineBuf, s_cdpHost, s_cdpTerm, iLen );
+#endif
          hb_gt_std_termOut( s_sLineBuf, iLen );
       }
       s_iRow = iRow;

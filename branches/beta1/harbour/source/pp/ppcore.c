@@ -642,7 +642,7 @@ static void hb_pp_tokenAddStreamFunc( PHB_PP_STATE pState, PHB_PP_TOKEN pToken,
 
 static void hb_pp_readLine( PHB_PP_STATE pState )
 {
-   int ch, iLine;
+   int ch, iLine = 0;
 
    while( TRUE )
    {
@@ -659,13 +659,16 @@ static void hb_pp_readLine( PHB_PP_STATE pState )
       }
       else
          ch = fgetc( pState->pFile->file_in );
+
       if( ch == EOF )
       {
          pState->pFile->fEof = TRUE;
          break;
       }
+
+      iLine = 1;
       /* In Clipper ^Z works like \n */
-      else if( ch == '\n' || ch == '\x1a' )
+      if( ch == '\n' || ch == '\x1a' )
       {
          break;
       }
@@ -675,7 +678,7 @@ static void hb_pp_readLine( PHB_PP_STATE pState )
          hb_membufAddCh( pState->pBuffer, ch );
       }
    }
-   ++pState->iLineTot;
+   pState->iLineTot += iLine;
    iLine = ++pState->pFile->iCurrentLine / 100;
    if( !pState->fQuiet &&
        iLine != pState->pFile->iLastDisp )
@@ -844,6 +847,7 @@ static void hb_pp_getLine( PHB_PP_STATE pState )
    char * pBuffer, ch;
    ULONG ulLen, ul;
    BOOL fDump = FALSE;
+   int iLines = 0;
 
    pInLinePtr = NULL;
    hb_pp_tokenListFree( &pState->pFile->pTokenList );
@@ -1388,8 +1392,9 @@ static void hb_pp_getLine( PHB_PP_STATE pState )
       if( !pState->fCanNextLine &&
           ( pState->iNestedBlock || pState->iBlockState == 5 ) )
       {
-         pState->pFile->iCurrentLine--;
+         iLines++;
          hb_pp_tokenAdd( &pState->pNextTokenPtr, "\n", 1, 0, HB_PP_TOKEN_EOL | HB_PP_TOKEN_STATIC );
+         pState->iSpaces = pState->iSpacesMin = 0;
          pState->pFile->iTokens++;
          pState->fNewStatement = TRUE;
          if( pState->iBlockState )
@@ -1421,6 +1426,7 @@ static void hb_pp_getLine( PHB_PP_STATE pState )
       hb_pp_tokenAdd( &pState->pNextTokenPtr, "\n", 1, 0, HB_PP_TOKEN_EOL | HB_PP_TOKEN_STATIC );
       pState->pFile->iTokens++;
    }
+   pState->pFile->iCurrentLine -= iLines;
 }
 
 static int hb_pp_tokenStr( PHB_PP_TOKEN pToken, PHB_MEM_BUFFER pBuffer,
@@ -4416,6 +4422,12 @@ static PHB_PP_TOKEN hb_pp_calcValue( PHB_PP_TOKEN pToken, int iPrecedense,
          pToken = pToken->pNext;
       }
    }
+   else if( HB_PP_TOKEN_TYPE( pToken->type ) == HB_PP_TOKEN_LOGICAL )
+   {
+      *plValue = HB_PP_ISTRUE( pToken->value[ 1 ] ) ? 1 : 0;
+      * pfError = FALSE;
+      pToken = pToken->pNext;
+   }
    else
       * pfError = TRUE;
 
@@ -4812,12 +4824,7 @@ static void hb_pp_preprocessToken( PHB_PP_STATE pState )
             break;
          }
          if( !fDirective && pState->pFile->pTokenList )
-         {
-            if( HB_PP_TOKEN_ISEOC( pState->pFile->pTokenList ) )
-               hb_pp_tokenListFreeCmd( &pState->pFile->pTokenList );
-            else
-               hb_pp_genLineTokens( pState );
-         }
+            hb_pp_genLineTokens( pState );
       }
    }
 }
@@ -5000,6 +5007,11 @@ void hb_pp_setStdBase( PHB_PP_STATE pState )
    hb_pp_ruleSetId( pState, pState->pDefinitions, HB_PP_DEFINE );
    hb_pp_ruleSetId( pState, pState->pTranslations, HB_PP_TRANSLATE );
    hb_pp_ruleSetId( pState, pState->pCommands, HB_PP_COMMAND );
+
+   /* clear total number of preprocessed lines so we will report only
+    * lines in compiled .prg files
+    */
+   pState->iLineTot = 0;
 }
 
 /*

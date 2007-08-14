@@ -21,28 +21,46 @@ C_SOURCES = \
 	charop.c \
 	charrepl.c \
 	charsort.c \
+	charsprd.c \
 	charswap.c \
+	color.c \
 	count.c \
 	ctc.c \
+	ctchksum.c \
+	ctcrypt.c \
 	ctmath.c \
 	ctmath2.c \
 	ctnet.c \
+	ctpad.c \
 	ctset.c \
 	ctstr.c \
-	ctchksum.c \
-	ctcrypt.c \
+	ctstrfil.c \
 	ctwfunc.c \
 	ctwin.c \
+	cursor.c \
+	datetime.c \
+	dattime2.c \
+	dattime3.c \
+	dbftools.c \
+	disk.c \
+	expand.c \
 	exponent.c \
 	files.c \
 	finan.c \
 	ftoc.c \
 	justify.c \
 	keyset.c \
+	like.c \
+	lton.c \
+	maxline.c \
 	misc1.c \
+	misc2.c \
+	misc3.c \
 	num1.c \
 	numat.c \
-	pad.c \
+	numcount.c \
+	numline.c \
+	pack.c \
 	pos1.c \
 	pos2.c \
 	posdiff.c \
@@ -52,27 +70,35 @@ C_SOURCES = \
 	remove.c \
 	replace.c \
 	screen1.c \
+	screen2.c \
+	setlast.c \
 	strdiff.c \
 	strswap.c \
 	tab.c \
 	token1.c \
 	token2.c \
 	trig.c \
+	video.c \
 	wordrepl.c \
 	wordtoch.c \
 
 PRG_SOURCES= \
-	color.prg \
+	blank.prg \
 	ct.prg \
 	ctmisc.prg \
-	datetime.prg \
-	dattime2.prg \
-	invrtwin.prg \
+	cttime.prg \
+	fcopy.prg \
+	getinfo.prg \
+	getinput.prg \
+	getsecrt.prg \
+	keysave.prg \
+	keysec.prg \
+	keytime.prg \
 	numconv.prg \
-	screen2.prg \
-	setlast.prg \
+	screen3.prg \
+	scrmark.prg \
+	showtime.prg \
 
 LIBNAME=ct
 
 include $(TOP)$(ROOT)config/lib.cf
-

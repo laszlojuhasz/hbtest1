@@ -351,6 +351,7 @@ static void hb_sln_setCharTrans( PHB_CODEPAGE cdpHost, PHB_CODEPAGE cdpTerm, BOO
    HB_SYMBOL_UNUSED( cdpHost );
    HB_SYMBOL_UNUSED( cdpTerm );
    HB_SYMBOL_UNUSED( fBox );
+   HB_SYMBOL_UNUSED( iSrc );
 #endif
 
    /* build a conversion chars table */
@@ -906,23 +907,23 @@ static BOOL hb_gt_sln_Info( int iType, PHB_GT_INFO pInfo )
 
 static BOOL hb_gt_sln_SetDispCP( char * pszTermCDP, char * pszHostCDP, BOOL fBox )
 {
+   HB_GTSUPER_SETDISPCP( pszTermCDP, pszHostCDP, fBox );
+
 #ifndef HB_CDP_SUPPORT_OFF
-   PHB_CODEPAGE cdpTerm = NULL, cdpHost = NULL;
+   {
+      PHB_CODEPAGE cdpTerm = NULL, cdpHost = NULL;
 
-   cdpHost = hb_cdpFind( pszHostCDP );
-   if ( pszHostCDP && *pszHostCDP )
       cdpHost = hb_cdpFind( pszHostCDP );
-   if ( ! cdpHost )
-      cdpHost = hb_cdp_page;
+      if ( pszHostCDP && *pszHostCDP )
+         cdpHost = hb_cdpFind( pszHostCDP );
+      if ( ! cdpHost )
+         cdpHost = hb_cdp_page;
 
-   if ( pszTermCDP && *pszTermCDP )
-      cdpTerm = hb_cdpFind( pszTermCDP );
+      if ( pszTermCDP && *pszTermCDP )
+         cdpTerm = hb_cdpFind( pszTermCDP );
 
-   hb_sln_setCharTrans( cdpHost, cdpTerm, fBox );
-#else
-   HB_SYMBOL_UNUSED( pszTermCDP );
-   HB_SYMBOL_UNUSED( pszHostCDP );
-   HB_SYMBOL_UNUSED( fBox );
+      hb_sln_setCharTrans( cdpHost, cdpTerm, fBox );
+   }
 #endif
    return TRUE;
 }

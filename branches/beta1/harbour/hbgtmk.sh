@@ -46,7 +46,7 @@ then
     cd
     mkdir -p CVS
     cd CVS
-    if cvs -z3 co -r beta1 "${PROJECT}"; then
+    if cvs -z3 co "${PROJECT}"; then
 	cd "${PROJECT}"
 	./make_rpm.sh "$*"
     fi

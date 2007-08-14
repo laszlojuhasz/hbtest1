@@ -50,7 +50,6 @@
  *
  */
 
-
 #include "ct.h"
 
 
@@ -103,44 +102,23 @@
 
 HB_FUNC( XTOC )
 {
-   union 
+   union
    {
       double value;
-      char   string[ sizeof( double )];
-   }  xConvert;
-  char     pcString[ sizeof( double ) ];
+      char string[sizeof( double )];
+   } xConvert;
 
-  if (ISCHAR( 1 ))
-  {
-    hb_retc( hb_parc( 1 ));
-  }
-
-  else if (ISNUM( 1 ))
-  {
-    xConvert.value = hb_parnd( 1 );
-    hb_retclen( xConvert.string, sizeof( double ) );
-  }
-
-  else if (ISLOG( 1 ))
-  {
-    if (hb_parl( 1 ) == 0)
-      pcString[0] = 0x46;  
-    else
-      pcString[0] = 0x54;  
-    hb_retclen( pcString, 1 );
-  }
-
-  else if (ISDATE( 1 ))
-  {
-    hb_retc( hb_pards( 1 ));
-  }
-
-  else
-  {
-    pcString[0] = 0x00;
-    hb_retc( pcString );
-  }
-
-   
+   if( ISCHAR( 1 ) )
+      hb_retc( hb_parc( 1 ) );
+   else if( ISDATE( 1 ) )
+      hb_retc( hb_pards( 1 ) );
+   else if( ISNUM( 1 ) )
+   {
+      xConvert.value = hb_parnd( 1 );
+      hb_retclen( xConvert.string, sizeof( double ) );
+   }
+   else if( ISLOG( 1 ) )
+      hb_retclen( hb_parl( 1 ) ? "T" : "F", 1 );
+   else
+      hb_retc( NULL );
 }
-

@@ -567,8 +567,9 @@ HB_EXPORT int hb_vmQuit( void )
    hb_setRelease();             /* releases Sets */
    hb_vmReleaseLocalSymbols();  /* releases the local modules linked list */
    hb_dynsymRelease();          /* releases the dynamic symbol table */
+#ifndef HB_CDP_SUPPORT_OFF
    hb_cdpReleaseAll();          /* releases codepages */
-
+#endif
    hb_itemClear( hb_stackReturnItem() );
 
    /* release all known garbage */
@@ -1011,7 +1012,7 @@ HB_EXPORT void hb_vmExecute( const BYTE * pCode, PHB_SYMB pSymbols )
          /* Object */
 
          case HB_P_MESSAGE:
-            hb_vmPushSymbol( pSymbols + HB_PCODE_MKUSHORT( &( pCode[ w + 1 ] ) ) );
+            hb_vmPushSymbol( pSymbols + HB_PCODE_MKUSHORT( &pCode[ w + 1 ] ) );
             w += 3;
             break;
 
@@ -1593,7 +1594,7 @@ HB_EXPORT void hb_vmExecute( const BYTE * pCode, PHB_SYMB pSymbols )
             break;
 
          case HB_P_PUSHSYM:
-            hb_vmPushSymbol( pSymbols + HB_PCODE_MKUSHORT( &( pCode[ w + 1 ] ) ) );
+            hb_vmPushSymbol( pSymbols + HB_PCODE_MKUSHORT( &pCode[ w + 1 ] ) );
             w += 3;
             break;
 
@@ -1889,11 +1890,14 @@ HB_EXPORT void hb_vmExecute( const BYTE * pCode, PHB_SYMB pSymbols )
                /* NOTE: pMacro string is replaced with a symbol.
                 * Symbol is created if it doesn't exist.
                */
-               pSym = pMacro->item.asSymbol.value;
-               /* NOTE: pMacro item of symbol type is replaced with 
-                *  the reference 
-               */
-               hb_memvarGetRefer( pMacro, pSym );
+               if( hb_stackGetActionRequest() == 0 )
+               {
+                  pSym = pMacro->item.asSymbol.value;
+                  /* NOTE: pMacro item of symbol type is replaced with 
+                   *  the reference 
+                  */
+                  hb_memvarGetRefer( pMacro, pSym );
+               }
                w++;
             }
             break;
@@ -1916,7 +1920,7 @@ HB_EXPORT void hb_vmExecute( const BYTE * pCode, PHB_SYMB pSymbols )
 
          case HB_P_MMESSAGE:
          {
-            HB_DYNS_PTR pDynSym = ( HB_DYNS_PTR) HB_GET_PTR( pCode + w + 1 );
+            HB_DYNS_PTR pDynSym = ( HB_DYNS_PTR ) HB_GET_PTR( pCode + w + 1 );
             hb_vmPushSymbol( pDynSym->pSymbol );
             w += sizeof( HB_DYNS_PTR ) + 1;
             break;
@@ -9070,7 +9074,8 @@ HB_EXPORT BOOL hb_xvmMacroPushRef( void )
 
    pMacro = hb_stackItemFromTop( -1 );
    hb_macroPushSymbol( pMacro );
-   hb_memvarGetRefer( pMacro, pMacro->item.asSymbol.value );
+   if( hb_stackGetActionRequest() == 0 )
+      hb_memvarGetRefer( pMacro, pMacro->item.asSymbol.value );
 
    HB_XVM_RETURN
 }

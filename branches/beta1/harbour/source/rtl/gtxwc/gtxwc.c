@@ -1854,10 +1854,12 @@ static void hb_gt_xwc_ProcessKey( PXWND_DEF wnd, XKeyEvent *evt)
    }
    if( n > 0 )
    {
+#ifndef HB_CDP_SUPPORT_OFF
       if( wnd->inCDP && wnd->hostCDP && wnd->inCDP != wnd->hostCDP )
       {
          hb_cdpnTranslate( (char *) buf, wnd->inCDP, wnd->hostCDP, n );
       }
+#endif
 #ifdef XWC_DEBUG
       buf[n] = '\0';
       printf( "keySymISO=%lx keystr=[%s]\r\n", outISO, buf ); fflush(stdout);
@@ -2123,6 +2125,7 @@ static void hb_gt_xwc_WndProc( PXWND_DEF wnd, XEvent *evt )
             if( XGetTextProperty( wnd->dpy, wnd->window, &text,
                                   evt->xselection.property ) != 0 )
             {
+#ifndef HB_CDP_SUPPORT_OFF
                if( evt->xselection.target == s_atomUTF8String && text.format == 8 )
                {
 #ifdef XWC_DEBUG
@@ -2138,7 +2141,9 @@ static void hb_gt_xwc_WndProc( PXWND_DEF wnd, XEvent *evt )
                   wnd->ClipboardTime = evt->xselection.time;
                   wnd->ClipboardRcvd = TRUE;
                }
-               else if( evt->xselection.target == s_atomString && text.format == 8 )
+               else
+#endif
+               if( evt->xselection.target == s_atomString && text.format == 8 )
                {
 #ifdef XWC_DEBUG
                   printf( "String='%s'\r\n", text.value ); fflush(stdout);
@@ -2147,8 +2152,10 @@ static void hb_gt_xwc_WndProc( PXWND_DEF wnd, XEvent *evt )
                      hb_xfree( wnd->ClipboardData );
                   wnd->ClipboardData = ( unsigned char * ) hb_xgrab( text.nitems + 1 );
                   memcpy( wnd->ClipboardData, text.value, text.nitems );
+#ifndef HB_CDP_SUPPORT_OFF
                   if( wnd->inCDP && wnd->hostCDP && wnd->inCDP != wnd->hostCDP )
                      hb_cdpnTranslate( ( char * ) wnd->ClipboardData, wnd->inCDP, wnd->hostCDP, text.nitems );
+#endif
                   wnd->ClipboardData[ text.nitems ] = '\0';
                   wnd->ClipboardSize = text.nitems;
                   wnd->ClipboardTime = evt->xselection.time;
@@ -2214,6 +2221,7 @@ static void hb_gt_xwc_WndProc( PXWND_DEF wnd, XEvent *evt )
          }
          else if( req->target == s_atomString )
          {
+#ifndef HB_CDP_SUPPORT_OFF
             if( wnd->inCDP && wnd->hostCDP && wnd->inCDP != wnd->hostCDP )
             {
                BYTE * pBuffer = ( BYTE * ) hb_xgrab( wnd->ClipboardSize + 1 );
@@ -2225,12 +2233,14 @@ static void hb_gt_xwc_WndProc( PXWND_DEF wnd, XEvent *evt )
                hb_xfree( pBuffer );
             }
             else
+#endif
             {
                XChangeProperty( wnd->dpy, req->requestor, req->property,
                                 s_atomString, 8, PropModeReplace,
                                 wnd->ClipboardData, wnd->ClipboardSize );
             }
          }
+#ifndef HB_CDP_SUPPORT_OFF
          else if( req->target == s_atomUTF8String )
          {
             ULONG ulLen = hb_cdpStringInUTF8Length( wnd->hostCDP, FALSE, wnd->ClipboardData, wnd->ClipboardSize );
@@ -2245,6 +2255,7 @@ static void hb_gt_xwc_WndProc( PXWND_DEF wnd, XEvent *evt )
                              pBuffer, ulLen );
             hb_xfree( pBuffer );
          }
+#endif
          else
          {
             respond.xselection.property = None;
@@ -2964,7 +2975,9 @@ static PXWND_DEF hb_gt_xwc_CreateWndDef( void )
    wnd->fInit = wnd->fData = FALSE;
    hb_gt_xwc_SetScrBuff( wnd, XWC_DEFAULT_COLS, XWC_DEFAULT_ROWS );
    wnd->fWinResize = FALSE;
+#ifndef HB_CDP_SUPPORT_OFF
    wnd->hostCDP = hb_cdp_page;
+#endif
    wnd->cursorType = SC_NORMAL;
    
    /* Window Title */
@@ -3494,7 +3507,9 @@ static int hb_gt_xwc_mouse_CountButton( void )
 
 static BOOL hb_gt_xwc_SetDispCP( char * pszTermCDP, char * pszHostCDP, BOOL fBox )
 {
-   HB_SYMBOL_UNUSED( fBox );
+
+   HB_GTSUPER_SETDISPCP( pszTermCDP, pszHostCDP, fBox );
+
 #ifndef HB_CDP_SUPPORT_OFF
    /*
     * We are displaying text in U16 so pszTermCDP is unimportant.
@@ -3518,9 +3533,6 @@ static BOOL hb_gt_xwc_SetDispCP( char * pszTermCDP, char * pszHostCDP, BOOL fBox
             hb_gt_xwc_BuildCharTrans( s_wnd );
       }
    }
-#else
-   HB_SYMBOL_UNUSED( pszTermCDP );
-   HB_SYMBOL_UNUSED( pszHostCDP );
 #endif
 
    return TRUE;
@@ -3563,6 +3575,17 @@ static BOOL hb_gt_xwc_SetKeyCP( char * pszTermCDP, char * pszHostCDP )
 }
 
 /* *********************************************************************** */
+
+static int hb_gt_xwc_getKbdState( PXWND_DEF wnd )
+{
+   int iKbdState = 0;
+
+   if( wnd->keyModifiers.bShift ) iKbdState |= GTI_KBD_SHIFT;
+   if( wnd->keyModifiers.bCtrl  ) iKbdState |= GTI_KBD_CTRL;
+   if( wnd->keyModifiers.bAlt   ) iKbdState |= GTI_KBD_ALT;
+
+   return iKbdState;
+}
 
 static BOOL hb_gt_xwc_Info( int iType, PHB_GT_INFO pInfo )
 {
@@ -3717,6 +3740,11 @@ static BOOL hb_gt_xwc_Info( int iType, PHB_GT_INFO pInfo )
          pInfo->pResult = hb_itemPutNI( pInfo->pResult, s_cursorBlinkRate );
          if( hb_itemType( pInfo->pNewVal ) & HB_IT_NUMERIC )
             s_cursorBlinkRate = hb_itemGetNI( pInfo->pNewVal );
+         break;
+
+      case GTI_KBDSHIFTS:
+         pInfo->pResult = hb_itemPutNI( pInfo->pResult,
+                                        hb_gt_xwc_getKbdState( s_wnd ) );
          break;
 
       default:
