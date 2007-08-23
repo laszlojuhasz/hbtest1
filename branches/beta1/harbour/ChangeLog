@@ -8,6 +8,16 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-08-23 14:55 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/make_gcc.sh
+  * harbour/make_tgz.sh
+  * harbour/harbour.spec
+  * harbour/include/hbgtcore.h
+  * harbour/source/rtl/hbgtcore.c
+  * harbour/source/rtl/gtxwc/gtxwc.c
+  * harbour/source/rtl/gttrm/gttrm.c
+    * synced with modifications in DEVEL branch
+
 2007-08-23 04:35 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   * harbour/makefile.vc
   * harbour/makefile.gc
