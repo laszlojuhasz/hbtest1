@@ -102,6 +102,16 @@ static ULONG PackDateTime( void )
    return HB_MKLONG( szString[3], szString[2], szString[1], szString[0] );
 }
 
+static void hb_notSupportedInfo( HB_COMP_DECL, char *szSwitch )
+{
+   char buffer[ 512 ];
+
+   snprintf( buffer, sizeof( buffer ),
+             "Not yet supported command line option: %s\n", szSwitch );
+
+   hb_compOutStd( HB_COMP_PARAM, buffer );
+}
+
 static void hb_compChkEnvironVar( HB_COMP_DECL, char *szSwitch )
 {
    if( szSwitch && !HB_COMP_PARAM->fExit )
@@ -109,13 +119,8 @@ static void hb_compChkEnvironVar( HB_COMP_DECL, char *szSwitch )
       char *s = szSwitch;
 
       /* If szSwitch doesn't start with a HB_OSOPTSEP char
-         show an error
+       * show an error
        */
-
-      /*
-         printf( "Switch: %s\n", s );
-       */
-
       if( !HB_ISOPTSEP( *s ) )
          hb_compGenError( HB_COMP_PARAM, hb_comp_szErrors, 'F', HB_COMP_ERR_BADOPTION, s, NULL );
       else
@@ -323,8 +328,8 @@ static void hb_compChkEnvironVar( HB_COMP_DECL, char *szSwitch )
                   switch( s[i++] )
                   {
                      case '?':
-                        hb_compPrintLogo(  );
-                        hb_compPrintModes(  );
+                        hb_compPrintLogo( HB_COMP_PARAM );
+                        hb_compPrintModes( HB_COMP_PARAM );
                         HB_COMP_PARAM->fLogo = FALSE;
                         HB_COMP_PARAM->fQuiet = TRUE;
                         break;
@@ -444,10 +449,15 @@ static void hb_compChkEnvironVar( HB_COMP_DECL, char *szSwitch )
 
             case 'q':
             case 'Q':
-               if( *( s + 1 ) == '0' )
-                  HB_COMP_PARAM->fLogo = FALSE;
-
-               HB_COMP_PARAM->fQuiet = TRUE;
+               switch( *( s + 1 ) )
+               {
+                  case '2':
+                     HB_COMP_PARAM->fFullQuiet = TRUE;
+                  case '0':
+                     HB_COMP_PARAM->fLogo = FALSE;
+                  default:
+                     HB_COMP_PARAM->fQuiet = TRUE;
+               }
                break;
 
             case 'r':
@@ -463,7 +473,7 @@ static void hb_compChkEnvironVar( HB_COMP_DECL, char *szSwitch )
                else
                {
                   /* TODO: Implement this switch */
-                  printf( "Not yet supported command line option: %s\n", s );
+                  hb_notSupportedInfo( HB_COMP_PARAM, s );
                }
                break;
 
@@ -478,7 +488,7 @@ static void hb_compChkEnvironVar( HB_COMP_DECL, char *szSwitch )
             case 't':
             case 'T':
                /* TODO: Implement this switch */
-               printf( "Not yet supported command line option: %s\n", s );
+               hb_notSupportedInfo( HB_COMP_PARAM, s );
                break;
 
             case 'u':

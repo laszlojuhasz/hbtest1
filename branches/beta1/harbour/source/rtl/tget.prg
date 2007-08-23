@@ -366,6 +366,7 @@ METHOD End() CLASS Get
          endif
       next
       ::lClear := .f.
+      ::TypeOut := ( ::nPos == 0 )
       ::Display( .f. )
    endif
 
@@ -378,6 +379,7 @@ METHOD Home() CLASS Get
    if ::HasFocus
       ::Pos := ::FirstEditable()
       ::lClear := .f.
+      ::TypeOut := ( ::nPos == 0 )
       ::Display( .f. )
    endif
 
@@ -394,7 +396,7 @@ METHOD Reset() CLASS Get
       ::lEdit     := .f.
       ::lMinus    := .f.
       ::Rejected  := .f.
-      ::TypeOut   := ( ::nPos == 0 ) /* ; Simple .f. in CA-Cl*pper [vszakats] */
+      ::TypeOut   := !( ::Type $ "CNDL" ) .or. ( ::nPos == 0 ) /* ; Simple .f. in CA-Cl*pper [vszakats] */
       ::Display()
    endif
 
@@ -614,10 +616,13 @@ METHOD UnTransform() CLASS Get
          next
       else
          if "E" $ ::cPicFunc .or. ::lDecRev
-            cBuffer := Left( cBuffer, ::FirstEditable() - 1 ) + StrTran( SubStr( cBuffer, ::FirstEditable(), ::LastEditable() - ::FirstEditable() + 1 ), ".", " " ) + SubStr( cBuffer, ::LastEditable() + 1 )
-            cBuffer := Left( cBuffer, ::FirstEditable() - 1 ) + StrTran( SubStr( cBuffer, ::FirstEditable(), ::LastEditable() - ::FirstEditable() + 1 ), ",", "." ) + SubStr( cBuffer, ::LastEditable() + 1 )
+            cBuffer := Left( cBuffer, ::FirstEditable() - 1 ) +; 
+                       StrTran( StrTran( SubStr( cBuffer, ::FirstEditable(), ::LastEditable() - ::FirstEditable() + 1 ), ".", " " ), ",", "." ) +;
+                       SubStr( cBuffer, ::LastEditable() + 1 )
          else
-            cBuffer := Left( cBuffer, ::FirstEditable() - 1 ) + StrTran( SubStr( cBuffer, ::FirstEditable(), ::LastEditable() - ::FirstEditable() + 1 ), ",", " " ) + SubStr( cBuffer, ::LastEditable() + 1 )
+            cBuffer := Left( cBuffer, ::FirstEditable() - 1 ) +;
+                                StrTran( SubStr( cBuffer, ::FirstEditable(), ::LastEditable() - ::FirstEditable() + 1 ), ",", " " ) +;
+                       SubStr( cBuffer, ::LastEditable() + 1 )
          endif
 
          for nFor := ::FirstEditable() to ::LastEditable()
@@ -639,7 +644,7 @@ METHOD UnTransform() CLASS Get
 
       if lMinus
          for nFor := 1 to Len( cBuffer )
-            if IsDigit( SubStr( cBuffer, nFor, 1 ) )
+            if IsDigit( SubStr( cBuffer, nFor, 1 ) ) .or. SubStr( cBuffer, nFor, 1 ) == "."
                exit
             endif
          next
@@ -997,11 +1002,15 @@ METHOD IsEditable( nPos ) CLASS Get
       return .t.
    endif
 
-   cChar := SubStr( ::cPicMask, nPos, 1 )
-
-   if Empty( cChar )
-      return .f.
+   /* ; This odd behaviour helps to be more compatible with CA-Cl*pper in some rare situations.
+        xVar := 98 ; o := _GET_( xVar, "xVar" ) ; o:SetFocus() ; o:picture := "99999" ; o:UnTransform() -> result 
+        We're still not 100% compatible in slighly different situations because the CA-Cl*pper 
+        behaviour is pretty much undefined here. [vszakats] */
+   if nPos > Len( ::cPicMask ) .and. nPos <= ::nMaxLen
+      return .t.
    endif
+
+   cChar := SubStr( ::cPicMask, nPos, 1 )
 
    do case
    case ::cType == "C"
@@ -1011,7 +1020,7 @@ METHOD IsEditable( nPos ) CLASS Get
    case ::cType == "D"
       return cChar == "9"
    case ::cType == "L"
-      return cChar $ "LY#"   /* Clipper 5.2 undocumented: # allow T,F,Y,N for Logical [ckedem] */
+      return cChar $ "LY#" /* CA-Cl*pper 5.2 undocumented: # allow T,F,Y,N for Logical [ckedem] */
    endcase
 
 return .f.
@@ -1538,92 +1547,95 @@ METHOD Picture( cPicture ) CLASS Get
    local nFor
    local cNum
 
-   if PCount() == 0 .or. cPicture == NIL
+   if PCount() == 0
       return ::cPicture
    endif
 
-   ::cPicture    := cPicture
-   ::cPicFunc    := ""
-   ::cPicMask    := ""
-   ::lPicComplex := .f.
+   if cPicture != NIL
 
-   IF ISCHARACTER( cPicture )
-
-      ::nDispLen := NIL
-      cNum := ""
+      ::cPicture    := cPicture
+      ::cPicFunc    := ""
+      ::cPicMask    := ""
+      ::lPicComplex := .f.
       
-      if Left( cPicture, 1 ) == "@"
+      IF ISCHARACTER( cPicture )
       
-         nAt := At( " ", cPicture )
-      
-         if nAt == 0
-            ::cPicFunc := Upper( cPicture )
-            ::cPicMask := ""
-         else
-            ::cPicFunc := Upper( SubStr( cPicture, 1, nAt - 1 ) )
-            ::cPicMask := SubStr( cPicture, nAt + 1 )
-         endif
-      
-         if "D" $ ::cPicFunc
-      
-            ::cPicMask := Set( _SET_DATEFORMAT )
-            ::cPicMask := StrTran( ::cPicmask, "y", "9" )
-            ::cPicMask := StrTran( ::cPicmask, "Y", "9" )
-            ::cPicMask := StrTran( ::cPicmask, "m", "9" )
-            ::cPicMask := StrTran( ::cPicmask, "M", "9" )
-            ::cPicMask := StrTran( ::cPicmask, "d", "9" )
-            ::cPicMask := StrTran( ::cPicmask, "D", "9" )
-      
-         endif
-      
-         if ( nAt := At( "S", ::cPicFunc ) ) > 0
-            for nFor := nAt + 1 to Len( ::cPicFunc )
-               if ! IsDigit( SubStr( ::cPicFunc, nFor, 1 ) )
-                  exit
-               else
-                  cNum += SubStr( ::cPicFunc, nFor, 1 )
-               endif
-            next
-            if Val( cNum ) > 0
-               ::nDispLen := Val( cNum )
+         ::nDispLen := NIL
+         cNum := ""
+         
+         if Left( cPicture, 1 ) == "@"
+         
+            nAt := At( " ", cPicture )
+         
+            if nAt == 0
+               ::cPicFunc := Upper( cPicture )
+               ::cPicMask := ""
+            else
+               ::cPicFunc := Upper( SubStr( cPicture, 1, nAt - 1 ) )
+               ::cPicMask := SubStr( cPicture, nAt + 1 )
             endif
-            ::cPicFunc := SubStr( ::cPicFunc, 1, nAt - 1 ) + SubStr( ::cPicFunc, nFor )
-         endif
-      
-         if "Z" $ ::cPicFunc
-            ::lCleanZero := .t.
+         
+            if "D" $ ::cPicFunc
+         
+               ::cPicMask := Set( _SET_DATEFORMAT )
+               ::cPicMask := StrTran( ::cPicmask, "y", "9" )
+               ::cPicMask := StrTran( ::cPicmask, "Y", "9" )
+               ::cPicMask := StrTran( ::cPicmask, "m", "9" )
+               ::cPicMask := StrTran( ::cPicmask, "M", "9" )
+               ::cPicMask := StrTran( ::cPicmask, "d", "9" )
+               ::cPicMask := StrTran( ::cPicmask, "D", "9" )
+         
+            endif
+         
+            if ( nAt := At( "S", ::cPicFunc ) ) > 0
+               for nFor := nAt + 1 to Len( ::cPicFunc )
+                  if ! IsDigit( SubStr( ::cPicFunc, nFor, 1 ) )
+                     exit
+                  else
+                     cNum += SubStr( ::cPicFunc, nFor, 1 )
+                  endif
+               next
+               if Val( cNum ) > 0
+                  ::nDispLen := Val( cNum )
+               endif
+               ::cPicFunc := SubStr( ::cPicFunc, 1, nAt - 1 ) + SubStr( ::cPicFunc, nFor )
+            endif
+         
+            if "Z" $ ::cPicFunc
+               ::lCleanZero := .t.
+            else
+               ::lCleanZero := .f.
+            endif
+            ::cPicFunc := StrTran( ::cPicFunc, "Z", "" )
+         
+            if ::cPicFunc == "@"
+               ::cPicFunc := ""
+            endif
          else
+            ::cPicFunc   := ""
+            ::cPicMask   := cPicture
             ::lCleanZero := .f.
          endif
-         ::cPicFunc := StrTran( ::cPicFunc, "Z", "" )
-      
-         if ::cPicFunc == "@"
-            ::cPicFunc := ""
+         
+//       if ::cType == NIL
+//          ::Original := ::xVarGet
+//          ::cType    := ValType( ::Original )
+//       endif
+         
+         if ::cType == "D"
+            ::cPicMask := LTrim( ::cPicMask )
          endif
-      else
-         ::cPicFunc   := ""
-         ::cPicMask   := cPicture
-         ::lCleanZero := .f.
+         
+         // Comprobar si tiene la , y el . cambiado (Solo en Xbase++)
+         
+         ::lDecRev := "," $ Transform( 1.1, "9.9" )
+      
       endif
-      
-//    if ::cType == NIL
-//       ::Original := ::xVarGet
-//       ::cType    := ValType( ::Original )
-//    endif
-      
-      if ::cType == "D"
-         ::cPicMask := LTrim( ::cPicMask )
-      endif
-      
-      // Comprobar si tiene la , y el . cambiado (Solo en Xbase++)
-      
-      ::lDecRev := "," $ Transform( 1.1, "9.9" )
-
    endif
       
    // Generate default picture mask if not specified
    
-   if Empty( ::cPicMask )
+   if Empty( ::cPicMask ) .or. ::cPicture == NIL
    
       do case
       case ::cType == "D"
@@ -1667,7 +1679,7 @@ METHOD Picture( cPicture ) CLASS Get
       next
    endif
 
-return cPicture
+return ::cPicture
 
 /* ------------------------------------------------------------------------- */
 
@@ -1755,8 +1767,6 @@ METHOD FirstEditable() CLASS Get
 
    endif
 
-   ::TypeOut := .t.
-
    return 0
 
 /* ------------------------------------------------------------------------- */
@@ -1774,8 +1784,6 @@ METHOD LastEditable() CLASS Get
       next
 
    endif
-
-   ::TypeOut := .t.
 
    return 0
 

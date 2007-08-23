@@ -4,9 +4,10 @@
 
 /*
  * Harbour Project source code:
- * Error Class
+ *    Undocumented CA-Cl*pper function used to validate
+ *    instance variable type in assign messages.
  *
- * Copyright 1999 Antonio Linares <alinares@fivetech.com>
+ * Copyright 2007 Przemyslaw Czerpak <druzus / at / priv.onet.pl>
  * www - http://www.harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,34 +51,27 @@
  *
  */
 
-/* Error Class. We are keeping Clipper compatibility here, instead of using
-   TError():New() style and also avoiding hungarian notation. */
+#include "common.ch"
 
-FUNCTION ErrorNew()
+FUNCTION _eInstVar( oVar, cMethod, xValue, cType, nSubCode, bValid )
 
-   STATIC s_oClass
+   LOCAL oError
 
-   IF s_oClass == NIL
-      s_oClass := HBClass():New( "ERROR",, @ErrorNew() )
-
-      s_oClass:AddData( "Args"         , 0 )
-      s_oClass:AddData( "CanDefault"   , .F. )
-      s_oClass:AddData( "CanRetry"     , .F. )
-      s_oClass:AddData( "CanSubstitute", .F. )
-      s_oClass:AddData( "Cargo" )
-      s_oClass:AddData( "Description"  , "" )
-      s_oClass:AddData( "FileName"     , "" )
-      s_oClass:AddData( "GenCode"      , 0 )
-      s_oClass:AddData( "Operation"    , "" )
-      s_oClass:AddData( "OsCode"       , 0 )
-      s_oClass:AddData( "Severity"     , 0 )
-      s_oClass:AddData( "SubCode"      , 0 )
-      s_oClass:AddData( "SubSystem"    , "" )
-      s_oClass:AddData( "Tries"        , 0 )
-
-      s_oClass:Create()
-
+   IF VALTYPE( xValue ) != cType .OR. ;
+      ( bValid != NIL .AND. !EVAL( bValid, oVar, xValue ) )
+      oError := errornew()
+      oError:description := HB_LANGERRMSG( 1 )
+      oError:gencode := 1
+      oError:severity := 2
+      oError:cansubstitute := .T.
+      oError:subsystem := oVar:classname
+      oError:operation := cMethod
+      oError:subcode := nSubCode
+      oError:args := { xValue }
+      xValue := EVAL( ERRORBLOCK(), oError )
+      IF VALTYPE( xValue ) != cType
+         __errInHandler()
+      ENDIF
    ENDIF
 
-   RETURN s_oClass:Instance()
-
+   RETURN xValue

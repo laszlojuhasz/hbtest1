@@ -8,6 +8,87 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-08-23 04:35 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/makefile.vc
+  * harbour/makefile.gc
+  * harbour/bin/pack_src.sh
+  * harbour/include/hbpp.h
+  * harbour/include/hbcomp.h
+  * harbour/include/hbcompdf.h
+  * harbour/include/hbapi.h
+  * harbour/include/hbapierr.h
+  * harbour/include/hbexprb.c
+  * harbour/ChangeLog
+  * harbour/harbour.spec
+  * harbour/common.mak
+  * harbour/contrib/libct/makefile.bc
+  * harbour/source/pp/ppcore.c
+  * harbour/source/rtl/fserror.c
+  * harbour/source/rtl/errorapi.c
+  * harbour/source/rtl/tgetlist.prg
+  * harbour/source/rtl/gttrm/gttrm.c
+  * harbour/source/rtl/browse.prg
+  * harbour/source/rtl/tget.prg
+  * harbour/source/rtl/browdb.prg
+  * harbour/source/rtl/Makefile
+  - harbour/source/rtl/terror.prg
+  + harbour/source/rtl/einstvar.prg
+  * harbour/source/vm/arrays.c
+  * harbour/source/vm/memvars.c
+  * harbour/source/main/harbour.c
+  * harbour/source/rdd/dbcmd.c
+  * harbour/source/compiler/hbmain.c
+  * harbour/source/compiler/cmdcheck.c
+  * harbour/source/compiler/hbcomp.c
+  * harbour/source/compiler/genjava.c
+  * harbour/source/compiler/genc.c
+  * harbour/source/compiler/hbcmplib.c
+  * harbour/source/compiler/ppcomp.c
+  * harbour/source/compiler/gencli.c
+  * harbour/source/compiler/genhrb.c
+  * harbour/source/compiler/gencobj.c
+  * harbour/source/compiler/genobj32.c
+  * harbour/source/compiler/hbusage.c
+  * harbour/source/compiler/hbgenerr.c
+  + harbour/utils/hbdot
+  + harbour/utils/hbdot/hbdot.prg
+  + harbour/utils/hbdot/Makefile
+  * harbour/utils/hbtest/rt_hvma.prg
+  * harbour/utils/hbtest/rt_misc.prg
+  * harbour/utils/hbtest/rt_array.prg
+  * harbour/utils/Makefile
+  * harbour/makefile.bc
+  * harbour/config/darwin/gcc.cf
+  * harbour/config/darwin/global.cf
+  * harbour/config/hpux/gcc.cf
+  * harbour/config/hpux/global.cf
+  * harbour/config/dos/owatcom.cf
+  * harbour/config/dos/watcom.cf
+  * harbour/config/dos/bcc16.cf
+  * harbour/config/dos/global.cf
+  * harbour/config/dos/rsx32.cf
+  * harbour/config/dos/djgpp.cf
+  * harbour/config/linux/owatcom.cf
+  * harbour/config/linux/gcc.cf
+  * harbour/config/linux/global.cf
+  * harbour/config/os2/gcc.cf
+  * harbour/config/os2/icc.cf
+  * harbour/config/os2/global.cf
+  * harbour/config/sunos/global.cf
+  * harbour/config/bsd/gcc.cf
+  * harbour/config/bsd/global.cf
+  * harbour/config/w32/msvc.cf
+  * harbour/config/w32/owatcom.cf
+  * harbour/config/w32/watcom.cf
+  * harbour/config/w32/bcc32.cf
+  * harbour/config/w32/gcc.cf
+  * harbour/config/w32/xcc.cf
+  * harbour/config/w32/rsxnt.cf
+  * harbour/config/w32/global.cf
+  * harbour/config/w32/mingw32.cf
+  * harbour/make_tgz.sh
+    * synced with modifications in DEVEL branch
+
 2007-08-14 15:35 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   * harbour/doc/whatsnew.txt
     * reverted unnecessary synchronization

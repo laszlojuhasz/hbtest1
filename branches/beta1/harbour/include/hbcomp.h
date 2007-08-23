@@ -169,7 +169,7 @@ extern void hb_compGenBreak( HB_COMP_DECL );  /* generate code for BREAK stateme
 
 extern void hb_compExternGen( HB_COMP_DECL ); /* generates the symbols for the EXTERN names */
 extern void hb_compExternAdd( HB_COMP_DECL, char * szExternName, HB_SYMBOLSCOPE cScope ); /* defines a new extern name */
-extern void hb_compAutoOpenAdd( HB_COMP_DECL, char * szName );
+extern void hb_compAutoOpenAdd( HB_COMP_DECL, const char * szName );
 
 extern void hb_compSwitchKill( HB_COMP_DECL );
 extern void hb_compLoopKill( HB_COMP_DECL );
@@ -266,7 +266,10 @@ extern BOOL hb_compCheckUnclosedStru( HB_COMP_DECL );
 #define HB_GEN_FUNC3( func, p1,p2,p3 )    hb_compGen##func( p1, p2, p3, HB_COMP_PARAM )
 #define HB_GEN_FUNC4( func, p1,p2,p3,p4 ) hb_compGen##func( p1, p2, p3, p4, HB_COMP_PARAM )
 
-extern int  hb_compMain( int argc, char * argv[], BYTE ** pBufPtr, ULONG * pulSize );
+extern int  hb_compMain( int argc, char * argv[], BYTE ** pBufPtr, ULONG * pulSize, const char * szSource );
+extern void hb_compOutStd( HB_COMP_DECL, const char * szMessage );
+extern void hb_compOutErr( HB_COMP_DECL, const char * szMessage );
+
 extern void hb_compExprLstDealloc( HB_COMP_DECL );
 
 extern HB_EXPR_PTR hb_compExprGenStatement( HB_EXPR_PTR, HB_COMP_DECL );
@@ -304,12 +307,10 @@ extern void hb_compChkCompilerSwitch( HB_COMP_DECL, int, char * Args[] );
 extern void hb_compChkPaths( HB_COMP_DECL );
 extern void hb_compChkDefines( HB_COMP_DECL, int iArg, char * Args[] );
 
-extern void hb_compPrintUsage( char * );
-extern void hb_compPrintCredits( void );
-extern void hb_compFileInfo( void );
-extern void hb_compPrintLogo( void );
-extern void hb_compPrintModes( void );
-
+extern void hb_compPrintUsage( HB_COMP_DECL, char * );
+extern void hb_compPrintCredits( HB_COMP_DECL );
+extern void hb_compPrintLogo( HB_COMP_DECL );
+extern void hb_compPrintModes( HB_COMP_DECL );
 
 /* Misc functions defined in harbour.c */
 extern void hb_compNOOPfill( PFUNCTION pFunc, ULONG ulFrom, int iCount, BOOL fPop, BOOL fCheck );
@@ -350,9 +351,6 @@ extern const char *  hb_comp_szWarnings[];
 
 /* table with PCODEs' length */
 extern const BYTE    hb_comp_pcode_len[];
-
-/* file handle for error messages */
-extern FILE          * hb_comp_errFile;
 
 /* identifier types for hb_compIdentifierNew() */
 #define HB_IDENT_STATIC       0

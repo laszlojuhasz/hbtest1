@@ -30,6 +30,8 @@
 #       HARBOURFLAGSDLL   - Extra Harbour compiler options for shared libraries
 #       PRG_USR           - Extra Harbour compiler options
 #                           (GNU make compatible envvar)
+#       HB_GT_DEFAULT     - The default GT driver, Choose between :
+#                           gtstd (default),gtcgi,gtwin,gtwvt
 #       HB_GT_LIB         - To override the default GT driver
 #                           (search for HB_GT_LIBS for a list of values)
 #       HB_BUILD_DLL      - If set to yes enables building harbour VM+RTL
@@ -487,6 +489,19 @@ $(HBRUN_EXE)  :: $(HBRUN_EXE_OBJS)
     $(CC) @&&!
 $(CFLAGS)
 -e$(HBRUN_EXE)
+$(**: = ^
+)
+$(STANDARD_STATIC_HBLIBS)
+!
+#**********************************************************
+# HBDOT build rule
+#**********************************************************
+$(HBDOT_EXE)  :: BasicLibs BasicExes StdLibs
+$(HBDOT_EXE)  :: $(HBDOT_EXE_OBJS)
+    IF EXIST "$(HBDOT_EXE)" $(DEL) "$(HBDOT_EXE)" > NUL
+    $(CC) @&&!
+$(CFLAGS)
+-e$(HBDOT_EXE)
 $(**: = ^
 )
 $(STANDARD_STATIC_HBLIBS)

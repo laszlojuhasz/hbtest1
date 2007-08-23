@@ -73,6 +73,13 @@ static void hb_pp_ErrorGen( void * cargo,
    HB_COMP_PARAM->currModule = currModule;
 }
 
+static void hb_pp_Disp( void * cargo, const char * szMessage )
+{
+   HB_COMP_DECL = ( HB_COMP_PTR ) cargo;
+
+   hb_compOutStd( HB_COMP_PARAM, szMessage );
+}
+
 static void hb_pp_PragmaDump( void * cargo, char * pBuffer, ULONG ulSize,
                               int iLine )
 {
@@ -210,7 +217,7 @@ void hb_compInitPP( HB_COMP_DECL, int argc, char * argv[] )
       hb_pp_init( HB_COMP_PARAM->pLex->pPP, HB_COMP_PARAM->fQuiet,
                   HB_COMP_PARAM->iMaxTransCycles,
                   HB_COMP_PARAM, NULL, NULL,
-                  hb_pp_ErrorGen, NULL, hb_pp_PragmaDump,
+                  hb_pp_ErrorGen, hb_pp_Disp, hb_pp_PragmaDump,
                   HB_COMP_ISSUPPORTED( HB_COMPFLAG_HB_INLINE ) ?
                   hb_pp_hb_inLine : NULL, hb_pp_CompilerSwitch );
 
@@ -219,10 +226,7 @@ void hb_compInitPP( HB_COMP_DECL, int argc, char * argv[] )
       else if( HB_COMP_PARAM->szStdCh[ 0 ] > ' ' )
          hb_pp_readRules( HB_COMP_PARAM->pLex->pPP, HB_COMP_PARAM->szStdCh );
       else if( ! HB_COMP_PARAM->fQuiet )
-      {
-         printf( "Standard command definitions excluded.\n" );
-         fflush( stdout );
-      }
+         hb_compOutStd( HB_COMP_PARAM, "Standard command definitions excluded.\n" );
 
       hb_pp_initDynDefines( HB_COMP_PARAM->pLex->pPP );
 

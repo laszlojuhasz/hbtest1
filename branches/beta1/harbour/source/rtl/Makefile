@@ -151,6 +151,7 @@ PRG_SOURCES=\
 	dbedit.prg   \
 	devoutp.prg  \
 	dircmd.prg   \
+	einstvar.prg \
 	errorsys.prg \
 	fieldbl.prg  \
 	getlist.prg  \
@@ -182,7 +183,6 @@ PRG_SOURCES=\
 	tbcolumn.prg \
 	tbrowse.prg  \
 	teditor.prg  \
-	terror.prg   \
 	text.prg     \
 	tget.prg     \
 	tgetint.prg  \
