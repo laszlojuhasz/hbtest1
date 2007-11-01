@@ -3,13 +3,12 @@ rem
 rem $Id$
 rem
 
-..\..\bin\harbour /n guestbk  /i..\..\include\
-..\..\bin\harbour /n inifiles /i..\..\include\
-..\..\bin\harbour /n testcgi  /i..\..\include\
+..\..\bin\harbour /n pe       /i..\..\include\
+..\..\bin\harbour /n editorhi /i..\..\include\
 
 echo -O2 -I..\..\include -L..\..\lib > build.tmp
-echo -eguestbk.exe >> build.tmp
-echo guestbk.c inifiles.c testcgi.c >> build.tmp
+echo -epe.exe >> build.tmp
+echo pe.c editorhi.c editorlo.c >> build.tmp
 echo debug.lib >> build.tmp
 echo vm.lib >> build.tmp
 echo rtl.lib >> build.tmp
@@ -26,4 +25,4 @@ echo common.lib >> build.tmp
 bcc32 @build.tmp
 del build.tmp
 
-guestbk
+pe

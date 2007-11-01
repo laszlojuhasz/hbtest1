@@ -1,5 +1,5 @@
 /*
- * $Id: readme.txt 7844 2007-10-21 09:23:41Z vszakats $
+ * $Id$
  */
 
 /*

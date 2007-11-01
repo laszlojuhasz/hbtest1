@@ -72,8 +72,6 @@ void hb_compPrintUsage( HB_COMP_DECL, char * szSelf )
            "\n          %cgo              output type: Platform dependant object module",
            "\n          %cgw              output type: Windows/DOS OBJ32 (.obj)",
            "\n          %cgh              output type: Harbour Portable Object (.hrb)",
-           "\n          %cgj              output type: Java source (.java)",
-           "\n          %cgi              output type: .NET platform (.il)",
            "\n          %ci<path>         #include file search path",
            "\n          %ck               compilation mode (type -k? for more data)",
            "\n          %cl               suppress line number information",
@@ -91,6 +89,7 @@ void hb_compPrintUsage( HB_COMP_DECL, char * szSelf )
            "\n          %cs               syntax check only",
 /* TODO:   "\n          %ct<path>         path for temp file creation", */
            "\n          %cu[<file>]       use command def set in <file> (or none)",
+           "\n          %cundef:<id>      #undef <id>",
            "\n          %cv               variables are assumed M->",
            "\n          %cw[<level>]      set warning level number (0..3, default 1)",
            "\n          %cx[<prefix>]     set symbol init function name prefix (for .c only)",
@@ -127,7 +126,7 @@ void hb_compPrintModes( HB_COMP_DECL )
            "\n          h               Harbour mode (default)",
            "\n          i               enable support for HB_INLINE",
            "\n          r               runtime settings enabled",
-           "\n          s               string as bytes array enabled",
+           "\n          s               allow indexed assignment on all types",
            "\n          x               extended xbase mode",
            "\n          J               turn off jump optimization in pcode",
            "\n          M               turn off macrotext substitution",
@@ -221,6 +220,6 @@ void hb_compPrintLogo( HB_COMP_DECL )
 
    hb_compOutStd( HB_COMP_PARAM, szVer );
    hb_compOutStd( HB_COMP_PARAM,
-                  "\nCopyright 1999-2007, http://www.harbour-project.org/\n" );
+                  "\nCopyright (c) 1999-2007, http://www.harbour-project.org/\n" );
    hb_xfree( szVer );
 }

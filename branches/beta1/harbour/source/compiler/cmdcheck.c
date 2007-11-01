@@ -45,9 +45,13 @@
  *
  */
 
-#include <time.h>
-
 #include "hbcomp.h"
+
+#if defined(HB_OS_WIN_32)
+#include <windows.h>
+#else
+#include <time.h>
+#endif
 
 /* TODO: Add support for this compiler switches
    -r -t || hb_getenv( "TMP" )
@@ -76,11 +80,40 @@ static ULONG PackDateTime( void )
    BYTE szString[4];
    BYTE nValue;
 
+#if defined(HB_OS_WIN_32)
+   SYSTEMTIME st;
+
+   GetLocalTime( &st );
+
+   nValue = ( BYTE ) ( ( st.wYear - 1980 ) & ( 2 ^ 6 ) );      /* 6 bits */
+   szString[0] = nValue << 2;
+   nValue = ( BYTE ) ( st.wMonth );    /* 4 bits */
+   szString[0] |= nValue >> 2;
+   szString[1] = nValue << 6;
+   nValue = ( BYTE ) ( st.wDay );      /* 5 bits */
+   szString[1] |= nValue << 1;
+
+   nValue = ( BYTE ) st.wHour;         /* 5 bits */
+   szString[1] = nValue >> 4;
+   szString[2] = nValue << 4;
+   nValue = ( BYTE ) st.wMinute;       /* 6 bits */
+   szString[2] |= nValue >> 2;
+   szString[3] = nValue << 6;
+   nValue = ( BYTE ) st.wSecond;       /* 6 bits */
+   szString[3] |= nValue;
+#else
    time_t t;
    struct tm *oTime;
 
+#if defined( HB_OS_LINUX ) && !defined( __WATCOMC__ )
+   struct tm tm;
+   time( &t );
+   oTime = &tm;
+   localtime_r( &t, oTime );
+#else
    time( &t );
    oTime = localtime( &t );
+#endif
 
    nValue = ( BYTE ) ( ( ( oTime->tm_year + 1900 ) - 1980 ) & ( 2 ^ 6 ) );      /* 6 bits */
    szString[0] = nValue << 2;
@@ -98,6 +131,7 @@ static ULONG PackDateTime( void )
    szString[3] = nValue << 6;
    nValue = ( BYTE ) oTime->tm_sec;     /* 6 bits */
    szString[3] |= nValue;
+#endif
 
    return HB_MKLONG( szString[3], szString[2], szString[1], szString[0] );
 }
@@ -222,7 +256,7 @@ static void hb_compChkEnvironVar( HB_COMP_DECL, char *szSwitch )
                {
                   case 'c':
                   case 'C':
-                     HB_COMP_PARAM->iLanguage = LANG_C;
+                     HB_COMP_PARAM->iLanguage = HB_LANG_C;
 
                      switch( *( s + 2 ) )
                      {
@@ -250,7 +284,7 @@ static void hb_compChkEnvironVar( HB_COMP_DECL, char *szSwitch )
 
                   case 'o':
                   case 'O':
-                     HB_COMP_PARAM->iLanguage = LANG_OBJ_MODULE;
+                     HB_COMP_PARAM->iLanguage = HB_LANG_OBJ_MODULE;
 
                      switch( *( s + 2 ) )
                      {
@@ -276,24 +310,14 @@ static void hb_compChkEnvironVar( HB_COMP_DECL, char *szSwitch )
                      }
                      break;
 
-                  case 'j':
-                  case 'J':
-                     HB_COMP_PARAM->iLanguage = LANG_JAVA;
-                     break;
-
                   case 'h':
                   case 'H':
-                     HB_COMP_PARAM->iLanguage = LANG_PORT_OBJ;
-                     break;
-
-                  case 'i':
-                  case 'I':
-                     HB_COMP_PARAM->iLanguage = LANG_CLI;
+                     HB_COMP_PARAM->iLanguage = HB_LANG_PORT_OBJ;
                      break;
 
                   case 'w':
                   case 'W':
-                     HB_COMP_PARAM->iLanguage = LANG_OBJ32;
+                     HB_COMP_PARAM->iLanguage = HB_LANG_OBJ32;
                      break;
 
                   default:

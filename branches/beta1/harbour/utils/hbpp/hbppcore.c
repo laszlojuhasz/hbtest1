@@ -76,7 +76,9 @@
 #endif
 
 #include <time.h>
-#include <errno.h>
+#if !defined(__MINGW32CE__)
+#  include <errno.h>
+#endif
 
 #include "hbppdef.h"
 #include "hbcomp.h"
@@ -557,11 +559,13 @@ int hb_pp_ParseDirective_( char *sLine )
 
          if( !OpenInclude( sLine, hb_comp_pIncludePath, hb_comp_pFileName, ( cDelimChar == '>' ), szInclude ) )
          {
+#if !defined(__MINGW32CE__)
             if( errno == 0 || errno == EMFILE )
                hb_compGenError( NULL, hb_pp_szErrors, 'F', HB_PP_ERR_TOO_MANY_INCLUDES, sLine, NULL );
             else
+#endif
             {
-#if defined(__CYGWIN__) || defined(__IBMCPP__) || defined(__LCC__)
+#if defined(__CYGWIN__) || defined(__MINGW32CE__) || defined(__IBMCPP__) || defined(__LCC__)
                hb_compGenError( NULL, hb_pp_szErrors, 'F', HB_PP_ERR_CANNOT_OPEN, sLine, "" );
 #else
                hb_compGenError( NULL, hb_pp_szErrors, 'F', HB_PP_ERR_CANNOT_OPEN, sLine, strerror( errno ) );
@@ -2808,7 +2812,7 @@ static int getExpReal( char *expreal, char **ptri, BOOL prlist, int maxrez, BOOL
 
                if( State == STATE_ID )
                {
-                  // Prefix ONLY when lens == 0 (2) oterwise MUST be a postfix.
+                  /* Prefix ONLY when lens == 0 (2) oterwise MUST be a postfix. */
                   if( lens == 2 )
                   {
                      while( **ptri == ' ' && lens < maxrez )
@@ -4172,10 +4176,10 @@ static int IsInStr( char symb, char *s )
 }
 
 /* ptri = string for inserting
-	ptro = output string
-	len1 = length of ptri string
-	len2 = length of ptro string that will be replaced
-	lenres = length of ptro string
+   ptro = output string
+   len1 = length of ptri string
+   len2 = length of ptro string that will be replaced
+   lenres = length of ptro string
 */
 void hb_pp_Stuff( char *ptri, char *ptro, int len1, int len2, int lenres )
 {
@@ -4734,7 +4738,9 @@ static BOOL OpenInclude( char *szFileName, HB_PATHNAMES * pSearch, PHB_FNAME pMa
 
    HB_TRACE( HB_TR_DEBUG, ( "OpenInclude(%s, %p, %p, %d, %s)", szFileName, pSearch, pMainFileName, ( int ) bStandardOnly, szInclude ) );
 
+#if !defined(__MINGW32CE__)
    errno = 0;
+#endif
    if( bStandardOnly )
    {
       fptr = 0;
@@ -4753,7 +4759,11 @@ static BOOL OpenInclude( char *szFileName, HB_PATHNAMES * pSearch, PHB_FNAME pMa
       hb_xfree( pFileName );
    }
 
+#if defined(__MINGW32CE__)
+   if( !fptr && pSearch )
+#else
    if( !fptr && pSearch && errno != EMFILE )
+#endif
    {
       pFileName = hb_fsFNameSplit( szFileName );
       pFileName->szName = szFileName;

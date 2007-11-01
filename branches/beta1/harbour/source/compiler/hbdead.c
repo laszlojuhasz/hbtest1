@@ -76,6 +76,12 @@ typedef HB_CODETRACE_FUNC_ * PHB_CODETRACE_FUNC;
 
 static void hb_compCodeTraceAddJump( PHB_CODETRACE_INFO pInfo, ULONG ulPCodePos )
 {
+   /* Checking for ulPCodePos < pInfo->ulPCodeSize disabled intentionally
+    * for easier detecting bugs in generated PCODE
+    */
+   /*
+   if( ulPCodePos < pInfo->ulPCodeSize && pInfo->pCodeMark[ ulPCodePos ] == 0 )
+   */
    if( pInfo->pCodeMark[ ulPCodePos ] == 0 )
    {
       if( pInfo->ulJumpSize == 0 )
@@ -329,7 +335,8 @@ static HB_CODETRACE_FUNC( hb_p_switch )
    }
    hb_compCodeTraceMark( cargo, ulStart, lPCodePos - ulStart );
 
-   return hb_compCodeTraceNextPos( cargo, lPCodePos );
+   return hb_compCodeTraceNextPos( cargo, us > usCases ?
+                                   cargo->ulPCodeSize : lPCodePos );
 }
 
 static HB_CODETRACE_FUNC( hb_p_endblock )

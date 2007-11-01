@@ -8,6 +8,76 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-11-01 20:05 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/utils/hbextern/make_c5x.bat
+  * harbour/utils/hbdot/hbdot.prg
+  * harbour/utils/hbver/hbverfix.c
+  * harbour/utils/hbmake/hbmlang.c
+  * harbour/utils/hbpp/hbppcore.c
+  * harbour/utils/hbpp/pragma.c
+  * harbour/utils/hbpp/hbpp.c
+  * harbour/utils/hbpptest/pp_test.prg
+  * harbour/utils/hbpptest/compare.bat
+  - harbour/utils/hbpptest/.cvsignore
+  * harbour/utils/hbpptest/pretest.prg
+  * harbour/utils/hbtest/hbtest.prg
+  * harbour/utils/hbtest/rt_misc.prg
+  * harbour/utils/hbtest/make_c5x.bat
+  * harbour/utils/hbtest/make_xpp.bat
+  * harbour/utils/hbtest/rt_array.prg
+  * harbour/source/compiler/hbmain.c
+  * harbour/source/compiler/cmdcheck.c
+  * harbour/source/compiler/hbdead.c
+  * harbour/source/compiler/complex.c
+  * harbour/source/compiler/hbcomp.c
+  - harbour/source/compiler/genjava.c
+  * harbour/source/compiler/harbour.l
+  * harbour/source/compiler/gencc.c
+  * harbour/source/compiler/hbfunchk.c
+  * harbour/source/compiler/harbour.y
+  * harbour/source/compiler/Makefile
+  * harbour/source/compiler/ppcomp.c
+  - harbour/source/compiler/gencli.c
+  * harbour/source/compiler/genhrb.c
+  * harbour/source/compiler/gencobj.c
+  * harbour/source/compiler/hbopt.c
+  * harbour/source/compiler/hbusage.c
+  * harbour/source/Makefile
+  - harbour/contrib/libnf/idle.c
+  * harbour/contrib/libnf/ftidle.c
+  * harbour/contrib/libnf/ftround.prg
+  - harbour/contrib/libnf/round.prg
+  - harbour/contrib/libnf/test.prg
+  * harbour/contrib/libnf/test/test.prg
+  * harbour/contrib/tip/makefile.vc
+  * harbour/contrib/directx/test/testdx.prg
+  * harbour/contrib/directx/makefile.bc
+  * harbour/contrib/directx/makefile.vc
+  * harbour/contrib/directx/readme.txt
+  * harbour/contrib/directx/w32_ddrw.cpp
+  * harbour/contrib/win32/makefile.bc
+  * harbour/contrib/win32/makefile.vc
+  * harbour/contrib/win32/w32_tole.prg
+  * harbour/contrib/win32/w32_ole.c
+  * harbour/samples/guestbk/bld_b32.bat
+  * harbour/samples/pe/editorlo.c
+  * harbour/samples/pe/pe.prg
+  + harbour/samples/pe/bld_b32.bat
+  * harbour/samples/hscript/hscript.prg
+  * harbour/samples/hscript/dir.hs
+  * harbour/samples/hscript/multiply.hs
+  * harbour/samples/hscript/ugly.hs
+  * harbour/samples/hscript/makehtm.bat
+  * harbour/samples/hscript/bld_b32.bat
+  * harbour/samples/hscript/hello.hs
+  * harbour/config/darwin/gcc.cf
+  * harbour/config/hpux/gcc.cf
+  * harbour/config/dos/rsx32.cf
+  * harbour/config/os2/gcc.cf
+  * harbour/config/sunos/gcc.cf
+  + harbour/make_rpmce.sh
+    * synced with devel branch - part 5
+
 2007-11-01 19:10 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   * harbour/tests/rto_get.prg
   * harbour/contrib/ole/bldtest.bat

@@ -148,7 +148,7 @@ int main( int argc, char * argv[] )
                     {
                        szDefText[ pAssign - szDefText ] = '\0';
 
-                       //hb_pp_AddDefine_( szDefText,  pAssign + 1 );
+                       /* hb_pp_AddDefine_( szDefText,  pAssign + 1 ); */
                        sDefLine = hb_xstrcpy( NULL, szDefText, " ", pAssign + 1, NULL );
                        hb_pp_ParseDefine_( sDefLine );
                        hb_xfree( sDefLine );
@@ -232,14 +232,14 @@ int main( int argc, char * argv[] )
     }
 
   {
-    char * szInclude = getenv( "INCLUDE" );
+    char * szInclude = hb_getenv( "INCLUDE" );
 
     if( szInclude )
       {
         char * pPath;
         char * pDelim;
 
-        pPath = szInclude = hb_strdup( szInclude );
+        pPath = szInclude;
         while( ( pDelim = strchr( pPath, OS_PATH_LIST_SEPARATOR ) ) != NULL )
           {
             *pDelim = '\0';
@@ -247,6 +247,7 @@ int main( int argc, char * argv[] )
             pPath = pDelim + 1;
           }
         AddSearchPath( pPath, &hb_comp_pIncludePath );
+        hb_xfree( szInclude );
       }
   }
 

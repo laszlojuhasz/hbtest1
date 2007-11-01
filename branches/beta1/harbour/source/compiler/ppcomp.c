@@ -52,7 +52,6 @@
 
 
 #include "hbcomp.h"
-#include <errno.h>
 
 static void hb_pp_ErrorGen( void * cargo,
                             const char * szMsgTable[], char cPrefix, int iErrorCode,
@@ -97,7 +96,7 @@ static void hb_pp_hb_inLine( void * cargo, char * szFunc,
 {
    HB_COMP_DECL = ( HB_COMP_PTR ) cargo;
 
-   if( HB_COMP_PARAM->iLanguage != LANG_C && HB_COMP_PARAM->iLanguage != LANG_OBJ_MODULE )
+   if( HB_COMP_PARAM->iLanguage != HB_LANG_C && HB_COMP_PARAM->iLanguage != HB_LANG_OBJ_MODULE )
    {
       int iCurrLine = HB_COMP_PARAM->currLine;
       HB_COMP_PARAM->currLine = iLine;
@@ -187,10 +186,55 @@ static BOOL hb_pp_CompilerSwitch( void * cargo, const char * szSwitch,
    }
    else if( i == 2 )
    {
-      if( hb_strnicmp( szSwitch, "es", 2 ) == 0 &&
-          ( iValue == HB_EXITLEVEL_DEFAULT ||
-            iValue == HB_EXITLEVEL_SETEXIT ||
-            iValue == HB_EXITLEVEL_DELTARGET ) )
+      if( szSwitch[ 0 ] == 'k' || szSwitch[ 0 ] == 'K' )
+      {
+         int iFlag = 0;
+         /* -k? parameters are case sensitive */
+         switch( szSwitch[ 1 ] )
+         {
+            case 'c':
+               /* clear all flags - minimal set of features */
+               HB_COMP_PARAM->supported &= HB_COMPFLAG_SHORTCUTS;
+               HB_COMP_PARAM->supported |= HB_COMPFLAG_OPTJUMP;
+               break;
+            case 'h':
+               iFlag = HB_COMPFLAG_HARBOUR;
+               break;
+            case 'i':
+               iFlag = HB_COMPFLAG_HB_INLINE;
+               break;
+            case 'r':
+               iFlag = HB_COMPFLAG_RT_MACRO;
+               break;
+            case 'x':
+               iFlag = HB_COMPFLAG_XBASE;
+               break;
+            case 'J':
+               iFlag = HB_COMPFLAG_OPTJUMP;
+               iValue = !iValue;
+               break;
+            case 'M':
+               iFlag = HB_COMPFLAG_MACROTEXT;
+               iValue = !iValue;
+               break;
+            case 's':
+               iFlag = HB_COMPFLAG_ARRSTR;
+               break;
+            default:
+               fError = TRUE;
+         }
+         if( !fError && iFlag )
+         {
+            if( iValue )
+               HB_COMP_PARAM->supported |= iFlag;
+            else
+               HB_COMP_PARAM->supported &= ~iFlag;
+         }
+      }
+      else if( hb_strnicmp( szSwitch, "es", 2 ) == 0 &&
+               ( iValue == HB_EXITLEVEL_DEFAULT ||
+                 iValue == HB_EXITLEVEL_SETEXIT ||
+                 iValue == HB_EXITLEVEL_DELTARGET ) )
          HB_COMP_PARAM->iExitLevel = iValue;
       else if( hb_stricmp( szSwitch, "p+" ) == 0 )
          HB_COMP_PARAM->fPPT = iValue != 0;

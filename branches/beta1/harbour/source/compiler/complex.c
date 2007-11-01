@@ -94,6 +94,7 @@
 #define LARRAY          -7
 #define RARRAY          -8
 #define AS_TYPE         -9
+#define DECLARE_TYPE    -10
 
 
 typedef struct
@@ -123,6 +124,9 @@ static const HB_LEX_KEY s_keytable[] =
    { "ENDCASE",     4,  7, ENDCASE        },
    { "ENDDO",       4,  5, ENDDO          },
    { "ENDIF",       4,  5, ENDIF          },
+   { "ENDSEQUENCE", 6, 11, ENDSEQ         },
+   { "ENDSWITCH",   5,  9, ENDSWITCH      },
+   { "ENDWITH",     4,  7, ENDWITH        },
    { "EXIT",        4,  4, EXIT           },
    { "EXTERNAL",    4,  8, EXTERN         },
    { "FIELD",       4,  5, FIELD          },
@@ -283,6 +287,158 @@ static char * hb_comp_tokenString( YYSTYPE *yylval_ptr, HB_COMP_DECL, PHB_PP_TOK
    return pToken->value;
 }
 
+#if 0
+static BOOL hb_comp_timeDecode( PHB_PP_TOKEN pTime, LONG * plTime )
+{
+   HB_LONG lHour, lMinute, lMilliSec;
+   double dNumber;
+   int iDec, iWidth;
+
+   if( !pTime || HB_PP_TOKEN_TYPE( pTime->type ) != HB_PP_TOKEN_NUMBER ||
+       hb_compStrToNum( pTime->value, pTime->len, &lHour, &dNumber,
+                        &iDec, &iWidth ) || lHour < 0 || lHour >= 24 )
+      return FALSE;
+
+   pTime = pTime->pNext;
+   if( !pTime || HB_PP_TOKEN_TYPE( pTime->type ) != HB_PP_TOKEN_SEND )
+      return FALSE;
+
+   pTime = pTime->pNext;
+   if( !pTime || HB_PP_TOKEN_TYPE( pTime->type ) != HB_PP_TOKEN_NUMBER ||
+       hb_compStrToNum( pTime->value, pTime->len, &lMinute, &dNumber,
+                        &iDec, &iWidth ) || lMinute < 0 || lMinute >= 60 )
+      return FALSE;
+
+   pTime = pTime->pNext;
+   if( !pTime )
+      return FALSE;
+
+   if( HB_PP_TOKEN_TYPE( pTime->type ) == HB_PP_TOKEN_SEND )
+   {
+      pTime = pTime->pNext;
+      if( !pTime || HB_PP_TOKEN_TYPE( pTime->type ) != HB_PP_TOKEN_NUMBER )
+         return FALSE;
+
+      if( hb_compStrToNum( pTime->value, pTime->len, &lMilliSec, &dNumber,
+                           &iDec, &iWidth ) )
+      {
+         if( dNumber < 0.0 || dNumber >= 60.0 )
+            return FALSE;
+         lMilliSec = ( HB_LONG ) ( dNumber * 1000 );
+      }
+      else if( lMilliSec < 0 || lMilliSec >= 60 )
+         return FALSE;
+      else
+         lMilliSec *= 1000;
+      pTime = pTime->pNext;
+   }
+   else
+      lMilliSec = 0;
+
+   if( HB_PP_TOKEN_TYPE( pTime->type ) == HB_PP_TOKEN_KEYWORD &&
+       lHour > 0 && lHour <= 12 )
+   {
+      if( ( pTime->len == 1 &&
+            ( pTime->value[0] == 'A' || pTime->value[0] == 'a' ) ) ||
+          ( pTime->len == 2 && hb_stricmp( pTime->value, "AM" ) == 0 ) )
+      {
+         if( lHour == 12 )
+            lHour = 0;
+         pTime = pTime->pNext;
+      }
+      else if( ( pTime->len == 1 &&
+                 ( pTime->value[0] == 'P' || pTime->value[0] == 'p' ) ) ||
+               ( pTime->len == 2 && hb_stricmp( pTime->value, "PM" ) == 0 ) )
+      {
+         if( lHour < 12 )
+            lHour += 12;
+         pTime = pTime->pNext;
+      }
+   }
+
+   if( !pTime || HB_PP_TOKEN_TYPE( pTime->type ) != HB_PP_TOKEN_RIGHT_CB )
+      return FALSE;
+
+   *plTime = ( lHour * 60 + lMinute ) * 60000 + lMilliSec;
+
+   return TRUE;
+}
+
+static BOOL hb_comp_dayTimeDecode( PHB_COMP_LEX pLex, PHB_PP_TOKEN pToken,
+                                   YYSTYPE *yylval_ptr )
+{
+   /* TODO: decode datetime in VFP strict date form:
+    *    {^YYYY/MM/DD[,][HH[:MM[:SS][.CCC]][A|P]]}
+    * VFP accepts slash, dot or hyphen as date delimiter and
+    * 12 or 24-hour formatted time,
+    * If only hours are included in time part then comma have to
+    * be used to separate date and time parts or it's necesary
+    * to follow the hours with a colon.
+    *    { ^ <YEAR> <sep:/.-> <MONTH> <sep:/.-> <DAY> [[<sep2:,>]
+    *      [ <HOUR> [ : <MIN> [ : <SEC> [ . <FRAQ> ] ] ] [A|P] ] }
+    * We will not accept dot as date delimiter to avoid possible
+    * conflicts with PP.
+    */
+
+   /* Now support for dates constatns: {^YYYY/MM/DD} or {^YYYY-MM-DD} */
+   PHB_PP_TOKEN pYear, pMonth, pDay;
+   HB_LONG lYear, lMonth, lDay;
+   LONG lDate = 0, lTime = 0;
+   double dNumber;
+   int iDec, iWidth;
+
+   pYear = pToken->pNext->pNext;
+   if( pYear && HB_PP_TOKEN_TYPE( pYear->type ) == HB_PP_TOKEN_NUMBER &&
+       pYear->pNext )
+   {
+      if( ( HB_PP_TOKEN_TYPE( pYear->pNext->type ) == HB_PP_TOKEN_DIV ||
+            HB_PP_TOKEN_TYPE( pYear->pNext->type ) == HB_PP_TOKEN_MINUS ) &&
+          !hb_compStrToNum( pYear->value, pYear->len, &lYear, &dNumber,
+                            &iDec, &iWidth ) )
+      {
+         pMonth = pYear->pNext->pNext;
+         if( pMonth && HB_PP_TOKEN_TYPE( pMonth->type ) == HB_PP_TOKEN_NUMBER &&
+             pMonth->pNext && HB_PP_TOKEN_TYPE( pYear->pNext->type ) ==
+                              HB_PP_TOKEN_TYPE( pMonth->pNext->type ) &&
+             !hb_compStrToNum( pMonth->value, pMonth->len, &lMonth, &dNumber,
+                               &iDec, &iWidth ) )
+         {
+            pDay = pMonth->pNext->pNext;
+            if( pDay && HB_PP_TOKEN_TYPE( pDay->type ) == HB_PP_TOKEN_NUMBER &&
+                pDay->pNext &&
+                !hb_compStrToNum( pDay->value, pDay->len, &lDay, &dNumber,
+                                  &iDec, &iWidth ) )
+            {
+               pDay = pDay->pNext;
+               if( HB_PP_TOKEN_TYPE( pDay->type ) != HB_PP_TOKEN_RIGHT_CB )
+               {
+                  if( HB_PP_TOKEN_TYPE( pDay->type ) == HB_PP_TOKEN_COMMA )
+                     pDay = pDay->pNext;
+                  if( !hb_comp_timeDecode( pDay, &lTime ) )
+                     return 0;
+               }
+               lDate = hb_dateEncode( lYear, lMonth, lDay );
+               if( lDate != 0 || ( lYear == 0 && lMonth == 0 && lDay == 0 ) )
+               {
+                  while( HB_PP_TOKEN_TYPE( pToken->type ) != HB_PP_TOKEN_RIGHT_CB )
+                     pToken = hb_pp_tokenGet( pLex->pPP );
+                  yylval_ptr->valLong.lNumber = lDate;
+                  pLex->iState = LITERAL;
+                  return NUM_DATE;
+               }
+            }
+         }
+      }
+      else if( hb_comp_timeDecode( pDay, &lTime ) )
+      {
+         ;
+      }
+   }
+
+   return 0;
+}
+#endif
+
 int hb_complex( YYSTYPE *yylval_ptr, HB_COMP_DECL )
 {
    PHB_COMP_LEX pLex = HB_COMP_PARAM->pLex;
@@ -380,6 +536,7 @@ int hb_complex( YYSTYPE *yylval_ptr, HB_COMP_DECL )
             case RETURN:
             case WITH:
             case WHILE:
+            case DECLARE_TYPE:
                pLex->iState = LITERAL;
                hb_pp_tokenToString( pLex->pPP, pToken );
                pLex->lasttok = hb_comp_tokenString( yylval_ptr, HB_COMP_PARAM,
@@ -396,15 +553,25 @@ int hb_complex( YYSTYPE *yylval_ptr, HB_COMP_DECL )
          return ']';
 
       case HB_PP_TOKEN_LEFT_CB:
-         if( pToken->pNext &&
-             HB_PP_TOKEN_TYPE( pToken->pNext->type ) == HB_PP_TOKEN_PIPE )
+         if( pToken->pNext )
          {
-            yylval_ptr->asCodeblock.string = hb_strdup( 
+            if( HB_PP_TOKEN_TYPE( pToken->pNext->type ) == HB_PP_TOKEN_PIPE )
+            {
+               yylval_ptr->asCodeblock.string = hb_strdup( 
                   hb_pp_tokenBlockString( pLex->pPP, pToken,
                                           &yylval_ptr->asCodeblock.flags,
                                           &yylval_ptr->asCodeblock.length ) );
-            hb_pp_tokenGet( pLex->pPP );
-            return CBSTART;
+               hb_pp_tokenGet( pLex->pPP );
+               return CBSTART;
+            }
+#if 0
+            else if( HB_PP_TOKEN_TYPE( pToken->pNext->type ) == HB_PP_TOKEN_POWER )
+            {
+               int iType = hb_comp_dayTimeDecode( pLex, pToken, yylval_ptr );
+               if( iType )
+                  return iType;
+            }
+#endif
          }
          pLex->iState = LARRAY;
          return '{';
@@ -743,6 +910,13 @@ int hb_complex( YYSTYPE *yylval_ptr, HB_COMP_DECL )
                                    HB_COMP_ERR_ENDDO, NULL, NULL );
                break;
 
+            case ENDSEQ:
+            case ENDSWITCH:
+            case ENDWITH:
+               if( pLex->iState != LOOKUP || !HB_PP_TOKEN_ISEOC( pToken->pNext ) )
+                  iType = IDENTIFIER;
+               break;
+
             case INIT:
                if( pLex->iState == LOOKUP && pToken->pNext &&
                    HB_PP_TOKEN_TYPE( pToken->pNext->type ) == HB_PP_TOKEN_KEYWORD &&
@@ -1065,6 +1239,7 @@ int hb_complex( YYSTYPE *yylval_ptr, HB_COMP_DECL )
                int iAs = hb_comp_asType( pToken->pNext, FALSE );
                if( iAs )
                {
+                  pLex->iState = DECLARE_TYPE;
                   pToken = hb_pp_tokenGet( pLex->pPP );
                   if( iAs == AS_ARRAY && pToken->pNext &&
                       HB_PP_TOKEN_TYPE( pToken->pNext->type ) == HB_PP_TOKEN_KEYWORD &&
@@ -1084,9 +1259,24 @@ int hb_complex( YYSTYPE *yylval_ptr, HB_COMP_DECL )
                break;
             }
             case DECLARE_CLASS:
+               if( pLex->iState == LOOKUP && !HB_PP_TOKEN_ISEOC( pToken->pNext ) &&
+                   HB_PP_TOKEN_TYPE( pToken->pNext->type ) == HB_PP_TOKEN_KEYWORD )
+               {
+                  pLex->iState = DECLARE_TYPE;
+                  return DECLARE_CLASS;
+               }
+               iType = IDENTIFIER;
+               break;
             case DECLARE_MEMBER:
-               pLex->iState = OPERATOR;
-               return iType;
+               if( pLex->iState == LOOKUP && !HB_PP_TOKEN_ISEOC( pToken->pNext ) &&
+                   ( HB_PP_TOKEN_TYPE( pToken->pNext->type ) == HB_PP_TOKEN_KEYWORD ||
+                     HB_PP_TOKEN_TYPE( pToken->pNext->type ) == HB_PP_TOKEN_LEFT_CB ) )
+               {
+                  pLex->iState = OPERATOR;
+                  return DECLARE_MEMBER;
+               }
+               iType = IDENTIFIER;
+               break;
 
             case EXIT:
             case STATIC:
@@ -1097,9 +1287,12 @@ int hb_complex( YYSTYPE *yylval_ptr, HB_COMP_DECL )
                }
                break;
 
+            case NIL:
+               if( pLex->iState == DECLARE_TYPE )
+                  iType = IDENTIFIER;
+               break;
             case IN:
             case LOOP:
-            case NIL:
             case STEP:
             case TO:
             case ANNOUNCE:

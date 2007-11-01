@@ -59,14 +59,39 @@
    #endif
 #endif
 
+#define HB_OS_WIN_32_USED
+
 #include <ctype.h>
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#if ! defined(__MINGW32CE__)
+#  include <errno.h>
+#endif
 
 #include "hbcomp.h"
 
 #define MAX_BUF_LEN 4096
+
+#if defined(__MINGW32CE__)
+int remove( const char *filename )
+{
+   int length, result;
+   wchar_t *wpath;
+
+   length = MultiByteToWideChar( CP_ACP, 0, filename, -1, NULL, 0 );
+   wpath = ( wchar_t * ) malloc( ( length + 1 ) * sizeof( wchar_t ) );
+   MultiByteToWideChar( CP_ACP, 0, filename, -1, wpath, length );
+   result = DeleteFileW( wpath ) ? 0 : -1;
+   free( wpath );
+
+   return result;
+}
+
+void perror( const char *szError )
+{
+   fprintf( stderr, "error: %s\n", szError );
+}
+#endif
 
 static char * szIncrementNumber( char * szBuffer, size_t stSkipOver )
 {
@@ -208,6 +233,10 @@ int main( int argc, char * argv[] )
       fhChangeLog = fopen( cszChangeLogName, "rt" );
       if( fhChangeLog == NULL )
       {
+#if defined(__MINGW32CE__)
+         perror( szErrBuf );
+         return 4;
+#else
          switch( errno )
          {
          case ENOENT:
@@ -217,6 +246,7 @@ int main( int argc, char * argv[] )
             perror( szErrBuf );
             return 4;
          }
+#endif
       }
       while( ! ( bFoundID && bFoundLog ) && ! feof( fhChangeLog ) )
       {

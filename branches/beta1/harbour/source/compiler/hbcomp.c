@@ -216,9 +216,6 @@ HB_COMP_PTR hb_comp_new( void )
                          HB_COMPFLAG_HB_INLINE |
                          HB_COMPFLAG_OPTJUMP   |
                          HB_COMPFLAG_MACROTEXT |
-#if defined( HB_COMPAT_XHB )
-                         HB_COMPFLAG_ARRSTR    |
-#endif
                          HB_COMPFLAG_SHORTCUTS;
 
       pComp->fTextSubst       = ( pComp->supported & HB_COMPFLAG_MACROTEXT ) != 0;
@@ -241,7 +238,7 @@ HB_COMP_PTR hb_comp_new( void )
       pComp->iWarnings  = 0;                    /* enable parse warnings */
       pComp->iGenCOutput= HB_COMPGENC_VERBOSE;  /* C code generation should be verbose (use comments) or not */
       pComp->iExitLevel = HB_EXITLEVEL_DEFAULT; /* holds if there was any warning during the compilation process */
-      pComp->iLanguage  = LANG_C;               /* default Harbour generated output language */
+      pComp->iLanguage  = HB_LANG_C;            /* default Harbour generated output language */
    }
 
    return pComp;
@@ -311,7 +308,7 @@ void hb_compOutErr( HB_COMP_DECL, const char * szMessage )
          HB_COMP_PARAM->outErrFunc( HB_COMP_PARAM->cargo, szMessage );
       else
       {
-#if defined( HOST_OS_UNIX_COMPATIBLE )
+#if defined( OS_UNIX_COMPATIBLE )
          fprintf( stderr, "%s", szMessage ); fflush( stderr );
 #else
          fprintf( stdout, "%s", szMessage ); fflush( stdout );

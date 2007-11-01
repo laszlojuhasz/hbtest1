@@ -34,14 +34,10 @@
 /* QUESTION: Allocate buffer dynamically ? */
 #define HB_CFG_LINE_LEN    ( _POSIX_PATH_MAX )
 
-#if defined( HOST_OS_UNIX_COMPATIBLE )
+#if defined( OS_UNIX_COMPATIBLE )
    #define HB_NULL_STR " > /dev/null"
-   #define HB_ACCESS_FLAG F_OK
 #elif defined( OS_DOS_COMPATIBLE )
    #define HB_NULL_STR " >nul"      
-   #define HB_ACCESS_FLAG 0
-#else
-   #define HB_ACCESS_FLAG 0
 #endif
 
 /*--------------------------------------------------------------------------*/
@@ -52,7 +48,7 @@ static char * hb_searchpath( const char * pszFile, char * pszEnv, char * pszCfg 
    BOOL bFound = FALSE;
 
    /* Check current dir first  */
-   if( access( ( const char * ) pszFile, HB_ACCESS_FLAG ) == 0 )
+   if( hb_fsFileExists( ( const char * ) pszFile ) )
    {
       snprintf( pszCfg, _POSIX_PATH_MAX + 1, "%s", pszFile );
       return ( char * ) pszFile;
@@ -75,7 +71,7 @@ static char * hb_searchpath( const char * pszFile, char * pszEnv, char * pszCfg 
          if( *pszPath )
          {
             snprintf( pszCfg, _POSIX_PATH_MAX + 1, "%s%c%s", pszPath, OS_PATH_DELIMITER, pszFile );
-            if( access( ( const char * ) pszCfg, HB_ACCESS_FLAG ) == 0 )
+            if( hb_fsFileExists( ( const char * ) pszCfg ) )
             {
                bFound = TRUE;
                break;
@@ -137,7 +133,7 @@ void hb_compGenCObj( HB_COMP_DECL, PHB_FNAME pFileName )
    char szOutPath[ _POSIX_PATH_MAX + 1 ] = "\0";
    char pszTemp[ _POSIX_PATH_MAX + 1 ] = "";
    char buffer[ HB_CFG_LINE_LEN * 2 + 1024 ];
-#if defined( HOST_OS_UNIX_COMPATIBLE )
+#if defined( OS_UNIX_COMPATIBLE )
    char * pszEnv = hb_strdup( "/etc:/usr/local/etc" );
 #elif defined( OS_DOS_COMPATIBLE )
    char * pszEnv = hb_getenv( "PATH" );
