@@ -64,7 +64,7 @@
 
 /* NOTE: User programs should never call this layer directly! */
 
-#define HB_GT_NAME	TRM
+#define HB_GT_NAME      TRM
 
 #include "hbgtcore.h"
 #include "hbinit.h"
@@ -132,11 +132,11 @@ static HB_GT_FUNCS SuperTable;
 
 /* mouse button states */
 #define M_BUTTON_LEFT      0x0001
-#define M_BUTTON_RIGHT	   0x0002
-#define M_BUTTON_MIDDLE	   0x0004
-#define M_BUTTON_LDBLCK	   0x0010
-#define M_BUTTON_RDBLCK	   0x0020
-#define M_BUTTON_MDBLCK	   0x0040
+#define M_BUTTON_RIGHT     0x0002
+#define M_BUTTON_MIDDLE    0x0004
+#define M_BUTTON_LDBLCK    0x0010
+#define M_BUTTON_RDBLCK    0x0020
+#define M_BUTTON_MDBLCK    0x0040
 #define M_BUTTON_WHEELUP   0x0100
 #define M_BUTTON_WHEELDOWN 0x0200
 #define M_CURSOR_MOVE      0x0400
@@ -336,6 +336,8 @@ typedef struct
    struct termios saved_TIO, curr_TIO;
 #endif
 
+   double   dToneSeconds;
+
    /* input events */
    keyTab *pKeyTab;
    int key_flag;
@@ -384,8 +386,6 @@ static const char * s_szMouseOn  = "\033[?1001s\033[?1002h";
 /* disable mouse tracking & restore old hilit tracking */
 static const char * s_szMouseOff = "\033[?1002l\033[?1001r";
 static const BYTE s_szBell[] = { HB_CHAR_BEL, 0 };
-static BYTE *  s_szCrLf;
-static ULONG   s_ulCrLf;
 
 /* The tables below are indexed by internal key value,
  * It cause that we don't have to make any linear scans
@@ -583,7 +583,8 @@ static int getClipKey( int nKey )
 }
 
 
-#if defined( OS_UNIX_COMPATIBLE )
+/* SA_NOCLDSTOP in #if is a hack to detect POSIX compatible environment */
+#if defined( OS_UNIX_COMPATIBLE ) && defined( SA_NOCLDSTOP )
 
 static void sig_handler( int iSigNo )
 {
@@ -1482,6 +1483,11 @@ static void hb_gt_trm_LinuxTone( double dFrequency, double dDuration )
 
    HB_TRACE(HB_TR_DEBUG, ("hb_gt_trm_LinuxTone(%lf, %lf)", dFrequency, dDuration));
 
+   if( s_termState.iACSC )
+   {
+      hb_gt_trm_termOut( ( BYTE * ) "\033[10m", 5 );
+      s_termState.iACSC = 0;
+   }
    snprintf( escseq, sizeof( escseq ), "\033[10;%d]\033[11;%d]\007",
              ( int ) dFrequency, ( int ) ( dDuration * 1000.0 / 18.2 ) );
    hb_gt_trm_termOut( ( BYTE * ) escseq, strlen( escseq ) );
@@ -1726,6 +1732,11 @@ static BOOL hb_gt_trm_AnsiGetCursorPos( int * iRow, int * iCol )
             i = read( s_termState.hFilenoStdin, rdbuf + n, sizeof( rdbuf ) - 1 - n );
             if( i <= 0 )
                break;
+            if( n == 0 )
+            {
+               while( i > 0 && rdbuf[0] != '\033' )
+                  memmove( rdbuf, rdbuf + 1, i-- );
+            }
             n += i;
             if( n >= 6 )
             {
@@ -1735,6 +1746,8 @@ static BOOL hb_gt_trm_AnsiGetCursorPos( int * iRow, int * iCol )
                   s_termState.fPosAnswer = TRUE;
                   break;
                }
+               else if( n == sizeof( rdbuf ) )
+                  break;
             }
          }
       }
@@ -1745,7 +1758,7 @@ static BOOL hb_gt_trm_AnsiGetCursorPos( int * iRow, int * iCol )
          do
          {
             i = getc( stdin );
-            if( i != EOF )
+            if( i != EOF && ( n || i == '\033' ) )
             {
                rdbuf[ n++ ] = ( char ) i;
                if( n >= 6 && i == 'R' )
@@ -1958,7 +1971,6 @@ static void hb_gt_trm_AnsiBell( void )
 
 static void hb_gt_trm_AnsiTone( double dFrequency, double dDuration )
 {
-   static double s_dLastSeconds = 0;
    double dCurrentSeconds;
 
    HB_TRACE(HB_TR_DEBUG, ("hb_gt_trm_AnsiTone(%lf, %lf)", dFrequency, dDuration));
@@ -1969,10 +1981,11 @@ static void hb_gt_trm_AnsiTone( double dFrequency, double dDuration )
    /* succession leading to BEL hell on the terminal */
 
    dCurrentSeconds = hb_dateSeconds();
-   if( dCurrentSeconds < s_dLastSeconds || dCurrentSeconds - s_dLastSeconds > 0.5 )
+   if( dCurrentSeconds < s_termState.dToneSeconds ||
+       dCurrentSeconds - s_termState.dToneSeconds > 0.5 )
    {
       hb_gt_trm_AnsiBell();
-      s_dLastSeconds = dCurrentSeconds;
+      s_termState.dToneSeconds = dCurrentSeconds;
    }
 
    HB_SYMBOL_UNUSED( dFrequency );
@@ -2708,7 +2721,9 @@ static void hb_gt_trm_SetTerm( void )
          szTerm = "ansi";
    }
 
-   if( strncmp( szTerm, "linux", 5 ) == 0 )
+   if( strncmp( szTerm, "linux", 5 ) == 0 ||
+       strcmp( szTerm, "tterm" ) == 0 ||
+       strcmp( szTerm, "teraterm" ) == 0 )
    {
       s_termState.Init           = hb_gt_trm_AnsiInit;
       s_termState.Exit           = hb_gt_trm_AnsiExit;
@@ -2792,16 +2807,16 @@ static void hb_gt_trm_Init( FHANDLE hFilenoStdin, FHANDLE hFilenoStdout, FHANDLE
 
    HB_TRACE(HB_TR_DEBUG, ("hb_gt_trm_Init(%p,%p,%p)", hFilenoStdin, hFilenoStdout, hFilenoStderr));
 
-   s_szCrLf = (BYTE *) hb_conNewLine();
-   s_ulCrLf = strlen( (char *) s_szCrLf );
-
    memset( &s_termState, 0, sizeof( s_termState ) );
    s_termState.hFilenoStdin  = hFilenoStdin;
    s_termState.hFilenoStdout = hFilenoStdout;
    s_termState.hFilenoStderr = hFilenoStderr;
 
    hb_gt_trm_SetTerm();
-#ifdef OS_UNIX_COMPATIBLE
+
+/* SA_NOCLDSTOP in #if is a hack to detect POSIX compatible environment */
+#if defined( OS_UNIX_COMPATIBLE ) && defined( SA_NOCLDSTOP )
+
    if( s_termState.fStdinTTY )
    {
       struct sigaction act, old;

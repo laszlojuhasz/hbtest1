@@ -53,18 +53,17 @@
 /* NOTE: Harbour internal function to set and get the active GetList */
 
 STATIC s_oGetListActive
-STATIC s_oGetListLast
 
 PROCEDURE __GetListSetActive( oGetList )
 
    IF s_oGetListActive != NIL
-      s_oGetListActive:lHasFocus := .F.
+      s_oGetListActive:HasFocus := .F.
    ENDIF
 
    s_oGetListActive := oGetList
 
    IF s_oGetListActive != NIL
-      s_oGetListActive:lHasFocus := .T.
+      s_oGetListActive:HasFocus := .T.
    ENDIF
 
    RETURN
@@ -75,9 +74,10 @@ FUNCTION __GetListActive()
    RETURN s_oGetListActive
 
 FUNCTION __GetListLast( oGetListLast )
+   STATIC s_oGetListLast
 
-   if oGetListLast != NIL
+   IF oGetListLast != NIL
       s_oGetListLast := oGetListLast
-   endif
-   RETURN s_oGetListLast
+   ENDIF
 
+   RETURN s_oGetListLast

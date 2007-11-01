@@ -19,7 +19,7 @@ export HB_ARCHITECTURE=w32
 export HB_COMPILER=mingw32
 
 [ -z "$HB_INSTALL_PREFIX" ] && export HB_INSTALL_PREFIX=/usr/local/mingw32-harbour
-export CC_C_USR="-DHOST_OS_UNIX_COMPATIBLE"
+export CC_C_USR=""
 export C_USR="$CC_C_USR $C_USR"
 export CC_PRG_USR="-D__PLATFORM__Windows -undef:__PLATFORM__UNIX -undef:__PLATFORM__$UNAME"
 export PRG_USR="$CC_PRG_USR $PRG_USR"
@@ -60,7 +60,7 @@ else
     exit 1
 fi
 
-(cd `dirname $0`; ln -s `pwd`/source/pp/linux/gcc/ppgen ${HB_BIN_COMPILE}/ppgen.exe)
+(cd `dirname $0`; ln -s `pwd`/source/pp/linux/gcc/hbppgen ${HB_BIN_COMPILE}/hbppgen.exe)
 export HB_PPGEN_PATH=${HB_BIN_COMPILE}
 
 export PATH CCPATH CCPREFIX

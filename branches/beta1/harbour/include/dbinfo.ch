@@ -72,12 +72,12 @@
 #define RDDI_REMOTE               11   /* Remote table access? */
 #define RDDI_CONNECTION           12   /* Get/Set default connection */
 #define RDDI_TABLETYPE            13   /* Type of table file */
-#define RDDI_MEMOTYPE             14   /* Type of MEMO file: DBT, SMT, FPT(FP,SIX3,FLEXIII) */
+#define RDDI_MEMOTYPE             14   /* Type of MEMO file DB_MEMO_*: DBT, SMT, FPT(FP,SIX3,FLEXIII) */
 #define RDDI_LARGEFILE            15   /* Is large file size (>=4GB) supported */
 #define RDDI_LOCKSCHEME           16   /* Locking scheme used by RDD */
 #define RDDI_RECORDMAP            17   /* Does RDD support record map functionality? */
 #define RDDI_ENCRYPTION           18   /* Does RDD support encryption */
-#define RDDI_TRIGGERS             19   /* Get/Set default trigger function */
+#define RDDI_TRIGGER              19   /* Get/Set default trigger function */
 #define RDDI_AUTOLOCK             20   /* automatic locking on update */
 
 /* index parameters */
@@ -100,6 +100,13 @@
 #define RDDI_MEMOREADLOCK         35   /* use read lock in memo file access */
 #define RDDI_MEMOREUSE            36   /* reuse free space on write */
 #define RDDI_BLOB_SUPPORT         37   /* can support BLOB files directly */
+
+/* misc */
+#define RDDI_PENDINGTRIGGER       40   /* set pending trigger for next open operation */
+#define RDDI_PENDINGPASSWORD      41   /* set pending password for next open operation */
+#define RDDI_PASSWORD             42   /* Get/Set default password */
+#define RDDI_LOCKRETRY            43   /* Get/Set record and file lock timeout value */
+#define RDDI_DIRTYREAD            44   /* Get/Set index dirty read flag */
 
 /*
    Constants for SELF_ORDINFO ()
@@ -195,11 +202,28 @@
 #define DBOI_I_TAGNAME           129  /* created tag name */
 
 #define DBOI_RELKEYPOS           130  /* get/set relative key position (in range 0 - 1) */
+#define DBOI_USECURRENT          131  /* get/set "use current index" flag */
+#define DBOI_INDEXTYPE           132  /* current index type */
 
-/* Return values for DBOI_OPTLEVEL */
-#define DBOI_OPTIMIZED_NONE       0
-#define DBOI_OPTIMIZED_PART       1
-#define DBOI_OPTIMIZED_FULL       2
+/* return values for DBOI_OPTLEVEL */
+#define DBOI_OPTIMIZED_NONE      0
+#define DBOI_OPTIMIZED_PART      1
+#define DBOI_OPTIMIZED_FULL      2
+
+/* return values for DBOI_INDEXTYPE */
+#define DBOI_TYPE_UNDEF         -1
+#define DBOI_TYPE_NONE           0
+#define DBOI_TYPE_NONCOMPACT     1
+#define DBOI_TYPE_COMPACT        2
+#define DBOI_TYPE_COMPOUND       3
+
+/* constants for DBOI_SCOPEEVAL array parameter */
+#define DBRMI_FUNCTION  1
+#define DBRMI_PARAM     2
+#define DBRMI_LOVAL     3
+#define DBRMI_HIVAL     4
+#define DBRMI_RESULT    5
+#define DBRMI_SIZE      5
 
 /* constants for SELF_RECINFO() */
 #define DBRI_DELETED              1
@@ -211,14 +235,6 @@
 #define DBRI_RAWRECORD            7
 #define DBRI_RAWMEMOS             8
 #define DBRI_RAWDATA              9
-
-/* constants for some SCOPED DBOI_* parameter */
-#define DBRMI_FUNCTION  1
-#define DBRMI_PARAM     2
-#define DBRMI_LOVAL     3
-#define DBRMI_HIVAL     4
-#define DBRMI_RESULT    5
-#define DBRMI_SIZE      5
 
 /* constants for dbInfo()  */
 #define DBI_ISDBF                 1  /* Does this RDD support DBFs? */
@@ -262,8 +278,15 @@
 #define DBI_MEMOTYPE            133  /* Type of MEMO file: DBT, SMT, FPT */
 #define DBI_SEPARATOR           134  /* The record separator (as a string) */
 #define DBI_MEMOVERSION         135  /* sub version of memo file */
-#define DBI_TABLETYPE           136   /* Type of table file */
-#define DBI_SCOPEDRELATION      137   /* Is given relation scoped */
+#define DBI_TABLETYPE           136  /* Type of table file */
+#define DBI_SCOPEDRELATION      137  /* Is given relation scoped */
+#define DBI_TRIGGER             138  /* Get/Set trigger function */
+#define DBI_OPENINFO            139  /* DBOPENINFO structure pointer */
+#define DBI_ENCRYPT             140  /* Encrypt table */
+#define DBI_DECRYPT             141  /* Decrypt table */
+#define DBI_MEMOPACK            142  /* Pack memo file */
+#define DBI_DIRTYREAD           143  /* Get/Set index dirty read flag */
+#define DBI_POSITIONED          144  /* Is cursor positioned to valid record */
 
 /* RECORD MAP (RM) support */
 #define DBI_RM_SUPPORTED        150  /* has WA RDD record map support? */

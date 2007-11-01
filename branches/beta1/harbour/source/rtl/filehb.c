@@ -58,7 +58,11 @@
 
 /* NOTE: CA-Cl*pper RTrim()s the filename before doing the existence check.
          This is not multiplatform friendly, so Harbour doesn't do any 
-         modification on the filename. [vszakats] */
+         modification on the filename. [vszakats]
+         For easier portability in Harbour user can optionally enable
+         leading and trailing spaces stripping by
+            SET( _SET_TRIMFILENAME, .T. )
+         [druzus] */
 
 HB_FUNC( FILE )
 {

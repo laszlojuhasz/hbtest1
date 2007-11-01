@@ -52,7 +52,7 @@
 
 /* NOTE: User programs should never call this layer directly! */
 
-#define HB_GT_NAME	STD
+#define HB_GT_NAME      STD
 
 #include "hbgtcore.h"
 #include "hbinit.h"
@@ -189,7 +189,8 @@ static void hb_gt_std_Init( FHANDLE hFilenoStdin, FHANDLE hFilenoStdout, FHANDLE
    hb_fsSetDevMode( s_hFilenoStdout, FD_BINARY );
    HB_GTSUPER_INIT( hFilenoStdin, hFilenoStdout, hFilenoStderr );
 
-#if defined( OS_UNIX_COMPATIBLE )
+/* SA_NOCLDSTOP in #if is a hack to detect POSIX compatible environment */
+#if defined( OS_UNIX_COMPATIBLE ) && defined( SA_NOCLDSTOP )
    s_fRestTTY = FALSE;
    if( s_bStdinConsole )
    {
@@ -233,7 +234,7 @@ static void hb_gt_std_Init( FHANDLE hFilenoStdin, FHANDLE hFilenoStdout, FHANDLE
          HB_GTSUPER_RESIZE( win.ws_row, win.ws_col );
       }
    }
-#elif defined( HB_WIN32_IO )
+#elif defined( HB_WIN32_IO ) && ! defined( HB_WINCE )
    if( s_bStdinConsole )
    {
       SetConsoleMode( ( HANDLE ) hb_fsGetOsHandle( s_hFilenoStdin ), 0x0000 );

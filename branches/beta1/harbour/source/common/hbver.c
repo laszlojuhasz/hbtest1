@@ -88,7 +88,7 @@
       #define VER_PLATFORM_WIN32_CE 3
    #endif
 
-#elif defined(HB_OS_UNIX)
+#elif defined(HB_OS_UNIX) && !defined(__CEGCC__)
 
    #include <sys/utsname.h>
 
@@ -198,11 +198,11 @@ char * hb_verPlatform( void )
 #elif defined(HB_OS_WIN_32)
 
    {
-      OSVERSIONINFO osVer;
+      OSVERSIONINFOA osVer;
 
       osVer.dwOSVersionInfoSize = sizeof( osVer );
 
-      if( GetVersionEx( &osVer ) )
+      if( GetVersionExA( &osVer ) )
       {
          char * pszName = "Windows";
 
@@ -269,6 +269,10 @@ char * hb_verPlatform( void )
          snprintf( pszPlatform, 256, "Windows" );
    }
 
+#elif defined(__CEGCC__)
+   {
+      snprintf( pszPlatform, 256, "Windows" );
+   }
 #elif defined(HB_OS_UNIX)
 
    {
@@ -303,10 +307,10 @@ HB_EXPORT BOOL hb_iswinnt( void )
 
    if( ! s_fInited )
    {
-      OSVERSIONINFO osvi ;
-      osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-      GetVersionEx (&osvi);
-      s_fWinNT = osvi.dwPlatformId == VER_PLATFORM_WIN32_NT; /* && osvi.dwMajorVersion >= 4); */
+      OSVERSIONINFO osvi;
+      osvi.dwOSVersionInfoSize = sizeof( osvi );
+      if( GetVersionEx( &osvi ) )
+         s_fWinNT = osvi.dwPlatformId == VER_PLATFORM_WIN32_NT; /* && osvi.dwMajorVersion >= 4); */
       s_fInited = TRUE;
    }
    return s_fWinNT;
@@ -527,6 +531,11 @@ char * hb_verHarbour( void )
 
    pszVersion = ( char * ) hb_xgrab( 80 );
 
+   /* NOTE: 
+      CA-Clipper 5.2e returns: "Clipper (R) 5.2e Intl. (x216)  (1995.02.07)"
+      CA-Clipper 5.3b returns: "Clipper (R) 5.3b Intl. (Rev. 338) (1997.04.25)"
+   */
+
    snprintf( pszVersion, 80, "Harbour %s build %d.%d-%d Intl.",
              HB_VER_STATUS, HB_VER_MAJOR, HB_VER_MINOR, HB_VER_REVISION );
 
@@ -545,4 +554,16 @@ char * hb_verPCode( void )
              HB_PCODE_VER >> 8, HB_PCODE_VER & 0xff );
 
    return pszPCode;
+}
+
+char * hb_verBuildDate( void )
+{
+   char * pszDate;
+
+   HB_TRACE(HB_TR_DEBUG, ("hb_verBuildDate()"));
+
+   pszDate = ( char * ) hb_xgrab( 64 );
+   snprintf( pszDate, 64, "%s %s", __DATE__, __TIME__ );
+
+   return  pszDate;
 }

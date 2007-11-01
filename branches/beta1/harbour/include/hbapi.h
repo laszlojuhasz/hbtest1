@@ -90,11 +90,13 @@ HB_EXTERN_BEGIN
 #define HB_IT_MEMVAR    ( ( HB_TYPE ) 0x04000 )
 #define HB_IT_ARRAY     ( ( HB_TYPE ) 0x08000 )
 #define HB_IT_ENUM      ( ( HB_TYPE ) 0x10000 )
+#define HB_IT_EXTREF    ( ( HB_TYPE ) 0x20000 )
+#define HB_IT_DEFAULT   ( ( HB_TYPE ) 0x40000 )
 #define HB_IT_OBJECT    HB_IT_ARRAY
 #define HB_IT_NUMERIC   ( ( HB_TYPE ) ( HB_IT_INTEGER | HB_IT_LONG | HB_IT_DOUBLE ) )
 #define HB_IT_NUMINT    ( ( HB_TYPE ) ( HB_IT_INTEGER | HB_IT_LONG ) )
 #define HB_IT_ANY       ( ( HB_TYPE ) 0xFFFFFFFF )
-#define HB_IT_COMPLEX   ( ( HB_TYPE ) ( HB_IT_BLOCK | HB_IT_ARRAY | HB_IT_HASH | HB_IT_POINTER | /* HB_IT_MEMVAR | HB_IT_ENUM |*/ HB_IT_BYREF | HB_IT_STRING ) )
+#define HB_IT_COMPLEX   ( ( HB_TYPE ) ( HB_IT_BLOCK | HB_IT_ARRAY | HB_IT_HASH | HB_IT_POINTER | /* HB_IT_MEMVAR | HB_IT_ENUM | HB_IT_EXTREF |*/ HB_IT_BYREF | HB_IT_STRING ) )
 #define HB_IT_GCITEM    ( ( HB_TYPE ) ( HB_IT_BLOCK | HB_IT_ARRAY | HB_IT_HASH | HB_IT_POINTER | HB_IT_BYREF ) )
 #define HB_IT_HASHKEY   ( ( HB_TYPE ) ( HB_IT_INTEGER | HB_IT_LONG | HB_IT_DOUBLE | HB_IT_DATE | HB_IT_STRING ) )
 
@@ -134,6 +136,7 @@ HB_EXTERN_BEGIN
 #define HB_IS_MEMVAR( p )     HB_IS_OF_TYPE( p, HB_IT_MEMVAR )
 #define HB_IS_MEMO( p )       HB_IS_OF_TYPE( p, HB_IT_MEMO )
 #define HB_IS_ENUM( p )       HB_IS_OF_TYPE( p, HB_IT_ENUM )
+#define HB_IS_EXTREF( p )     HB_IS_OF_TYPE( p, HB_IT_EXTREF )
 #define HB_IS_STRING( p )     ( ( HB_ITEM_TYPE( p ) & ~( HB_IT_BYREF | HB_IT_MEMOFLAG ) ) == HB_IT_STRING )
 #define HB_IS_BYREF( p )      ( ( HB_ITEM_TYPE( p ) & HB_IT_BYREF ) != 0 )
 #define HB_IS_NUMERIC( p )    ( ( HB_ITEM_TYPE( p ) & HB_IT_NUMERIC ) != 0 )
@@ -166,6 +169,7 @@ HB_EXTERN_BEGIN
 #define HB_IS_MEMO( p )       ( HB_ITEM_TYPE( p ) == HB_IT_MEMO )
 #define HB_IS_MEMVAR( p )     ( HB_ITEM_TYPE( p ) == ( HB_IT_MEMVAR | HB_IT_BYREF ) )
 #define HB_IS_ENUM( p )       ( HB_ITEM_TYPE( p ) == ( HB_IT_ENUM | HB_IT_BYREF ) )
+#define HB_IS_EXTREF( p )     ( HB_ITEM_TYPE( p ) == ( HB_IT_EXTREF | HB_IT_BYREF ) )
 #define HB_IS_STRING( p )     ( ( HB_ITEM_TYPE( p ) & ~HB_IT_MEMOFLAG ) == HB_IT_STRING )
 #define HB_IS_BYREF( p )      ( ( HB_ITEM_TYPE( p ) & ~HB_IT_MEMVAR ) == HB_IT_BYREF )
 #define HB_IS_NUMERIC( p )    ( ( HB_ITEM_TYPE( p ) & HB_IT_NUMERIC ) != 0 )
@@ -183,27 +187,28 @@ HB_EXTERN_BEGIN
  * these ones are can be the most efficiently optimized on some CPUs
  */
 #define HB_IS_NIL( p )        ( HB_ITEM_TYPE( p ) == HB_IT_NIL )
-#define HB_IS_ARRAY( p )      ( ( HB_ITEM_TYPE( p ) & HB_IT_ARRAY ) != 0 )
-#define HB_IS_BLOCK( p )      ( ( HB_ITEM_TYPE( p ) & HB_IT_BLOCK ) != 0 )
-#define HB_IS_DATE( p )       ( ( HB_ITEM_TYPE( p ) & HB_IT_DATE ) != 0 )
-#define HB_IS_DOUBLE( p )     ( ( HB_ITEM_TYPE( p ) & HB_IT_DOUBLE ) != 0 )
-#define HB_IS_INTEGER( p )    ( ( HB_ITEM_TYPE( p ) & HB_IT_INTEGER ) != 0 )
-#define HB_IS_LOGICAL( p )    ( ( HB_ITEM_TYPE( p ) & HB_IT_LOGICAL ) != 0 )
-#define HB_IS_LONG( p )       ( ( HB_ITEM_TYPE( p ) & HB_IT_LONG ) != 0 )
-#define HB_IS_SYMBOL( p )     ( ( HB_ITEM_TYPE( p ) & HB_IT_SYMBOL ) != 0 )
-#define HB_IS_POINTER( p )    ( ( HB_ITEM_TYPE( p ) & HB_IT_POINTER ) != 0 )
-#define HB_IS_HASH( p )       ( ( HB_ITEM_TYPE( p ) & HB_IT_HASH ) != 0 )
-#define HB_IS_MEMO( p )       ( ( HB_ITEM_TYPE( p ) & HB_IT_MEMOFLAG ) != 0 )
-#define HB_IS_STRING( p )     ( ( HB_ITEM_TYPE( p ) & HB_IT_STRING ) != 0 )
-#define HB_IS_MEMVAR( p )     ( ( HB_ITEM_TYPE( p ) & HB_IT_MEMVAR ) != 0 )
-#define HB_IS_ENUM( p )       ( ( HB_ITEM_TYPE( p ) & HB_IT_ENUM ) != 0 )
-#define HB_IS_BYREF( p )      ( ( HB_ITEM_TYPE( p ) & HB_IT_BYREF ) != 0 )
-#define HB_IS_NUMERIC( p )    ( ( HB_ITEM_TYPE( p ) & HB_IT_NUMERIC ) != 0 )
-#define HB_IS_NUMINT( p )     ( ( HB_ITEM_TYPE( p ) & HB_IT_NUMINT ) != 0 )
-#define HB_IS_COMPLEX( p )    ( ( HB_ITEM_TYPE( p ) & HB_IT_COMPLEX ) != 0 )
-#define HB_IS_GCITEM( p )     ( ( HB_ITEM_TYPE( p ) & HB_IT_GCITEM ) != 0 )
-#define HB_IS_HASHKEY( p )    ( ( HB_ITEM_TYPE( p ) & HB_IT_HASHKEY ) != 0 )
-#define HB_IS_BADITEM( p )    ( ( HB_ITEM_TYPE( p ) & HB_IT_COMPLEX ) != 0 && ( HB_ITEM_TYPE( p ) & ~( HB_IT_COMPLEX | HB_IT_MEMOFLAG ) ) != 0 )
+#define HB_IS_ARRAY( p )      ( ( HB_ITEM_TYPERAW( p ) & HB_IT_ARRAY ) != 0 )
+#define HB_IS_BLOCK( p )      ( ( HB_ITEM_TYPERAW( p ) & HB_IT_BLOCK ) != 0 )
+#define HB_IS_DATE( p )       ( ( HB_ITEM_TYPERAW( p ) & HB_IT_DATE ) != 0 )
+#define HB_IS_DOUBLE( p )     ( ( HB_ITEM_TYPERAW( p ) & HB_IT_DOUBLE ) != 0 )
+#define HB_IS_INTEGER( p )    ( ( HB_ITEM_TYPERAW( p ) & HB_IT_INTEGER ) != 0 )
+#define HB_IS_LOGICAL( p )    ( ( HB_ITEM_TYPERAW( p ) & HB_IT_LOGICAL ) != 0 )
+#define HB_IS_LONG( p )       ( ( HB_ITEM_TYPERAW( p ) & HB_IT_LONG ) != 0 )
+#define HB_IS_SYMBOL( p )     ( ( HB_ITEM_TYPERAW( p ) & HB_IT_SYMBOL ) != 0 )
+#define HB_IS_POINTER( p )    ( ( HB_ITEM_TYPERAW( p ) & HB_IT_POINTER ) != 0 )
+#define HB_IS_HASH( p )       ( ( HB_ITEM_TYPERAW( p ) & HB_IT_HASH ) != 0 )
+#define HB_IS_MEMO( p )       ( ( HB_ITEM_TYPERAW( p ) & HB_IT_MEMOFLAG ) != 0 )
+#define HB_IS_STRING( p )     ( ( HB_ITEM_TYPERAW( p ) & HB_IT_STRING ) != 0 )
+#define HB_IS_MEMVAR( p )     ( ( HB_ITEM_TYPERAW( p ) & HB_IT_MEMVAR ) != 0 )
+#define HB_IS_ENUM( p )       ( ( HB_ITEM_TYPERAW( p ) & HB_IT_ENUM ) != 0 )
+#define HB_IS_EXTREF( p )     ( ( HB_ITEM_TYPERAW( p ) & HB_IT_EXTREF ) != 0 )
+#define HB_IS_BYREF( p )      ( ( HB_ITEM_TYPERAW( p ) & HB_IT_BYREF ) != 0 )
+#define HB_IS_NUMERIC( p )    ( ( HB_ITEM_TYPERAW( p ) & HB_IT_NUMERIC ) != 0 )
+#define HB_IS_NUMINT( p )     ( ( HB_ITEM_TYPERAW( p ) & HB_IT_NUMINT ) != 0 )
+#define HB_IS_COMPLEX( p )    ( ( HB_ITEM_TYPERAW( p ) & HB_IT_COMPLEX ) != 0 )
+#define HB_IS_GCITEM( p )     ( ( HB_ITEM_TYPERAW( p ) & HB_IT_GCITEM ) != 0 )
+#define HB_IS_HASHKEY( p )    ( ( HB_ITEM_TYPERAW( p ) & HB_IT_HASHKEY ) != 0 )
+#define HB_IS_BADITEM( p )    ( ( HB_ITEM_TYPERAW( p ) & HB_IT_COMPLEX ) != 0 && ( HB_ITEM_TYPERAW( p ) & ~( HB_IT_COMPLEX | HB_IT_MEMOFLAG | HB_IT_DEFAULT ) ) != 0 )
 #define HB_IS_OBJECT( p )     ( HB_IS_ARRAY( p ) && HB_ARRAY_OBJ( p ) )
 #define HB_IS_NUMBER( p )     HB_IS_NUMERIC( p )
 
@@ -233,6 +238,7 @@ struct _HB_BASEARRAY;
 struct _HB_BASEHASH;
 struct _HB_ITEM;
 struct _HB_VALUE;
+struct _HB_EXTREF;
 
 typedef struct _HB_STACK_STATE
 {
@@ -326,6 +332,12 @@ struct hb_struEnum
    LONG offset;
 };
 
+struct hb_struExtRef
+{
+   void * value;                          /* value item pointer */
+   const struct _HB_EXTREF * func;        /* extended reference functions */
+};
+
 struct hb_struString
 {
    ULONG length;
@@ -367,6 +379,7 @@ typedef struct _HB_ITEM
       struct hb_struMemvar    asMemvar;
       struct hb_struRefer     asRefer;
       struct hb_struEnum      asEnum;
+      struct hb_struExtRef    asExtRef;
       struct hb_struString    asString;
       struct hb_struSymbol    asSymbol;
       struct hb_struRecover   asRecover;
@@ -409,6 +422,20 @@ typedef struct _HB_VALUE
    HB_HANDLE   hPrevMemvar;
 } HB_VALUE, * PHB_VALUE, * HB_VALUE_PTR;
 
+typedef void     ( * HB_EXTREF_FUNC0 )( void * );
+typedef PHB_ITEM ( * HB_EXTREF_FUNC1 )( PHB_ITEM );
+typedef PHB_ITEM ( * HB_EXTREF_FUNC2 )( PHB_ITEM, PHB_ITEM );
+typedef void     ( * HB_EXTREF_FUNC3 )( PHB_ITEM );
+
+typedef struct _HB_EXTREF
+{
+   HB_EXTREF_FUNC1 read;
+   HB_EXTREF_FUNC2 write;
+   HB_EXTREF_FUNC3 copy;
+   HB_EXTREF_FUNC0 clear;
+   HB_EXTREF_FUNC0 mark;
+} HB_EXTREF, * PHB_EXTREF, * HB_EXTREF_PTR;
+
 typedef struct _HB_NESTED_CLONED
 {
    void *   value;
@@ -433,6 +460,8 @@ typedef USHORT ERRCODE;
 
 extern HB_SYMB  hb_symEval;
 
+typedef ULONG HB_VMHANDLE;
+
 extern HB_EXPORT void   hb_xinit( void );                           /* Initialize fixed memory subsystem */
 extern HB_EXPORT void   hb_xexit( void );                           /* Deinitialize fixed memory subsystem */
 extern HB_EXPORT void * hb_xalloc( ULONG ulSize );                  /* allocates memory, returns NULL on failure */
@@ -441,6 +470,23 @@ extern HB_EXPORT void   hb_xfree( void * pMem );                    /* frees mem
 extern HB_EXPORT void * hb_xrealloc( void * pMem, ULONG ulSize );   /* reallocates memory */
 extern HB_EXPORT ULONG  hb_xsize( void * pMem );                    /* returns the size of an allocated memory block */
 extern HB_EXPORT ULONG  hb_xquery( USHORT uiMode );                 /* Query different types of memory information */
+
+extern HB_EXPORT HB_VMHANDLE hb_xvalloc( ULONG nSize, USHORT nFlags );
+extern HB_EXPORT void        hb_xvfree( HB_VMHANDLE h );
+extern HB_EXPORT HB_VMHANDLE hb_xvrealloc( HB_VMHANDLE h, ULONG nSize, USHORT nFlags );
+extern HB_EXPORT void *      hb_xvlock( HB_VMHANDLE h );
+extern HB_EXPORT void        hb_xvunlock( HB_VMHANDLE h );
+extern HB_EXPORT void *      hb_xvwire( HB_VMHANDLE h );
+extern HB_EXPORT void        hb_xvunwire( HB_VMHANDLE h );
+extern HB_EXPORT ULONG       hb_xvlockcount( HB_VMHANDLE h );
+extern HB_EXPORT ULONG       hb_xvsize( HB_VMHANDLE h );
+extern HB_EXPORT HB_VMHANDLE hb_xvheapnew( ULONG nSize );
+extern HB_EXPORT void        hb_xvheapdestroy( HB_VMHANDLE h );
+extern HB_EXPORT HB_VMHANDLE hb_xvheapresize( HB_VMHANDLE h, ULONG nSize );
+extern HB_EXPORT ULONG       hb_xvheapalloc( HB_VMHANDLE h, ULONG nSize );
+extern HB_EXPORT void        hb_xvheapfree( HB_VMHANDLE h, ULONG nOffset );
+extern HB_EXPORT void *      hb_xvheaplock( HB_VMHANDLE h, ULONG nOffset );
+extern HB_EXPORT void        hb_xvheapunlock( HB_VMHANDLE h, ULONG nOffset );
 
 #ifdef _HB_API_INTERNAL_
 extern void       hb_xRefInc( void * pMem );    /* increment reference counter */
@@ -582,17 +628,7 @@ extern HB_EXPORT void   hb_retnll( LONGLONG lNumber );/* returns a long long num
 extern HB_EXPORT void   hb_retnlllen( LONGLONG lNumber, int iWidth ); /* returns a long long number, with specific width */
 #endif
 
-/*
- * check if array/string index is in valid range, update it if necessary
- * in xHarbour compatibility mode where negative indexes are used to access
- * data from tail
- */
-#if defined( HB_COMPAT_XHB )
-#  define HB_IS_VALID_INDEX( idx, max )  ( ( ( LONG ) (idx) < 0 ? (idx) += (max) + 1 : (idx) ) > 0 && ( ULONG ) (idx) <= (max) )
-#else
-#  define HB_IS_VALID_INDEX( idx, max )  ( (idx) > 0 && ( ULONG ) (idx) <= (max) )
-#endif
-
+#define HB_IS_VALID_INDEX( idx, max )  ( (idx) > 0 && ( ULONG ) (idx) <= (max) )
 
 /* xHarbour compatible function */
 #define hb_retcAdopt( szText )               hb_retc_buffer( (szText) )
@@ -633,6 +669,7 @@ extern HB_EXPORT void   hb_retnlllen( LONGLONG lNumber, int iWidth ); /* returns
 
 extern HB_EXPORT int    hb_storc( char * szText, int iParam, ... ); /* stores a szString on a variable by reference */
 extern HB_EXPORT int    hb_storclen( char * szText, ULONG ulLength, int iParam, ... ); /* stores a fixed length string on a variable by reference */
+extern HB_EXPORT int    hb_storclen_buffer( char * szText, ULONG ulLength, int iParam, ... ); /* stores a fixed length string buffer on a variable by reference */
 extern HB_EXPORT int    hb_stords( char * szDate, int iParam, ... );   /* szDate must have yyyymmdd format */
 extern HB_EXPORT int    hb_storl( int iLogical, int iParam, ... ); /* stores a logical integer on a variable by reference */
 extern HB_EXPORT int    hb_storni( int iValue, int iParam, ... ); /* stores an integer on a variable by reference */
@@ -687,6 +724,7 @@ extern HB_EXPORT BOOL      hb_arraySetC( PHB_ITEM pArray, ULONG ulIndex, const c
 extern HB_EXPORT BOOL      hb_arraySetCL( PHB_ITEM pArray, ULONG ulIndex, const char * szText, ULONG ulLen );
 extern HB_EXPORT BOOL      hb_arraySetCPtr( PHB_ITEM pArray, ULONG ulIndex, char * szText, ULONG ulLen );
 extern HB_EXPORT BOOL      hb_arraySetPtr( PHB_ITEM pArray, ULONG ulIndex, void * pValue );
+extern HB_EXPORT BOOL      hb_arraySetPtrGC( PHB_ITEM pArray, ULONG ulIndex, void * pValue );
 extern HB_EXPORT BOOL      hb_arrayFill( PHB_ITEM pArray, PHB_ITEM pValue, ULONG * pulStart, ULONG * pulCount ); /* fill an array with a given item */
 extern HB_EXPORT ULONG     hb_arrayScan( PHB_ITEM pArray, PHB_ITEM pValue, ULONG * pulStart, ULONG * pulCount, BOOL fExact ); /* scan an array for a given item, or until code-block item returns TRUE */
 extern HB_EXPORT ULONG     hb_arrayRevScan( PHB_ITEM pArray, PHB_ITEM pValue, ULONG * pulStart, ULONG * pulCount, BOOL fExact ); /* scan an array for a given item, or until code-block item returns TRUE in reverted order */
@@ -764,6 +802,11 @@ extern void hb_hashRefGrabage( PHB_ITEM pHash );
                           ( c ) == HB_CHAR_LF || \
                           ( c ) == HB_CHAR_CR )
 
+#define HB_ISFIRSTIDCHAR(c)   ( ( (c) >= 'A' && (c) <= 'Z' ) || \
+                                ( (c) >= 'a' && (c) <= 'z' ) || (c) == '_' )
+#define HB_ISNEXTIDCHAR(c)    ( HB_ISFIRSTIDCHAR(c) || \
+                                ( ( (c) >= '0' && (c) <= '9' ) ) )
+
 extern const char * hb_szAscii[256];      /* array of 1 character length strings */
 
 extern HB_EXPORT int       hb_stricmp( const char * s1, const char * s2 ); /* compare two strings without regards to case */
@@ -795,6 +838,7 @@ extern HB_EXPORT int       hb_charLower( int iChar );  /* converts iChar to lowe
 extern HB_EXPORT char *    hb_strncpy( char * pDest, const char * pSource, ULONG ulLen ); /* copy at most ulLen bytes from string buffer to another buffer and _always_ set 0 in destin buffer */
 extern HB_EXPORT char *    hb_strncat( char * pDest, const char * pSource, ULONG ulLen ); /* copy at most ulLen-strlen(pDest) bytes from string buffer to another buffer and _always_ set 0 in destin buffer */
 extern HB_EXPORT char *    hb_strncpyTrim( char * pDest, const char * pSource, ULONG ulLen );
+extern HB_EXPORT char *    hb_strncpyLower( char * pDest, const char * pSource, ULONG ulLen ); /* copy an existing string buffer to another buffer, as lower case */
 extern HB_EXPORT char *    hb_strncpyUpper( char * pDest, const char * pSource, ULONG ulLen ); /* copy an existing string buffer to another buffer, as upper case */
 extern HB_EXPORT char *    hb_strncpyUpperTrim( char * pDest, const char * pSource, ULONG ulLen );
 extern HB_EXPORT double    hb_strVal( const char * szText, ULONG ulLen ); /* return the numeric value of a character string representation of a number */
@@ -836,6 +880,7 @@ extern HB_EXPORT PHB_SYMB  hb_dynsymGetSymbol( const char * szName ); /* finds a
 extern HB_EXPORT PHB_SYMB  hb_dynsymFindSymbol( const char * szName ); /* finds a dynamic symbol and return pointer to its HB_SYMB structure */
 extern HB_EXPORT PHB_SYMB  hb_dynsymSymbol( PHB_DYNS pDynSym );
 extern HB_EXPORT const char * hb_dynsymName( PHB_DYNS pDynSym ); /* return dynamic symbol name */
+extern HB_EXPORT BOOL      hb_dynsymIsFunction( PHB_DYNS pDynSym );
 extern HB_EXPORT HB_HANDLE hb_dynsymMemvarHandle( PHB_DYNS pDynSym ); /* return memvar handle number bound with given dynamic symbol */
 extern HB_EXPORT int       hb_dynsymAreaHandle( PHB_DYNS pDynSym ); /* return work area number bound with given dynamic symbol */
 extern HB_EXPORT void      hb_dynsymSetAreaHandle( PHB_DYNS pDynSym, int iArea ); /* set work area number for a given dynamic symbol */
@@ -895,6 +940,7 @@ extern void     hb_conRelease( void ); /* release the console API system */
 extern char *   hb_conNewLine( void ); /* retrieve a pointer to a static buffer containing new-line characters */
 extern void     hb_conOutStd( const char * pStr, ULONG ulLen ); /* output an string to STDOUT */
 extern void     hb_conOutErr( const char * pStr, ULONG ulLen ); /* output an string to STDERR */
+extern void     hb_conOutAlt( const char * pStr, ULONG ulLen ); /* output an string to the screen and/or printer and/or alternate */
 extern USHORT   hb_conSetCursor( BOOL bSetCursor, USHORT usNewCursor ); /* retrieve and optionally set cursor shape */
 extern char *   hb_conSetColor( const char * szColor ); /* retrieve and optionally set console color */
 extern void     hb_conXSaveRestRelease( void ); /* release the save/restore API */
@@ -940,6 +986,7 @@ extern char * hb_verPlatform( void ); /* retrieves a newly allocated buffer cont
 extern char * hb_verCompiler( void ); /* retrieves a newly allocated buffer containing compiler version */
 extern char * hb_verHarbour( void ); /* retrieves a newly allocated buffer containing harbour version */
 extern char * hb_verPCode( void ); /* retrieves a newly allocated buffer containing PCode version */
+extern char * hb_verBuildDate( void ); /* retrieves a newly allocated buffer containing build date and time */
 extern void   hb_verBuildInfo( void ); /* display harbour, compiler, and platform versions to standard console */
 
 extern HB_EXPORT BOOL   hb_iswinnt( void ); /* return .T. if OS == WinNt, 2000, XP */

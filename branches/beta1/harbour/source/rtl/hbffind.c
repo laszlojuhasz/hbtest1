@@ -76,7 +76,6 @@ HB_FILE_VER( "$Id$" )
 
    #if defined(__DJGPP__) || defined(__RSX32__)
       #include <sys/param.h>
-      #include <errno.h>
    #endif
    #if defined(__DJGPP__) || defined(__RSX32__) || defined(__BORLANDC__)
       #include <sys/stat.h>
@@ -127,13 +126,11 @@ HB_FILE_VER( "$Id$" )
 
 #elif defined(HB_OS_WIN_32)
 
-   #include <errno.h>
-
    typedef struct
    {
-      HANDLE          hFindFile;
-      WIN32_FIND_DATA pFindFileData;
-      DWORD           dwAttr;
+      HANDLE            hFindFile;
+      WIN32_FIND_DATAA  pFindFileData;
+      DWORD             dwAttr;
    } HB_FFIND_INFO, * PHB_FFIND_INFO;
 
    #define HB_WIN_32_MATCH() \
@@ -144,10 +141,12 @@ HB_FILE_VER( "$Id$" )
 
 #elif defined(HB_OS_UNIX)
 
+   #ifndef __USE_BSD
+      #define __USE_BSD
+   #endif
    #include <sys/types.h>
    #include <sys/stat.h>
    #include <fcntl.h>
-   #include <errno.h>
    #include <dirent.h>
    #include <time.h>
 
@@ -547,7 +546,7 @@ static BOOL hb_fsFindNextLow( PHB_FFIND ffind )
             ffind->bFirst = FALSE;
             ffind->szName[ 0 ] = '\0';
 
-            bFound = GetVolumeInformation( ffind->pszFileMask, ffind->szName, _POSIX_PATH_MAX, NULL, NULL, NULL, NULL, 0 );
+            bFound = GetVolumeInformationA( ffind->pszFileMask, ffind->szName, _POSIX_PATH_MAX, NULL, NULL, NULL, NULL, 0 );
          }
       }
       else
@@ -556,7 +555,7 @@ static BOOL hb_fsFindNextLow( PHB_FFIND ffind )
          {
             ffind->bFirst = FALSE;
 
-            info->hFindFile = FindFirstFile( ffind->pszFileMask, &info->pFindFileData );
+            info->hFindFile = FindFirstFileA( ffind->pszFileMask, &info->pFindFileData );
             info->dwAttr    = ( DWORD ) hb_fsAttrToRaw( ffind->attrmask );
 
             if( ( info->hFindFile != INVALID_HANDLE_VALUE ) && HB_WIN_32_MATCH() )
@@ -565,7 +564,7 @@ static BOOL hb_fsFindNextLow( PHB_FFIND ffind )
 
          if( ! bFound && info->hFindFile != INVALID_HANDLE_VALUE )
          {
-            while( FindNextFile( info->hFindFile, &info->pFindFileData ) )
+            while( FindNextFileA( info->hFindFile, &info->pFindFileData ) )
             {
                if( HB_WIN_32_MATCH() )
                {
@@ -717,8 +716,7 @@ static BOOL hb_fsFindNextLow( PHB_FFIND ffind )
 #else
 
    {
-      HB_SYMBOL_UNUSED( ffind );
-      HB_SYMBOL_UNUSED( info );
+      /* HB_SYMBOL_UNUSED( ffind ); */
 
       HB_SYMBOL_UNUSED( nYear );
       HB_SYMBOL_UNUSED( nMonth );

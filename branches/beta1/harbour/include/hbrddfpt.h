@@ -53,7 +53,6 @@
 #ifndef HB_RDDFPT_H_
 #define HB_RDDFPT_H_
 
-#include "hbsetup.h"
 #include "hbdbf.h"
 #include "hbdbferr.h"
 #include "hbapirdd.h"
@@ -299,8 +298,8 @@ static ERRCODE hb_fptInfo( FPTAREAP pArea, USHORT uiIndex, PHB_ITEM pItem );
 static ERRCODE hb_fptStructSize( FPTAREAP pArea, USHORT * uiSize );
 #define hb_fptSysName                              NULL
 #define hb_fptEval                                 NULL
-#define hb_fptPack                                 NULL
-#define hb_fptPackRec                              NULL
+static ERRCODE hb_fptPack( FPTAREAP pArea );
+static ERRCODE hb_fptPackRec( FPTAREAP pArea, ULONG ulRecNo, BOOL *pfWritten );
 #define hb_fptSort                                 NULL
 #define hb_fptTrans                                NULL
 #define hb_fptTransRec                             NULL

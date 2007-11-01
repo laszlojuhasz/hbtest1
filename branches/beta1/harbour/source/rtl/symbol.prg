@@ -52,30 +52,30 @@
 
 #include "hbclass.ch"
 
-CLASS Symbol
+CREATE CLASS Symbol
 
-   DATA   nSym  HIDDEN       // internal pointer to the Symbols table symbol
+   EXPORT:
 
    METHOD New( cSymName )    // Constructor. cSymName may already exists or not
-
-   METHOD Name()             // retrieves the symbol name
-
-   METHOD IsEqual( oSymbol ) // Compares two symbol objects
-
-   METHOD Exec()             // Executes the function referred to by the
+   METHOD name()             // retrieves the symbol name
+   METHOD isEqual( oSymbol ) // Compares two symbol objects
+   METHOD exec()             // Executes the function referred to by the
                              // Symbol object, with an optional parameters list
+   PROTECTED:
+
+   VAR nSym                  // internal pointer to the Symbols table symbol
 
 ENDCLASS
 
 METHOD New( cSymName ) CLASS Symbol
-   ::nSym = __DynSN2Sym( cSymName )
-return Self
+   ::nSym := __DynSN2Sym( cSymName )
+   RETURN Self
 
-METHOD Name() CLASS Symbol
-return ::nSym:Name
+METHOD name() CLASS Symbol
+   RETURN ::nSym:Name
 
-METHOD IsEqual( oSymbol ) CLASS Symbol
-return ::ClassH == oSymbol:ClassH .AND. ::nSym:Name == oSymbol:nSym:Name
+METHOD isEqual( oSymbol ) CLASS Symbol
+   RETURN ::ClassH == oSymbol:ClassH .AND. ::nSym:Name == oSymbol:nSym:Name
 
-METHOD Exec( ... ) CLASS Symbol
-return ::nSym:exec( ... )
+METHOD exec( ... ) CLASS Symbol
+   RETURN ::nSym:exec( ... )

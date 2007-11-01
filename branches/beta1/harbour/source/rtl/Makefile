@@ -56,6 +56,7 @@ C_SOURCES=\
 	hbhex.c      \
 	hbmd5.c      \
 	hbffind.c    \
+	hbfile.c     \
 	hbgtcore.c   \
 	hbinet.c     \
 	hbrandom.c   \
@@ -83,6 +84,7 @@ C_SOURCES=\
 	natmsg.c     \
 	net.c        \
 	oemansi.c    \
+	oemansix.c   \
 	oldbox.c     \
 	oldclear.c   \
 	pad.c        \
@@ -124,6 +126,16 @@ C_SOURCES=\
 	trace.c      \
 	transfrm.c   \
 	trim.c       \
+	tscalara.c   \
+	tscalarb.c   \
+	tscalarc.c   \
+	tscalard.c   \
+	tscalarh.c   \
+	tscalarl.c   \
+	tscalarn.c   \
+	tscalarp.c   \
+	tscalars.c   \
+	tscalaru.c   \
 	type.c       \
 	val.c        \
 	valtostr.c   \
@@ -139,15 +151,11 @@ PRG_SOURCES=\
 	adir.prg     \
 	alert.prg    \
 	altd.prg     \
-	array.prg    \
-	block.prg    \
 	browdb.prg   \
 	browdbx.prg  \
 	browse.prg   \
-	characte.prg \
 	checkbox.prg \
 	color53.prg  \
-	date.prg     \
 	dbedit.prg   \
 	devoutp.prg  \
 	dircmd.prg   \
@@ -156,15 +164,14 @@ PRG_SOURCES=\
 	fieldbl.prg  \
 	getlist.prg  \
 	getsys.prg   \
+	gui.prg      \
+	hbini.prg    \
 	input.prg    \
 	listbox.prg  \
-	logical.prg  \
 	memoedit.prg \
 	memvarbl.prg \
 	menuto.prg   \
-	mssgline.prg \
-	nil.prg      \
-	numeric.prg  \
+	menusys.prg  \
 	objfunc.prg  \
 	perfuncs.prg \
 	persist.prg  \
@@ -174,7 +181,6 @@ PRG_SOURCES=\
 	radiogrp.prg \
 	readkey.prg  \
 	readvar.prg  \
-	scalar.prg   \
 	scrollbr.prg \
 	setfunc.prg  \
 	setta.prg    \
@@ -182,6 +188,7 @@ PRG_SOURCES=\
 	tclass.prg   \
 	tbcolumn.prg \
 	tbrowse.prg  \
+	tbrowsys.prg \
 	teditor.prg  \
 	text.prg     \
 	tget.prg     \
@@ -189,12 +196,15 @@ PRG_SOURCES=\
 	tgetlist.prg \
 	tlabel.prg   \
 	tmenuitm.prg \
+	tmenusys.prg \
 	tobject.prg  \
 	tpopup.prg   \
 	treport.prg  \
+	tscalar.prg  \
 	ttextlin.prg \
 	ttopbar.prg  \
 	typefile.prg \
+	typefilx.prg \
 	valtoexp.prg \
 	wait.prg     \
 

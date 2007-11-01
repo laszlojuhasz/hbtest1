@@ -54,6 +54,7 @@ C_HEADERS=\
 	hbvmopt.h    \
 	hbvmpub.h    \
 	hbxvm.h      \
+	hbwince.h    \
 	hb_io.h      \
 
 PRG_HEADERS=\
@@ -73,7 +74,6 @@ PRG_HEADERS=\
 	getexit.ch   \
 	hbclass.ch   \
 	hbcommon.ch  \
-	hbcompat.ch  \
 	hbdebug.ch   \
 	hbextern.ch  \
 	hbgetcmt.ch  \
@@ -100,7 +100,8 @@ PRG_HEADERS=\
 	setcurs.ch   \
 	simpleio.ch  \
 	std.ch       \
-	tbrowse.ch
+	hbsxdef.ch   \
+	tbrowse.ch   \
 
 API_HEADERS=\
 	error.api    \

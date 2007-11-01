@@ -374,7 +374,7 @@ static BOOL hb_regex( int iRequest )
             do
             {
                /* If I want all matches */
-               if( iGetMatch == 0 || // Check boundaries
+               if( iGetMatch == 0 || /* Check boundaries */
                    ( iGetMatch < 0 || iGetMatch > iMatches ) )
                {
                   pAtxArray = hb_itemArrayNew( iMatches );
@@ -545,6 +545,8 @@ HB_CALL_ON_STARTUP_BEGIN( _hb_regex_init_ )
 #if defined( HB_PCRE_REGEX )
    pcre_malloc = hb_pcre_grab;
    pcre_free = hb_xfree;
+   pcre_stack_malloc = hb_pcre_grab;
+   pcre_stack_free = hb_xfree;
 #endif
    hb_regexInit( hb_regfree, hb_regcomp, hb_regexec );
 HB_CALL_ON_STARTUP_END( _hb_regex_init_ )

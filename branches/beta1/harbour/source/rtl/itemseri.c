@@ -88,7 +88,7 @@ UCHAR [ 1 ] - item type
   23. HASHREF8          1+n
   24. HASHREF16         2+n
   25. HASHREF32         4+n
-  26. SYMBOL		1+n
+  26. SYMBOL            1+n
   27. CYCLIC REFERENCE  4
   28. OBJECT MARKER     n+1+m+1
 */
@@ -1000,17 +1000,3 @@ HB_FUNC( HB_DESERIALIZE )
    else if( pParam )
       hb_itemClear( pParam );
 }
-
-#ifdef HB_COMPAT_XHB
-HB_FUNC( HB_DESERIALBEGIN )
-{
-   PHB_ITEM pItem = hb_param( 1, HB_IT_STRING );
-   if( pItem )
-      hb_itemReturn( pItem );
-}
-
-HB_FUNC( HB_DESERIALNEXT )
-{
-   HB_FUNC_EXEC( HB_DESERIALIZE );
-}
-#endif

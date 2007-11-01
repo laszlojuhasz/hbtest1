@@ -126,13 +126,6 @@
    #define HB_CLS_NO_DECLARATIONS
 #endif
 
-/* disable method decoration when Harbour compiled with short (10 chars) symbols */
-#ifdef HB_SHORTNAMES
-   #ifndef HB_CLS_NO_DECORATION
-      #define HB_CLS_NO_DECORATION
-   #endif
-#endif
-
 /*
  * I have to enable this definition by default untill we will not fix
  * preprocessor. [druzus]
@@ -157,7 +150,7 @@
 
 /* should we inherit from HBObject class by default ? */
 #ifdef HB_CLS_NOTOBJECT
-   #xtranslate __HB_CLS_PAR([<cls,...>])  => { [<cls>] }
+   #xtranslate __HB_CLS_PAR([<cls,...>])  => { <cls> }
 #else
    #xtranslate __HB_CLS_PAR([<cls,...>])  => iif( <.cls.>, { <cls> }, { @HBObject() } )
 #endif
@@ -204,7 +197,7 @@ DECLARE HBClass ;
  * bindings it casts object to class in which current method were defined.
  */
 #translate @:<MessageName>([<MsgParams,...>]) => ;
-                                ::realclass:<MessageName>([<MsgParams>])
+                                ::realclass:<MessageName>([ <MsgParams>])
 
 /* Indirect super casting translation */
 #xtranslate :Super( <SuperClass> ): => :<SuperClass>:
@@ -216,11 +209,11 @@ DECLARE HBClass ;
 #xtranslate __HB_CLS_ASSTRING( <FuncName> )                 => <(FuncName)>
 #xtranslate __HB_CLS_ASSTRING( <FuncName>([<params,...>]) ) => <(FuncName)>
 #xtranslate __HB_CLS_ASFUNC( <FuncName> )                   => <FuncName>()
-#xtranslate __HB_CLS_ASFUNC( <FuncName>([<params,...>]) )   => <FuncName>([<params>])
+#xtranslate __HB_CLS_ASFUNC( <FuncName>([<params,...>]) )   => <FuncName>([ <params>])
 #xtranslate __HB_CLS_ASID( <FuncName> )                     => <FuncName>
 #xtranslate __HB_CLS_ASID( <FuncName>([<params,...>]) )     => <FuncName>
 #xtranslate __HB_CLS_ASARGS( <FuncName> )                   =>
-#xtranslate __HB_CLS_ASARGS( <FuncName>([<Args,...>]) )     => [<Args>]
+#xtranslate __HB_CLS_ASARGS( <FuncName>([<Args,...>]) )     => [ <Args>]
 #xtranslate __HB_CLS_ASARGSOPT( <FuncName> )                =>
 #xtranslate __HB_CLS_ASARGSOPT( <FuncName>([<Args,...>]) )  => [, <Args>]
 #xtranslate __HB_CLS_ISVAR( <var> )                         => __HB_CLS_VARERR(<var>)
@@ -318,6 +311,8 @@ DECLARE HBClass ;
    _HB_MEMBER __HB_CLS_ASFUNC(<MethodName>);;
    __HB_CLS_DECLARE_METHOD __HB_CLS_PARAMS(<MethodName>) _CLASS_NAME_ ;;
    s_oClass:SetOnError( @__HB_CLS_ASID( __HB_CLS_MTHNAME _CLASS_NAME_ <MethodName> )() )
+#xcommand ON ERROR FUNCTION <FuncName> => ;
+   s_oClass:SetOnError( @__HB_CLS_ASID( <FuncName> )() )
 
 /* Friend function/class definitions */
 #xcommand FRIEND CLASS <ClassName1> [, <ClassNameN> ] => ;
@@ -334,6 +329,9 @@ DECLARE HBClass ;
    _HB_MEMBER __HB_CLS_ASFUNC(<MethodName>) [ AS <type> ];;
    __HB_CLS_DECLARE_METHOD __HB_CLS_PARAMS(<MethodName>) _CLASS_NAME_ ;;
    s_oClass:AddMethod( <(op)>, @__HB_CLS_ASID( __HB_CLS_MTHNAME _CLASS_NAME_ <MethodName> )(), __HB_CLS_SCOPE( <.export.>, <.protect.>, <.hidde.> ) )
+
+#xcommand OPERATOR <op> FUNCTION <FuncName> [ <export: EXPORTED, VISIBLE>] [<protect: PROTECTED>] [<hidde: HIDDEN>] => ;
+   s_oClass:AddMethod( <(op)>, @__HB_CLS_ASID( <FuncName> )(), __HB_CLS_SCOPE( <.export.>, <.protect.>, <.hidde.> ) )
 
 /* Set/Get Method */
 #xcommand METHOD <MethodName> [ AS <type> ] SETGET [ <export: EXPORTED, VISIBLE>] [<protect: PROTECTED>] [<hidde: HIDDEN>] [<ro: READONLY, RO>] [<persistent: PERSISTENT, PROPERTY>] => ;
@@ -370,7 +368,7 @@ DECLARE HBClass ;
    MESSAGE <MessageName> [ AS <type> ] BLOCK {|Self __HB_CLS_ASARGSOPT(<MessageName>) [,<Locals>]| __HB_CLS_SYMBOL_UNUSED(Self), <Code>} <ctor> <export> <protect> <hidde> <persistent>
 
 #xcommand MESSAGE <MessageName> [ AS <type> ] <arg: ARG, ARGS> <Args,...> [LOCAL <Locals,...>] INLINE <Code,...> [<ctor: CONSTRUCTOR>] [<export: EXPORTED, VISIBLE>] [<protect: PROTECTED>] [<hidde: HIDDEN>] [<persistent: PERSISTENT, PROPERTY>] => ;
-   MESSAGE __HB_CLS_ASID(<MessageName>)([<Args>]) [ AS <type> ] [LOCAL <Locals>] INLINE <Code> <ctor> <export> <protect> <hidde> <persistent>
+   MESSAGE __HB_CLS_ASID(<MessageName>)(<Args>) [ AS <type> ] [LOCAL <Locals>] INLINE <Code> <ctor> <export> <protect> <hidde> <persistent>
 
 #xcommand MESSAGE <MessageName> [ AS <type> ] TO <oObject> [<export: EXPORTED, VISIBLE>] [<protect: PROTECTED>] [<hidde: HIDDEN>] [<persistent: PERSISTENT, PROPERTY>] =>;
    MESSAGE <MessageName> [ AS <type> ] INLINE Self:<oObject>:<MessageName> <export> <protect> <hidde> <persistent>
@@ -420,7 +418,7 @@ DECLARE HBClass ;
 /* CLASSY SYNTAX */
 #ifdef HB_CLS_CSY
 
-   #xcommand CREATE CLASS <ClassName> [<*more*>] => CLASS <ClassName> [<more>]
+   #xcommand CREATE CLASS <ClassName> [<*more*>] => CLASS <ClassName> <more>
    #xcommand END CLASS [<*more*>]   => ENDCLASS <more>
    #xcommand CLASS VAR <*more*>     => CLASSVAR <more>
    #xcommand CLASS METHOD <*more*>  => CLASSMETHOD <more>
@@ -446,10 +444,10 @@ DECLARE HBClass ;
 
    // Classy compatibility... Added By JF Lefebvre (mafact) 2006/11/07
    #xcommand METHOD <MethodName> [ AS <type> ] INLINE [Local <v>,] <Code,...> [<other>] => ;
-             MESSAGE <MethodName> [ AS <type> ] BLOCK {|Self [,<v>] | __HB_CLS_SYMBOL_UNUSED(Self), <Code>} [<other>]
+             MESSAGE <MethodName> [ AS <type> ] BLOCK {|Self [,<v>] | __HB_CLS_SYMBOL_UNUSED(Self), <Code>} [ <other>]
 
    #xcommand METHOD <MethodName>( [<params,...>] ) [ AS <type> ] INLINE [Local <v>,] <Code,...> [<other>] => ;
-             MESSAGE <MethodName> [ AS <type> ] BLOCK {|Self [,<params>] [,<v>] | __HB_CLS_SYMBOL_UNUSED(Self), <Code> } [<other>]
+             MESSAGE <MethodName> [ AS <type> ] BLOCK {|Self [, <params>] [, <v>] | __HB_CLS_SYMBOL_UNUSED(Self), <Code> } [ <other>]
 
 
    /* This definitions are not Class(y) compatible - I'm leaving them as is now */
@@ -534,5 +532,21 @@ DECLARE HBClass ;
 #xcommand CLASSVAR <!DataName1!> [, <!DataNameN!>] [ <tp: TYPE, AS> <type> ] [ <as: ASSIGN, INIT> <uValue> ] [<export: EXPORTED, VISIBLE>] [<protect: PROTECTED>] [<hidde: HIDDEN>] [<ro: READONLY, RO>] [<share: SHARED>] [<persistent: PERSISTENT, PROPERTY>] => ;
    _HB_MEMBER {[ AS <type>] <DataName1> [, <DataNameN>] } ;;
    s_oClass:AddMultiClsData( <(type)>, <uValue>, __HB_CLS_SCOPE( <.export.>, <.protect.>, <.hidde.> ) + iif( <.ro.>, HB_OO_CLSTP_READONLY, 0 ) + iif( <.share.>, HB_OO_CLSTP_SHARED, 0 ) + iif( <.persistent.>, HB_OO_CLSTP_PERSIST, 0 ), {<(DataName1)> [, <(DataNameN)>]}, __HB_CLS_NOINI )
+
+
+/* Scalar classes support */
+#command ASSOCIATE CLASS <ClassFuncName> WITH TYPE <type: ;
+   ARRAY, BLOCK, CHARACTER, DATE, HASH, LOGICAL, NIL, NUMERIC, SYMBOL, POINTER> => ;
+      __clsAssocType( __clsInstSuper( @<ClassFuncName>() ), #<type> )
+
+#command ENABLE TYPE CLASS <type: ;
+   ARRAY, BLOCK, CHARACTER, DATE, HASH, LOGICAL, NIL, NUMERIC, SYMBOL, POINTER> ;
+   [, <typeN: ;
+   ARRAY, BLOCK, CHARACTER, DATE, HASH, LOGICAL, NIL, NUMERIC, SYMBOL, POINTER>] => ;
+      REQUEST HB<type> [, HB<typeN>]
+
+#command ENABLE TYPE CLASS ALL => ;
+      REQUEST HBArray, HBBlock, HBCharacter, HBDate, HBHash, ;
+              HBLogical, HBNil, HBNumeric, HBSymbol, HBPointer
 
 #endif /* HB_CLASS_CH_ */

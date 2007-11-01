@@ -50,6 +50,7 @@
  * If you do not wish that, delete this exception notice.
  *
  */
+
 /*
  * The following functions are added by
  *       Horacio Roldan <harbour_ar@yahoo.com.ar>
@@ -70,23 +71,22 @@
 #include "hbvm.h"
 #include "hbset.h"
 
+/* The 5-th parameter is Harbour extensions */
 HB_FUNC( AFIELDS )
 {
-   PHB_ITEM pName, pType, pLen, pDec;
    USHORT uiFields, uiCount;
    AREAP pArea = ( AREAP ) hb_rddGetCurrentWorkAreaPointer();
+   PHB_ITEM pName = hb_param( 1, HB_IT_ARRAY );
+   PHB_ITEM pType = hb_param( 2, HB_IT_ARRAY );
+   PHB_ITEM pLen = hb_param( 3, HB_IT_ARRAY );
+   PHB_ITEM pDec = hb_param( 4, HB_IT_ARRAY );
+#ifdef DBS_FLAG
+   PHB_ITEM pFlags = hb_param( 5, HB_IT_ARRAY );
+#else
+   PHB_ITEM pFlags = NULL;
+#endif
 
-   if( !pArea )
-   {
-      hb_retni( 0 );
-      return;
-   }
-
-   pName = hb_param( 1, HB_IT_ARRAY );
-   pType = hb_param( 2, HB_IT_ARRAY );
-   pLen = hb_param( 3, HB_IT_ARRAY );
-   pDec = hb_param( 4, HB_IT_ARRAY );
-   if( !pName && !pType && !pLen && !pDec )
+   if( !pArea || ( !pName && !pType && !pLen && !pDec && !pFlags ) )
    {
       hb_retni( 0 );
       return;
@@ -116,6 +116,13 @@ HB_FUNC( AFIELDS )
    if( pDec )
    {
       USHORT uiArrayLen = ( USHORT ) hb_arrayLen( pDec );
+      if( uiArrayLen < uiFields )
+         uiFields = uiArrayLen;
+   }
+
+   if( pFlags )
+   {
+      USHORT uiArrayLen = ( USHORT ) hb_arrayLen( pFlags );
       if( uiArrayLen < uiFields )
          uiFields = uiArrayLen;
    }
@@ -152,17 +159,27 @@ HB_FUNC( AFIELDS )
             return;
       }
    }
+#ifdef DBS_FLAG
+   if( pFlags )
+   {
+      for( uiCount = 1; uiCount <= uiFields; ++uiCount )
+      {
+         if( SELF_FIELDINFO( pArea, uiCount, DBS_FLAG, hb_arrayGetItemPtr( pFlags, uiCount ) ) != SUCCESS )
+            return;
+      }
+   }
+#endif
 
    hb_retni( uiFields );
 }
 
 HB_FUNC( ALIAS )
 {
-   USHORT uiArea;
+   int iArea;
    AREAP pArea;
 
-   uiArea = hb_parni( 1 );
-   pArea = ( AREAP ) hb_rddGetWorkAreaPointer( uiArea );
+   iArea = hb_parni( 1 );
+   pArea = ( AREAP ) hb_rddGetWorkAreaPointer( iArea );
    if( pArea )
    {
       char szAlias[ HARBOUR_MAX_RDD_ALIAS_LENGTH + 1 ];
@@ -469,11 +486,9 @@ HB_FUNC( DBFILTER )
 
    if( pArea )
    {
-      PHB_ITEM pFilter = hb_itemNew( NULL );
-      hb_itemPutC( pFilter, "" );
+      PHB_ITEM pFilter = hb_itemPutC( NULL, "" );
       SELF_FILTERTEXT( pArea, pFilter );
-      hb_itemReturn( pFilter );
-      hb_itemRelease( pFilter );
+      hb_itemReturnRelease( pFilter );
    }
    else
       hb_retc( NULL );
@@ -775,7 +790,7 @@ HB_FUNC( DBSTRUCT )
    PHB_ITEM pStruct = hb_itemArrayNew( 0 );
    AREAP pArea = ( AREAP ) hb_rddGetCurrentWorkAreaPointer();
    if( pArea )
-      hb_tblStructure( pArea, pStruct );
+      hb_tblStructure( pArea, pStruct, DBS_ALEN );
    hb_itemRelease( hb_itemReturn( pStruct ) );
 }
 
@@ -870,6 +885,47 @@ HB_FUNC( FCOUNT )
    hb_retni( uiFields );
 }
 
+HB_FUNC( FIELDGET )
+{
+   PHB_ITEM pItem = hb_itemNew( NULL );
+   AREAP pArea = ( AREAP ) hb_rddGetCurrentWorkAreaPointer();
+   USHORT uiField = hb_parni( 1 );
+
+   if( pArea && uiField )
+   {
+      SELF_GETVALUE( pArea, uiField, pItem );
+   }
+
+   hb_itemReturnForward( pItem );
+   hb_itemRelease( pItem );
+}
+
+#ifdef HB_EXTENSION
+
+HB_FUNC( FIELDLEN )
+{
+   AREAP pArea = ( AREAP ) hb_rddGetCurrentWorkAreaPointer();
+
+   if( pArea )
+   {
+      USHORT uiIndex;
+      if( ( uiIndex = hb_parni( 1 ) ) > 0 )
+      {
+         PHB_ITEM pItem = hb_itemNew( NULL );
+
+         if( SELF_FIELDINFO( pArea, uiIndex, DBS_LEN, pItem ) == SUCCESS )
+         {
+            hb_itemReturnForward( pItem );
+            hb_itemRelease( pItem );
+            return;
+         }
+         hb_itemRelease( pItem );
+      }
+   }
+
+   hb_retni(0);
+}
+
 HB_FUNC( FIELDDEC )
 {
    AREAP pArea = ( AREAP ) hb_rddGetCurrentWorkAreaPointer();
@@ -895,33 +951,19 @@ HB_FUNC( FIELDDEC )
    hb_retni(0);
 }
 
-HB_FUNC( FIELDGET )
-{
-   PHB_ITEM pItem = hb_itemNew( NULL );
-   AREAP pArea = ( AREAP ) hb_rddGetCurrentWorkAreaPointer();
-   USHORT uiField = hb_parni( 1 );
-
-   if( pArea && uiField )
-   {
-      SELF_GETVALUE( pArea, uiField, pItem );
-   }
-
-   hb_itemReturnForward( pItem );
-   hb_itemRelease( pItem );
-}
-
-HB_FUNC( FIELDLEN )
+HB_FUNC( FIELDTYPE )
 {
    AREAP pArea = ( AREAP ) hb_rddGetCurrentWorkAreaPointer();
 
    if( pArea )
    {
       USHORT uiIndex;
+
       if( ( uiIndex = hb_parni( 1 ) ) > 0 )
       {
          PHB_ITEM pItem = hb_itemNew( NULL );
 
-         if( SELF_FIELDINFO( pArea, uiIndex, DBS_LEN, pItem ) == SUCCESS )
+         if( SELF_FIELDINFO( pArea, uiIndex, DBS_TYPE, pItem ) == SUCCESS )
          {
             hb_itemReturnForward( pItem );
             hb_itemRelease( pItem );
@@ -931,8 +973,10 @@ HB_FUNC( FIELDLEN )
       }
    }
 
-   hb_retni(0);
+   hb_retc( NULL );
 }
+
+#endif
 
 HB_FUNC( FIELDNAME )
 {
@@ -988,31 +1032,6 @@ HB_FUNC( FIELDPUT )
          }
       }
    }
-}
-
-HB_FUNC( FIELDTYPE )
-{
-   AREAP pArea = ( AREAP ) hb_rddGetCurrentWorkAreaPointer();
-
-   if( pArea )
-   {
-      USHORT uiIndex;
-
-      if( ( uiIndex = hb_parni( 1 ) ) > 0 )
-      {
-         PHB_ITEM pItem = hb_itemNew( NULL );
-
-         if( SELF_FIELDINFO( pArea, uiIndex, DBS_TYPE, pItem ) == SUCCESS )
-         {
-            hb_itemReturnForward( pItem );
-            hb_itemRelease( pItem );
-            return;
-         }
-         hb_itemRelease( pItem );
-      }
-   }
-
-   hb_retc("");
 }
 
 HB_FUNC( FLOCK )
@@ -1508,7 +1527,7 @@ HB_FUNC( ORDFINDREC )
       memset( &pOrderInfo, 0, sizeof( DBORDERINFO ) );
       pOrderInfo.itmNewVal = hb_param( 1 , HB_IT_NUMERIC );
       pOrderInfo.itmResult = hb_itemPutL( NULL, FALSE );
-      SELF_ORDINFO( pArea, hb_parl( 2 ) ? DBOI_FINDRECCONT :
+      SELF_ORDINFO( pArea, ISLOG( 2 ) && hb_parl( 2 ) ? DBOI_FINDRECCONT :
                                           DBOI_FINDREC, &pOrderInfo );
       hb_itemReturn( pOrderInfo.itmResult );
       hb_itemRelease( pOrderInfo.itmResult );
@@ -1697,61 +1716,6 @@ HB_FUNC( ORDCOUNT )
 
 #endif
 
-#ifdef HB_COMPAT_XPP
-HB_FUNC( ORDWILDSEEK )
-{
-   AREAP pArea = ( AREAP ) hb_rddGetCurrentWorkAreaPointer();
-
-   if( pArea )
-   {
-      char * szPatern = hb_parc( 1 );
-
-      if( szPatern )
-      {
-         BOOL fCont = hb_parl( 2 ), fBack = hb_parl( 3 ), fFound = FALSE;
-         DBORDERINFO OrderInfo;
-         ERRCODE errCode = SUCCESS;
-
-         memset( &OrderInfo, 0, sizeof( DBORDERINFO ) );
-         OrderInfo.itmResult = hb_itemNew( NULL );
-
-         if( !fCont )
-         {
-            char * szKey;
-
-            if( fBack )
-               errCode = SELF_GOBOTTOM( pArea );
-            else
-               errCode = SELF_GOTOP( pArea );
-
-            if( errCode == SUCCESS )
-            {
-               errCode = SELF_ORDINFO( pArea, DBOI_KEYVAL, &OrderInfo );
-               if( errCode == SUCCESS )
-               {
-                  szKey = hb_itemGetCPtr( OrderInfo.itmResult );
-                  fFound = hb_strMatchWild( szKey, szPatern );
-               }
-            }
-         }
-         if( !fFound && errCode == SUCCESS )
-         {
-            OrderInfo.itmNewVal = hb_param( 1, HB_IT_STRING );
-            if( SELF_ORDINFO( pArea, fBack ? DBOI_SKIPWILDBACK : DBOI_SKIPWILD,
-                          &OrderInfo ) == SUCCESS )
-               fFound = hb_itemGetL( OrderInfo.itmResult );
-         }
-         hb_itemRelease( OrderInfo.itmResult );
-         hb_retl( fFound );
-      }
-      else
-         hb_errRT_DBCMD( EG_ARG, EDBCMD_DBFILEPUTBADPARAMETER, NULL, "ORDWILDSEEK" );
-   }
-   else
-      hb_errRT_DBCMD( EG_NOTABLE, EDBCMD_NOTABLE, NULL, "ORDWILDSEEK" );
-}
-#endif
-
 HB_FUNC( ORDLISTADD )
 {
    AREAP pArea = ( AREAP ) hb_rddGetCurrentWorkAreaPointer();
@@ -1855,7 +1819,8 @@ HB_FUNC( ORDNUMBER )
       memset( &pOrderInfo, 0, sizeof( DBORDERINFO ) );
       pOrderInfo.itmOrder = hb_param( 1, HB_IT_STRING );
       pOrderInfo.atomBagName = hb_param( 2, HB_IT_STRING );
-      if( !pOrderInfo.itmOrder && ! ISNIL( 1 ) )
+      if( !( pOrderInfo.itmOrder || ISNIL( 1 ) ) ||
+          !( pOrderInfo.atomBagName || ISNIL( 2 ) ) )
       {
          hb_errRT_DBCMD( EG_ARG, EDBCMD_REL_BADPARAMETER, NULL, "ORDNUMBER" );
          return;
@@ -2083,14 +2048,16 @@ HB_FUNC( ORDSCOPE )
 
 HB_FUNC( DBRELATION )  /* (<nRelation>) --> cLinkExp */
 {
-   char szExprBuff[ HARBOUR_MAX_RDD_RELTEXT_LENGTH + 1 ];
    AREAP pArea = ( AREAP ) hb_rddGetCurrentWorkAreaPointer();
 
-   szExprBuff[ 0 ] = 0;
    if( pArea )
-      SELF_RELTEXT( pArea, hb_parni(1), szExprBuff ) ;
-
-   hb_retc( szExprBuff );
+   {
+      PHB_ITEM pRelExpr = hb_itemPutC( NULL, "" );
+      SELF_RELTEXT( pArea, hb_parni( 1 ), pRelExpr ) ;
+      hb_itemReturnRelease( pRelExpr );
+   }
+   else
+      hb_retc( NULL );
 }
 
 HB_FUNC( DBRSELECT )  /* (<nRelation>) --> nWorkArea */
@@ -2135,13 +2102,13 @@ HB_FUNC( DBSETRELATION )
       }
       else
       {
-         USHORT uiArea = hb_rddGetCurrentWorkAreaNumber();
+         int iArea = hb_rddGetCurrentWorkAreaNumber();
 
          hb_rddSelectWorkAreaAlias( hb_parcx( 1 ) );
          if( hb_vmRequestQuery() )
             return;
          uiChildArea = hb_rddGetCurrentWorkAreaNumber();
-         hb_rddSelectWorkAreaNumber( uiArea );
+         hb_rddSelectWorkAreaNumber( iArea );
       }
 
       pChildArea = uiChildArea ? ( AREAP ) hb_rddGetWorkAreaPointer( uiChildArea ) : NULL;
@@ -2228,7 +2195,8 @@ HB_FUNC( __DBARRANGE )
       dbSortInfo.dbtri.dbsci.fIgnoreFilter =
       dbSortInfo.dbtri.dbsci.fLast =
       dbSortInfo.dbtri.dbsci.fIgnoreDuplicates =
-      dbSortInfo.dbtri.dbsci.fBackward = FALSE;
+      dbSortInfo.dbtri.dbsci.fBackward =
+      dbSortInfo.dbtri.dbsci.fOptimized = FALSE;
       dbSortInfo.dbtri.dbsci.fIncludeDeleted = TRUE;
 
       pFields = hb_param( 8, HB_IT_ARRAY );
@@ -2407,6 +2375,9 @@ HB_FUNC( DBRECORDINFO )
       hb_errRT_DBCMD( EG_NOTABLE, EDBCMD_NOTABLE, NULL, "DBRECORDINFO" );
 }
 
+/*
+ * DBFILEPUT/BLOB2FILE - retrieve memo contents into file
+ */
 HB_FUNC( DBFILEGET )
 {
    AREAP pArea = ( AREAP ) hb_rddGetCurrentWorkAreaPointer();
@@ -2437,6 +2408,9 @@ HB_FUNC( DBFILEGET )
       hb_errRT_DBCMD( EG_NOTABLE, EDBCMD_NOTABLE, NULL, "DBFILEGET" );
 }
 
+/*
+ * DBFILEPUT/FILE2BLOB - store file contents in MEMO
+ */
 HB_FUNC( DBFILEPUT )
 {
    AREAP pArea = ( AREAP ) hb_rddGetCurrentWorkAreaPointer();
@@ -2464,6 +2438,8 @@ HB_FUNC( DBFILEPUT )
       hb_errRT_DBCMD( EG_NOTABLE, EDBCMD_NOTABLE, NULL, "DBFILEPUT" );
 }
 #endif
+
+#ifdef HB_EXTENSION
 
 /*******************************************/
 /* here we have the NEW RDD level functions DBDROP, DBEXISTS, RDDINFO */
@@ -2546,6 +2522,8 @@ HB_FUNC( RDDINFO )
       hb_errRT_DBCMD( EG_ARG, EDBCMD_EVAL_BADPARAMETER, NULL, "RDDINFO" );
    }
 }
+
+#endif
 
 /* __dbTrans( nDstArea, aFieldsStru, bFor, bWhile, nNext, nRecord, lRest ) */
 HB_FUNC( __DBTRANS )
@@ -2660,62 +2638,3 @@ HB_FUNC( __RDDGETTEMPALIAS )
    else
       hb_ret();
 }
-
-#ifdef HB_COMPAT_XPP
-HB_FUNC( DBSKIPPER )
-{
-   AREAP pArea = ( AREAP ) hb_rddGetCurrentWorkAreaPointer();
-
-   if( pArea )
-   {
-      LONG lSkipped = 0;
-      LONG lRecs = 1;
-      BOOL fBEof;
-      ULONG ulRecords = 0;
-
-      if( SELF_RECCOUNT( pArea, &ulRecords ) == SUCCESS && ulRecords > 0 )
-      {
-         if( ISNUM( 1 ) )
-            lRecs = hb_parnl( 1 ) ;
-
-         if( lRecs == 0 )
-            SELF_SKIP( pArea, 0 );
-         else if( lRecs > 0 )
-         {
-            if( SELF_EOF( pArea, &fBEof ) == SUCCESS )
-            {
-               while( lSkipped < lRecs )
-               {
-                  if( SELF_SKIP( pArea, 1 ) != SUCCESS )
-                     break;
-                  if( SELF_EOF( pArea, &fBEof ) != SUCCESS )
-                     break;
-                  if( fBEof )
-                  {
-                     SELF_SKIP( pArea, -1 );
-                     break;
-                  }
-                  lSkipped++;
-               }
-            }
-         }
-         else /* if( lRecs < 0 ) */
-         {
-            while( lSkipped > lRecs )
-            {
-               if( SELF_SKIP( pArea, -1 ) != SUCCESS )
-                  break;
-               if( SELF_BOF( pArea, &fBEof ) != SUCCESS )
-                  break;
-               if( fBEof )
-                  break;
-               lSkipped--;
-            }
-         }
-         hb_retnl( lSkipped );
-      }
-   }
-   else
-      hb_errRT_DBCMD( EG_NOTABLE, EDBCMD_NOTABLE, NULL, "DBSKIPPER" );
-}
-#endif

@@ -9,7 +9,12 @@ ifeq ($(HB_ARCHITECTURE),w32)
 		C_MAIN = mainwin.c
 		DIRS = mainstd
 	else
-		C_MAIN = mainstd.c mainwin.c
+		ifeq ($(HB_COMPILER),cemgw)
+			C_MAIN = mainwin.c
+			DIRS = mainstd mainwin
+		else
+			C_MAIN = mainstd.c mainwin.c
+		endif
 	endif
 else
 	ifeq ($(HB_ARCHITECTURE),os2)
@@ -50,6 +55,7 @@ C_SOURCES=\
 	proc.c       \
 	pvalue.c     \
 	runner.c     \
+	vm.c         \
 
 PRG_SOURCES=\
 	harbinit.prg \

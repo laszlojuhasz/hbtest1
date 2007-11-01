@@ -161,6 +161,10 @@
 
 #endif
 
+#if defined( HB_OS_WIN_32 )
+   #include "hbwince.h"
+#endif
+
 #if ! defined( HB_DONT_DEFINE_BASIC_TYPES )
 
    #if ! defined( HB_DONT_DEFINE_BOOL )
@@ -634,8 +638,8 @@ typedef unsigned long HB_COUNTER;
  * IMHO need HB_ARCH_<arch> macro yet - the same OS can be used with
  * different architectures - SPARC + LINUX, ALPHA + LINUX
  */
-#if defined( HB_OS_SUNOS ) || defined( HB_OS_HPUX )
-#  if !defined( HB_STRICT_ALIGNMENT )
+#if !defined( HB_STRICT_ALIGNMENT )
+#  if defined( HB_OS_SUNOS ) || defined( HB_OS_HPUX ) || defined( _M_ARM )
 #     define HB_STRICT_ALIGNMENT
 #  endif
 #endif
@@ -1154,6 +1158,35 @@ typedef PHB_FUNC HB_FUNC_PTR;
 #else
    #define HB_EXPORT
 #endif
+
+#if defined( __RSXNT__ )
+   /* RSXNT does not support any type of export keyword.
+      Exported (i.e., public) names can be obtained via
+      the emxexp utility and the output can be used for
+      input to a module definition file. See emxdev.doc
+      in the RSXNT doc/ directory for more information. */
+   #define HB_IMPORT
+
+#elif defined( __GNUC__ ) && defined( HB_OS_WIN_32 )
+   #define HB_IMPORT __attribute__ (( dllimport ))
+
+#elif defined( __BORLANDC__ )
+   #define HB_IMPORT _declspec( dllimport )
+
+#elif defined( __WATCOMC__ )
+   #define HB_IMPORT __declspec( dllimport )
+
+#elif defined( ASANLM ) || defined( ASANT )
+   #define HB_IMPORT
+
+#elif defined( WIN32 )
+   #define HB_IMPORT _declspec( dllimport )
+
+#else
+   #define HB_IMPORT
+
+#endif
+
 
 /* Function declaration macros */
 

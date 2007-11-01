@@ -62,19 +62,13 @@
 #include "hbapierr.h"
 #include "hbapifs.h"
 
-#if defined( HB_OS_BSD )
-   #include <sys/param.h>
-   #include <sys/mount.h>
-#elif defined(HB_OS_SUNOS)
+#if defined( HB_OS_UNIX ) && !( defined( __WATCOMC__ ) || defined( __CEGCC__ ) )
    #include <sys/statvfs.h>
-#elif defined( HB_OS_UNIX ) && !defined(__WATCOMC__)
-   #include <sys/vfs.h>
 #endif
-
-#ifdef HB_EXTENSION
 
 HB_FUNC( HB_DISKSPACE )
 {
+   char szPathBuf[ 4 ];
    char * szPath = hb_parc( 1 );
    USHORT uiType = ISNUM( 2 ) ? hb_parni( 2 ) : HB_DISK_AVAIL;
    double dSpace = 0.0;
@@ -82,11 +76,32 @@ HB_FUNC( HB_DISKSPACE )
    if( uiType > HB_DISK_TOTAL )
       uiType = HB_DISK_AVAIL;
 
-#if defined(HB_OS_DOS)
-
+   if( !szPath )
    {
-      USHORT uiDrive = ( szPath[ 0 ] == '\0' ) ? 0 : ( toupper( szPath[ 0 ] ) - 'A' + 1 );
+#ifdef OS_HAS_DRIVE_LETTER
+      if( ISNUM( 1 ) )
+      {
+         szPathBuf[ 0 ] = ( char ) hb_parni( 1 ) + 'A' - 1;
+         szPathBuf[ 1 ] = OS_DRIVE_DELIMITER;
+         szPathBuf[ 2 ] = OS_PATH_DELIMITER;
+         szPathBuf[ 3 ] = '\0';
+      }
+      else
+#endif
+      {
+         szPathBuf[ 0 ] = OS_PATH_DELIMITER;
+         szPathBuf[ 1 ] = '\0';
+      }
+      szPath = szPathBuf;
+   }
 
+#if defined(HB_OS_DOS)
+   {
+      USHORT uiDrive = szPath[ 1 ] != OS_DRIVE_DELIMITER ? 0 :
+                       ( szPath[ 0 ] >= 'A' && szPath[ 0 ] <= 'Z' ?
+                         szPath[ 0 ] - 'A' + 1 :
+                       ( szPath[ 0 ] >= 'a' && szPath[ 0 ] <= 'z' ?
+                         szPath[ 0 ] - 'a' + 1 : 0 ) );
       while( TRUE )
       {
          union REGS regs;
@@ -132,87 +147,96 @@ HB_FUNC( HB_DISKSPACE )
          break;
       }
    }
-
 #elif defined(HB_OS_WIN_32)
-
    {
+#if defined(_MSC_VER) || defined(__LCC__) || \
+    ( defined(__GNUC__) && !defined(__RSXNT__) )
+
+#  define HB_GET_LARGE_UINT( v )  ( ( double ) (v).LowPart + \
+                                    ( double ) (v).HighPart * \
+                                    ( ( ( double ) 0xFFFFFFFF ) + 1 ) )
+
+#else
+   /* NOTE: Borland doesn't seem to deal with the un-named
+            struct that is part of ULARGE_INTEGER
+            [pt] */
+#  define HB_GET_LARGE_UINT( v )  ( ( double ) (v).u.LowPart + \
+                                    ( double ) (v).u.HighPart * \
+                                    ( ( ( double ) 0xFFFFFFFF ) + 1 ) )
+#endif
+
+      typedef BOOL ( WINAPI * P_GDFSE )( LPCSTR, PULARGE_INTEGER,
+                                         PULARGE_INTEGER, PULARGE_INTEGER );
+
       while( TRUE )
       {
-         typedef BOOL ( WINAPI * P_GDFSE )( LPCTSTR, PULARGE_INTEGER,
-                                            PULARGE_INTEGER, PULARGE_INTEGER );
+         ULARGE_INTEGER i64FreeBytesToCaller, i64TotalBytes, i64FreeBytes;
+         UINT uiErrMode = SetErrorMode( SEM_FAILCRITICALERRORS );
+         BOOL fResult;
 
-         P_GDFSE pGetDiskFreeSpaceEx;
-         UINT uiErrMode;
+#if defined(HB_WINCE)
+         LPTSTR lpPath = HB_TCHAR_CONVTO( szPath );
 
-         uiErrMode = SetErrorMode( SEM_FAILCRITICALERRORS );
+         fResult = GetDiskFreeSpaceEx( lpPath,
+                                       ( PULARGE_INTEGER ) &i64FreeBytesToCaller,
+                                       ( PULARGE_INTEGER ) &i64TotalBytes,
+                                       ( PULARGE_INTEGER ) &i64FreeBytes );
+         hb_fsSetIOError( fResult, 0 );
+         HB_TCHAR_FREE( lpPath );
+         if( fResult )
+         {
+            switch( uiType )
+            {
+               case HB_DISK_AVAIL:
+                  dSpace = HB_GET_LARGE_UINT( i64FreeBytesToCaller );
+                  break;
 
-         SetLastError( 0 );
+               case HB_DISK_FREE:
+                  dSpace = HB_GET_LARGE_UINT( i64FreeBytes );
+                  break;
 
-         pGetDiskFreeSpaceEx = ( P_GDFSE ) GetProcAddress( GetModuleHandle( "kernel32.dll" ),
-                                                           "GetDiskFreeSpaceExA");
+               case HB_DISK_TOTAL:
+                  dSpace = HB_GET_LARGE_UINT( i64TotalBytes );
+                  break;
 
+               case HB_DISK_USED:
+                  dSpace = HB_GET_LARGE_UINT( i64TotalBytes ) -
+                           HB_GET_LARGE_UINT( i64FreeBytes );
+                  break;
+            }
+         }
+#else
+         P_GDFSE pGetDiskFreeSpaceEx = ( P_GDFSE )
+                           GetProcAddress( GetModuleHandleA( "kernel32.dll" ),
+                                           "GetDiskFreeSpaceExA" );
          if( pGetDiskFreeSpaceEx )
          {
-            ULARGE_INTEGER i64FreeBytesToCaller,
-                           i64TotalBytes,
-                           i64FreeBytes,
-                           i64RetVal;
-
-            if( pGetDiskFreeSpaceEx( szPath,
-                                     ( PULARGE_INTEGER ) &i64FreeBytesToCaller,
-                                     ( PULARGE_INTEGER ) &i64TotalBytes,
-                                     ( PULARGE_INTEGER ) &i64FreeBytes ) )
+            fResult = pGetDiskFreeSpaceEx( szPath,
+                                           ( PULARGE_INTEGER ) &i64FreeBytesToCaller,
+                                           ( PULARGE_INTEGER ) &i64TotalBytes,
+                                           ( PULARGE_INTEGER ) &i64FreeBytes );
+            hb_fsSetIOError( fResult, 0 );
+            if( fResult )
             {
                switch( uiType )
                {
                   case HB_DISK_AVAIL:
-                     memcpy( &i64RetVal, &i64FreeBytesToCaller, sizeof( ULARGE_INTEGER ) );
+                     dSpace = HB_GET_LARGE_UINT( i64FreeBytesToCaller );
                      break;
 
                   case HB_DISK_FREE:
-                     memcpy( &i64RetVal, &i64FreeBytes, sizeof( ULARGE_INTEGER ) );
+                     dSpace = HB_GET_LARGE_UINT( i64FreeBytes );
+                     break;
+
+                  case HB_DISK_TOTAL:
+                     dSpace = HB_GET_LARGE_UINT( i64TotalBytes );
                      break;
 
                   case HB_DISK_USED:
-                  case HB_DISK_TOTAL:
-                     memcpy( &i64RetVal, &i64TotalBytes, sizeof( ULARGE_INTEGER ) );
+                     dSpace = HB_GET_LARGE_UINT( i64TotalBytes ) -
+                              HB_GET_LARGE_UINT( i64FreeBytes );
+                     break;
                }
-
-               #if (defined(__GNUC__) || defined(_MSC_VER)) && !defined(__RSXNT__)
-
-                  dSpace  = ( double ) i64RetVal.LowPart +
-                            ( double ) i64RetVal.HighPart +
-                            ( double ) i64RetVal.HighPart *
-                            ( double ) 0xFFFFFFFF;
-
-                  if( uiType == HB_DISK_USED )
-                  {
-                     dSpace -= ( double ) i64FreeBytes.LowPart +
-                               ( double ) i64FreeBytes.HighPart +
-                               ( double ) i64FreeBytes.HighPart *
-                               ( double ) 0xFFFFFFFF;
-                  }
-
-               #else
-
-                  /* NOTE: Borland doesn't seem to deal with the un-named
-                           struct that is part of ULARGE_INTEGER
-                           [pt] */
-
-                  dSpace  = ( double ) i64RetVal.u.LowPart +
-                            ( double ) i64RetVal.u.HighPart +
-                            ( double ) i64RetVal.u.HighPart *
-                            ( double ) 0xFFFFFFFF;
-
-                  if( uiType == HB_DISK_USED )
-                  {
-                     dSpace -= ( double ) i64FreeBytes.u.LowPart +
-                               ( double ) i64FreeBytes.u.HighPart +
-                               ( double ) i64FreeBytes.u.HighPart *
-                               ( double ) 0xFFFFFFFF;
-                  }
-
-               #endif
             }
          }
          else
@@ -222,13 +246,13 @@ HB_FUNC( HB_DISKSPACE )
             DWORD dwNumberOfFreeClusters;
             DWORD dwTotalNumberOfClusters;
 
-            SetLastError( 0 );
-
-            if( GetDiskFreeSpace( szPath,
-                                  &dwSectorsPerCluster,
-                                  &dwBytesPerSector,
-                                  &dwNumberOfFreeClusters,
-                                  &dwTotalNumberOfClusters ) )
+            fResult = GetDiskFreeSpaceA( szPath,
+                                         &dwSectorsPerCluster,
+                                         &dwBytesPerSector,
+                                         &dwNumberOfFreeClusters,
+                                         &dwTotalNumberOfClusters );
+            hb_fsSetIOError( fResult, 0 );
+            if( fResult )
             {
                switch( uiType )
                {
@@ -250,30 +274,23 @@ HB_FUNC( HB_DISKSPACE )
                                   ( double ) dwSectorsPerCluster *
                                   ( double ) dwBytesPerSector;
                      break;
-
                }
             }
          }
-
+#endif
          SetErrorMode( uiErrMode );
-
-         if( GetLastError() != 0 )
-         {
-            hb_fsSetIOError( FALSE, 0 );
-            dSpace = 0.0;
-         }
-         else
-            hb_fsSetIOError( TRUE, 0 );
          break;
       }
    }
-
 #elif defined(HB_OS_OS2)
-
    {
       struct _FSALLOCATE fsa;
       USHORT rc;
-      USHORT uiDrive = ( szPath[ 0 ] == '\0' ) ? 0 : ( toupper( szPath[ 0 ] ) - 'A' + 1 );
+      USHORT uiDrive = szPath[ 1 ] != OS_DRIVE_DELIMITER ? 0 :
+                       ( szPath[ 0 ] >= 'A' && szPath[ 0 ] <= 'Z' ?
+                         szPath[ 0 ] - 'A' + 1 :
+                       ( szPath[ 0 ] >= 'a' && szPath[ 0 ] <= 'z' ?
+                         szPath[ 0 ] - 'a' + 1 : 0 ) );
 
       /* Query level 1 info from filesystem */
       while( ( rc = DosQueryFSInfo( uiDrive, 1, &fsa, sizeof( fsa ) ) ) != 0 )
@@ -310,17 +327,14 @@ HB_FUNC( HB_DISKSPACE )
       else
          hb_fsSetIOError( FALSE, 0 );
    }
-
-#elif defined(HB_OS_UNIX) && !defined(__WATCOMC__)
-
+#elif defined(HB_OS_UNIX) && !( defined(__WATCOMC__) || defined(__CEGCC__) )
    {
-#if defined(HB_OS_SUNOS)
       struct statvfs sf;
+      BOOL fFree = FALSE;
+
+      szPath = ( char * ) hb_fsNameConv( ( BYTE * ) szPath, &fFree );
+
       if( statvfs( szPath, &sf ) == 0 )
-#else
-      struct statfs sf;
-      if( statfs( szPath, &sf ) == 0 )
-#endif
       {
          switch( uiType )
          {
@@ -345,20 +359,16 @@ HB_FUNC( HB_DISKSPACE )
       }
       else
          hb_fsSetIOError( FALSE, 0 );
+
+      if( fFree )
+         hb_xfree( szPath );
    }
-
 #else
-
    {
       HB_SYMBOL_UNUSED( szPath );
       HB_SYMBOL_UNUSED( uiType );
    }
-
 #endif
 
    hb_retnlen( dSpace, -1, 0 );
 }
-
-#endif
-
-

@@ -53,19 +53,31 @@
 
 #include "common.ch"
 
+/* NOTE: In CA-Cl*pper 5.2 the 6th and 7th arguments are a minimum and 
+         maximum limit for a (numerical) value. In CA-Cl*pper 5.3 and 
+         in Harbour there is no 7th argument and 6th is a generic 
+         validation codeblock. In other words, in case of _eInstVar() 
+         Harbour is compatible with CA-Cl*pper 5.3, not with 5.2. */
+
+/* NOTE: In CA-Cl*pper 5.2/5.3 the cMethod argument seems to be ignored. */
+
 FUNCTION _eInstVar( oVar, cMethod, xValue, cType, nSubCode, bValid )
 
    LOCAL oError
 
    IF VALTYPE( xValue ) != cType .OR. ;
       ( bValid != NIL .AND. !EVAL( bValid, oVar, xValue ) )
-      oError := errornew()
+      oError := ErrorNew()
       oError:description := HB_LANGERRMSG( 1 )
       oError:gencode := 1
       oError:severity := 2
       oError:cansubstitute := .T.
       oError:subsystem := oVar:classname
+#ifdef HB_C52_STRICT
+      HB_SYMBOL_UNUSED( cMethod )
+#else
       oError:operation := cMethod
+#endif
       oError:subcode := nSubCode
       oError:args := { xValue }
       xValue := EVAL( ERRORBLOCK(), oError )

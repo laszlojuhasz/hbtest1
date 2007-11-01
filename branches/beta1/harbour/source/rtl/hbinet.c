@@ -61,7 +61,6 @@
 #include "hbapiitm.h"
 #include "hbapierr.h"
 
-
 /* HB_INET_H_ */
 #if defined( HB_OS_DOS )
 
@@ -71,6 +70,8 @@
 
 #else
 
+   #include <string.h>
+
    #if defined( HB_OS_WIN_32 )
       #define _WINSOCKAPI_  /* Prevents inclusion of Winsock.h in Windows.h */
       #define HB_SOCKET_T SOCKET
@@ -78,8 +79,6 @@
       #include <windows.h>
 
       #define HB_INET_CLOSE( x )    closesocket( x )
-
-      extern char *hstrerror( int i );
    #else
 
       #if defined( HB_OS_HPUX )
@@ -94,7 +93,11 @@
       #include <netinet/in.h>
       #include <arpa/inet.h>
 
-      extern int h_errno;
+      #if defined(__WATCOMC__)
+         #define h_errno errno
+      #else
+         extern int h_errno;
+      #endif
       #define HB_INET_CLOSE( x )    close( x )
       #include <errno.h>
    #endif
@@ -168,7 +171,9 @@
 #if !defined( HB_NO_DEFAULT_INET )
 
 #include <fcntl.h>
-#include <errno.h>
+#if !defined(__MINGW32CE__)
+   #include <errno.h>
+#endif
 
 #if defined( HB_OS_UNIX ) || defined( OS_UNIX_COMPATIBLE ) || defined( HB_OS_BSD ) || defined(HB_OS_OS2)
    #include <sys/time.h>
@@ -333,7 +338,7 @@ static struct hostent * hb_getHosts( char * name, HB_SOCKET_STRUCT *Socket )
 #if defined(HB_OS_WIN_32)
       HB_SOCKET_SET_ERROR2( Socket, WSAGetLastError() , "Generic error in GetHostByName()" );
       WSASetLastError( 0 );
-#elif defined(HB_OS_OS2) || defined(HB_OS_HPUX)
+#elif defined(HB_OS_OS2) || defined(HB_OS_HPUX) || defined(__WATCOMC__)
       HB_SOCKET_SET_ERROR2( Socket, h_errno, "Generic error in GetHostByName()" );
 #else
       HB_SOCKET_SET_ERROR2( Socket, h_errno, (char *) hstrerror( h_errno ) );
@@ -736,7 +741,7 @@ HB_FUNC( HB_INETPERIODCALLBACK )
       if( pExec )
       {
          if( Socket->caPeriodic )
-   	      hb_itemRelease( Socket->caPeriodic );
+            hb_itemRelease( Socket->caPeriodic );
          Socket->caPeriodic = hb_itemClone( pExec );
       }
    }
@@ -1511,6 +1516,9 @@ HB_FUNC( HB_INETSERVER )
 
 HB_FUNC( HB_INETACCEPT )
 {
+#if !defined(EAGAIN)
+#define EAGAIN -1
+#endif
    HB_SOCKET_STRUCT *Socket = HB_PARSOCKET( 1 );
    HB_SOCKET_STRUCT *NewSocket;
    HB_SOCKET_T incoming = 0;
@@ -1979,56 +1987,9 @@ HB_FUNC( HB_INETCRLF )
    hb_retc( "\r\n" );
 }
 
-HB_FUNC( HB_ISINETSOCKET )
+HB_FUNC( HB_INETISSOCKET )
 {
    hb_retl( HB_PARSOCKET( 1 ) != NULL );
 }
-
-#ifdef HB_COMPAT_XHB
-
-HB_FUNC( INETINIT )                 { HB_FUNC_EXEC( HB_INETINIT ); }
-HB_FUNC( INETCLEANUP )              { HB_FUNC_EXEC( HB_INETCLEANUP ); }
-HB_FUNC( INETCREATE )               { HB_FUNC_EXEC( HB_INETCREATE ); }
-HB_FUNC( INETCLOSE )                { HB_FUNC_EXEC( HB_INETCLOSE ); }
-HB_FUNC( INETFD )                   { HB_FUNC_EXEC( HB_INETFD ); }
-HB_FUNC( INETSTATUS )               { HB_FUNC_EXEC( HB_INETSTATUS ); }
-HB_FUNC( INETERRORCODE )            { HB_FUNC_EXEC( HB_INETERRORCODE ); }
-HB_FUNC( INETERRORDESC )            { HB_FUNC_EXEC( HB_INETERRORDESC ); }
-HB_FUNC( INETCLEARERROR )           { HB_FUNC_EXEC( HB_INETCLEARERROR ); }
-HB_FUNC( INETCOUNT )                { HB_FUNC_EXEC( HB_INETCOUNT ); }
-HB_FUNC( INETADDRESS )              { HB_FUNC_EXEC( HB_INETADDRESS ); }
-HB_FUNC( INETPORT )                 { HB_FUNC_EXEC( HB_INETPORT ); }
-HB_FUNC( INETSETTIMEOUT )           { HB_FUNC_EXEC( HB_INETTIMEOUT ); }
-HB_FUNC( INETGETTIMEOUT )           { HB_FUNC_EXEC( HB_INETTIMEOUT ); }
-HB_FUNC( INETCLEARTIMEOUT )         { HB_FUNC_EXEC( HB_INETCLEARTIMEOUT ); }
-HB_FUNC( INETSETTIMELIMIT )         { HB_FUNC_EXEC( HB_INETTIMELIMIT ); }
-HB_FUNC( INETGETTIMELIMIT )         { HB_FUNC_EXEC( HB_INETTIMELIMIT ); }
-HB_FUNC( INETCLEARTIMELIMIT )       { HB_FUNC_EXEC( HB_INETCLEARTIMELIMIT ); }
-HB_FUNC( INETSETPERIODCALLBACK )    { HB_FUNC_EXEC( HB_INETPERIODCALLBACK ); }
-HB_FUNC( INETGETPERIODCALLBACK )    { HB_FUNC_EXEC( HB_INETPERIODCALLBACK ); }
-HB_FUNC( INETCLEARPERIODCALLBACK )  { HB_FUNC_EXEC( HB_INETCLEARPERIODCALLBACK ); }
-HB_FUNC( INETRECV )                 { HB_FUNC_EXEC( HB_INETRECV ); }
-HB_FUNC( INETRECVALL )              { HB_FUNC_EXEC( HB_INETRECVALL ); }
-HB_FUNC( INETRECVLINE )             { HB_FUNC_EXEC( HB_INETRECVLINE ); }
-HB_FUNC( INETRECVENDBLOCK )         { HB_FUNC_EXEC( HB_INETRECVENDBLOCK ); }
-HB_FUNC( INETDATAREADY )            { HB_FUNC_EXEC( HB_INETDATAREADY ); }
-HB_FUNC( INETSEND )                 { HB_FUNC_EXEC( HB_INETSEND ); }
-HB_FUNC( INETSENDALL )              { HB_FUNC_EXEC( HB_INETSENDALL ); }
-HB_FUNC( INETGETHOSTS )             { HB_FUNC_EXEC( HB_INETGETHOSTS ); }
-HB_FUNC( INETGETALIAS )             { HB_FUNC_EXEC( HB_INETGETALIAS ); }
-HB_FUNC( INETSERVER )               { HB_FUNC_EXEC( HB_INETSERVER ); }
-HB_FUNC( INETACCEPT )               { HB_FUNC_EXEC( HB_INETACCEPT ); }
-HB_FUNC( INETCONNECT )              { HB_FUNC_EXEC( HB_INETCONNECT ); }
-HB_FUNC( INETCONNECTIP )            { HB_FUNC_EXEC( HB_INETCONNECTIP ); }
-HB_FUNC( INETDGRAMBIND )            { HB_FUNC_EXEC( HB_INETDGRAMBIND ); }
-HB_FUNC( INETDGRAM )                { HB_FUNC_EXEC( HB_INETDGRAM ); }
-HB_FUNC( INETDGRAMSEND )            { HB_FUNC_EXEC( HB_INETDGRAMSEND ); }
-HB_FUNC( INETDGRAMRECV )            { HB_FUNC_EXEC( HB_INETDGRAMRECV ); }
-HB_FUNC( INETCRLF )                 { HB_FUNC_EXEC( HB_INETCRLF ); }
-HB_FUNC( ISINETSOCKET )             { HB_FUNC_EXEC( HB_ISINETSOCKET ); }
-/* Kept for backward compatibility */
-HB_FUNC( INETDESTROY )              { if( HB_PARSOCKET( 1 ) ) HB_FUNC_EXEC( HB_INETCLOSE ); }
-
-#endif /* HB_COMPAT_XHB */
 
 #endif /* !HB_NO_DEFAULT_INET */

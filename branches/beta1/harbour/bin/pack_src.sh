@@ -63,6 +63,10 @@ $hb_collect doc/en/[Mm]akefile*
 $hb_collect doc/en/*.txt
 $hb_collect doc/es/[Mm]akefile*
 $hb_collect doc/es/*.txt
+$hb_collect doc/man/*.1*
+
+# DEBIAN
+$hb_collect debian/*
 
 # INCLUDE
 $hb_collect include/Makefile
@@ -246,6 +250,9 @@ $hb_collect source/vm/*.prg
 # SOURCE\VM\MAINSTD
 $hb_collect source/vm/mainstd/Makefile
 
+# SOURCE\VM\MAINWIN
+$hb_collect source/vm/mainwin/Makefile
+
 # TESTS
 $hb_collect tests/Makefile
 $hb_collect tests/*.bat
@@ -315,35 +322,50 @@ $hb_collect utils/hbver/*.[ch]
 $hb_collect contrib/Makefile
 
 # CONTRIB\RDD_ADS
-$hb_collect contrib/rdd_ads/Makefile
+$hb_collect contrib/rdd_ads/[Mm]akefile*
 $hb_collect contrib/rdd_ads/*.[ch]
 $hb_collect contrib/rdd_ads/*.prg
 $hb_collect contrib/rdd_ads/*.ch
+$hb_collect contrib/rdd_ads/*.txt
+$hb_collect contrib/rdd_ads/*.bat
 
 # CONTRIB\LIBCT
-$hb_collect contrib/libct/Makefile
+$hb_collect contrib/libct/[Mm]akefile*
 $hb_collect contrib/libct/*.[ch]
 $hb_collect contrib/libct/*.prg
 $hb_collect contrib/libct/*.ch
+$hb_collect contrib/libct/*.txt
+$hb_collect contrib/libct/*.bat
 
 # CONTRIB\LIBNF
-$hb_collect contrib/libnf/Makefile
+$hb_collect contrib/libnf/[Mm]akefile*
 $hb_collect contrib/libnf/*.[ch]
 $hb_collect contrib/libnf/*.prg
 $hb_collect contrib/libnf/*.ch
+$hb_collect contrib/libnf/*.txt
+$hb_collect contrib/libnf/*.bat
 
 # CONTRIB\DOT
+$hb_collect contrib/dot/[Mm]akefile*
 $hb_collect contrib/dot/*.prg
 $hb_collect contrib/dot/*.ch
 $hb_collect contrib/dot/*.txt
 
 # CONTRIB\TIP
-$hb_collect contrib/tip/Makefile
+$hb_collect contrib/tip/[Mm]akefile*
 $hb_collect contrib/tip/Change[Ll]og*
 $hb_collect contrib/tip/*.[ch]
 $hb_collect contrib/tip/*.prg
 $hb_collect contrib/tip/*.ch
 $hb_collect contrib/tip/*.txt
+$hb_collect contrib/tip/*.bat
+
+# CONTRIB\XHB
+$hb_collect contrib/xhb/[Mm]akefile*
+$hb_collect contrib/xhb/*.[ch]
+$hb_collect contrib/xhb/*.prg
+$hb_collect contrib/xhb/*.ch
+$hb_collect contrib/xhb/*.bat
 
 # CONTRIB\ODBC
 $hb_collect contrib/odbc/Makefile
@@ -351,6 +373,21 @@ $hb_collect contrib/odbc/*.[ch]
 $hb_collect contrib/odbc/*.ch
 $hb_collect contrib/odbc/*.prg
 $hb_collect contrib/odbc/*.txt
+
+# CONTRIB\ADORDD
+$hb_collect contrib/adordd/[Mm]akefile*
+$hb_collect contrib/adordd/*.[ch]
+$hb_collect contrib/adordd/*.prg
+$hb_collect contrib/adordd/*.ch
+$hb_collect contrib/adordd/*.bat
+
+# CONTRIB\WIN32
+$hb_collect contrib/win32/[Mm]akefile*
+$hb_collect contrib/win32/*.[ch]
+$hb_collect contrib/win32/*.prg
+$hb_collect contrib/win32/*.ch
+$hb_collect contrib/win32/*.bat
+$hb_collect contrib/win32/test/*.prg
 
 # CONTRIB\PGSQL
 $hb_collect contrib/pgsql/[mM]akefile*
@@ -362,6 +399,14 @@ $hb_collect contrib/pgsql/*.prg
 $hb_collect contrib/pgsql/*.txt
 $hb_collect contrib/pgsql/*.bat
 
+# CONTRIB\MYSQL
+$hb_collect contrib/mysql/[mM]akefile*
+$hb_collect contrib/mysql/*.[ch]
+$hb_collect contrib/mysql/*.ch
+$hb_collect contrib/mysql/*.prg
+$hb_collect contrib/mysql/*.txt
+$hb_collect contrib/mysql/*.bat
+
 # CONTRIB\GD
 $hb_collect contrib/gd/[mM]akefile*
 $hb_collect contrib/gd/Change[Ll]og*
@@ -372,14 +417,16 @@ $hb_collect contrib/gd/*.ch
 $hb_collect contrib/gd/*.prg
 $hb_collect contrib/gd/*.txt
 $hb_collect contrib/gd/*.bat
-
-# CONTRIB\MYSQL
-$hb_collect contrib/mysql/[mM]akefile*
-$hb_collect contrib/mysql/*.[ch]
-$hb_collect contrib/mysql/*.ch
-$hb_collect contrib/mysql/*.prg
-$hb_collect contrib/mysql/*.txt
-$hb_collect contrib/mysql/*.bat
+$hb_collect contrib/gd/doc/COPYING
+$hb_collect contrib/gd/doc/*.txt
+$hb_collect contrib/gd/tests/*.prg
+$hb_collect contrib/gd/tests/*.bat
+$hb_collect contrib/gd/tests/*.sh
+$hb_collect contrib/gd/tests/digits/*.gif
+$hb_collect contrib/gd/tests/images_in/*.jpeg
+$hb_collect contrib/gd/tests/images_in/*.png
+$hb_collect contrib/gd/tests/images_in/*.gif
+$hb_collect contrib/gd/tests/images_out/EMPTY*
 
 # CONTRIB\BTREE
 $hb_collect contrib/btree/[mM]akefile*
@@ -409,6 +456,7 @@ $hb_collect contrib/libmisc/[mM]akefile*
 $hb_collect contrib/libmisc/*.[ch]
 $hb_collect contrib/libmisc/*.ch
 $hb_collect contrib/libmisc/*.prg
+$hb_collect contrib/libmisc/*.bat
 $hb_collect contrib/libmisc/doc/gen*
 $hb_collect contrib/libmisc/doc/lib*
 $hb_collect contrib/libmisc/doc/en/*.txt
@@ -418,6 +466,7 @@ $hb_collect contrib/samples/[mM]akefile*
 $hb_collect contrib/samples/*.[ch]
 $hb_collect contrib/samples/*.ch
 $hb_collect contrib/samples/*.prg
+$hb_collect contrib/samples/*.bat
 
 }
 

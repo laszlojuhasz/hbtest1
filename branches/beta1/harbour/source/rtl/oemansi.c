@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * OEM <-> ANSI string conversion functions (Win32 specific, Xbase++ ext.)
  *
- * Copyright 1999-2001 Viktor Szakats <viktor.szakats@syenar.hu>
+ * Copyright 1999-2007 Viktor Szakats <viktor.szakats@syenar.hu>
  * www - http://www.harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -58,8 +58,6 @@
 #include "hbapi.h"
 #include "hbapiitm.h"
 
-#ifdef HB_EXTENSION
-
 HB_FUNC( HB_ANSITOOEM )
 {
    PHB_ITEM pString = hb_param( 1, HB_IT_STRING );
@@ -70,7 +68,7 @@ HB_FUNC( HB_ANSITOOEM )
       DWORD ulLen = hb_itemGetCLen( pString );
       char * pszDst = ( char * ) hb_xgrab( ulLen + 1 );
 
-      CharToOemBuff( ( LPCSTR ) hb_itemGetCPtr( pString ), ( LPSTR ) pszDst, ulLen );
+      CharToOemBuffA( ( LPCSTR ) hb_itemGetCPtr( pString ), ( LPSTR ) pszDst, ulLen );
 
       hb_retclen_buffer( pszDst, ulLen );
    }
@@ -91,7 +89,7 @@ HB_FUNC( HB_OEMTOANSI )
       DWORD ulLen = hb_itemGetCLen( pString );
       char * pszDst = ( char * ) hb_xgrab( ulLen + 1 );
 
-      OemToCharBuff( ( LPCSTR ) hb_itemGetCPtr( pString ), ( LPSTR ) pszDst, ulLen );
+      OemToCharBuffA( ( LPCSTR ) hb_itemGetCPtr( pString ), ( LPSTR ) pszDst, ulLen );
 
       hb_retclen_buffer( pszDst, ulLen );
    }
@@ -101,23 +99,3 @@ HB_FUNC( HB_OEMTOANSI )
    else
       hb_retc( NULL );
 }
-
-#endif
-
-#ifdef HB_COMPAT_XPP
-
-/* NOTE: Xbase++ compatible function */
-
-HB_FUNC( CONVTOOEMCP )
-{
-   HB_FUNC_EXEC( HB_ANSITOOEM );
-}
-
-/* NOTE: Xbase++ compatible function */
-
-HB_FUNC( CONVTOANSICP )
-{
-   HB_FUNC_EXEC( HB_OEMTOANSI );
-}
-
-#endif

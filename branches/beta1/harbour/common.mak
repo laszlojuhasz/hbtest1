@@ -207,7 +207,7 @@ GTXWC_LIB    = $(LIB_DIR)\$(LIBPREF)gtxwc$(LIBEXT)
 HARBOUR_EXE  = $(BIN_DIR)\harbour$(EXEEXT)
 # required (intermediate) utility
 #     to generate pptable.c
-HBPPGEN_EXE  = $(BIN_DIR)\ppgen$(EXEEXT)
+HBPPGEN_EXE  = $(BIN_DIR)\hbppgen$(EXEEXT)
 HBPP_EXE     = $(BIN_DIR)\hbpp$(EXEEXT)
 HBPPTEST_EXE = $(BIN_DIR)\hbpptest$(EXEEXT)
 HBRUN_EXE    = $(BIN_DIR)\hbrun$(EXEEXT)
@@ -289,6 +289,7 @@ COMMON_LIB_OBJS = \
     $(OBJ_DIR)\hbfhnd$(OBJEXT)   \
     $(OBJ_DIR)\hbfsapi$(OBJEXT)  \
     $(OBJ_DIR)\hbgete$(OBJEXT)   \
+    $(OBJ_DIR)\hbwince$(OBJEXT)  \
     $(OBJ_DIR)\hbhash$(OBJEXT)   \
     $(OBJ_DIR)\hbdate$(OBJEXT)   \
     $(OBJ_DIR)\hbstr$(OBJEXT)    \
@@ -329,10 +330,8 @@ COMPILER_LIB_OBJS = \
     $(OBJ_DIR)\ppcomp$(OBJEXT)   \
     $(OBJ_DIR)\genc$(OBJEXT)     \
     $(OBJ_DIR)\gencc$(OBJEXT)    \
-    $(OBJ_DIR)\gencli$(OBJEXT)   \
     $(OBJ_DIR)\gencobj$(OBJEXT)  \
     $(OBJ_DIR)\genobj32$(OBJEXT) \
-    $(OBJ_DIR)\genjava$(OBJEXT)  \
     $(OBJ_DIR)\genhrb$(OBJEXT)   \
     $(OBJ_DIR)\expropta$(OBJEXT) \
     $(OBJ_DIR)\exproptb$(OBJEXT) \
@@ -370,6 +369,7 @@ VM_COMMON_LIB_OBJS = \
     $(OBJ_DIR)\proc$(OBJEXT)     \
     $(OBJ_DIR)\pvalue$(OBJEXT)   \
     $(OBJ_DIR)\runner$(OBJEXT)   \
+    $(OBJ_DIR)\vm$(OBJEXT)       \
     $(OBJ_DIR)\harbinit$(OBJEXT) \
 
 # Specific VM Objects for building STATIC library
@@ -446,6 +446,7 @@ RTL_LIB_OBJS = \
     $(OBJ_DIR)\hbhex$(OBJEXT)    \
     $(OBJ_DIR)\hbmd5$(OBJEXT)    \
     $(OBJ_DIR)\hbffind$(OBJEXT)  \
+    $(OBJ_DIR)\hbfile$(OBJEXT)   \
     $(OBJ_DIR)\hbgtcore$(OBJEXT) \
     $(OBJ_DIR)\hbinet$(OBJEXT)   \
     $(OBJ_DIR)\hbrandom$(OBJEXT) \
@@ -473,6 +474,7 @@ RTL_LIB_OBJS = \
     $(OBJ_DIR)\natmsg$(OBJEXT)   \
     $(OBJ_DIR)\net$(OBJEXT)      \
     $(OBJ_DIR)\oemansi$(OBJEXT)  \
+    $(OBJ_DIR)\oemansix$(OBJEXT) \
     $(OBJ_DIR)\oldbox$(OBJEXT)   \
     $(OBJ_DIR)\oldclear$(OBJEXT) \
     $(OBJ_DIR)\pad$(OBJEXT)      \
@@ -514,6 +516,16 @@ RTL_LIB_OBJS = \
     $(OBJ_DIR)\trace$(OBJEXT)    \
     $(OBJ_DIR)\transfrm$(OBJEXT) \
     $(OBJ_DIR)\trim$(OBJEXT)     \
+    $(OBJ_DIR)\tscalara$(OBJEXT) \
+    $(OBJ_DIR)\tscalarb$(OBJEXT) \
+    $(OBJ_DIR)\tscalarc$(OBJEXT) \
+    $(OBJ_DIR)\tscalard$(OBJEXT) \
+    $(OBJ_DIR)\tscalarh$(OBJEXT) \
+    $(OBJ_DIR)\tscalarl$(OBJEXT) \
+    $(OBJ_DIR)\tscalarn$(OBJEXT) \
+    $(OBJ_DIR)\tscalarp$(OBJEXT) \
+    $(OBJ_DIR)\tscalars$(OBJEXT) \
+    $(OBJ_DIR)\tscalaru$(OBJEXT) \
     $(OBJ_DIR)\type$(OBJEXT)     \
     $(OBJ_DIR)\val$(OBJEXT)      \
     $(OBJ_DIR)\valtostr$(OBJEXT) \
@@ -527,15 +539,11 @@ RTL_LIB_OBJS = \
     $(OBJ_DIR)\adir$(OBJEXT)     \
     $(OBJ_DIR)\alert$(OBJEXT)    \
     $(OBJ_DIR)\altd$(OBJEXT)     \
-    $(OBJ_DIR)\array$(OBJEXT)    \
-    $(OBJ_DIR)\block$(OBJEXT)    \
     $(OBJ_DIR)\browdb$(OBJEXT)   \
     $(OBJ_DIR)\browdbx$(OBJEXT)  \
     $(OBJ_DIR)\browse$(OBJEXT)   \
-    $(OBJ_DIR)\characte$(OBJEXT) \
     $(OBJ_DIR)\checkbox$(OBJEXT) \
     $(OBJ_DIR)\color53$(OBJEXT)  \
-    $(OBJ_DIR)\date$(OBJEXT)     \
     $(OBJ_DIR)\dbedit$(OBJEXT)   \
     $(OBJ_DIR)\devoutp$(OBJEXT)  \
     $(OBJ_DIR)\dircmd$(OBJEXT)   \
@@ -544,15 +552,14 @@ RTL_LIB_OBJS = \
     $(OBJ_DIR)\fieldbl$(OBJEXT)  \
     $(OBJ_DIR)\getlist$(OBJEXT)  \
     $(OBJ_DIR)\getsys$(OBJEXT)   \
+    $(OBJ_DIR)\gui$(OBJEXT)      \
+    $(OBJ_DIR)\hbini$(OBJEXT)    \
     $(OBJ_DIR)\input$(OBJEXT)    \
     $(OBJ_DIR)\listbox$(OBJEXT)  \
-    $(OBJ_DIR)\logical$(OBJEXT)  \
     $(OBJ_DIR)\memoedit$(OBJEXT) \
     $(OBJ_DIR)\memvarbl$(OBJEXT) \
     $(OBJ_DIR)\menuto$(OBJEXT)   \
-    $(OBJ_DIR)\mssgline$(OBJEXT) \
-    $(OBJ_DIR)\nil$(OBJEXT)      \
-    $(OBJ_DIR)\numeric$(OBJEXT)  \
+    $(OBJ_DIR)\menusys$(OBJEXT) \
     $(OBJ_DIR)\objfunc$(OBJEXT)  \
     $(OBJ_DIR)\perfuncs$(OBJEXT) \
     $(OBJ_DIR)\persist$(OBJEXT)  \
@@ -562,13 +569,13 @@ RTL_LIB_OBJS = \
     $(OBJ_DIR)\radiogrp$(OBJEXT) \
     $(OBJ_DIR)\readkey$(OBJEXT)  \
     $(OBJ_DIR)\readvar$(OBJEXT)  \
-    $(OBJ_DIR)\scalar$(OBJEXT)   \
     $(OBJ_DIR)\scrollbr$(OBJEXT) \
     $(OBJ_DIR)\setfunc$(OBJEXT)  \
     $(OBJ_DIR)\setta$(OBJEXT)    \
     $(OBJ_DIR)\symbol$(OBJEXT)   \
     $(OBJ_DIR)\tbcolumn$(OBJEXT) \
     $(OBJ_DIR)\tbrowse$(OBJEXT)  \
+    $(OBJ_DIR)\tbrowsys$(OBJEXT) \
     $(OBJ_DIR)\tclass$(OBJEXT)   \
     $(OBJ_DIR)\teditor$(OBJEXT)  \
     $(OBJ_DIR)\text$(OBJEXT)     \
@@ -577,12 +584,15 @@ RTL_LIB_OBJS = \
     $(OBJ_DIR)\tgetlist$(OBJEXT) \
     $(OBJ_DIR)\tlabel$(OBJEXT)   \
     $(OBJ_DIR)\tmenuitm$(OBJEXT) \
+    $(OBJ_DIR)\tmenusys$(OBJEXT) \
     $(OBJ_DIR)\tobject$(OBJEXT)  \
     $(OBJ_DIR)\tpopup$(OBJEXT)   \
     $(OBJ_DIR)\treport$(OBJEXT)  \
+    $(OBJ_DIR)\tscalar$(OBJEXT)  \
     $(OBJ_DIR)\ttextlin$(OBJEXT) \
     $(OBJ_DIR)\ttopbar$(OBJEXT)  \
     $(OBJ_DIR)\typefile$(OBJEXT) \
+    $(OBJ_DIR)\typefilx$(OBJEXT) \
     $(OBJ_DIR)\valtoexp$(OBJEXT) \
     $(OBJ_DIR)\wait$(OBJEXT)     \
 
@@ -772,6 +782,7 @@ CODEPAGE_LIB_OBJS = \
 
 RDD_LIB_OBJS = \
     $(OBJ_DIR)\dbcmd$(OBJEXT)    \
+    $(OBJ_DIR)\dbcmdx$(OBJEXT)   \
     $(OBJ_DIR)\hbdbsort$(OBJEXT) \
     $(OBJ_DIR)\workarea$(OBJEXT) \
     $(OBJ_DIR)\wacore$(OBJEXT)   \
@@ -785,12 +796,19 @@ RDD_LIB_OBJS = \
     $(OBJ_DIR)\dbdelim$(OBJEXT)  \
     $(OBJ_DIR)\dbsdf$(OBJEXT)    \
     $(OBJ_DIR)\dbjoin$(OBJEXT)   \
+    $(OBJ_DIR)\dbjoinx$(OBJEXT)  \
     $(OBJ_DIR)\dbtotal$(OBJEXT)  \
+    $(OBJ_DIR)\dbtotalx$(OBJEXT) \
     $(OBJ_DIR)\dbfuncs$(OBJEXT)  \
+    $(OBJ_DIR)\dbfuncsx$(OBJEXT) \
     $(OBJ_DIR)\dblist$(OBJEXT)   \
+    $(OBJ_DIR)\dblistx$(OBJEXT)  \
     $(OBJ_DIR)\dbsort$(OBJEXT)   \
+    $(OBJ_DIR)\dbsortx$(OBJEXT)  \
     $(OBJ_DIR)\dbstrux$(OBJEXT)  \
+    $(OBJ_DIR)\dbstruxx$(OBJEXT) \
     $(OBJ_DIR)\dbupdat$(OBJEXT)  \
+    $(OBJ_DIR)\dbupdatx$(OBJEXT) \
     $(OBJ_DIR)\rddord$(OBJEXT)   \
     $(OBJ_DIR)\rddsys$(OBJEXT)   \
 
@@ -920,7 +938,7 @@ HBPP_EXE_OBJS = \
 #**********************************************************
 
 HBPPGEN_EXE_OBJS = \
-    $(OBJ_DIR)\ppgen$(OBJEXT)    \
+    $(OBJ_DIR)\hbppgen$(OBJEXT)  \
 
 #**********************************************************
 

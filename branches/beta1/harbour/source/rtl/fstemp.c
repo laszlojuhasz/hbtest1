@@ -75,13 +75,13 @@ static BOOL hb_fsTempName( BYTE * pszBuffer, const BYTE * pszDir, const BYTE * p
 
    char cTempDir[ _POSIX_PATH_MAX + 1 ];
 
-   if ( pszDir != NULL && pszDir[0] != '\0' )
+   if( pszDir != NULL && pszDir[0] != '\0' )
    {
       strncpy( (char *) cTempDir, (const char *) pszDir, _POSIX_PATH_MAX );
    }
    else
    {
-      if ( ! GetTempPath( ( DWORD ) _POSIX_PATH_MAX, cTempDir ) )
+      if( ! GetTempPathA( ( DWORD ) _POSIX_PATH_MAX, cTempDir ) )
       {
          hb_fsSetIOError( FALSE, 0 );
          return FALSE;
@@ -89,7 +89,7 @@ static BOOL hb_fsTempName( BYTE * pszBuffer, const BYTE * pszDir, const BYTE * p
    }
    cTempDir[ _POSIX_PATH_MAX ] = '\0';
 
-   fResult = GetTempFileName( ( LPCSTR ) cTempDir, ( ( pszPrefix == NULL ) ? ( LPCSTR ) "hb" : ( LPCSTR ) pszPrefix ), 0, ( LPSTR ) pszBuffer );
+   fResult = GetTempFileNameA( ( LPCSTR ) cTempDir, ( ( pszPrefix == NULL ) ? ( LPCSTR ) "hb" : ( LPCSTR ) pszPrefix ), 0, ( LPSTR ) pszBuffer );
 
 #else
 
@@ -184,11 +184,24 @@ HB_EXPORT FHANDLE hb_fsCreateTemp( const BYTE * pszDir, const BYTE * pszPrefix, 
       {
          hb_strncpy( ( char * ) pszName, ( char * ) pszDir, _POSIX_PATH_MAX );
       }
-      else if( !fsGetTempDirByCase( pszName, getenv( "TMPDIR" ) ) &&
-               !fsGetTempDirByCase( pszName, P_tmpdir ) )
+      else
       {
-         hb_strncpy( ( char * ) pszName, ".", _POSIX_PATH_MAX );
+         char * pszTmpDir = hb_getenv( "TMPDIR" );
+
+         if( !fsGetTempDirByCase( pszName, pszTmpDir ) )
+         {
+#ifdef P_tmpdir
+            if( !fsGetTempDirByCase( pszName, P_tmpdir ) )
+#endif
+            {
+               pszName[0] = '.';
+               pszName[1] = '\0';
+            }
+         }
+         if( pszTmpDir )
+            hb_xfree( pszTmpDir );
       }
+
       if( pszName[0] != '\0' )
       {
          int len;
@@ -229,7 +242,7 @@ HB_EXPORT FHANDLE hb_fsCreateTemp( const BYTE * pszDir, const BYTE * pszPrefix, 
             d = modf( d, &x );
             pszName[ iLen++ ] = n + ( n > 9 ? 'a' - 10 : '0' );
          }
-         hb_fileNameConv( ( char * ) pszName );
+         hb_fsNameConv( pszName, NULL );
          fd = hb_fsCreateEx( pszName, uiAttr, FO_EXCLUSIVE | FO_EXCL );
       }
 
@@ -243,8 +256,6 @@ HB_EXPORT FHANDLE hb_fsCreateTemp( const BYTE * pszDir, const BYTE * pszPrefix, 
 
 #endif
 
-#ifdef HB_EXTENSION
-
 HB_FUNC( HB_FTEMPCREATE )
 {
    BYTE szName[ _POSIX_PATH_MAX + 1 ];
@@ -256,5 +267,3 @@ HB_FUNC( HB_FTEMPCREATE )
 
    hb_storc( ( char *) szName, 4 );
 }
-
-#endif

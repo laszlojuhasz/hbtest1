@@ -144,7 +144,7 @@ static const RDDFUNCS dbtTable =
    ( DBENTRYP_V )     hb_dbtForceRel,
    ( DBENTRYP_SVP )   hb_dbtRelArea,
    ( DBENTRYP_VR )    hb_dbtRelEval,
-   ( DBENTRYP_SVP )   hb_dbtRelText,
+   ( DBENTRYP_SI )    hb_dbtRelText,
    ( DBENTRYP_VR )    hb_dbtSetRel,
 
 
@@ -441,7 +441,7 @@ static ERRCODE hb_dbtGetVarLen( DBTAREAP pArea, USHORT uiIndex, ULONG * pLength 
       if( SELF_DELETED( ( AREAP ) pArea, &bDeleted ) == FAILURE )
          return FAILURE;
 
-      if( pArea->lpFields[ uiIndex - 1 ].uiType == HB_IT_MEMO )
+      if( pArea->lpFields[ uiIndex - 1 ].uiType == HB_FT_MEMO )
       {
          if( hb_dbtFileLockSh( pArea ) )
          {
@@ -532,7 +532,7 @@ static ERRCODE hb_dbtGetValue( DBTAREAP pArea, USHORT uiIndex, PHB_ITEM pItem )
    HB_TRACE(HB_TR_DEBUG, ("hb_dbtGetValue(%p, %hu, %p)", pArea, uiIndex, pItem));
 
    if( pArea->fHasMemo && pArea->hMemoFile != FS_ERROR &&
-       pArea->lpFields[ uiIndex - 1 ].uiType == HB_IT_MEMO )
+       pArea->lpFields[ uiIndex - 1 ].uiType == HB_FT_MEMO )
    {
       /* Force read record */
       if( SELF_DELETED( ( AREAP ) pArea, &bDeleted ) == FAILURE )
@@ -574,7 +574,7 @@ static ERRCODE hb_dbtPutValue( DBTAREAP pArea, USHORT uiIndex, PHB_ITEM pItem )
    HB_TRACE(HB_TR_DEBUG, ("hb_dbtPutValue(%p, %hu, %p)", pArea, uiIndex, pItem));
 
    if( pArea->fHasMemo && pArea->hMemoFile != FS_ERROR &&
-       pArea->lpFields[ uiIndex - 1 ].uiType == HB_IT_MEMO )
+       pArea->lpFields[ uiIndex - 1 ].uiType == HB_FT_MEMO )
    {
       if( HB_IS_MEMO( pItem ) || HB_IS_STRING( pItem ) )
       {
@@ -796,10 +796,10 @@ HB_FUNC( DBFDBT_GETFUNCTABLE )
    RDDFUNCS * pTable;
    USHORT * uiCount;
 
-   uiCount = ( USHORT * ) hb_itemGetPtr( hb_param( 1, HB_IT_POINTER ) );
-   pTable = ( RDDFUNCS * ) hb_itemGetPtr( hb_param( 2, HB_IT_POINTER ) );
+   uiCount = ( USHORT * ) hb_parptr( 1 );
+   pTable = ( RDDFUNCS * ) hb_parptr( 2 );
 
-   HB_TRACE(HB_TR_DEBUG, ("DBFDBT_GETFUNCTABLE(%i, %p)", uiCount, pTable));
+   HB_TRACE(HB_TR_DEBUG, ("DBFDBT_GETFUNCTABLE(%p, %p)", uiCount, pTable));
 
    if( pTable )
    {

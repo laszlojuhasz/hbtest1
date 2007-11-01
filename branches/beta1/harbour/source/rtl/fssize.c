@@ -58,7 +58,6 @@
 #include "hbapi.h"
 #include "hbapifs.h"
 
-#include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -66,22 +65,46 @@ HB_FOFFSET hb_fsFSize( BYTE * pszFileName, BOOL bUseDirEntry )
 {
    if( bUseDirEntry )
    {
-      BOOL fResult;
-#if defined(HB_OS_LINUX) && defined(__USE_LARGEFILE64)
-         /*
-          * The macro: __USE_LARGEFILE64 is set when _LARGEFILE64_SOURCE is
-          * define and efectively enables lseek64/flock64/ftruncate64 functions
-          * on 32bit machines.
-          */
+#if defined(HB_WINCE)
+      BOOL fFree;
+      PHB_FFIND ffind;
+      pszFileName = hb_fsNameConv( pszFileName, &fFree );
+      ffind = hb_fsFindFirst( ( char * ) pszFileName, HB_FA_ALL );
+      if( fFree )
+         hb_xfree( pszFileName );
+      hb_fsSetIOError( ffind != NULL, 0 );
+      if( ffind )
+      {
+         HB_FOFFSET size = ffind->size;
+         hb_fsFindClose( ffind );
+         return size;
+      }
+#elif defined(HB_OS_LINUX) && defined(__USE_LARGEFILE64)
+      /*
+       * The macro: __USE_LARGEFILE64 is set when _LARGEFILE64_SOURCE is
+       * define and efectively enables lseek64/flock64/ftruncate64 functions
+       * on 32bit machines.
+       */
+      BOOL fResult, fFree;
       struct stat64 statbuf;
+      pszFileName = hb_fsNameConv( pszFileName, &fFree );
       fResult = stat64( ( char * ) pszFileName, &statbuf ) == 0;
-#else
-      struct stat statbuf;
-      fResult = stat( ( char * ) pszFileName, &statbuf ) == 0;
-#endif
+      if( fFree )
+         hb_xfree( pszFileName );
       hb_fsSetIOError( fResult, 0 );
       if( fResult )
          return ( HB_FOFFSET ) statbuf.st_size;
+#else
+      BOOL fResult, fFree;
+      struct stat statbuf;
+      pszFileName = hb_fsNameConv( pszFileName, &fFree );
+      fResult = stat( ( char * ) pszFileName, &statbuf ) == 0;
+      if( fFree )
+         hb_xfree( pszFileName );
+      hb_fsSetIOError( fResult, 0 );
+      if( fResult )
+         return ( HB_FOFFSET ) statbuf.st_size;
+#endif
    }
    else
    {
@@ -99,12 +122,8 @@ HB_FOFFSET hb_fsFSize( BYTE * pszFileName, BOOL bUseDirEntry )
    return 0;
 }
 
-#ifdef HB_EXTENSION
-
 HB_FUNC( HB_FSIZE )
 {
    hb_retnint( ISCHAR( 1 ) ? hb_fsFSize( ( BYTE * ) hb_parc( 1 ),
                                     ISLOG( 2 ) ? hb_parl( 2 ) : TRUE ) : 0 );
 }
-
-#endif

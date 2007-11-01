@@ -57,7 +57,7 @@
 
 /* NOTE: User programs should never call this layer directly! */
 
-#define HB_GT_NAME	PCA
+#define HB_GT_NAME      PCA
 
 #include "hbgtcore.h"
 #include "hbinit.h"
@@ -443,7 +443,9 @@ static void hb_gt_pca_Init( FHANDLE hFilenoStdin, FHANDLE hFilenoStdout, FHANDLE
 
    HB_GTSUPER_INIT( hFilenoStdin, hFilenoStdout, hFilenoStderr );
 
-#ifdef OS_UNIX_COMPATIBLE
+/* SA_NOCLDSTOP in #if is a hack to detect POSIX compatible environment */
+#if defined( OS_UNIX_COMPATIBLE ) && defined( SA_NOCLDSTOP )
+   s_fRestTTY = FALSE;
    if( s_bStdinConsole )
    {
       struct sigaction act, old;
@@ -451,10 +453,17 @@ static void hb_gt_pca_Init( FHANDLE hFilenoStdin, FHANDLE hFilenoStdout, FHANDLE
       s_fRestTTY = TRUE;
 
       /* if( s_saved_TIO.c_lflag & TOSTOP ) != 0 */
-      sigaction( SIGTTOU, 0, &old );
+      sigaction( SIGTTOU, NULL, &old );
       memcpy( &act, &old, sizeof( struct sigaction ) );
       act.sa_handler = sig_handler;
-      act.sa_flags = SA_RESTART;
+      /* do not use SA_RESTART - new Linux kernels will repeat the operation */
+#if defined( SA_ONESHOT )
+      act.sa_flags = SA_ONESHOT;
+#elif defined( SA_RESETHAND )
+      act.sa_flags = SA_RESETHAND;
+#else
+      act.sa_flags = 0;
+#endif
       sigaction( SIGTTOU, &act, 0 );
 
       tcgetattr( hFilenoStdin, &s_saved_TIO );
@@ -467,7 +476,7 @@ static void hb_gt_pca_Init( FHANDLE hFilenoStdin, FHANDLE hFilenoStdout, FHANDLE
       tcsetattr( hFilenoStdin, TCSAFLUSH, &s_curr_TIO );
       act.sa_handler = SIG_DFL;
 
-      sigaction( SIGTTOU, &old, 0 );
+      sigaction( SIGTTOU, &old, NULL );
    }
 
    iRows = 24;

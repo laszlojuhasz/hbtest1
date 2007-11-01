@@ -64,20 +64,18 @@
 #include "common.ch"
 
 #ifdef HB_COMPAT_C53
-FUNCTION ReadModal( GetList, nPos, nMsgRow, nMsgLeft, nMsgRight, cMsgColor )
+
+#define SLUPDATED       1
+#define SOACTIVEGET     8
+#define SXREADVAR       9
+
+FUNCTION ReadModal( GetList, nPos, oMenu, nMsgRow, nMsgLeft, nMsgRight, cMsgColor )
 #else
 FUNCTION ReadModal( GetList, nPos )
 #endif
 
-   LOCAL oGetList, oSaveGetList
-
-#ifdef HB_COMPAT_C53
-   LOCAL lMsgFlag
-   LOCAL cSaveColor
-   LOCAL cOldMsg
-   LOCAL lColorFlag
-   LOCAL oGet
-#endif
+   LOCAL oGetList
+   LOCAL oSaveGetList
 
    IF Empty( GetList )
       SetPos( MaxRow() - 1, 0 )
@@ -85,97 +83,55 @@ FUNCTION ReadModal( GetList, nPos )
    ENDIF
 
    oGetList := HBGetList():New( GetList )
-   oGetList:cReadProcName := ProcName( 1 )
-   oGetList:nReadProcLine := ProcLine( 1 )
 
    oSaveGetList := __GetListActive( )
+#ifdef HB_COMPAT_C53
+// oSaveGetList:ReadStats( SLUPDATED, .F. )
+// oSaveGetList:ReadStats( SXREADVAR, ReadVar( "" ) )
+// oSaveGetList:ReadStats( SOACTIVEGET, GetActive( NIL ) )
+#endif
+
    __GetListSetActive( oGetList )
    __GetListLast( oGetList )
 
-   IF ! ( ISNUMBER( nPos ) .AND. nPos > 0 )
-      oGetList:nPos := oGetList:Settle( 0 )
-   ENDIF
-
 #ifdef HB_COMPAT_C53
-   if     ( ! ValType( nMsgRow ) == "N" )
-      lMsgFlag := .f.
-
-   elseif ( ! ValType( nMsgLeft ) == "N" )
-      lMsgFlag := .f.
-
-   elseif ( ! ValType( nMsgRight ) == "N" )
-      lMsgFlag := .f.
-
-   else
-      lMsgFlag := .t.
-      cOldMsg := SaveScreen( nMsgRow, nMsgLeft, nMsgRow, nMsgRight )
-      lColorFlag := ( ValType( cMsgColor ) == "C" )
-
-   endif
-#endif
-
-   DO WHILE oGetList:nPos != 0
-
-      oGetList:oGet := oGetList:aGetList[ oGetList:nPos ]
-      oGetList:PostActiveGet()
-
-#ifdef HB_COMPAT_C53
-      if ( lMsgFlag )
-         oGet := oGetList:aGetList[ oGetList:nPos ]
-            if ( lColorFlag )
-               cSaveColor := SetColor( cMsgColor )
-            endif
-
-            if ( ValType( oGet:Control ) == "O" )
-               @ nMsgRow, nMsgLeft ;
-               say PadC( oGet:Control:Message, nMsgRight - nMsgLeft + 1 )
-            else
-               @ nMsgRow, nMsgLeft ;
-               say PadC( oGet:Message, nMsgRight - nMsgLeft + 1 )
-            endif
-
-            if ( lColorFlag )
-               SetColor( cSaveColor )
-            endif
-      endif
-#endif
-
-      IF ISBLOCK( oGetList:oGet:Reader )
-#ifdef HB_COMPAT_C53
-         Eval( oGetList:oGet:Reader, oGetList:oGet ,oGetlist)
+   oGetList:ReadModal( nPos, oMenu, nMsgRow, nMsgLeft, nMsgRight, cMsgColor )
 #else
-         Eval( oGetList:oGet:Reader, oGetList:oGet )
-#endif
-      ELSE
-         oGetList:Reader()
-      ENDIF
-
-      oGetList:nPos := oGetList:Settle()
-
-   ENDDO
-
-#ifdef HB_COMPAT_C53
-   if ( lMsgFlag )
-      RestScreen( nMsgRow, nMsgLeft, nMsgRow, nMsgRight, cOldMsg )
-   endif
+   oGetList:ReadModal( nPos )
 #endif
 
    __GetListSetActive( oSaveGetList )
+#ifdef HB_COMPAT_C53
+// oSaveGetList:ReadStats( SLUPDATED, oGetList:Updated() )
+// ReadVar( oSaveGetList:ReadStats( SXREADVAR ) )
+// GetActive( oSaveGetList:ReadStats( SOACTIVEGET ) )
+#endif
 
    SetPos( MaxRow() - 1, 0 )
 
-   RETURN oGetList:lUpdated
+   RETURN oGetList:Updated()
 
+#ifdef HB_COMPAT_C53
+PROCEDURE GetReader( oGet, oGetList, oMenu, aMsg )
+
+   HB_SYMBOL_UNUSED( oGetList )
+
+   oGet:Reader( oMenu, aMsg )
+
+   RETURN
+#else
 PROCEDURE GetReader( oGet )
+
    oGet:Reader()
 
    RETURN
+#endif
 
 FUNCTION GetActive( oGet )
    LOCAL oGetList := __GetListActive()
 
    IF oGetList != NIL
-      IF PCount() >= 1
+      IF PCount() > 0
          RETURN oGetList:GetActive( oGet )
       ELSE
          RETURN oGetList:GetActive()
@@ -184,98 +140,79 @@ FUNCTION GetActive( oGet )
 
    RETURN NIL
 
-PROCEDURE GetDoSetKey( keyBlock, oGet )
+PROCEDURE GetDoSetKey( bKeyBlock, oGet )
    LOCAL oGetList := __GetListActive()
 
    IF oGetList != NIL
-      IF oGet != NIL
-         oGetList:oGet := oGet
-      ENDIF
-      oGetList:GetDoSetKey( keyBlock )
+      oGetList:GetDoSetKey( bKeyBlock, oGet )
    ENDIF
 
    RETURN
 
+#ifdef HB_COMPAT_C53
+PROCEDURE GetApplyKey( oGet, nKey, oGetList, oMenu, aMsg )
+   IF !ISOBJECT( oGetList )
+      oGetList := __GetListActive()
+   ENDIF
+#else
 PROCEDURE GetApplyKey( oGet, nKey )
    LOCAL oGetList := __GetListActive()
+#endif
 
    IF oGetList != NIL
-      IF oGet != NIL
-         oGetList:oGet := oGet
-      ENDIF
-      oGetList:GetApplyKey( nKey )
+#ifdef HB_COMPAT_C53
+      oGetList:GetApplyKey( nKey, oGet, oMenu, aMsg )
+#else
+      oGetList:GetApplyKey( nKey, oGet )
+#endif
    ENDIF
 
    RETURN
 
+#ifdef HB_COMPAT_C53
+FUNCTION GetPreValidate( oGet, aMsg )
+#else
 FUNCTION GetPreValidate( oGet )
+#endif
    LOCAL oGetList := __GetListActive()
 
    IF oGetList != NIL
-      IF oGet != NIL
-         oGetList:oGet := oGet
-      ENDIF
-
-      RETURN oGetList:GetPreValidate()
+#ifdef HB_COMPAT_C53
+      RETURN oGetList:GetPreValidate( oGet, aMsg )
+#else
+      RETURN oGetList:GetPreValidate( oGet )
+#endif
    ENDIF
 
    RETURN .F.
 
+#ifdef HB_COMPAT_C53
+FUNCTION GetPostValidate( oGet, aMsg )
+#else
 FUNCTION GetPostValidate( oGet )
+#endif
    LOCAL oGetList := __GetListActive()
 
    IF oGetList != NIL
-      IF oGet != NIL
-         oGetList:oGet := oGet
-      ENDIF
-      
-      RETURN oGetList:GetPostValidate()
+#ifdef HB_COMPAT_C53
+      RETURN oGetList:GetPostValidate( oGet, aMsg )
+#else
+      RETURN oGetList:GetPostValidate( oGet )
+#endif
    ENDIF
 
    RETURN .F.
 
 FUNCTION ReadExit( lExit )
-   RETURN IF( ISLOGICAL( lExit ), Set( _SET_EXIT, lExit ), Set( _SET_EXIT ) )
+   RETURN Set( _SET_EXIT, lExit )
 
 FUNCTION ReadInsert( lInsert )
-   RETURN IF( ISLOGICAL( lInsert ), Set( _SET_INSERT, lInsert ), Set( _SET_INSERT ) )
-
-FUNCTION ReadUpdated( lUpdated )
-/*   LOCAL oGetList := __GetListActive() */
-   LOCAL oGetList := __GetListLast()
-
-   IF oGetList != NIL
-      IF PCount() >= 1
-         RETURN oGetList:ReadUpdated( lUpdated )
-      ELSE
-         RETURN oGetList:ReadUpdated()
-      ENDIF
-   ENDIF
-
-   RETURN .F.
+   RETURN Set( _SET_INSERT, lInsert )
 
 FUNCTION Updated()
-/*   LOCAL oGetList := __GetListActive() */
    LOCAL oGetList := __GetListLast()
 
-   IF oGetList != NIL
-      RETURN oGetList:lUpdated
-   ENDIF
-
-   RETURN .F.
-
-FUNCTION ReadKill( lKill )
-   LOCAL oGetList := __GetListActive()
-
-   IF oGetList != NIL
-      IF PCount() >= 1
-         RETURN oGetList:KillRead( lKill )
-      ELSE
-         RETURN oGetList:KillRead()
-      ENDIF
-   ENDIF
-
-   RETURN .F.
+   RETURN iif( oGetList != NIL, oGetList:Updated(), .F. )
 
 PROCEDURE __KillRead()
    LOCAL oGetList := __GetListActive()
@@ -285,6 +222,45 @@ PROCEDURE __KillRead()
    ENDIF
 
    RETURN
+
+FUNCTION ReadUpdated( lUpdated )
+   LOCAL oGetList := __GetListLast()
+
+   IF oGetList != NIL
+      IF PCount() > 0
+         RETURN oGetList:ReadUpdated( lUpdated )
+      ELSE
+         RETURN oGetList:ReadUpdated()
+      ENDIF
+   ENDIF
+
+   RETURN .F.
+
+FUNCTION ReadKill( lKill )
+   LOCAL oGetList := __GetListActive()
+
+   IF oGetList != NIL
+      IF PCount() > 0
+         RETURN oGetList:KillRead( lKill )
+      ELSE
+         RETURN oGetList:KillRead()
+      ENDIF
+   ENDIF
+
+   RETURN .F.
+
+FUNCTION ReadFormat( bFormat )
+   LOCAL oGetList := __GetListActive()
+
+   IF oGetList != NIL
+      IF PCount() > 0
+         RETURN oGetList:SetFormat( bFormat )
+      ELSE
+         RETURN oGetList:SetFormat()
+      ENDIF
+   ENDIF
+
+   RETURN NIL
 
 PROCEDURE __SetFormat( bFormat )
    LOCAL oGetList := __GetListActive()
@@ -299,14 +275,14 @@ PROCEDURE __SetFormat( bFormat )
 
    RETURN
 
-FUNCTION ReadFormat( bFormat )
+FUNCTION ReadStats( nElement, xNewValue )
    LOCAL oGetList := __GetListActive()
 
    IF oGetList != NIL
-      IF PCount() >= 1
-         RETURN oGetList:SetFormat( bFormat )
+      IF PCount() > 1
+         RETURN oGetList:ReadStats( nElement, xNewValue )
       ELSE
-         RETURN oGetList:SetFormat()
+         RETURN oGetList:ReadStats( nElement )
       ENDIF
    ENDIF
 
@@ -321,7 +297,8 @@ FUNCTION ReadFormat( bFormat )
 FUNCTION RangeCheck( oGet, xDummy, xLow, xHigh )
    LOCAL xValue
    LOCAL cMessage
-   LOCAL nOldRow, nOldCol
+   LOCAL nOldRow
+   LOCAL nOldCol
 
    HB_SYMBOL_UNUSED( xDummy )
 
@@ -358,92 +335,98 @@ FUNCTION RangeCheck( oGet, xDummy, xLow, xHigh )
 
 #ifdef HB_COMPAT_C53
 
-PROCEDURE GUIReader( oGet, oGetlist, a, b )
+PROCEDURE GUIReader( oGet, oGetlist, oMenu, aMsg )
+
+   IF !ISOBJECT( oGetList )
+      oGetList := __GetListActive()
+   ENDIF
  
-   oGetlist:GuiReader( oGet, oGetList, a, b )
+   IF oGetList != NIL
+      oGetlist:GUIReader( oGet, oMenu, aMsg )
+   ENDIF
 
    RETURN
 
-PROCEDURE TBReader( oGet, oGetList, aMsg )
+PROCEDURE GUIApplyKey( oGet, oGUI, oGetList, nKey, oMenu, aMsg )
 
-   oGetlist:TBReader( oGet, oGetList, aMsg )
-
-   RETURN
-
-PROCEDURE TBApplyKey( oGet, oTB, GetList, nKey,  aMsg )
-   LOCAL oGetList := __GetListActive()
+   IF !ISOBJECT( oGetList )
+      oGetList := __GetListActive()
+   ENDIF
 
    IF oGetList != NIL
-      IF oGet != NIL
-         oGetList:oGet := oGet
-      ENDIF
-      oGetList:Tbapplykey( oGet, oTB, GetList, nKey, aMsg )
+      oGetList:GUIApplyKey( oGet, oGUI, nKey, oMenu, aMsg )
    ENDIF
+
+   RETURN
+
+FUNCTION GUIPreValidate( oGet, oGUI, aMsg )
+   LOCAL oGetList := __GetListActive()
+
+   RETURN iif( oGetList != NIL, oGetList:GUIPreValidate( oGet, oGUI, aMsg ), .F. )
+
+FUNCTION GUIPostValidate( oGet, oGUI, aMsg )
+   LOCAL oGetList := __GetListActive()
+
+   RETURN iif( oGetList != NIL, oGetList:GUIPostValidate( oGet, oGUI, aMsg ), .F. )
+
+PROCEDURE TBReader( oGet, oGetList, oMenu, aMsg )
+
+   IF !ISOBJECT( oGetList )
+      oGetList := __GetListActive()
+   ENDIF
+
+   IF oGetList != NIL
+      oGetlist:TBReader( oGet, oMenu, aMsg )
+   ENDIF
+
+   RETURN
+
+PROCEDURE TBApplyKey( oGet, oTB, oGetList, nKey, aMsg )
+
+   IF !ISOBJECT( oGetList )
+      oGetList := __GetListActive()
+   ENDIF
+
+   IF oGetList != NIL
+      oGetList:TBApplyKey( oGet, oTB, nKey, aMsg )
+   ENDIF
+
    RETURN 
 
-PROCEDURE GuiApplyKey(oGet,nKey)
+FUNCTION Accelerator( oGetList, nKey, aMsg )
+
+   IF !ISOBJECT( oGetList )
+      oGetList := __GetListActive()
+   ENDIF
+
+   RETURN iif( oGetList != NIL, oGetlist:Accelerator( nKey, aMsg ), 0 )
+
+FUNCTION HitTest( oGetList, nMRow, nMCol, aMsg )
+
+   IF !ISOBJECT( oGetList )
+      oGetList := __GetListActive()
+   ENDIF
+
+   RETURN iif( oGetList != NIL, oGetlist:hitTest( nMRow, nMCol, aMsg ), 0 )
+
+FUNCTION ShowGetMsg( oGet, aMsg )
    LOCAL oGetList := __GetListActive()
 
    IF oGetList != NIL
-      IF oGet != NIL
-         oGetList:oGet := oGet
-      ENDIF
-      oGetList:GUIApplyKey(oGet, nKey )
+      oGetList:ShowGetMsg( oGet, aMsg )
    ENDIF
 
-   RETURN
+   RETURN NIL
 
-FUNCTION GuiGetPreValidate( oGet, oGUI )
+FUNCTION EraseGetMsg( oGet, aMsg )
    LOCAL oGetList := __GetListActive()
 
-   HB_SYMBOL_UNUSED( oGUI )
+   HB_SYMBOL_UNUSED( oGet )
 
    IF oGetList != NIL
-      IF oGet != NIL
-         oGetList:oGet := oGet
-      ENDIF
-
-      RETURN oGetList:GetPreValidate()
+      oGetList:EraseGetMsg( aMsg )
    ENDIF
 
-   RETURN .F.
-
-FUNCTION GuiGetPostValidate( oGet, oGUI )
-   LOCAL oGetList := __GetListActive()
-
-   IF oGetList != NIL
-      IF oGet != NIL
-         oGetList:oGet := oGet
-      ENDIF
-      
-      RETURN oGetList:GuiGetPostValidate( oGUI )
-   ENDIF
-
-   RETURN .F.
-
-
-FUNCTION HitTest( aGetList, MouseRow, MouseCol, aMsg ) // Removed STATIC
-   LOCAL oGetList := __GetListActive()
-
-   IF oGetList != NIL
-      RETURN oGetlist:Hittest( aGetList, MouseRow, MouseCol, aMsg ) // Removed STATIC
-   ENDIF
-   RETURN 0
-
-/***
-*
-*  Accelerator( <aGetList>, <nKey>, <aMsg> ) --> 0
-*
-*  Identify the Accelerator key 
-*
-***/
-FUNCTION Accelerator( aGetList, nKey, aMsg ) // Removed STATIC
-   LOCAL oGetList := __GetListActive()
-
-   IF oGetList != NIL
-      RETURN oGetlist:Accelerator( aGetList, nKey, aMsg ) // Removed STATIC
-   ENDIF
-   RETURN 0
+   RETURN NIL
 
 #endif
-

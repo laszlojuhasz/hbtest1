@@ -190,9 +190,16 @@ static HB_HANDLE hb_memvarValueNew( HB_ITEM_PTR pSource, HB_HANDLE hPrevMemvar )
    if( pSource )
    {
       if( hPrevMemvar == ( HB_HANDLE ) -1 ) /* detached local - copy its body only */
+      {
          memcpy( pValue->pVarItem, pSource, sizeof( HB_ITEM ) );
+         pValue->pVarItem->type &= ~HB_IT_DEFAULT;
+      }
       else
+      {
          hb_itemCopy( pValue->pVarItem, pSource );
+         /* Remove MEMOFLAG if exists (assignment from field). */
+         pValue->pVarItem->type &= ~HB_IT_MEMOFLAG;
+      }
    }
 
    HB_TRACE(HB_TR_INFO, ("hb_memvarValueNew: memvar item created with handle %i", hValue));
@@ -284,7 +291,7 @@ static void hb_memvarDetachDynSym( PHB_DYNS pDynSym, BOOL fRestore )
  */
 HB_ITEM_PTR hb_memvarDetachLocal( HB_ITEM_PTR pLocal )
 {
-   HB_TRACE(HB_TR_DEBUG, ("hb_memvarDetachLocal(%p, %d)", pLocal, pLocal->type ));
+   HB_TRACE(HB_TR_DEBUG, ("hb_memvarDetachLocal(%p)", pLocal));
 
    if( HB_IS_BYREF( pLocal ) )
    {
@@ -292,7 +299,6 @@ HB_ITEM_PTR hb_memvarDetachLocal( HB_ITEM_PTR pLocal )
       {
          if( HB_IS_MEMVAR( pLocal ) )
             break;
-#ifdef HB_COMPAT_XHB
          else if( HB_IS_ENUM( pLocal ) && !pLocal->item.asEnum.valuePtr )
          {
             PHB_ITEM pBase = HB_IS_BYREF( pLocal->item.asEnum.basePtr ) ?
@@ -310,7 +316,6 @@ HB_ITEM_PTR hb_memvarDetachLocal( HB_ITEM_PTR pLocal )
          else if( pLocal->item.asRefer.value >= 0 &&
                   pLocal->item.asRefer.offset == 0 )
             break;
-#endif
          pLocal = hb_itemUnRefOnce( pLocal );
       }
       while( HB_IS_BYREF( pLocal ) );
@@ -423,6 +428,9 @@ void hb_memvarSetValue( PHB_SYMB pMemvarSymb, HB_ITEM_PTR pItem )
       {
          /* value is already created */
          hb_itemCopyToRef( s_globalTable[ pDyn->hMemvar ].pVarItem, pItem );
+
+         /* Remove MEMOFLAG if exists (assignment from field). */
+         s_globalTable[ pDyn->hMemvar ].pVarItem->type &= ~HB_IT_MEMOFLAG;
       }
       else
       {
@@ -430,8 +438,6 @@ void hb_memvarSetValue( PHB_SYMB pMemvarSymb, HB_ITEM_PTR pItem )
          hb_memvarCreateFromDynSymbol( pDyn, VS_PRIVATE, pItem );
       }
 
-      /* Remove MEMOFLAG if exists (assignment from field). */
-      s_globalTable[ pDyn->hMemvar ].pVarItem->type &= ~HB_IT_MEMOFLAG;
    }
    else
       hb_errInternal( HB_EI_MVBADSYMBOL, NULL, pMemvarSymb->szName, NULL );
@@ -1429,7 +1435,11 @@ HB_FUNC( __MVRESTORE )
 {
    /* Clipper checks for the number of arguments here here, but we cannot
       in Harbour since we have two optional parameters as an extension. */
+#ifdef HB_EXTENSION
    if( ISCHAR( 1 ) && ISLOG( 2 ) )
+#else
+   if( hb_pcount() == 2 && ISCHAR( 1 ) && ISLOG( 2 ) )
+#endif
    {
       PHB_FNAME pFileName;
       char szFileName[ _POSIX_PATH_MAX + 1 ];
@@ -1472,8 +1482,13 @@ HB_FUNC( __MVRESTORE )
          BYTE buffer[ HB_MEM_REC_LEN ];
          char * pszMask;
 
+#ifdef HB_EXTENSION
          pszMask = hb_memvarGetMask( 3 );
          bIncludeMask = !ISLOG( 4 ) || hb_parl( 4 );
+#else
+         pszMask = "*";
+         bIncludeMask = TRUE;
+#endif
 
          while( hb_fsRead( fhnd, buffer, HB_MEM_REC_LEN ) == HB_MEM_REC_LEN )
          {

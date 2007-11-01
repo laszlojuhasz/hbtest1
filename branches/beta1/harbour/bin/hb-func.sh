@@ -64,7 +64,7 @@ mk_hbgetlibs()
 {
     if [ -z "$@" ]
     then
-        echo -n "vm pp rtl rdd dbffpt dbfcdx dbfntx hsx hbsix usrrdd ${HB_DB_DRVEXT} macro common lang codepage gtcrs gtsln gtxvt gtxwc gtalleg gtcgi gtstd gtpca gttrm gtwin gtwvt gtdos gtos2 debug profiler compiler hbpcre"
+        echo -n "vm pp rtl rdd dbffpt dbfcdx dbfntx hsx hbsix usrrdd ${HB_DB_DRVEXT} macro common lang codepage gtcrs gtsln gtxvt gtxwc gtalleg gtcgi gtstd gtpca gttrm gtwin gtwvt gtgui gtdos gtos2 debug profiler compiler hbpcre"
     else
         echo -n "$@"
     fi
@@ -74,7 +74,7 @@ mk_hbgetlibsctb()
 {
     if [ -z "$@" ]
     then
-        echo -n "rddads ct nf tip hbgd hbodbc hbole hbpg hbmysql"
+        echo -n "rddads ct nf tip xhb hbgd hbodbc hbpg hbmysql adordd hbwin32"
     else
         echo -n "$@"
     fi
@@ -126,6 +126,8 @@ mk_hbtools()
     fi
     if [ "${HB_COMPILER}" = "mingw32" ]; then
         HB_SYS_LIBS="${HB_SYS_LIBS} -luser32 -lwinspool -lgdi32 -lcomctl32 -lcomdlg32 -lole32 -loleaut32 -luuid -lwsock32 -lws2_32"
+    elif [ "${HB_COMPILER}" = "cemgw" ]; then
+        HB_SYS_LIBS="${HB_SYS_LIBS} -lwininet -lws2"
     elif [ "${HB_COMPILER}" = "djgpp" ]; then
         HB_SYS_LIBS="${HB_SYS_LIBS}"
     else
@@ -205,7 +207,7 @@ elif [ "\$*" = "mk-links" ]; then
     NAME="\${0##*/}"
     if [ "\${DIR}" != "\${NAME}" ]; then
         (cd "\${DIR}"
-        for n in ${hb_pref}cc ${hb_pref}cmp ${hb_pref}mk ${hb_pref}lnk gharbour harbour-link; do
+        for n in ${hb_pref}cc ${hb_pref}cmp ${hb_pref}mk ${hb_pref}lnk; do
             if [ "\${HB_ARCHITECTURE}" = "dos" ]; then
                 cp -f "\${NAME}" "\${n}"
             else
@@ -329,18 +331,18 @@ if [ "\${HB_WITHOUT_X11}" != "yes" ]; then
 fi
 [ -n "\${HB_GPM_LIB}" ] && SYSTEM_LIBS="\${SYSTEM_LIBS} -l\${HB_GPM_LIB}"
 
-if [ "\${HB_STATIC}" = "full" ]; then
-    if [ "\${HB_ARCHITECTURE}" = "linux" ]; then
-        SYSTEM_LIBS="\${SYSTEM_LIBS} -lpthread"
-    fi
-    LN_OPT="\${LN_OPT} -static"
-    HB_STATIC="yes"
-fi
-
 if [ "\${HB_XBGTK}" = "yes" ]; then
     SYSTEM_LIBS="\${SYSTEM_LIBS} \`pkg-config --libs gtk+-2.0\`"
 elif [ "\${HB_HWGUI}" = "yes" ]; then
     SYSTEM_LIBS="\${SYSTEM_LIBS} \`pkg-config --libs gtk+-2.0 --libs libgnomeprint-2.2\`"
+fi
+
+if [ "\${HB_STATIC}" = "full" ]; then
+    if [ "\${HB_ARCHITECTURE}" = "linux" ]; then
+        SYSTEM_LIBS="\${SYSTEM_LIBS} -ldl -lpthread"
+    fi
+    LN_OPT="\${LN_OPT} -static"
+    HB_STATIC="yes"
 fi
 
 HB_LNK_REQ=""
@@ -401,9 +403,16 @@ if [ "\${HB_ARCHITECTURE}" = "darwin" ] || \\
 else
     HARBOUR_LIBS="-Wl,--start-group \${HARBOUR_LIBS} -Wl,--end-group"
 fi
+
+l="mainwin"
+[ "\${HB_MT}" = "MT" ] && [ -f "\${HB_LIB_INSTALL}/lib\${l}mt.a" ] && l="\${l}mt"
+[ -f "\${HB_LIB_INSTALL}/lib\${l}.a" ] && HARBOUR_LIBS="\${HARBOUR_LIBS} -l\${l}"
+
 l="fm"
 [ "\${HB_MT}" = "MT" ] && [ -f "\${HB_LIB_INSTALL}/lib\${l}mt.a" ] && l="\${l}mt"
-if [ -f "\${HB_LIB_INSTALL}/lib\${l}.a" ]; then
+if [ -f "\${HB_LIB_INSTALL}/lib\${l}.a" ] && \\
+   ( [ -n "\${HB_FM_REQ}" ] || [ "\${HB_STATIC}" = "yes" ] ) && \\
+   ( [ "\${HB_COMPILER}" != "cemgw" ] || [ "\${HB_FM_REQ}" = "STAT" ] ); then
     if [ "\${HB_STATIC}" = "yes" ] && [ "\${HB_FM_REQ}" = "STAT" ]; then
         HARBOUR_LIBS="-l\${l} \${HARBOUR_LIBS}"
     else
@@ -516,17 +525,17 @@ case "\${HB}" in
     *cc)
         hb_cc "\${P[@]}"
         ;;
-    *cmp|gharbour)
+    *cmp)
         hb_cmp "\${P[@]}"
         ;;
-    *lnk|harbour-link)
+    *lnk)
         hb_link "\${P[@]}" && \\
-        ( [ "\${HB_STRIP}" != "yes" ] || strip "\${FOUTE}" )
+        ( [ "\${HB_STRIP}" != "yes" ] || ${CCPREFIX}strip "\${FOUTE}" )
         ;;
     *mk)
         hb_cmp "\${P[@]}" && \\
         hb_link "\${FOUTO}" && \\
-        ( [ "\${HB_STRIP}" != "yes" ] || strip "\${FOUTE}" ) && \\
+        ( [ "\${HB_STRIP}" != "yes" ] || ${CCPREFIX}strip "\${FOUTE}" ) && \\
         rm -f "\${FOUTO}"
         ;;
 esac
@@ -542,7 +551,7 @@ mk_hblibso()
 
     name=`get_solibname`
     hb_rootdir="${1-.}"
-    
+
     hb_ver=`get_hbver "${hb_rootdir}"`
     hb_libs=`mk_hbgetlibs "$2"`
     [ -z "${HB_GT_LIB}" ] && HB_GT_LIB="gtstd"

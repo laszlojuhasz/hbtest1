@@ -443,20 +443,17 @@ HB_EXPORT BOOL hb_itemGetL( PHB_ITEM pItem )
 
    if( pItem )
    {
-      switch( pItem->type )
-      {
-         case HB_IT_LOGICAL:
-            return pItem->item.asLogical.value;
+      if( HB_IS_LOGICAL( pItem ) )
+         return pItem->item.asLogical.value;
 
-         case HB_IT_INTEGER:
-            return pItem->item.asInteger.value != 0;
+      else if( HB_IS_INTEGER( pItem ) )
+         return pItem->item.asInteger.value != 0;
 
-         case HB_IT_LONG:
-            return pItem->item.asLong.value != 0;
+      else if( HB_IS_LONG( pItem ) )
+         return pItem->item.asLong.value != 0;
 
-         case HB_IT_DOUBLE:
-            return pItem->item.asDouble.value != 0.0;
-      }
+      else if( HB_IS_DOUBLE( pItem ) )
+         return pItem->item.asDouble.value != 0.0;
    }
 
    return FALSE;
@@ -468,17 +465,14 @@ HB_EXPORT double hb_itemGetND( PHB_ITEM pItem )
 
    if( pItem )
    {
-      switch( pItem->type )
-      {
-         case HB_IT_DOUBLE:
-            return pItem->item.asDouble.value;
+      if( HB_IS_DOUBLE( pItem ) )
+         return pItem->item.asDouble.value;
 
-         case HB_IT_INTEGER:
-            return ( double ) pItem->item.asInteger.value;
+      else if( HB_IS_INTEGER( pItem ) )
+         return ( double ) pItem->item.asInteger.value;
 
-         case HB_IT_LONG:
-            return ( double ) pItem->item.asLong.value;
-      }
+      else if( HB_IS_LONG( pItem ) )
+         return ( double ) pItem->item.asLong.value;
    }
 
    return 0;
@@ -490,17 +484,14 @@ HB_EXPORT int hb_itemGetNI( PHB_ITEM pItem )
 
    if( pItem )
    {
-      switch( pItem->type )
-      {
-         case HB_IT_INTEGER:
-            return pItem->item.asInteger.value;
+      if( HB_IS_INTEGER( pItem ) )
+         return pItem->item.asInteger.value;
 
-         case HB_IT_LONG:
-            return ( int ) pItem->item.asLong.value;
+      else if( HB_IS_LONG( pItem ) )
+         return ( int ) pItem->item.asLong.value;
 
-         case HB_IT_DOUBLE:
-            return ( int ) pItem->item.asDouble.value;
-      }
+      else if( HB_IS_DOUBLE( pItem ) )
+         return ( int ) pItem->item.asDouble.value;
    }
 
    return 0;
@@ -512,23 +503,21 @@ HB_EXPORT LONG hb_itemGetNL( PHB_ITEM pItem )
 
    if( pItem )
    {
-      switch( pItem->type )
-      {
-         case HB_IT_LONG:
-            return ( LONG ) pItem->item.asLong.value;
+      if( HB_IS_LONG( pItem ) )
+         return ( LONG ) pItem->item.asLong.value;
 
-         case HB_IT_INTEGER:
-            return ( LONG ) pItem->item.asInteger.value;
+      else if( HB_IS_INTEGER( pItem ) )
+         return ( LONG ) pItem->item.asInteger.value;
 
-         case HB_IT_DOUBLE:
+      else if( HB_IS_DOUBLE( pItem ) )
 #ifdef __GNUC__
-            return ( LONG ) ( ULONG ) pItem->item.asDouble.value;
+         return ( LONG ) ( ULONG ) pItem->item.asDouble.value;
 #else
-            return ( LONG ) pItem->item.asDouble.value;
+         return ( LONG ) pItem->item.asDouble.value;
 #endif
-         case HB_IT_DATE:
-            return ( LONG ) pItem->item.asDate.value;
-      }
+
+      else if( HB_IS_DATE( pItem ) )
+         return ( LONG ) pItem->item.asDate.value;
    }
 
    return 0;
@@ -540,23 +529,21 @@ HB_EXPORT HB_LONG hb_itemGetNInt( PHB_ITEM pItem )
 
    if( pItem )
    {
-      switch( pItem->type )
-      {
-         case HB_IT_LONG:
-            return ( HB_LONG ) pItem->item.asLong.value;
+      if( HB_IS_LONG( pItem ) )
+         return ( HB_LONG ) pItem->item.asLong.value;
 
-         case HB_IT_INTEGER:
-            return ( LONG ) pItem->item.asInteger.value;
+      else if( HB_IS_INTEGER( pItem ) )
+         return ( HB_LONG ) pItem->item.asInteger.value;
 
-         case HB_IT_DOUBLE:
+      else if( HB_IS_DOUBLE( pItem ) )
 #ifdef __GNUC__
-            return ( HB_LONG ) ( HB_ULONG ) pItem->item.asDouble.value;
+         return ( HB_LONG ) ( HB_ULONG ) pItem->item.asDouble.value;
 #else
-            return ( HB_LONG ) pItem->item.asDouble.value;
+         return ( HB_LONG ) pItem->item.asDouble.value;
 #endif
-         case HB_IT_DATE:
-            return ( HB_LONG ) pItem->item.asDate.value;
-      }
+
+      else if( HB_IS_DATE( pItem ) )
+         return ( LONG ) pItem->item.asDate.value;
    }
 
    return 0;
@@ -569,24 +556,21 @@ HB_EXPORT LONGLONG hb_itemGetNLL( PHB_ITEM pItem )
 
    if( pItem )
    {
-      switch( pItem->type )
-      {
-         case HB_IT_LONG:
-            return ( LONGLONG ) pItem->item.asLong.value;
+      if( HB_IS_LONG( pItem ) )
+         return ( LONGLONG ) pItem->item.asLong.value;
 
-         case HB_IT_INTEGER:
-            return ( LONGLONG ) pItem->item.asInteger.value;
+      else if( HB_IS_INTEGER( pItem ) )
+         return ( LONGLONG ) pItem->item.asInteger.value;
 
-         case HB_IT_DOUBLE:
+      else if( HB_IS_DOUBLE( pItem ) )
 #ifdef __GNUC__
-            return ( LONGLONG ) ( ULONGLONG ) pItem->item.asDouble.value;
+         return ( LONGLONG ) ( ULONGLONG ) pItem->item.asDouble.value;
 #else
-            return ( LONGLONG ) pItem->item.asDouble.value;
+         return ( LONGLONG ) pItem->item.asDouble.value;
 #endif
 
-         case HB_IT_DATE:
-            return ( LONGLONG ) pItem->item.asDate.value;
-      }
+      else if( HB_IS_DATE( pItem ) )
+         return ( LONGLONG ) pItem->item.asDate.value;
    }
 
    return 0;
@@ -947,38 +931,31 @@ HB_EXPORT PHB_ITEM hb_itemPutNDDec( PHB_ITEM pItem, double dNumber, int iDec )
 
 HB_EXPORT double hb_itemGetNDDec( PHB_ITEM pItem, int * piDec )
 {
-   double dNumber;
-
    HB_TRACE(HB_TR_DEBUG, ("hb_itemGetNDDec(%p,p%)", pItem, piDec));
 
-   switch( pItem->type )
+   if( HB_IS_INTEGER( pItem ) )
    {
-      case HB_IT_INTEGER:
-         dNumber = ( double ) pItem->item.asInteger.value;
-         *piDec = 0;
-         break;
-
-      case HB_IT_LONG:
-         dNumber = ( double ) pItem->item.asLong.value;
-         *piDec = 0;
-         break;
-
-      case HB_IT_DOUBLE:
-         dNumber = pItem->item.asDouble.value;
-         *piDec = pItem->item.asDouble.decimal;
-         break;
-
-      case HB_IT_DATE:
-         dNumber = (double) pItem->item.asDate.value;
-         *piDec = 0;
-         break;
-
-      default:
-         dNumber = 0;  /* To avoid GCC -O2 warning */
-         break;
+      *piDec = 0;
+      return ( double ) pItem->item.asInteger.value;
+   }
+   else if( HB_IS_LONG( pItem ) )
+   {
+      *piDec = 0;
+      return ( double ) pItem->item.asLong.value;
+   }
+   else if( HB_IS_DOUBLE( pItem ) )
+   {
+      *piDec = pItem->item.asDouble.decimal;
+      return pItem->item.asDouble.value;
+   }
+   else if( HB_IS_DATE( pItem ) )
+   {
+      *piDec = 0;
+      return ( double ) pItem->item.asDate.value;
    }
 
-   return dNumber;
+   *piDec = 0;
+   return 0.0;
 }
 
 
@@ -1161,26 +1138,25 @@ HB_EXPORT void hb_itemGetNLen( PHB_ITEM pItem, int * piWidth, int * piDecimal )
 
    if( pItem )
    {
-      switch( pItem->type )
+      if( HB_IS_DOUBLE( pItem ) )
       {
-         case HB_IT_DOUBLE:
-            if( piWidth ) *piWidth = ( int ) pItem->item.asDouble.length;
-            if( piDecimal ) *piDecimal = ( int ) pItem->item.asDouble.decimal;
-            break;
-
-         case HB_IT_LONG:
-            if( piWidth ) *piWidth = ( int ) pItem->item.asLong.length;
-            if( piDecimal ) *piDecimal = 0;
-            break;
-
-         case HB_IT_INTEGER:
-            if( piWidth ) *piWidth = ( int ) pItem->item.asInteger.length;
-            if( piDecimal ) *piDecimal = 0;
-            break;
-
-         default:
-            if( piWidth ) *piWidth = 0;
-            if( piDecimal ) *piDecimal = 0;
+         if( piWidth ) *piWidth = ( int ) pItem->item.asDouble.length;
+         if( piDecimal ) *piDecimal = ( int ) pItem->item.asDouble.decimal;
+      }
+      else if( HB_IS_INTEGER( pItem ) )
+      {
+         if( piWidth ) *piWidth = ( int ) pItem->item.asInteger.length;
+         if( piDecimal ) *piDecimal = 0;
+      }
+      else if( HB_IS_LONG( pItem ) )
+      {
+         if( piWidth ) *piWidth = ( int ) pItem->item.asLong.length;
+         if( piDecimal ) *piDecimal = 0;
+      }
+      else
+      {
+         if( piWidth ) *piWidth = 0;
+         if( piDecimal ) *piDecimal = 0;
       }
    }
 }
@@ -1191,17 +1167,12 @@ HB_EXPORT ULONG hb_itemSize( PHB_ITEM pItem )
 
    if( pItem )
    {
-      switch( pItem->type )
-      {
-         case HB_IT_STRING:
-            return pItem->item.asString.length;
-
-         case HB_IT_ARRAY:
-            return hb_arrayLen( pItem );
-
-         case HB_IT_HASH:
-            return hb_hashLen( pItem );
-      }
+      if( HB_IS_STRING( pItem ) )
+         return pItem->item.asString.length;
+      else if( HB_IS_ARRAY( pItem ) )
+         return hb_arrayLen( pItem );
+      else if( HB_IS_HASH( pItem ) )
+         return hb_hashLen( pItem );
    }
 
    return 0;
@@ -1212,7 +1183,7 @@ HB_EXPORT HB_TYPE hb_itemType( PHB_ITEM pItem )
    HB_TRACE(HB_TR_DEBUG, ("hb_itemType(%p)", pItem));
 
    if( pItem )
-      return ( HB_TYPE ) pItem->type;
+      return ( HB_TYPE ) HB_ITEM_TYPE( pItem );
    else
       return HB_IT_NIL;
 }
@@ -1221,7 +1192,7 @@ HB_EXPORT char * hb_itemTypeStr( PHB_ITEM pItem )
 {
    HB_TRACE(HB_TR_DEBUG, ("hb_itemTypeStr(%p)", pItem));
 
-   switch( pItem->type )
+   switch( HB_ITEM_TYPE( pItem ) )
    {
       case HB_IT_ARRAY:
          return ( char * ) ( hb_arrayIsObject( pItem ) ? "O" : "A" );
@@ -1275,7 +1246,7 @@ HB_EXPORT void hb_itemClear( PHB_ITEM pItem )
 
    HB_TRACE(HB_TR_DEBUG, ("hb_itemClear(%p)", pItem));
 
-   type = pItem->type;
+   type = HB_ITEM_TYPERAW( pItem );
    pItem->type = HB_IT_NIL;
 
    if( type & HB_IT_STRING )
@@ -1301,6 +1272,9 @@ HB_EXPORT void hb_itemClear( PHB_ITEM pItem )
          hb_vmEnumRelease( pItem->item.asEnum.basePtr,
                            pItem->item.asEnum.valuePtr );
 
+      else if( type & HB_IT_EXTREF )
+         pItem->item.asExtRef.func->clear( pItem->item.asExtRef.value );
+
       else if( pItem->item.asRefer.offset == 0 && pItem->item.asRefer.value >= 0 )
          hb_gcRefFree( pItem->item.asRefer.BasePtr.array );
    }
@@ -1324,6 +1298,7 @@ HB_EXPORT void hb_itemCopy( PHB_ITEM pDest, PHB_ITEM pSource )
       hb_itemClear( pDest );
 
    memcpy( pDest, pSource, sizeof( HB_ITEM ) );
+   pDest->type &= ~HB_IT_DEFAULT;
 
    if( HB_IS_COMPLEX( pSource ) )
    {
@@ -1348,6 +1323,9 @@ HB_EXPORT void hb_itemCopy( PHB_ITEM pDest, PHB_ITEM pSource )
 
          else if( HB_IS_ENUM( pSource ) )    /* enumerators cannnot be copied */
             pDest->type = HB_IT_NIL;
+
+         else if( HB_IS_EXTREF( pSource ) )
+            pSource->item.asExtRef.func->copy( pDest );
 
          else if( pSource->item.asRefer.offset == 0 && pSource->item.asRefer.value >= 0 )
             hb_gcRefInc( pSource->item.asRefer.BasePtr.array );
@@ -1430,6 +1408,7 @@ HB_EXPORT void hb_itemMove( PHB_ITEM pDest, PHB_ITEM pSource )
       hb_itemClear( pDest );
 
    memcpy( pDest, pSource, sizeof( HB_ITEM ) );
+   pDest->type &= ~HB_IT_DEFAULT;
    pSource->type = HB_IT_NIL;
 }
 
@@ -1458,6 +1437,7 @@ void hb_itemMoveRef( PHB_ITEM pDest, PHB_ITEM pSource )
       hb_itemClear( pDest );
 
    memcpy( pDest, pSource, sizeof( HB_ITEM ) );
+   pDest->type &= ~HB_IT_DEFAULT;
    pSource->type = HB_IT_NIL;
 }
 
@@ -1504,6 +1484,7 @@ void hb_itemMoveToRef( PHB_ITEM pDest, PHB_ITEM pSource )
       hb_itemClear( pDest );
 
    memcpy( pDest, pSource, sizeof( HB_ITEM ) );
+   pDest->type &= ~HB_IT_DEFAULT;
    pSource->type = HB_IT_NIL;
 }
 
@@ -1538,6 +1519,8 @@ HB_EXPORT void hb_itemSwap( PHB_ITEM pItem1, PHB_ITEM pItem2 )
    memcpy( &temp, pItem2, sizeof( HB_ITEM ) );
    memcpy( pItem2, pItem1, sizeof( HB_ITEM ) );
    memcpy( pItem1, &temp, sizeof( HB_ITEM ) );
+   pItem1->type &= ~HB_IT_DEFAULT;
+   pItem2->type &= ~HB_IT_DEFAULT;
 }
 
 /* Internal API, not standard Clipper */
@@ -1602,6 +1585,10 @@ PHB_ITEM hb_itemUnRefOnce( PHB_ITEM pItem )
             }
             return pItem->item.asEnum.valuePtr;
          }
+      }
+      else if( HB_IS_EXTREF( pItem ) )
+      {
+         pItem = pItem->item.asExtRef.func->read( pItem );
       }
       else
       {
@@ -1686,7 +1673,11 @@ PHB_ITEM hb_itemUnRefWrite( PHB_ITEM pItem, PHB_ITEM pSource )
 {
    HB_TRACE(HB_TR_DEBUG, ("hb_itemUnRefWrite(%p,%p)", pItem, pSource));
 
-   if( HB_IS_STRING( pSource ) &&
+   if( HB_IS_EXTREF( pItem ) )
+   {
+      pItem = pItem->item.asExtRef.func->write( pItem, pSource );
+   }
+   else if( HB_IS_STRING( pSource ) &&
        pSource->item.asString.length == 1 )
    {
       do
@@ -1762,6 +1753,7 @@ PHB_ITEM hb_itemReSizeString( PHB_ITEM pItem, ULONG ulSize )
       pItem->item.asString.allocated = ulAlloc;
       pItem->item.asString.value[ ulSize ] = '\0';
    }
+   pItem->type &= ~HB_IT_DEFAULT;
 
    return pItem;
 }
@@ -1785,6 +1777,7 @@ PHB_ITEM hb_itemUnShareString( PHB_ITEM pItem )
       pItem->item.asString.value = szText;
       pItem->item.asString.allocated = ulLen;
    }
+   pItem->type &= ~HB_IT_DEFAULT;
 
    return pItem;
 }
@@ -2194,28 +2187,22 @@ HB_EXPORT BOOL hb_itemStrBuf( char *szResult, PHB_ITEM pNumber, int iSize, int i
    {
       HB_LONG lNumber;
 
-      switch( pNumber->type )
+      if( HB_IS_INTEGER( pNumber ) )
+         lNumber = pNumber->item.asInteger.value;
+
+      else if( HB_IS_LONG( pNumber ) )
+         lNumber = pNumber->item.asLong.value;
+
+      else if( HB_IS_DATE( pNumber ) )
+         lNumber = pNumber->item.asDate.value;
+
+      else if( HB_IS_STRING( pNumber ) )
+         lNumber = pNumber->item.asString.value[0];
+
+      else
       {
-         case HB_IT_INTEGER:
-            lNumber = pNumber->item.asInteger.value;
-            break;
-
-         case HB_IT_LONG:
-            lNumber = pNumber->item.asLong.value;
-            break;
-
-         case HB_IT_DATE:
-            lNumber = pNumber->item.asDate.value;
-            break;
-
-         case HB_IT_STRING:
-            lNumber = pNumber->item.asString.value[0];
-            break;
-
-         default:
-            lNumber = 0;
-            iPos = -1;
-            break;
+         lNumber = 0;
+         iPos = -1;
       }
 
       fNeg = ( lNumber < 0 );
@@ -2324,7 +2311,7 @@ HB_EXPORT char * hb_itemString( PHB_ITEM pItem, ULONG * ulLen, BOOL * bFreeReq )
 
    HB_TRACE(HB_TR_DEBUG, ("hb_itemString(%p, %p, %p)", pItem, ulLen, bFreeReq));
 
-   switch( pItem->type )
+   switch( HB_ITEM_TYPE( pItem ) )
    {
       case HB_IT_STRING:
       case HB_IT_MEMO:
@@ -2352,9 +2339,9 @@ HB_EXPORT char * hb_itemString( PHB_ITEM pItem, ULONG * ulLen, BOOL * bFreeReq )
          if( hb_set.HB_SET_FIXED )
          {
             /* If fixed mode is enabled, use the default number of decimal places. */
-            PHB_ITEM pDec = hb_itemPutNI( NULL, hb_set.HB_SET_DECIMALS );
-            buffer = hb_itemStr( pItem, NULL, pDec );
-            hb_itemRelease( pDec );
+            hb_itemPutNI( hb_stackAllocItem(), hb_set.HB_SET_DECIMALS );
+            buffer = hb_itemStr( pItem, NULL, hb_stackItemFromTop( -1 ) );
+            hb_stackPop();
          }
          else
             buffer = hb_itemStr( pItem, NULL, NULL );
@@ -2430,7 +2417,7 @@ HB_EXPORT char * hb_itemPadConv( PHB_ITEM pItem, ULONG * pulSize, BOOL * bFreeRe
 
    if( pItem )
    {
-      switch( pItem->type )
+      switch( HB_ITEM_TYPE( pItem ) )
       {
          case HB_IT_STRING:
          case HB_IT_MEMO:
@@ -2478,9 +2465,10 @@ HB_EXPORT PHB_ITEM hb_itemValToStr( PHB_ITEM pItem )
    HB_TRACE(HB_TR_DEBUG, ("hb_itemValToStr(%p)", pItem));
 
    buffer = hb_itemString( pItem, &ulLen, &bFreeReq );
-   pResult = hb_itemPutCL( NULL, buffer, ulLen );
    if( bFreeReq )
-      hb_xfree( buffer );
+      pResult = hb_itemPutCPtr( NULL, buffer, ulLen );
+   else
+      pResult = hb_itemPutCL( NULL, buffer, ulLen );
 
    return pResult;
 }

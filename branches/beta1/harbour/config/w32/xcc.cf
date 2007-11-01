@@ -2,7 +2,7 @@
 # $Id$
 #
 # The Harbour Project
-# GNU MAKE file for Borland C/C++ 32bit (4.x, 5.x)
+# GNU MAKE file for xHarbour.com POCC compiler
 
 include $(TOP)$(ROOT)config/$(HB_ARCHITECTURE)/global.cf
 
@@ -17,6 +17,9 @@ CC_OUT = -Fo
 CPPFLAGS = -I. -I$(TOP) -I$(TOP)$(ROOT)
 # disabled - it produces bad code
 #CPPFLAGS += -Ot
+
+# For Pocket PC and ARM processors (including XScale)
+#CPPFLAGS += /Tarm-coff
 
 ifneq ($(HB_INC_COMPILE),)
 CPPFLAGS += -I$(HB_INC_COMPILE)

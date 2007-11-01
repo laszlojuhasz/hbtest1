@@ -77,30 +77,30 @@ cd "${OTMPDIR}"
 for f in $*
 do
     case "${f}" in
-	*.o)
-	    if [ ! -r "${dir}/${f}" ]
-	    then
-	        echo "cannot read file: ${f}"
-	        exit 1
-	    fi
-	    cp "${dir}/${f}" "${OTMPDIR}" || exit 1
-	    ;;
-	*.a)
+        *.o)
             if [ ! -r "${dir}/${f}" ]
-	    then
-	        echo "cannot read file: ${f}"
-	        exit 1
-	    fi
-	    d="${f%.a}"
-	    d="${f##*/}"
-	    mkdir $d
-	    cd $d
-	    ${CCPREFIX}ar -x "${dir}/${f}" || exit 1
-	    cd ..
-	    ;;
-	*)
+            then
+                echo "cannot read file: ${f}"
+                exit 1
+            fi
+            cp "${dir}/${f}" "${OTMPDIR}" || exit 1
+            ;;
+        *.a)
+            if [ ! -r "${dir}/${f}" ]
+            then
+                echo "cannot read file: ${f}"
+                exit 1
+            fi
+            d="${f%.a}"
+            d="${f##*/}"
+            mkdir $d
+            cd $d
+            ${CCPREFIX}ar -x "${dir}/${f}" || exit 1
+            cd ..
+            ;;
+        *)
             linker_options="${linker_options} ${f}"
-	    ;;
+            ;;
     esac
 done
 OBJLST=`find . -name \*.o`
@@ -119,8 +119,12 @@ if [ "${SLIB_EXT}" = ".dylib" ]; then
     ln -sf "${FULLNAME}" "${DSTDIR}${BASE}${SLIB_EXT}"
 elif [ "${SLIB_EXT}" = ".dll" ]; then
     FULLNAME="${LIB_NAME}${SLIB_EXT}"
-    SYSLIBS="-luser32 -lwinspool -lgdi32 -lcomctl32 -lcomdlg32 -lole32"
-    SYSLIBS="${SYSLIBS} -loleaut32 -luuid -lmpr -lwsock32 -lws2_32 -lmapi32"
+    if [ "$HB_COMPILER" = "cemgw" ]; then
+        SYSLIBS=" -lwininet -lws2"
+    else
+        SYSLIBS="-luser32 -lwinspool -lgdi32 -lcomctl32 -lcomdlg32 -lole32"
+        SYSLIBS="${SYSLIBS} -loleaut32 -luuid -lmpr -lwsock32 -lws2_32 -lmapi32"
+    fi
     ${CCPREFIX}gcc -shared -o "${FULLNAME}" $OBJLST ${linker_options} ${SYSLIBS} ${HB_DLLIBS} && \
         cd "${dir}" && \
         rm -f "${DSTDIR}${FULLNAME}" && \

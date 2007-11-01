@@ -17,10 +17,8 @@
 # --with pgsql       - build pgsql lib 
 # --with pgsql4      - build pgsql4 lib
 # --with gd          - build gd lib 
-# --with tip         - build tip lib (needs --withxhb)
 # --with odbc        - build odbc lib
 # --with allegro     - build GTALLEG - Allegro based GT driver
-# --with xhb         - build with xHarbour compatible extensions
 # --without adsrdd   - do not build ADS RDD
 # --without gpl      - do not build libs which needs GPL 3-rd party code
 # --without nf       - do not build nanforum lib
@@ -82,7 +80,7 @@
 %define hb_ldir  export HB_LIB_INSTALL=%{_libdir}/%{name}
 %define hb_opt   export HB_GTALLEG=%{?_with_allegro:yes}
 %define hb_cmrc  export HB_COMMERCE=%{?_without_gpl:yes}
-%define hb_ctrb  export HB_CONTRIBLIBS="%{?_with_gd:gd} %{?_with_tip:tip} %{?_with_pgsql:pgsql} %{?_with_mysql:mysql}"
+%define hb_ctrb  export HB_CONTRIBLIBS="%{?_with_gd:gd} %{?_with_pgsql:pgsql} %{?_with_mysql:mysql}"
 %define hb_env   %{hb_arch} ; %{hb_cc} ; %{hb_cflag} ; %{hb_lflag} ; %{hb_mt} ; %{hb_gt} ; %{hb_defgt} ; %{hb_gpm} ; %{hb_sln} ; %{hb_x11} ; %{hb_bdir} ; %{hb_idir} ; %{hb_ldir} ; %{hb_opt} ; %{hb_ctrb} ; %{hb_cmrc}
 
 %define hb_host  www.harbour-project.org
@@ -109,7 +107,7 @@ Requires:       gcc binutils bash sh-utils %{name}-lib = %{?epoch:%{epoch}:}%{ve
 Provides:       %{name} harbour
 BuildRoot:      /tmp/%{name}-%{version}-root
 
-%define		_noautoreq	'libharbour.*'
+%define         _noautoreq    'libharbour.*'
 
 %description
 %{dname} is a CA-Clipper compatible compiler for multiple platforms. This
@@ -245,11 +243,7 @@ case "`uname -m`" in
         export C_USR="$C_USR -fPIC"
         ;;
 esac
-if [ "%{?_with_xhb:1}" ]; then
-    sed -e "s!/\* #define HB_COMPAT_XHB \*/!#define HB_COMPAT_XHB      !g" \
-        include/hbsetup.ch > include/hbsetup.ch-new && \
-    mv include/hbsetup.ch-new include/hbsetup.ch
-fi
+
 [ "%{?_with_odbc:1}" ] || rm -fR contrib/odbc
 
 make -r
@@ -290,6 +284,9 @@ make -r -i install
 strip $HB_BIN_INSTALL/harbour
 # Keep the size of the libraries to a minimim.
 strip --strip-debug $HB_LIB_INSTALL/*
+
+mkdir -p $RPM_BUILD_ROOT%{_mandir}/man1
+install -m644 doc/man/*.1* $RPM_BUILD_ROOT%{_mandir}/man1/
 
 mkdir -p $RPM_BUILD_ROOT/etc/harbour
 install -m644 source/rtl/gtcrs/hb-charmap.def $RPM_BUILD_ROOT/etc/harbour/hb-charmap.def
@@ -367,8 +364,6 @@ All these scripts accept command line switches:
 Link options work only with "%{hb_pref}lnk" and "%{hb_pref}mk" and have no effect
 in "%{hb_pref}cc" and "%{hb_pref}cmp".
 Other options are passed to %{dname}/C compiler/linker.
-To save compatibility with older rpm distributions, "gharbour" can be used
-as a synonym of "%{hb_pref}cmp", and "harbour-link" as synonym of "%{hb_pref}lnk"
 
 An example compile/link session looks like:
 ----------------------------------------------------------------------
@@ -479,13 +474,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/%{hb_pref}cmp
 %{_bindir}/%{hb_pref}lnk
 %{_bindir}/%{hb_pref}mk
-%{_bindir}/gharbour
-%{_bindir}/harbour-link
 #%{_bindir}/hbtest
 %{_bindir}/hbrun
 %{_bindir}/hbdot
 %{_bindir}/hbpp
 %{_bindir}/hbmake
+%{_mandir}/man1/*.1*
 %dir %{_includedir}/%{name}
 %attr(644,root,root) %{_includedir}/%{name}/*
 
@@ -522,12 +516,12 @@ rm -rf $RPM_BUILD_ROOT
 %{?_with_pgsql: %{_libdir}/%{name}/libhbpg.a}
 %{?_with_pgsql4: %{_libdir}/%{name}/libhbpg.a}
 %{?_with_gd: %{_libdir}/%{name}/libhbgd.a}
-%{?_with_tip: %{_libdir}/%{name}/libtip.a}
-
 %{_libdir}/%{name}/libhbbtree.a
 %{_libdir}/%{name}/libhtml.a
 %{_libdir}/%{name}/libmisc.a
 %{_libdir}/%{name}/libct.a
+%{_libdir}/%{name}/libtip.a
+%{_libdir}/%{name}/libxhb.a
 
 %files lib
 %defattr(755,root,root,755)

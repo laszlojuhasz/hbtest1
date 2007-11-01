@@ -56,7 +56,7 @@
  *
  */
 
-#define HB_GT_NAME	NUL
+#define HB_GT_NAME      NUL
 
 #include <ctype.h>
 #include "hbgtcore.h"
@@ -313,13 +313,13 @@ static void hb_gt_def_SetClearChar( int iChar )
    s_uiClearChar = iChar;
 }
 
-static int  hb_gt_def_ColorNum( const char * szColorString )
+static const char * hb_gt_def_ColorDecode( const char * szColorString, int * piColor )
 {
    char c;
    int nColor = 0;
    BOOL bFore = TRUE;
 
-   HB_TRACE(HB_TR_DEBUG, ("hb_gt_def_ColorNum(%s)", szColorString));
+   HB_TRACE(HB_TR_DEBUG, ("hb_gt_def_ColorDecode(%p)", szColorString, piColor));
 
    while( ( c = *szColorString++ ) != 0 )
    {
@@ -334,7 +334,10 @@ static int  hb_gt_def_ColorNum( const char * szColorString )
             break;
 
          case '/':
-            bFore = FALSE;
+            if( !bFore )
+               nColor = ( ( nColor >> 4 ) & 0x0F07 ) | ( nColor & 0x88 );
+            else
+               bFore = FALSE;
             break;
 
          case 'B':
@@ -354,55 +357,63 @@ static int  hb_gt_def_ColorNum( const char * szColorString )
             break;
 
          case 'N':
-            nColor &= bFore ? 0xF8: 0x8F;
+            nColor &= bFore ? 0xFFF8: 0xFF8F;
             break;
 
          case 'I':
+            bFore = FALSE;
+            nColor &= 0x88;
             nColor |= 0x70;
             break;
 
-         case 'U':
-            nColor |= 0x01;
+         case 'X':
+            nColor &= 0x88;
             break;
 
-         case ' ':
+         case 'U':
+            if( bFore )
+               nColor = ( nColor & 0xF0F8 ) | 0x0801;
+            else
+               nColor = ( nColor & 0x0F8F ) | 0x8010;
             break;
 
          case ',':
-            return nColor;
+            * piColor = nColor;
+            return szColorString;
 
          default:
-            if( c >= '0' && c <= '9' &&
-                ( nColor & ( bFore ? 0xFF : 0xF0 ) ) == 0 )
+            if( c >= '0' && c <= '9' )
             {
                int iColor = c - '0';
                while( *szColorString >= '0' && *szColorString <= '9' )
                   iColor = iColor * 10 + ( *szColorString++ - '0' );
-               if( !bFore )
-                  iColor <<= 4;
-               nColor |= iColor & 0xff;
+               iColor &= 0x0f;
+               if( bFore )
+                  nColor = ( nColor & 0xF0F8 ) | iColor;
+               else
+                  nColor = ( nColor & 0x0F8F ) | ( iColor << 4 );
             }
-            else
-               return 0;
       }
    }
+
+   * piColor = nColor;
+   return NULL;
+}
+
+static int  hb_gt_def_ColorNum( const char * szColorString )
+{
+   int nColor;
+
+   hb_gt_def_ColorDecode( szColorString, &nColor );
 
    return nColor;
 }
 
 static void hb_gt_def_StringToColors( const char * szColorString, int ** pColorsPtr, int * piColorCount )
 {
-   char c;
-   char buff[ 6 ];
-   BOOL bHasI = FALSE;
-   BOOL bHasU = FALSE;
-   BOOL bHasX = FALSE;
-   BOOL bSlash = FALSE;
-   int nPos = 0;
-   int nFore = 0;
-   int nColor = 0;
-   int nCount = -1, i = 0;
    int * pColors;
+   int nPos = 0;
+   int nColor;
 
    HB_TRACE(HB_TR_DEBUG, ("hb_gt_def_StringToColors(%s,%p,%p)", szColorString, pColorsPtr, piColorCount));
 
@@ -421,132 +432,25 @@ static void hb_gt_def_StringToColors( const char * szColorString, int ** pColors
       pColors[ HB_CLR_ENHANCED   ] = 0x70;
       pColors[ HB_CLR_BORDER     ] = 0;
       pColors[ HB_CLR_BACKGROUND ] = 0;
-      pColors[ HB_CLR_UNSELECTED ] = 0x07;
+      pColors[ HB_CLR_UNSELECTED ] = 0x70;
    }
    else do
    {
-      c = *szColorString++;
+      szColorString = hb_gt_def_ColorDecode( szColorString, &nColor );
 
-      while( c >= '0' && c <= '9' && i < 6 )
+      if( nPos == *piColorCount )
       {
-         buff[ i++ ] = c;
-         c = *szColorString++;
+         ++*piColorCount;
+         pColors = *pColorsPtr = ( int * ) hb_xrealloc( pColors, *piColorCount * sizeof( int ) );
       }
-      if( i > 0 )
-      {
-         buff[ i ] = '\0';
-         nColor = atoi( buff ) & 0x0F;
-         ++nCount;
-         i = 0;
-      }
+      pColors[ nPos++ ] = nColor;
 
-      ++nCount;
-
-      switch( toupper( ( UCHAR ) c ) )
-      {
-         case 'B':
-            nColor |= 1;
-            break;
-         case 'G':
-            nColor |= 2;
-            break;
-         case 'R':
-            nColor |= 4;
-            break;
-         case 'W':
-            nColor  = 7;
-            break;
-         case 'N':
-            nColor  = 0;
-            break;
-         case 'I':
-            bHasI   = TRUE;
-            break;
-         case 'U':
-            bHasU   = TRUE;
-            break;
-         case 'X':                   /* always sets forground to 'N' */
-            bHasX   = TRUE;
-            break;
-         case '*':
-            nFore  |= 128;
-            break;
-         case '+':
-            nFore  |= 8;
-            break;
-         case '/':
-            if( bHasU )
-            {
-               bHasU = FALSE;
-               nFore |= 0x0800;  /* foreground underline bit */
-            }
-            else if( bHasX )
-            {
-               nColor = 0;
-               bHasX = FALSE;
-            }
-            else if( bHasI )
-            {
-               nColor = 7;
-               bHasI = FALSE;
-            }
-
-            nFore |= nColor;
-            nColor = 0;
-            bSlash = TRUE;
-            break;
-         case ',':
-         case '\0':
-
-            if( nCount == 0 )
-               nFore = pColors[ nPos ];
-
-            nCount = -1;
-
-            if( nPos == *piColorCount )
-            {
-               ++*piColorCount;
-               pColors = *pColorsPtr = ( int * ) hb_xrealloc( pColors, *piColorCount * sizeof( int ) );
-            }
-
-            if( bHasX )
-               nFore &= 0x88F8;
-
-            if( bHasU ) /* background if slash, else foreground */
-               nColor |= 0x0800;
-
-            if( bHasI )
-            {
-               if( bSlash )
-               {
-                  nColor &= 0x088F;
-                  nColor |= 0x0007;
-                  nFore &= 0x88F8;
-               }
-               else
-               {
-                  nColor &= 0x08F8;
-                  nColor |= 0x0070;
-                  nFore &= 0x888F;
-               }
-            }
-            if( ( nFore & 0x8800 ) != 0 && ( ( nFore | nColor ) & 0x0077 ) == 0 )
-               nFore |= 1;
-
-            if( bSlash )
-               pColors[ nPos++ ] = ( nColor << 4 ) | nFore;
-            else
-               pColors[ nPos++ ] = nColor | nFore;
-
-            nColor = nFore = 0;
-            bSlash = bHasX = bHasU = bHasI = FALSE;
-      }
    }
-   while( c );
+   while( szColorString );
 
-   if( nPos >= 1 && nPos <= 3 )
+   if( nPos >= HB_CLR_ENHANCED && nPos < HB_CLR_UNSELECTED &&
+       *piColorCount > HB_CLR_UNSELECTED )
       pColors[ HB_CLR_UNSELECTED ] = pColors[ HB_CLR_ENHANCED ];
-   
 }
 
 static void hb_gt_def_ColorsToString( int * pColors, int iColorCount, char * pszColorString, int iBufSize )
@@ -594,7 +498,6 @@ static void hb_gt_def_ColorsToString( int * pColors, int iColorCount, char * psz
                      which is quite ugly, otherwise it will put the "+" to the
                      first half and the "*" to the second (like "W+/B*"), which
                      is how it should be done. [vszakats] */
-
 #ifdef HB_C52_STRICT
             if( ( pColors[ iColorIndex ] & 0x80 ) != 0 )
                pszColorString[ iPos++ ] = '*';
@@ -937,6 +840,16 @@ static void hb_gt_def_WriteCon( BYTE * pText, ULONG ulLength )
                iCol = iMaxCol;
                --iRow;
                bDisp = TRUE;
+            }
+            if( bDisp )
+            {
+               if( iLen )
+                  szString[ iLen - 1 ] = ' ';
+               else
+               {
+                  hb_gt_SetPos( iRow, iCol );
+                  szString[ iLen++ ] = ' ';
+               }
             }
             break;
 

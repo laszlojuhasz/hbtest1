@@ -54,7 +54,7 @@
 #include "hbcomp.h"
 #include "hbmacro.ch"
 
-#if !defined( HB_HASH_USES_ARRAY_INDEXES ) /* && defined( HB_COMPAT_XHB ) */
+#if !defined( HB_HASH_USES_ARRAY_INDEXES )
 #  define HB_HASH_USES_ARRAY_INDEXES
 #endif
 
@@ -342,8 +342,7 @@ static HB_EXPR_FUNC( hb_compExprUseString )
       case HB_EA_REDUCE:
          break;
       case HB_EA_ARRAY_AT:
-         if( ! HB_SUPPORT_ARRSTR )
-            HB_COMP_ERROR_TYPE( pSelf );
+         HB_COMP_ERROR_TYPE( pSelf );
          break;
       case HB_EA_ARRAY_INDEX:
 #ifdef HB_HASH_USES_ARRAY_INDEXES
@@ -407,7 +406,7 @@ static HB_EXPR_FUNC( hb_compExprUseCodeblock )
          break;
       case HB_EA_PUSH_PCODE:
       {
-#if defined(HB_MACRO_SUPPORT)	 
+#if defined(HB_MACRO_SUPPORT)
          HB_EXPR_PCODE1( hb_compExprCodeblockPush, pSelf );
 #else
          if( pSelf->value.asCodeblock.flags & HB_BLOCK_EXT )
@@ -937,28 +936,26 @@ static HB_EXPR_FUNC( hb_compExprUseList )
    switch( iMessage )
    {
       case HB_EA_REDUCE:
+         if( HB_SUPPORT_XBASE )
          {
-            if( HB_SUPPORT_XBASE )
+            if( hb_compExprListLen( pSelf ) == 1 )
             {
-               if( hb_compExprListLen( pSelf ) == 1 )
+               HB_EXPR_PTR pExpr = pSelf->value.asList.pExprList;
+               if( pExpr->ExprType == HB_ET_MACRO &&
+                   pExpr->value.asMacro.SubType != HB_ET_MACRO_SYMBOL &&
+                   pExpr->value.asMacro.SubType != HB_ET_MACRO_REFER &&
+                   pExpr->value.asMacro.SubType != HB_ET_MACRO_ALIASED )
                {
-                  HB_EXPR_PTR pExpr = pSelf->value.asList.pExprList;
-                  if( pExpr->ExprType == HB_ET_MACRO &&
-                      pExpr->value.asMacro.SubType != HB_ET_MACRO_SYMBOL &&
-                      pExpr->value.asMacro.SubType != HB_ET_MACRO_REFER &&
-                      pExpr->value.asMacro.SubType != HB_ET_MACRO_ALIASED )
-                  {
-                     pExpr->value.asMacro.SubType |= HB_ET_MACRO_PARE;
-                  }
+                  pExpr->value.asMacro.SubType |= HB_ET_MACRO_PARE;
                }
             }
-
-            hb_compExprReduceList( pSelf, HB_COMP_PARAM );
-            /* NOTE: if the list contains a single expression then the list
-             * is not reduced to this expression - if you need that reduction
-             * then call hb_compExprListStrip() additionaly
-             */
          }
+
+         hb_compExprReduceList( pSelf, HB_COMP_PARAM );
+         /* NOTE: if the list contains a single expression then the list
+          * is not reduced to this expression - if you need that reduction
+          * then call hb_compExprListStrip() additionaly
+          */
          break;
 
       case HB_EA_ARRAY_AT:
@@ -1210,11 +1207,6 @@ static HB_EXPR_FUNC( hb_compExprUseArrayAt )
             else
                lIndex = ( LONG ) pIdx->value.asNum.val.d;
 
-#if !defined( HB_COMPAT_XHB )
-            if( lIndex <= 0 )
-               hb_compErrorBound( HB_COMP_PARAM, pIdx ); /* index <= 0 - bound error */
-            else
-#endif
             if( pExpr->ExprType == HB_ET_ARRAY )   /* is it a literal array */
             {
                ULONG ulSize = hb_compExprParamListCheck( HB_COMP_PARAM, pExpr );
@@ -1223,7 +1215,10 @@ static HB_EXPR_FUNC( hb_compExprUseArrayAt )
                   /* restore original expression type */
                   pExpr->ExprType = HB_ET_ARRAY;
                else if( !HB_IS_VALID_INDEX( lIndex, ulSize ) )
-                  hb_compErrorBound( HB_COMP_PARAM, pIdx );
+               {
+                  if( !HB_SUPPORT_ARRSTR )
+                     hb_compErrorBound( HB_COMP_PARAM, pIdx );
+               }
                else
                {
                   pExpr = pExpr->value.asList.pExprList; /* the first element in the array */
@@ -1246,15 +1241,16 @@ static HB_EXPR_FUNC( hb_compExprUseArrayAt )
                      HB_COMP_EXPR_DELETE( pSelf );
                      pSelf = pNew;
                   }
-                  else
+                  else if( !HB_SUPPORT_ARRSTR )
                      hb_compErrorBound( HB_COMP_PARAM, pIdx );
                }
             }
+#if 0
             else if( pExpr->ExprType == HB_ET_STRING && HB_SUPPORT_ARRSTR )   /* is it a literal string */
             {
                if( HB_IS_VALID_INDEX( lIndex, pExpr->ulLength ) )
                {
-#if defined( HB_COMPAT_XHB )
+#if defined( HB_COMPAT_X HB )
                   char * pszValue = ( char * ) hb_xgrab( 2 );
                   pszValue[ 0 ] = pExpr->value.asString.string[ lIndex - 1 ];
                   pszValue[ 1 ] = '\0';
@@ -1271,7 +1267,8 @@ static HB_EXPR_FUNC( hb_compExprUseArrayAt )
                else
                   hb_compErrorBound( HB_COMP_PARAM, pIdx );
             }
-            else
+#endif
+            else if( !HB_SUPPORT_ARRSTR )
             {
                HB_EXPR_USE( pExpr, HB_EA_ARRAY_AT );
             }
@@ -1305,7 +1302,39 @@ static HB_EXPR_FUNC( hb_compExprUseArrayAt )
          {
             fMacroIndex = pSelf->value.asList.pIndex->value.asList.reference;
          }
-         HB_EXPR_USE( pSelf->value.asList.pExprList, HB_EA_PUSH_PCODE );
+
+         if( pSelf->value.asList.reference && HB_SUPPORT_ARRSTR )
+         {
+            if( pSelf->value.asList.pExprList->ExprType == HB_ET_VARIABLE )
+            {
+               pSelf->value.asList.pExprList->ExprType = HB_ET_VARREF;
+               HB_EXPR_USE( pSelf->value.asList.pExprList, HB_EA_PUSH_PCODE );
+               pSelf->value.asList.pExprList->ExprType = HB_ET_VARIABLE;
+            }
+            else if( pSelf->value.asList.pExprList->ExprType == HB_ET_SEND )
+            {
+               hb_compExprPushSendPop( pSelf->value.asList.pExprList, HB_COMP_PARAM );
+               HB_GEN_FUNC1( PCode1, HB_P_PUSHOVARREF );
+            }
+            else if( pSelf->value.asList.pExprList->ExprType == HB_ET_ARRAYAT &&
+                     !pSelf->value.asList.pExprList->value.asList.reference )
+            {
+               pSelf->value.asList.pExprList->value.asList.reference = TRUE;
+               HB_EXPR_USE( pSelf->value.asList.pExprList, HB_EA_PUSH_PCODE );
+               pSelf->value.asList.pExprList->value.asList.reference = FALSE;
+            }
+            else if( pSelf->value.asList.pExprList->ExprType == HB_ET_MACRO &&
+                     pSelf->value.asList.pExprList->value.asMacro.SubType == HB_ET_MACRO_VAR )
+            {
+               pSelf->value.asList.pExprList->value.asMacro.SubType = HB_ET_MACRO_REFER;
+               HB_EXPR_USE( pSelf->value.asList.pExprList, HB_EA_PUSH_PCODE );
+               pSelf->value.asList.pExprList->value.asMacro.SubType = HB_ET_MACRO_VAR;
+            }
+            else
+               HB_EXPR_USE( pSelf->value.asList.pExprList, HB_EA_PUSH_PCODE );
+         }
+         else
+            HB_EXPR_USE( pSelf->value.asList.pExprList, HB_EA_PUSH_PCODE );
          HB_EXPR_USE( pSelf->value.asList.pIndex, HB_EA_PUSH_PCODE );
          if( fMacroIndex )
             HB_GEN_FUNC1( PCode1, HB_P_MACROPUSHINDEX );
@@ -1318,17 +1347,7 @@ static HB_EXPR_FUNC( hb_compExprUseArrayAt )
 
       case HB_EA_POP_PCODE:
       {
-         BOOL fMacroIndex = FALSE, bRemoveRef = FALSE;
-         /* to manage strings as bytes arrays, they must be pushed by reference */
-         /* arrays also are passed by reference */
-         if( pSelf->value.asList.pExprList->ExprType == HB_ET_VARIABLE )
-         {
-            if( HB_SUPPORT_ARRSTR )
-            {
-               pSelf->value.asList.pExprList->ExprType = HB_ET_VARREF;
-               bRemoveRef = TRUE;
-            }
-         }
+         BOOL fMacroIndex = FALSE;
          if( pSelf->value.asList.pIndex->ExprType == HB_ET_MACRO )
          {
             if( HB_SUPPORT_XBASE )
@@ -1346,13 +1365,44 @@ static HB_EXPR_FUNC( hb_compExprUseArrayAt )
          {
             fMacroIndex = pSelf->value.asList.pIndex->value.asList.reference;
          }
-         HB_EXPR_USE( pSelf->value.asList.pExprList, HB_EA_PUSH_PCODE );
+         /* to manage strings as bytes arrays, they must be pushed by reference */
+         /* arrays also are passed by reference */
+         if( HB_SUPPORT_ARRSTR )
+         {
+            if( pSelf->value.asList.pExprList->ExprType == HB_ET_VARIABLE )
+            {
+               pSelf->value.asList.pExprList->ExprType = HB_ET_VARREF;
+               HB_EXPR_USE( pSelf->value.asList.pExprList, HB_EA_PUSH_PCODE );
+               pSelf->value.asList.pExprList->ExprType = HB_ET_VARIABLE;
+            }
+            else if( pSelf->value.asList.pExprList->ExprType == HB_ET_SEND )
+            {
+               hb_compExprPushSendPop( pSelf->value.asList.pExprList, HB_COMP_PARAM );
+               HB_GEN_FUNC1( PCode1, HB_P_PUSHOVARREF );
+            }
+            else if( pSelf->value.asList.pExprList->ExprType == HB_ET_ARRAYAT &&
+                     !pSelf->value.asList.pExprList->value.asList.reference )
+            {
+               pSelf->value.asList.pExprList->value.asList.reference = TRUE;
+               HB_EXPR_USE( pSelf->value.asList.pExprList, HB_EA_PUSH_PCODE );
+               pSelf->value.asList.pExprList->value.asList.reference = FALSE;
+            }
+            else if( pSelf->value.asList.pExprList->ExprType == HB_ET_MACRO &&
+                     pSelf->value.asList.pExprList->value.asMacro.SubType == HB_ET_MACRO_VAR )
+            {
+               pSelf->value.asList.pExprList->value.asMacro.SubType = HB_ET_MACRO_REFER;
+               HB_EXPR_USE( pSelf->value.asList.pExprList, HB_EA_PUSH_PCODE );
+               pSelf->value.asList.pExprList->value.asMacro.SubType = HB_ET_MACRO_VAR;
+            }
+            else
+               HB_EXPR_USE( pSelf->value.asList.pExprList, HB_EA_PUSH_PCODE );
+         }
+         else
+            HB_EXPR_USE( pSelf->value.asList.pExprList, HB_EA_PUSH_PCODE );
          HB_EXPR_USE( pSelf->value.asList.pIndex, HB_EA_PUSH_PCODE );
          if( fMacroIndex )
             HB_GEN_FUNC1( PCode1, HB_P_MACROPUSHINDEX );
          HB_GEN_FUNC1( PCode1, HB_P_ARRAYPOP );
-         if( bRemoveRef )
-            pSelf->value.asList.pExprList->ExprType = HB_ET_VARIABLE;
          break;
       }
 

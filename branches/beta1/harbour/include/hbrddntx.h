@@ -94,7 +94,7 @@ HB_EXTERN_BEGIN
 #define NTX_TAGITEMSIZE                  16     /* Size of tag item in CTX header */
 #define NTX_HDR_UNUSED                  473     /* the unused part of header */
 #define NTX_PAGES_PER_TAG                 8
-#define NTX_STACKSIZE                    32	/* Maximum page stack size */
+#define NTX_STACKSIZE                    32     /* Maximum page stack size */
 
 /* index file structures - defined as BYTEs to avoid alignment problems */
 
@@ -374,17 +374,20 @@ typedef struct _NTXAREA
 
    FHANDLE  hDataFile;              /* Data file handle */
    FHANDLE  hMemoFile;              /* Memo file handle */
+   FHANDLE  hMemoTmpFile;           /* Memo temporary file handle */
    char *   szDataFileName;         /* Name of data file */
    char *   szMemoFileName;         /* Name of memo file */
    USHORT   uiHeaderLen;            /* Size of header */
    USHORT   uiRecordLen;            /* Size of record */
    USHORT   uiMemoBlockSize;        /* Size of memo block */
+   USHORT   uiNewBlockSize;         /* Size of new memo block */
    USHORT   uiMemoVersion;          /* MEMO file version */
-   DBFHEADER dbfHeader;             /* DBF header buffer */
+   USHORT   uiDirtyRead;            /* Index dirty read bit filed */
    BYTE     bTableType;             /* DBF type */
    BYTE     bMemoType;              /* MEMO type used in DBF memo fields */
    BYTE     bLockType;              /* Type of locking shemes */
    BYTE     bCryptType;             /* Type of used encryption */
+   DBFHEADER dbfHeader;             /* DBF header buffer */
    USHORT * pFieldOffset;           /* Pointer to field offset array */
    BYTE *   pRecord;                /* Buffer of record data */
    ULONG    ulRecCount;             /* Total records */
@@ -392,6 +395,7 @@ typedef struct _NTXAREA
    BOOL     fAutoInc;               /* WorkArea with auto increment fields */
    BOOL     fHasMemo;               /* WorkArea with Memo fields */
    BOOL     fHasTags;               /* WorkArea with MDX or CDX index */
+   BOOL     fModStamp;              /* WorkArea with modification autoupdate fields */
    BOOL     fDataFlush;             /* data was written to DBF and not commited */
    BOOL     fMemoFlush;             /* data was written to MEMO and not commited */
    BOOL     fShared;                /* Shared file */
@@ -406,6 +410,9 @@ typedef struct _NTXAREA
    BOOL     fUpdateHeader;          /* Update header of file */
    BOOL     fFLocked;               /* TRUE if file is locked */
    BOOL     fHeaderLocked;          /* TRUE if DBF header is locked */
+   BOOL     fPackMemo;              /* Pack memo file in pack operation */
+   BOOL     fTrigger;               /* Execute trigger function */
+   LPDBOPENINFO lpdbOpenInfo;       /* Pointer to current dbOpenInfo structure in OPEN/CREATE methods */
    LPDBRELINFO lpdbPendingRel;      /* Pointer to parent rel struct */
    ULONG *  pLocksPos;              /* List of records locked */
    ULONG    ulNumLocksPos;          /* Number of records locked */

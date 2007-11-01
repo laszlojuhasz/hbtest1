@@ -131,7 +131,8 @@ typedef enum
    HB_SET_FORCEOPT      = 107,
    HB_SET_DBFLOCKSCHEME = 108,
    HB_SET_DEFEXTENSIONS = 109,
-   HB_SET_EOL           = 110
+   HB_SET_EOL           = 110,
+   HB_SET_TRIMFILENAME  = 111
 
 } HB_set_enum;
 
@@ -200,6 +201,7 @@ typedef struct
    BOOL    HB_SET_FORCEOPT;
    BOOL    HB_SET_DEFEXTENSIONS;
    char *  HB_SET_EOL;
+   BOOL    HB_SET_TRIMFILENAME;
 
 } HB_SET_STRUCT;
 
@@ -212,11 +214,8 @@ typedef struct
 #define HB_SET_DBFLOCK_CL53       2
 #define HB_SET_DBFLOCK_VFP        3
 
-extern HB_SET_STRUCT hb_set;
-
 extern void hb_setInitialize( void );
 extern void hb_setRelease( void );
-extern HB_PATHNAMES * hb_setGetFirstSetPath( void );
 
 typedef enum
 {
@@ -228,6 +227,81 @@ typedef void HB_SET_LISTENER_CALLBACK( HB_set_enum, HB_set_listener_enum );
 extern int hb_setListenerAdd( HB_SET_LISTENER_CALLBACK * );
 extern void hb_setListenerNotify( HB_set_enum, HB_set_listener_enum );
 extern int hb_setListenerRemove( int );
+
+#if defined( HB_SET_IMPORT )
+   extern HB_IMPORT HB_SET_STRUCT hb_set;
+#else
+   extern HB_EXPORT HB_SET_STRUCT hb_set;
+#endif
+
+HB_EXPORT BOOL    hb_setGetL( HB_set_enum set_specifier );
+HB_EXPORT char *  hb_setGetCPtr( HB_set_enum set_specifier );
+HB_EXPORT int     hb_setGetNI( HB_set_enum set_specifier );
+HB_EXPORT long    hb_setGetNL( HB_set_enum set_specifier );
+
+extern HB_EXPORT HB_PATHNAMES * hb_setGetFirstSetPath( void );
+
+extern HB_EXPORT FHANDLE hb_setGetAltHan( void );
+extern HB_EXPORT BOOL    hb_setGetCentury( void );
+extern HB_EXPORT FHANDLE hb_setGetExtraHan( void );
+extern HB_EXPORT FHANDLE hb_setGetPrintHan( void );
+extern HB_EXPORT BOOL    hb_setGetAlternate( void );
+extern HB_EXPORT char *  hb_setGetAltFile( void );
+extern HB_EXPORT BOOL    hb_setGetAutOpen( void );
+extern HB_EXPORT int     hb_setGetAutOrder( void );
+extern HB_EXPORT int     hb_setGetAutoShare( void );
+extern HB_EXPORT BOOL    hb_setGetBell( void );
+extern HB_EXPORT BOOL    hb_setGetCancel( void );
+extern HB_EXPORT char *  hb_setGetColor( void );
+extern HB_EXPORT BOOL    hb_setGetConfirm( void );
+extern HB_EXPORT BOOL    hb_setGetConsole( void );
+extern HB_EXPORT char *  hb_setGetDateFormat( void );
+extern HB_EXPORT BOOL    hb_setGetDebug( void );
+extern HB_EXPORT int     hb_setGetDecimals( void );
+extern HB_EXPORT char *  hb_setGetDefault( void );
+extern HB_EXPORT BOOL    hb_setGetDeleted( void );
+extern HB_EXPORT char *  hb_setGetDelimChars( void );
+extern HB_EXPORT BOOL    hb_setGetDelimiters( void );
+extern HB_EXPORT char *  hb_setGetDevice( void );
+extern HB_EXPORT BOOL    hb_setGetEOF( void );
+extern HB_EXPORT int     hb_setGetEpoch( void );
+extern HB_EXPORT BOOL    hb_setGetEscape( void );
+extern HB_EXPORT int     hb_setGetEventMask( void );
+extern HB_EXPORT BOOL    hb_setGetExact( void );
+extern HB_EXPORT BOOL    hb_setGetExclusive( void );
+extern HB_EXPORT BOOL    hb_setGetExit( void );
+extern HB_EXPORT BOOL    hb_setGetExtra( void );
+extern HB_EXPORT char *  hb_setGetExtraFile( void );
+extern HB_EXPORT BOOL    hb_setGetFixed( void );
+extern HB_EXPORT BOOL    hb_setGetIdleRepeat( void );
+extern HB_EXPORT BOOL    hb_setGetInsert( void );
+extern HB_EXPORT BOOL    hb_setGetIntensity( void );
+extern HB_EXPORT char *  hb_setGetPath( void );
+extern HB_EXPORT int     hb_setGetMargin( void );
+extern HB_EXPORT int     hb_setGetMBlockSize( void );
+extern HB_EXPORT BOOL    hb_setGetMCenter( void );
+extern HB_EXPORT int     hb_setGetMessage( void );
+extern HB_EXPORT char *  hb_setGetMFileExt( void );
+extern HB_EXPORT BOOL    hb_setGetOptimize( void );
+extern HB_EXPORT BOOL    hb_setGetPrinter( void );
+extern HB_EXPORT char *  hb_setGetPrintFile( void );
+extern HB_EXPORT BOOL    hb_setGetScoreBoard( void );
+extern HB_EXPORT BOOL    hb_setGetScrollBreak( void );
+extern HB_EXPORT BOOL    hb_setGetSoftSeek( void );
+extern HB_EXPORT BOOL    hb_setGetStrictRead( void );
+extern HB_EXPORT int     hb_setGetTypeAhead( void );
+extern HB_EXPORT BOOL    hb_setGetUnique( void );
+extern HB_EXPORT int     hb_setGetFileCase( void );
+extern HB_EXPORT int     hb_setGetDirCase( void );
+extern HB_EXPORT int     hb_setGetDirSeparator( void );
+extern HB_EXPORT int     hb_setGetVideoMode( void );
+extern HB_EXPORT BOOL    hb_setGetWrap( void );
+extern HB_EXPORT int     hb_setGetDBFLockScheme( void );
+extern HB_EXPORT BOOL    hb_setGetHardCommit( void );
+extern HB_EXPORT BOOL    hb_setGetForceOpt( void );
+extern HB_EXPORT BOOL    hb_setGetDefExtension( void );
+extern HB_EXPORT char *  hb_setGetEOL( void );
+extern HB_EXPORT BOOL    hb_setGetTrimFileName( void );
 
 HB_EXTERN_END
 
