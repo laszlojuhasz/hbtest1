@@ -8,6 +8,42 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-11-01 21:33 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/contrib/xhb/makefile.vc
+  * harbour/contrib/xhb/makefile.bc
+  * harbour/contrib/apollo/Makefile
+  * harbour/contrib/tip/encurl.prg
+  * harbour/contrib/tip/utils.c
+  * harbour/contrib/tip/popcln.prg
+  * harbour/contrib/tip/Changelog
+  * harbour/contrib/tip/cgi.prg
+  * harbour/contrib/tip/url.prg
+  * harbour/contrib/tip/encqp.prg
+  * harbour/contrib/tip/base64x.c
+  * harbour/contrib/tip/makefile.bc
+  * harbour/contrib/tip/encmthd.c
+  * harbour/contrib/tip/httpcln.prg
+  * harbour/contrib/tip/client.prg
+  * harbour/contrib/tip/encoder.prg
+  * harbour/contrib/tip/smtpcln.prg
+  * harbour/contrib/tip/encb64.prg
+  * harbour/contrib/tip/mail.prg
+  * harbour/contrib/tip/credent.prg
+  * harbour/contrib/tip/ftpcln.prg
+  * harbour/contrib/tip/Makefile
+  * harbour/source/compiler/harbour.yyc
+  * harbour/source/compiler/harbour.yyh
+  * harbour/utils/hbextern/make_c5x.bat
+  * harbour/utils/hbpptest/compare.bat
+  * harbour/utils/hbtest/make_c5x.bat
+  * harbour/utils/hbtest/make_xpp.bat
+  * harbour/samples/guestbk/bld_b32.bat
+  * harbour/samples/pe/bld_b32.bat
+  * harbour/samples/hscript/makehtm.bat
+  * harbour/samples/hscript/bld_b32.bat
+  * harbour/make_tgz.sh
+    * synced with devel branch - part 6
+
 2007-11-01 20:05 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   * harbour/utils/hbextern/make_c5x.bat
   * harbour/utils/hbdot/hbdot.prg
