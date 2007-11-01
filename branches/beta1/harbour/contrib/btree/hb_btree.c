@@ -1556,6 +1556,11 @@ BOOL hb_BTreeSeek( struct hb_BTree * pBTree, BYTE *szKey, LONG lData, BOOL bSoft
 }
 
 
+static int hb_BTstrncmp( const char *s1, const char *s2, size_t n )
+{
+   return strncmp( s1, s2, n );
+}
+
 /* allocate hb_BTree structure */
 struct hb_BTree * hb_BTreeNew( BYTE * FileName, USHORT usPageSize, USHORT usKeySize, ULONG ulFlags, USHORT usBuffers )
 {
@@ -1643,7 +1648,7 @@ struct hb_BTree * hb_BTreeNew( BYTE * FileName, USHORT usPageSize, USHORT usKeyS
   }
   else
   {
-    pBTree->pStrCompare = ( BTreeCmpFunc ) strncmp;
+    pBTree->pStrCompare = ( BTreeCmpFunc ) hb_BTstrncmp;
   }
 
   if ( GETFLAG( pBTree, IsInMemory ) == FALSE )
@@ -1729,7 +1734,7 @@ struct hb_BTree *hb_BTreeOpen( BYTE *FileName, ULONG ulFlags, USHORT usBuffers )
   }
   else
   {
-    pBTree->pStrCompare = ( BTreeCmpFunc ) strncmp;
+    pBTree->pStrCompare = ( BTreeCmpFunc ) hb_BTstrncmp;
   }
 
   return pBTree;
@@ -1839,7 +1844,7 @@ HB_FUNC( HB_BTREECLOSE )  /* hb_BTreeClose( hb_BTree_Handle ) -> NIL */
 HB_FUNC( HB_BTREEINSERT )  /* hb_BTreeInsert( hb_BTree_Handle, CHAR cKey, LONG lData | ANY xData ) -> lSuccess */
 {
   struct hb_BTree * pBTree = BTree_GetTreeIndex( "hb_btreeinsert" );
-  //PHB_ITEM pKeyCode = hb_param( 1, HB_IT_NUMERIC );
+  /* PHB_ITEM pKeyCode = hb_param( 1, HB_IT_NUMERIC ); */
 
   HB_TRACE( HB_TR_DEBUG, ( SRCLINENO ) );
   if ( ISNUM( 1 ) && ISCHAR( 2 ) && ( hb_pcount() == 2 || GETFLAG( pBTree, IsInMemory ) || ISNUM( 3 ) ) )

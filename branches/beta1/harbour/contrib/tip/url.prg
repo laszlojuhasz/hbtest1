@@ -51,7 +51,6 @@
  *
  */
 
-#include "hbcompat.ch"
 #include "hbclass.ch"
 
 /*
@@ -150,7 +149,7 @@ METHOD BuildAddress() CLASS tURL
       ::cProto := Lower( ::cProto )
    ENDIF
 
-   IF .not. Empty( ::cProto ) .and. .not. Empty( ::cServer )
+   IF ! Empty( ::cProto ) .and. ! Empty( ::cServer )
       cRet := ::cProto + "://"
    ENDIF
 
@@ -169,12 +168,12 @@ METHOD BuildAddress() CLASS tURL
       ENDIF
    ENDIF
 
-   IF Len( ::cPath ) == 0 .or. ::cPath[-1] != "/"
+   IF Len( ::cPath ) == 0 .or. Right( ::cPath, 1 ) != "/"
       ::cPath += "/"
    ENDIF
 
    cRet += ::cPath + ::cFile
-   IF .not. Empty( ::cQuery )
+   IF ! Empty( ::cQuery )
       cRet += "?" + ::cQuery
    ENDIF
 
@@ -189,12 +188,12 @@ RETURN cRet
 METHOD BuildQuery( ) CLASS tURL
    LOCAL cLine
 
-   IF Len( ::cPath ) == 0 .or. ::cPath[-1] != "/"
+   IF Len( ::cPath ) == 0 .or. Right( ::cPath, 1 ) != "/"
       ::cPath += "/"
    ENDIF
 
    cLine := ::cPath + ::cFile
-   IF .not. Empty( ::cQuery )
+   IF ! Empty( ::cQuery )
       cLine += "?" + ::cQuery
    ENDIF
 
@@ -205,28 +204,28 @@ METHOD AddGetForm( cPostData )
 
    IF HB_IsHash( cPostData )
       FOR nI := 1 TO Len( cPostData )
-         cTmp := HGetKeyAt( cPostData, nI )
-         cTmp := CStr( cTmp )
+         cTmp := hb_HKeyAt( cPostData, nI )
+         cTmp := hb_cStr( cTmp )
          cTmp := AllTrim( cTmp )
          cTmp := TipEncoderUrl_Encode( cTmp )
          cData += cTmp +"="
-         cTmp := HGetValueAt( cPostData, nI )
-         cTmp := CStr( cTmp )
+         cTmp := hb_HValueAt( cPostData, nI )
+         cTmp := hb_cStr( cTmp )
          cTmp := AllTrim( cTmp )
          cTmp := TipEncoderUrl_Encode( cTmp )
          cData += cTmp + "&"
       NEXT
-      cData[-1] = ""
+      cData := Left( cData, Len( cData ) - 1 )
    elseIF HB_IsArray( cPostData )
       y:=Len(cPostData)
       FOR nI := 1 TO y
          cTmp := cPostData[ nI ,1]
-         cTmp := CStr( cTmp )
+         cTmp := hb_cStr( cTmp )
          cTmp := AllTrim( cTmp )
          cTmp := TipEncoderUrl_Encode( cTmp )
          cData += cTmp +"="
          cTmp := cPostData[ nI,2]
-         cTmp := CStr( cTmp )
+         cTmp := hb_cStr( cTmp )
          cTmp := AllTrim( cTmp )
          cTmp := TipEncoderUrl_Encode( cTmp )
          cData += cTmp

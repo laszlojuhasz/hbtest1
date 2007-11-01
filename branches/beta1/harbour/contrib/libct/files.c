@@ -103,6 +103,7 @@ static PHB_FFIND _hb_fileStart( BOOL fNext )
    {
       char * szFile = hb_parc( 1 );
       USHORT uiAttr = HB_FA_ALL;
+      BOOL fFree;
 
       if( s_ffind )
       {
@@ -117,11 +118,12 @@ static PHB_FFIND _hb_fileStart( BOOL fNext )
             hb_vmAtExit( _hb_fileClose, NULL );
             s_fInit = TRUE;
          }
-         szFile = ( char * ) hb_fileNameConv( hb_strdup( szFile ) );
+         szFile = ( char * ) hb_fsNameConv( ( BYTE * ) szFile, &fFree );
          if( ISNUM( 2 ) )
             uiAttr = hb_parni( 2 );
          s_ffind = hb_fsFindFirst( szFile, uiAttr );
-         hb_xfree( szFile );
+         if( fFree )
+            hb_xfree( szFile );
       }
    }
    else if( fNext && s_ffind )
@@ -192,7 +194,7 @@ HB_FUNC( SETFATTR )
 
    DWORD dwFlags = FILE_ATTRIBUTE_ARCHIVE;
    DWORD dwLastError = ERROR_SUCCESS;
-   LPCTSTR cFile = hb_parcx( 1 );
+   LPTSTR lpFile = HB_TCHAR_CONVTO( hb_parcx( 1 ) );
    int iAttr = hb_parni( 2 );
 
    if( iAttr & FA_READONLY )
@@ -203,9 +205,9 @@ HB_FUNC( SETFATTR )
       dwFlags |= FILE_ATTRIBUTE_SYSTEM;
    if( iAttr & FA_NORMAL )
       dwFlags |= FILE_ATTRIBUTE_NORMAL;
-   if( !SetFileAttributes( cFile, dwFlags ) )
+   if( !SetFileAttributes( lpFile, dwFlags ) )
       dwLastError = GetLastError();
-
+   HB_TCHAR_FREE( lpFile );
    hb_retni( dwLastError );
 
 #else
@@ -320,12 +322,13 @@ HB_FUNC( FILEDELETE )
       BYTE * pDirSpec;
       PHB_FFIND ffind;
       USHORT uiAttr = HB_FA_ALL;
+      BOOL fFree;
 
-      pDirSpec = hb_fileNameConv( hb_strdup( hb_parc( 1 ) ) );
+      pDirSpec = hb_fsNameConv( ( BYTE * ) hb_parc( 1 ), &fFree );
       if( ISNUM( 2 ) )
          uiAttr = hb_parni( 2 );
 
-      if( ( ffind = hb_fsFindFirst( ( const char * ) pDirSpec, uiAttr ) ) != NULL )
+      if( ( ffind = hb_fsFindFirst( ( char * ) pDirSpec, uiAttr ) ) != NULL )
       {
          PHB_FNAME pFilepath;
 
@@ -346,7 +349,8 @@ HB_FUNC( FILEDELETE )
 
          hb_fsFindClose( ffind );
       }
-      hb_xfree( pDirSpec );
+      if( fFree )
+         hb_xfree( pDirSpec );
    }
 
    hb_retl( bReturn );

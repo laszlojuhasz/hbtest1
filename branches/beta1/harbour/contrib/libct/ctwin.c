@@ -53,7 +53,7 @@
 /* NOTE: User programs should never call this layer directly! */
 
 /* This definition has to be placed before #include "hbapigt.h" */
-#define HB_GT_NAME	CTW
+#define HB_GT_NAME      CTW
 
 #include "hbgtcore.h"
 #include "hbinit.h"
@@ -1016,6 +1016,16 @@ static void hb_ctw_gt_WriteCon( BYTE * pText, ULONG ulLength )
                iCol = iMaxCol;
                --iRow;
                bDisp = TRUE;
+            }
+            if( bDisp )
+            {
+               if( iLen )
+                  szString[ iLen - 1 ] = ' ';
+               else
+               {
+                  hb_gt_SetPos( iRow, iCol );
+                  szString[ iLen++ ] = ' ';
+               }
             }
             break;
 

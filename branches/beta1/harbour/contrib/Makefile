@@ -12,30 +12,29 @@ DIRS=\
 	libmisc \
 	libnf \
 	samples \
+	xhb \
 	$(HB_CONTRIBLIBS)
 
+
+ifneq ($(HB_ARCHITECTURE),dos)
+
+DIRS +=\
+	bmdbfcdx \
+
+endif
 
 ifeq ($(HB_ARCHITECTURE),w32)
 
 DIRS +=\
 	rdd_ads \
 
-ifeq ($(HB_COMPILER),msvc)
+ifneq ($(HB_COMPILER),rsxnt)
 
 DIRS +=\
-	odbc \
-
-else
-ifeq ($(HB_COMPILER),rsxnt)
-
-else
-
-DIRS +=\
-	ole2 \
+	win32 \
 	odbc \
 	adordd \
 
-endif
 endif
 
 else
@@ -62,8 +61,8 @@ endif
 endif
 endif
 
-#ifneq ($(HB_ARCHITECTURE),dos)
-#DIRS += tip
-#endif
+ifneq ($(HB_ARCHITECTURE),dos)
+DIRS += tip
+endif
 
 include $(ROOT)config/dir.cf

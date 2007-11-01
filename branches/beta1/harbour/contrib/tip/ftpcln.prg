@@ -80,6 +80,21 @@
    Cleaned unused variables.
 */
 
+/* 2007-09-08 21:34 UTC+0100 Patrick Mast <patrick/dot/mast/at/xharbour.com>
+   * source\tip\ftpcln.prg
+     * Formatting
+	  + METHOD StartCleanLogFile()
+	    Starts a clean log file, overwriting current logfile.
+	  + METHOD fileSize( cFileSpec )
+	    Calculates the filesize of the given files specifications.
+	  + DATA cLogFile
+	    Holds the filename of the current logfile.
+	  ! Fixed logfilename in New(), now its not limited to 9999 log files anymore
+	  ! Fixed MGet() due to changes in HB_aTokens()
+	  ! Fixed listFiles() due to changes in HB_aTokens()
+	  ! listFiles() is still buggy. Needs to be fixed.
+*/
+
 #include "directry.ch"
 #include "hbclass.ch"
 #include "tip.ch"
@@ -100,6 +115,7 @@ CLASS tIPClientFTP FROM tIPClient
    // Socket opened in response to a port command
    DATA SocketControl
    DATA SocketPortServer
+   DATA cLogFile
 
    METHOD New( oUrl, lTrace, oCredentials )
    METHOD Open()
@@ -142,6 +158,8 @@ CLASS tIPClientFTP FROM tIPClient
    METHOD RMD( cPath )
    METHOD listFiles( cList )
    METHOD MPut
+   METHOD StartCleanLogFile()
+   METHOD fileSize( cFileSpec ) 
 ENDCLASS
 
 
@@ -159,18 +177,25 @@ METHOD New( oUrl,lTrace, oCredentials) CLASS tIPClientFTP
       if !file("ftp.log")
          ::nHandle := fcreate("ftp.log")
       else
-         while file(cFile+alltrim(str(n,2))+".log")
+         while file(cFile+LTrim(str(Int(n)))+".log")
            n++
          enddo
-         ::nHandle := fcreate(cFile+alltrim(str(n,2))+".log")
+         ::cLogFile:= cFile+LTrim(str(Int(n)))+".log"
+         ::nHandle := fcreate(::cLogFile)
       endif
    endif
 
    // precompilation of regex for better prestations
    ::RegBytes := HB_RegexComp( "\(([0-9]+)[ )a-zA-Z]" )
-   ::RegPasv :=  HB_RegexComp( ;
-      "([0-9]*) *, *([0-9]*) *, *([0-9]*) *, *([0-9]*) *, *([0-9]*) *, *([0-9]*)" )
+   ::RegPasv :=  HB_RegexComp( "([0-9]*) *, *([0-9]*) *, *([0-9]*) *, *([0-9]*) *, *([0-9]*) *, *([0-9]*)" )
+
 RETURN Self
+
+
+METHOD StartCleanLogFile() CLASS tIPClientFTP
+  fclose(::nHandle)
+  ::nHandle := fcreate(::cLogFile)
+RETURN NIL
 
 
 METHOD Open( cUrl ) CLASS tIPClientFTP
@@ -187,7 +212,7 @@ METHOD Open( cUrl ) CLASS tIPClientFTP
       RETURN .F.
    ENDIF
 
-   InetSetTimeout( ::SocketCon, ::nConnTimeout )
+   HB_InetTimeout( ::SocketCon, ::nConnTimeout )
    IF ::GetReply()
       ::InetSendall( ::SocketCon, "USER " + ::oUrl:cUserid + ::cCRLF )
       IF ::GetReply()
@@ -213,13 +238,13 @@ METHOD GetReply() CLASS tIPClientFTP
    ENDIF
 
    // now, if the reply has a '-' as fourth character, we need to proceed...
-   DO WHILE .not. Empty(cRep) .and. cRep[4] == '-'
+   DO WHILE .not. Empty(cRep) .and. SubStr( cRep, 4, 1 ) == '-'
       ::cReply := ::InetRecvLine( ::SocketCon, @nLen, 128 )
       cRep := IIf(ValType(::cReply) == "C", ::cReply, "")
    ENDDO
 
    // 4 and 5 are error codes
-   IF ::InetErrorCode( ::SocketCon ) != 0 .or. ::cReply[1] >= '4'
+   IF ::InetErrorCode( ::SocketCon ) != 0 .or. SubStr( ::cReply, 1, 1) >= '4'
       RETURN .F.
    ENDIF
 RETURN .T.
@@ -244,7 +269,7 @@ RETURN .T.
 
 
 METHOD Close() CLASS tIPClientFTP
-   InetSetTimeOut( ::SocketCon, ::nConnTimeout )
+   HB_InetTimeOut( ::SocketCon, ::nConnTimeout )
    if ::ltrace
       fClose(::nHandle)
    endif
@@ -274,7 +299,7 @@ RETURN ::GetReply()
 
 
 METHOD Rest( nPos ) CLASS tIPClientFTP
-   ::InetSendall( ::SocketCon, "REST " + LTrim( Str( If( Empty( nPos ), 0, nPos ) ) ) + ::cCRLF )
+   ::InetSendall( ::SocketCon, "REST " + alltrim( Str( If( Empty( nPos ), 0, nPos ) ) ) + ::cCRLF )
 RETURN ::GetReply()
 
 
@@ -314,19 +339,19 @@ METHOD TransferStart() CLASS tIPClientFTP
    ::SocketControl := ::SocketCon
 
    IF ::bUsePasv
-      skt := InetConnectIP( ::cDataServer, ::nDataPort )
+      skt := HB_InetConnectIP( ::cDataServer, ::nDataPort )
       IF skt != NIL .and. ::InetErrorCode( skt ) == 0
          // Get the start message from the control connection
          IF ! ::GetReply()
-            InetClose( skt )
+            HB_InetClose( skt )
             RETURN .F.
          ENDIF
 
-         InetSetTimeout( skt, ::nConnTimeout )
+         HB_InetTimeout( skt, ::nConnTimeout )
          ::SocketCon := skt
       ENDIF
    ELSE
-      ::SocketCon := InetAccept( ::SocketPortServer )
+      ::SocketCon := HB_InetAccept( ::SocketPortServer )
       IF Empty( ::SocketCon )
          ::bInitialized := .F.
          ::SocketCon := ::SocketControl
@@ -339,7 +364,7 @@ RETURN .T.
 
 
 METHOD Commit() CLASS tIPClientFTP
-   InetClose( ::SocketCon )
+   HB_InetClose( ::SocketCon )
    ::SocketCon := ::SocketControl
    ::bInitialized := .F.
 
@@ -348,7 +373,7 @@ METHOD Commit() CLASS tIPClientFTP
    ENDIF
 
    // error code?
-   IF ::cReply[1] == "5"
+   IF SubStr( ::cReply, 1, 1 ) == "5"
       RETURN .F.
    ENDIF
 
@@ -360,7 +385,7 @@ METHOD List( cSpec ) CLASS tIPClientFTP
 
    IF cSpec=nil
       cSpec := ''
-   else
+   ELSE
       cSpec := ' ' + cSpec
    ENDIF
    IF ::bUsePasv
@@ -424,7 +449,7 @@ METHOD ReadAuxPort(cLocalFile) CLASS tIPClientFTP
       cRet := ::super:Read( 512 )
    END
 
-   InetClose( ::SocketCon )
+   HB_InetClose( ::SocketCon )
    ::SocketCon := ::SocketControl
    IF ::GetReply()
    IF nFile>0
@@ -446,19 +471,21 @@ METHOD Stor( cFile ) CLASS tIPClientFTP
    ENDIF
 
    ::InetSendall( ::SocketCon, "STOR " + cFile + ::cCRLF )
-   IF ! ::GetReply()
-      RETURN .F.
-   ENDIF
+   //PM:08-31-2007 Remmed out 'IF ! ::GetReply()' because it always makes Stor() returning .F.
+   //              Causing the uploaded file to be sized ZERO.
+   //IF ! ::GetReply()
+   //   RETURN .F.
+   //ENDIF
 
 RETURN ::TransferStart()
 
 
 METHOD Port() CLASS tIPClientFTP
 
-   ::SocketPortServer := InetCreate( ::nConnTimeout )
+   ::SocketPortServer := HB_InetCreate( ::nConnTimeout )
    nPort ++
    DO WHILE nPort < 24000
-      InetServer( nPort, ::SocketPortServer )
+      HB_InetServer( nPort, ::SocketPortServer )
       IF ::InetErrorCode( ::SocketPortServer ) == 0
          RETURN ::SendPort()
       ENDIF
@@ -472,9 +499,9 @@ METHOD SendPort() CLASS tIPClientFTP
    LOCAL cAddr
    LOCAL cPort, nPort
 
-   cAddr := InetGetHosts( NetName() )[1]
+   cAddr := HB_InetGetHosts( NetName() )[1]
    cAddr := StrTran( cAddr, ".", "," )
-   nPort := InetPort( ::SocketPortServer )
+   nPort := HB_InetPort( ::SocketPortServer )
    cPort := "," + AllTrim( Str( Int( nPort / 256 ) ) ) +  "," + AllTrim( Str( Int( nPort % 256 ) ) )
 
    ::InetSendall( ::SocketCon, "PORT " + cAddr + cPort  + ::cCRLF )
@@ -602,7 +629,9 @@ METHOD MGET( cSpec,cLocalPath ) CLASS tIPClientFTP
    IF !empty(cStr)
       aFiles:=hb_atokens(strtran(cStr,chr(13),''),chr(10))
       FOR each cFile in aFiles
-         ::downloadfile( cLocalPath+trim(cFile), trim(cFile) )
+         IF !Empty(cFile) //PM:09-08-2007 Needed because of the new HB_aTokens()
+            ::downloadfile( cLocalPath+trim(cFile), trim(cFile) )
+         ENDIF   
       NEXT
 
    ENDIF
@@ -625,7 +654,7 @@ METHOD MPUT( cFileSpec, cAttr ) CLASS tIPClientFTP
 
    FOR each aFile in aFiles
       IF ::uploadFile( cPath + aFile[F_NAME], aFile[F_NAME] )
-         cStr += INetCrlf() + aFile[F_NAME]
+         cStr += HB_InetCrlf() + aFile[F_NAME]
       ENDIF
    NEXT
 RETURN SubStr(cStr,3)
@@ -635,7 +664,7 @@ METHOD UpLoadFile( cLocalFile, cRemoteFile ) CLASS tIPClientFTP
 
    LOCAL cPath := ""
    LOCAL cFile := ""
-   Local cExt  := ""
+   LOCAL cExt  := ""
 
    HB_FNameSplit( cLocalFile, @cPath, @cFile,@cExt  )
 
@@ -644,18 +673,16 @@ METHOD UpLoadFile( cLocalFile, cRemoteFile ) CLASS tIPClientFTP
    ::bEof := .F.
    ::oUrl:cFile := cRemoteFile
 
-   IF .not. ::bInitialized
+   IF ! ::bInitialized
 
       IF Empty( ::oUrl:cFile )
-
-         RETURN -1
-
+         RETURN .F.
       ENDIF
 
       IF ! Empty( ::oUrl:cPath )
 
          IF ! ::CWD( ::oUrl:cPath )
-            RETURN -1
+            RETURN .F.
          ENDIF
 
       ENDIF
@@ -665,7 +692,7 @@ METHOD UpLoadFile( cLocalFile, cRemoteFile ) CLASS tIPClientFTP
       ENDIF
 
       IF ! ::Stor( ::oUrl:cFile )
-         RETURN -1
+         RETURN .F.
       ENDIF
 
       // now channel is open
@@ -767,6 +794,15 @@ METHOD RMD( cPath ) CLASS tIPClientFTP
 RETURN ::GetReply()
 
 
+// Return total file size for <cFileSpec>
+METHOD fileSize( cFileSpec ) CLASS tIPClientFTP
+   LOCAL aFiles:=::ListFiles( cFileSpec ), nSize:=0, n
+   FOR n =1 TO Len(aFiles)
+       nSize+=Val(aFiles[n][7]) // Should [7] not be [F_SIZE] ?
+   NEXT
+RETURN nSize
+
+
 // Parse the :list() string into a Directory() compatible 2-dim array
 METHOD listFiles( cFileSpec ) CLASS tIPClientFTP
    LOCAL aMonth:= { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" }
@@ -774,79 +810,88 @@ METHOD listFiles( cFileSpec ) CLASS tIPClientFTP
    LOCAL cYear, cMonth, cDay, cTime
 
    cList := ::list( cFileSpec )
+
    IF Empty( cList )
       RETURN {}
-   ENDIf
+   ENDIF
 
    aList := HB_ATokens( StrTran( cList, Chr(13),''), Chr(10) )
 
    FOR EACH cEntry IN aList
-      aFile         := Array( F_LEN+3 )
-      nStart        := 1
-      nEnd          := At( Chr(32), cEntry, nStart )
 
-      // file permissions (attributes)
-      aFile[F_ATTR] := SubStr( cEntry, nStart, nEnd-nStart )
-      nStart        := nEnd
-
-      // # of links
-      DO WHILE cEntry[++nStart] == " " ; ENDDO
-      nEnd          := At( Chr(32), cEntry, nStart )
-      aFile[F_LEN+1]:= Val( SubStr( cEntry, nStart, nEnd-nStart ) )
-      nStart        := nEnd
-
-      // owner name
-      DO WHILE cEntry[++nStart] == " " ; ENDDO
-      nEnd          := At( Chr(32), cEntry, nStart )
-      aFile[F_LEN+2]:= SubStr( cEntry, nStart, nEnd-nStart )
-      nStart        := nEnd
-
-      // group name
-      DO WHILE cEntry[++nStart] == " " ; ENDDO
-      nEnd          := At( Chr(32), cEntry, nStart )
-      aFile[F_LEN+3]:= SubStr( cEntry, nStart, nEnd-nStart )
-      nStart        := nEnd
-
-      // file size
-      DO WHILE cEntry[++nStart] == " " ; ENDDO
-      nEnd          := At( Chr(32), cEntry, nStart )
-      aFile[F_SIZE] := Val( SubStr( cEntry, nStart, nEnd-nStart ) )
-      nStart        := nEnd
-
-      // Month
-      DO WHILE cEntry[++nStart] == " " ; ENDDO
-      nEnd          := At( Chr(32), cEntry, nStart )
-      cMonth        := SubStr( cEntry, nStart, nEnd-nStart )
-      cMonth        := PadL( AScan( aMonth, cMonth ), 2, "0" )
-      nStart        := nEnd
-
-      // Day
-      DO WHILE cEntry[++nStart] == " " ; ENDDO
-      nEnd          := At( Chr(32), cEntry, nStart )
-      cDay          := SubStr( cEntry, nStart, nEnd-nStart )
-      nStart        := nEnd
-
-      // year
-      DO WHILE cEntry[++nStart] == " " ; ENDDO
-      nEnd          := At( Chr(32), cEntry, nStart )
-      cYear         := SubStr( cEntry, nStart, nEnd-nStart )
-      nStart        := nEnd
-
-      IF ":" $ cYear
-         cTime := cYear
-         cYear := Str( Year(Date()), 4, 0 )
+      IF Empty( cEntry ) //PM:09-08-2007 Needed because of the new HB_aTokens()
+      
+        HB_ADel(aList, cEntry:__enumIndex(), .T.)
+      
       ELSE
-         cTime := ""
+   
+         aFile         := Array( F_LEN+3 )
+         nStart        := 1
+         nEnd          := At( Chr(32), cEntry, nStart )
+
+         // file permissions (attributes)
+         aFile[F_ATTR] := SubStr( cEntry, nStart, nEnd-nStart )
+         nStart        := nEnd
+
+         // # of links
+         DO WHILE SubStr( cEntry, ++nStart, 1 ) == " " ; ENDDO
+         nEnd          := At( Chr(32), cEntry, nStart )
+         aFile[F_LEN+1]:= Val( SubStr( cEntry, nStart, nEnd-nStart ) )
+         nStart        := nEnd
+
+         // owner name
+         DO WHILE SubStr( cEntry, ++nStart, 1 ) == " " ; ENDDO
+         nEnd          := At( Chr(32), cEntry, nStart )
+         aFile[F_LEN+2]:= SubStr( cEntry, nStart, nEnd-nStart )
+         nStart        := nEnd
+
+         // group name
+         DO WHILE SubStr( cEntry, ++nStart, 1 ) == " " ; ENDDO
+         nEnd          := At( Chr(32), cEntry, nStart )
+         aFile[F_LEN+3]:= SubStr( cEntry, nStart, nEnd-nStart )
+         nStart        := nEnd
+
+         // file size
+         DO WHILE SubStr( cEntry, ++nStart, 1 ) == " " ; ENDDO
+         nEnd          := At( Chr(32), cEntry, nStart )
+         aFile[F_SIZE] := Val( SubStr( cEntry, nStart, nEnd-nStart ) )
+         nStart        := nEnd
+
+         // Month
+         DO WHILE SubStr( cEntry, ++nStart, 1 ) == " " ; ENDDO
+         nEnd          := At( Chr(32), cEntry, nStart )
+         cMonth        := SubStr( cEntry, nStart, nEnd-nStart )
+         cMonth        := PadL( AScan( aMonth, cMonth ), 2, "0" )
+         nStart        := nEnd
+
+         // Day
+         DO WHILE SubStr( cEntry, ++nStart, 1 ) == " " ; ENDDO
+         nEnd          := At( Chr(32), cEntry, nStart )
+         cDay          := SubStr( cEntry, nStart, nEnd-nStart )
+         nStart        := nEnd
+
+         // year
+         DO WHILE SubStr( cEntry, ++nStart, 1 ) == " " ; ENDDO
+         nEnd          := At( Chr(32), cEntry, nStart )
+         cYear         := SubStr( cEntry, nStart, nEnd-nStart )
+         nStart        := nEnd
+
+         IF ":" $ cYear
+            cTime := cYear
+            cYear := Str( Year(Date()), 4, 0 )
+         ELSE
+            cTime := ""
+         ENDIF
+
+         // file name
+         DO WHILE SubStr( cEntry, ++nStart, 1 ) == " " ; ENDDO
+
+         aFile[F_NAME] := SubStr( cEntry, nStart )
+         aFile[F_DATE] := hb_StoD( cYear+cMonth+cDay )
+         aFile[F_TIME] := cTime
+
+         aList[ cEntry:__enumIndex() ] := aFile
       ENDIF
-
-      // file name
-      DO WHILE cEntry[++nStart] == " " ; ENDDO
-
-      aFile[F_NAME] := SubStr( cEntry, nStart )
-      aFile[F_DATE] := StoD( cYear+cMonth+cDay )
-      aFile[F_TIME] := cTime
-
-      aList[ HB_EnumIndex() ] := aFile
    NEXT
 
 RETURN aList

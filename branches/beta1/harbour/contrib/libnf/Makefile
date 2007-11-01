@@ -13,12 +13,14 @@ C_SOURCES = \
 	descend.c \
 	dispc.c \
 	ftattr.c \
+	ftidle.c \
+	ftisprn.c \
 	fttext.c \
 	ftshadow.c \
 	getenvrn.c \
 	getver.c \
 	getvid.c \
-	idle.c \
+	iamidle.c \
 	kspeed.c \
 	mkdir.c \
 	mouse.c \
@@ -29,6 +31,8 @@ C_SOURCES = \
 	prtscr.c \
 	putkey.c \
 	rmdir.c \
+	setkeys.c \
+	setlastk.c \
 	shift.c \
 	stod.c \
 
@@ -117,7 +121,7 @@ PRG_SOURCES= \
 	qtr.prg \
 	rand1.prg \
 	restsets.prg \
-	round.prg \
+	ftround.prg \
 	savearr.prg \
 	savesets.prg \
 	scancode.prg \
@@ -130,7 +134,6 @@ PRG_SOURCES= \
 	sysmem.prg \
 	tbwhile.prg \
 	tempfile.prg \
-	test.prg \
 	vertmenu.prg \
 	vidcur.prg \
 	vidmode.prg \
@@ -147,4 +150,3 @@ BAD_PRG_SOURCES= \
 LIBNAME=nf
 
 include $(TOP)$(ROOT)config/lib.cf
-

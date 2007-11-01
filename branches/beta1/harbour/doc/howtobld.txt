@@ -1,5 +1,5 @@
 /*
- * $Id: howtobld.txt 7862 2007-10-24 01:55:41Z druzus $
+ * $Id$
  */
 
 In the last phase of install process if bash shell is available in the
