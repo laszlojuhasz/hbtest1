@@ -148,6 +148,7 @@ extern HB_EXPORT FHANDLE  hb_fsGetOsHandle( FHANDLE hFileHandle );
 extern HB_EXPORT USHORT   hb_fsGetFError  ( void ); /* get FERROR() flag */
 extern HB_EXPORT void     hb_fsSetFError  ( USHORT uiError ); /* set FERROR() flag */
 extern HB_EXPORT BOOL     hb_fsFileExists ( const char * pszFileName ); /* check if a file exists (wildcard chars not accepted). */
+extern HB_EXPORT BOOL     hb_fsDirExists  ( const char * pszDirName ); /* check if a directory exists (wildcard chars not accepted). */
 
 #define hb_fsFLock( h, s, l )   hb_fsLock( h, s, l, FL_LOCK )
 #define hb_fsFUnlock( h, s, l ) hb_fsLock( h, s, l, FL_UNLOCK )
@@ -228,6 +229,9 @@ extern USHORT    hb_fsAttrEncode( const char * szAttr );
 extern char *    hb_fsAttrDecode( USHORT uiAttr, char * szAttr );
 extern HB_EXPORT BYTE * hb_fsNameConv( BYTE * szFileName, BOOL * pfFree );
 extern HB_EXPORT BYTE * hb_fileNameConv( char *str );
+
+/* wrapper to fopen() which calls hb_fsNameConv() */
+extern FILE * hb_fopen( const char *path, const char *mode );
 
 HB_EXTERN_END
 

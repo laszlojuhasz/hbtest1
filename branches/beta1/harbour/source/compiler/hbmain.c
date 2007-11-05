@@ -209,7 +209,7 @@ static int hb_compProcessRSPFile( HB_COMP_DECL, char * szRspName )
       szRspName = szFile;
    }
 
-   inFile = fopen( szRspName, "r" );
+   inFile = hb_fopen( szRspName, "r" );
    if( !inFile )
    {
       char buffer[ _POSIX_PATH_MAX + 80 ];
@@ -3193,7 +3193,7 @@ void hb_compGenPushMemvarRef( char * szVarName, HB_COMP_DECL ) /* generates the 
 void hb_compGenPopAliasedVar( char * szVarName,
                               BOOL bPushAliasValue,
                               char * szAlias,
-                              long lWorkarea,
+                              HB_LONG lWorkarea,
                               HB_COMP_DECL )
 {
    if( bPushAliasValue )
@@ -3238,7 +3238,7 @@ void hb_compGenPopAliasedVar( char * szVarName,
 void hb_compGenPushAliasedVar( char * szVarName,
                                BOOL bPushAliasValue,
                                char * szAlias,
-                               long lWorkarea,
+                               HB_LONG lWorkarea,
                                HB_COMP_DECL )
 {
    if( bPushAliasValue )

@@ -8,6 +8,70 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-11-05 13:35 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  - harbour/doc/genhtm.cmd
+  - harbour/utils/hbtest/make_xpp.cmd
+  - harbour/contrib/libmisc/doc/gendoc.cmd
+  - harbour/contrib/libgt/doc/gendoc.cmd
+  * harbour/include/hbpp.h
+  * harbour/include/hbcomp.h
+  * harbour/include/hbapifs.h
+  * harbour/include/hbmacro.h
+  * harbour/include/hbextern.ch
+  * harbour/include/hbapi.h
+  * harbour/common.mak
+  * harbour/utils/hbmake/hbmlang.c
+  * harbour/utils/hbpp/hbpp.c
+  * harbour/source/pp/hbppgen.c
+  * harbour/source/pp/ppcore.c
+  * harbour/source/rtl/cdpapi.c
+  * harbour/source/rtl/binnum.c
+  * harbour/source/rtl/hbfile.c
+  * harbour/source/rtl/fstemp.c
+  * harbour/source/rtl/gtchrmap.c
+  * harbour/source/rtl/gtwvt/gtwvt.c
+  * harbour/source/rtl/direct.c
+  * harbour/source/rtl/filesys.c
+  * harbour/source/vm/macro.c
+  * harbour/source/vm/garbage.c
+  * harbour/source/vm/hvm.c
+  * harbour/source/vm/fm.c
+  * harbour/source/vm/classes.c
+  * harbour/source/main/harbour.c
+  * harbour/source/common/hbtrace.c
+  * harbour/source/common/hbfsapi.c
+  * harbour/source/common/hbwince.c
+  + harbour/source/common/hbfopen.c
+  * harbour/source/common/hbstr.c
+  * harbour/source/common/Makefile
+  * harbour/source/rdd/dbfntx/dbfntx1.c
+  * harbour/source/rdd/dbfcdx/dbfcdx1.c
+  * harbour/source/rdd/dbf1.c
+  * harbour/source/rdd/dbffpt/dbffpt1.c
+  * harbour/source/compiler/hbmain.c
+  * harbour/source/compiler/genhrb.c
+  * harbour/source/compiler/gencobj.c
+  * harbour/source/compiler/genobj32.c
+  * harbour/source/compiler/genc.c
+  * harbour/source/compiler/harbour.yyc
+  * harbour/source/compiler/harbour.y
+  * harbour/contrib/xhb/makefile.vc
+  * harbour/contrib/libmisc/makefile.vc
+  * harbour/contrib/htmllib/makefile.vc
+  * harbour/contrib/libct/makefile.vc
+  * harbour/contrib/libgt/makefile.vc
+  * harbour/contrib/hgf/win32/makefile.vc
+  * harbour/contrib/hbzlib/makefile.vc
+  + harbour/contrib/dot/bld_b32.bat
+  * harbour/contrib/libnf/makefile.vc
+  * harbour/contrib/tip/makefile.vc
+  * harbour/contrib/rdd_ads/makefile.vc
+  * harbour/contrib/directx/makefile.vc
+  * harbour/contrib/win32/makefile.vc
+  * harbour/contrib/samples/makefile.vc
+  * harbour/contrib/bmdbfcdx/bmdbfcdx1.c
+    * synced with devel branch - part 7
+
 2007-11-01 21:33 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   * harbour/contrib/xhb/makefile.vc
   * harbour/contrib/xhb/makefile.bc

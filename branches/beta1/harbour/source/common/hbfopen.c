@@ -4,9 +4,9 @@
 
 /*
  * Harbour Project source code:
- * HB_FILEEXISTS() function
+ * 
  *
- * Copyright 2007 Viktor Szakats <viktor.szakats@syenar.hu>
+ * Copyright 2007 Przemyslaw Czerpak <druzus / at / priv.onet.pl>
  * www - http://www.harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,15 +50,16 @@
  *
  */
 
-#include "hbapi.h"
 #include "hbapifs.h"
 
-HB_FUNC( HB_FILEEXISTS )
+FILE * hb_fopen( const char *path, const char *mode )
 {
-   hb_retl( hb_fsFileExists( hb_parc( 1 ) ) );
-}
+   BOOL fFree;
+   char * pszFile = ( char * ) hb_fsNameConv( ( BYTE * ) path, &fFree );
+   FILE * file = fopen( pszFile, mode );
 
-HB_FUNC( HB_DIREXISTS )
-{
-   hb_retl( hb_fsDirExists( hb_parc( 1 ) ) );
+   if( fFree )
+      hb_xfree( pszFile );
+
+   return file;
 }
