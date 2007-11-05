@@ -1,6 +1,6 @@
 @echo off
 rem
-rem $Id: bld_b32.bat 7906 2007-11-02 12:17:16Z vszakats $
+rem $Id$
 rem
 
 ..\..\bin\harbour /l /gc0 /n pp       /i..\..\include\

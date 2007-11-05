@@ -8,6 +8,10 @@
    2002-12-01 13:30 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2007-11-05 14:13 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/contrib/dot/bld_b32.bat
+    * updated svn attributes
+
 2007-11-05 13:35 UTC+0100 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   - harbour/doc/genhtm.cmd
   - harbour/utils/hbtest/make_xpp.cmd
