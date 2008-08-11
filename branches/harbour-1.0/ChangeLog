@@ -8,6 +8,16 @@
    2008-12-31 13:59 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2008-08-11 21:20 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   ; Merging last-minute fixes to 1.0 from main branch.
+
+   * contrib/hbmisc/spd.c
+     ! Fix to SQL_SPRINTF() by Xavi.
+
+   * make_xmingw.sh
+     ! Fixed to look for hbpp in the path, like it does for 
+       harbour.
+
 2008-08-11 11:02 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
    * make_vcce.mak
      * Minor cosmetic sync with make_vc.mak
