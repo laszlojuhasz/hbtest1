@@ -8,6 +8,19 @@
    2008-12-31 13:59 UTC+0100 Foo Bar <foo.bar@foobar.org>
 */
 
+2008-08-12 00:11 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   ; Merging last-minute fixes to 1.0 from main branch.
+
+   * include/hbsetup.ch
+   * include/hbapi.h
+   * source/rtl/hbffind.c
+     - Removed HB_FILE_VER stuff. It's lost its importancy with SVN.
+
+   * include/Makefile
+   * include/hbcommon.ch
+     - Removed hbcommon.ch no longer needed. It only contained 
+       HB_FILE_VER related stuff.
+
 2008-08-11 21:20 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
    ; Merging last-minute fixes to 1.0 from main branch.
 
