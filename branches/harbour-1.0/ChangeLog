@@ -13,7 +13,6 @@
 
    * include/hbsetup.h
      ! HB_OS_LINUX, HB_OS_HPUX autodetection supposedly made more robust.
-       [1.0]
 
 2008-08-12 00:11 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
    ; Merging last-minute fixes to 1.0 from main branch.
