@@ -79732,7 +79732,7 @@ NOTE: You have to recompile all PRG sources!
      * hb_fsExtOpen
        + some HB_SYMBOL_UNUSED added.
 
-       NOTE [vszel]:
+       NOTE [vszakats]:
         1.) I've #ifdef-ed out the new stuff for __CYGWIN__ since
           setdisk()/getdisk() were neither declared nor present in any
           libraries.
