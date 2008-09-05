@@ -73,17 +73,17 @@
 
 #include "FreeImage.h"
 
-// --------------------------------------------------------------------------
-// Convert from FreeImage to HBITMAP ----------------------------------------
-// --------------------------------------------------------------------------
+/* -------------------------------------------------------------------------- */
+/* Convert from FreeImage to HBITMAP ---------------------------------------- */
+/* -------------------------------------------------------------------------- */
 #if ( defined(HB_OS_WIN_32) || defined(__WIN32__) )
 
-// implementation: HBITMAP bitmap = FI_FiToBitmap( FIBITMAP *dib );
+/* implementation: HBITMAP bitmap = FI_FiToBitmap( FIBITMAP *dib ); */
 HB_FUNC( FI_FITOBITMAP )
 {
-   if ( hb_pcount() == 1 &&
-        hb_parinfo( 1 ) & HB_IT_POINTER
-      )
+   if( hb_pcount() == 1 &&
+       hb_parinfo( 1 ) & HB_IT_POINTER
+     )
    {
       FIBITMAP *dib;
       HBITMAP bitmap;
@@ -100,15 +100,12 @@ HB_FUNC( FI_FITOBITMAP )
       ReleaseDC( NULL, hDC );
 
       /* return value */
-      if ( bitmap != NULL )
-      {
+      if( bitmap )
          hb_retptr( bitmap );
-      }
-
    }
    else
    {
-      // Parameter error
+      /* Parameter error */
       {
          hb_errRT_BASE_SubstR( EG_ARG, 0, NULL,
             HB_ERR_FUNCNAME, 1,
@@ -118,18 +115,18 @@ HB_FUNC( FI_FITOBITMAP )
    }
 }
 
-// --------------------------------------------------------------------------
+/* -------------------------------------------------------------------------- */
 
-// --------------------------------------------------------------------------
-// Convert from HBITMAP to FreeImage ----------------------------------------
-// --------------------------------------------------------------------------
+/* -------------------------------------------------------------------------- */
+/* Convert from HBITMAP to FreeImage ---------------------------------------- */
+/* -------------------------------------------------------------------------- */
 
-// implementation:  FIBITMAP *dib = FI_BitmapToFi( HBITMAP bitmap );
+/* implementation:  FIBITMAP *dib = FI_BitmapToFi( HBITMAP bitmap ); */
 HB_FUNC( FI_BITMAPTOFI )
 {
-   if ( hb_pcount() == 1 &&
-        hb_parinfo( 1 ) & HB_IT_POINTER
-      )
+   if( hb_pcount() == 1 &&
+       hb_parinfo( 1 ) & HB_IT_POINTER
+     )
    {
       FIBITMAP *dib;
       HBITMAP bitmap;
@@ -153,15 +150,12 @@ HB_FUNC( FI_BITMAPTOFI )
       }
 
       /* return value */
-      if ( dib != NULL )
-      {
+      if( dib )
          hb_retptr( dib );
-      }
-
    }
    else
    {
-      // Parameter error
+      /* Parameter error */
       {
          hb_errRT_BASE_SubstR( EG_ARG, 0, NULL,
             HB_ERR_FUNCNAME, 1,
@@ -171,23 +165,23 @@ HB_FUNC( FI_BITMAPTOFI )
    }
 }
 
-// --------------------------------------------------------------------------
+/* -------------------------------------------------------------------------- */
 
-// --------------------------------------------------------------------------
-// Draw an image in a window Box --------------------------------------------
-// --------------------------------------------------------------------------
+/* -------------------------------------------------------------------------- */
+/* Draw an image in a window Box -------------------------------------------- */
+/* -------------------------------------------------------------------------- */
 
-// implementation: int scanlines = FI_WinDraw( FIBITMAP *dib, HDC hDC, nTop, nLeft, nBottom, nRight );
+/* implementation: int scanlines = FI_WinDraw( FIBITMAP *dib, HDC hDC, nTop, nLeft, nBottom, nRight ); */
 HB_FUNC( FI_WINDRAW )
 {
-   if ( hb_pcount() == 6 &&
-        hb_parinfo( 1 ) & HB_IT_POINTER &&
-        hb_parinfo( 2 ) & HB_IT_NUMERIC &&
-        hb_parinfo( 3 ) & HB_IT_NUMERIC &&
-        hb_parinfo( 4 ) & HB_IT_NUMERIC &&
-        hb_parinfo( 5 ) & HB_IT_NUMERIC &&
-        hb_parinfo( 6 ) & HB_IT_NUMERIC
-      )
+   if( hb_pcount() == 6 &&
+       hb_parinfo( 1 ) & HB_IT_POINTER &&
+       hb_parinfo( 2 ) & HB_IT_NUMERIC &&
+       hb_parinfo( 3 ) & HB_IT_NUMERIC &&
+       hb_parinfo( 4 ) & HB_IT_NUMERIC &&
+       hb_parinfo( 5 ) & HB_IT_NUMERIC &&
+       hb_parinfo( 6 ) & HB_IT_NUMERIC
+     )
    {
       FIBITMAP *dib;
       HDC hDC;
@@ -219,7 +213,7 @@ HB_FUNC( FI_WINDRAW )
    }
    else
    {
-      // Parameter error
+      /* Parameter error */
       {
          hb_errRT_BASE_SubstR( EG_ARG, 0, NULL,
             HB_ERR_FUNCNAME, 6,
@@ -231,6 +225,6 @@ HB_FUNC( FI_WINDRAW )
    }
 }
 
-// --------------------------------------------------------------------------
+/* -------------------------------------------------------------------------- */
 
-#endif // ( defined(HB_OS_WIN_32) || defined(__WIN32__) )
+#endif /* ( defined(HB_OS_WIN_32) || defined(__WIN32__) ) */

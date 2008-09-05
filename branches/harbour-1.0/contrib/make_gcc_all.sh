@@ -20,6 +20,7 @@ if [ -z "$HB_ARCHITECTURE" ]; then
          *cygwin*)                    hb_arch="cyg" ;;
          *dos)                        hb_arch="dos" ;;
          *bsd)                        hb_arch="bsd" ;;
+         *darwin)                     hb_arch="darwin" ;;
       esac
    fi
    export HB_ARCHITECTURE="$hb_arch" _HB_ARCH_SAVED=1
@@ -39,17 +40,18 @@ fi
 #**************************************************************
 
 # hbsqlit2
-_HB_DIRS="hbbmcdx hbbtree hbclipsm hbct hbgt hbmisc hbmsql hbmzip hbnf hbtip hbsqlit3 hbtpathy hbvpdf xhb"
+_HB_DIRS="hbbmcdx hbbtree hbclipsm hbct hbgt hbmisc hbmsql hbmzip hbnf hbtip hbsqlit3 hbtpathy hbvpdf hbziparc xhb"
 
 case "$HB_ARCHITECTURE" in
    w32|cyg|os2)
-        # hbw32ddr hbwhat32 hbziparch
+        # hbwhat32
         _HB_DIRS_ADD="gtwvg hbole hbodbc hbw32 rddado"
         ;;
    *)
         _HB_DIRS_ADD=;;
 esac
 
+if [ "${HB_INC_ALLEGRO}"   != "" ]; then _HB_DIRS="${_HB_DIRS} gtalleg"; fi;
 if [ "${HB_INC_APOLLO}"    != "" ]; then _HB_DIRS="${_HB_DIRS} hbapollo"; fi;
 if [ "${HB_INC_CURL}"      != "" ]; then _HB_DIRS="${_HB_DIRS} hbcurl  "; fi;
 if [ "${HB_INC_FIREBIRD}"  != "" ]; then _HB_DIRS="${_HB_DIRS} hbfbird "; fi;

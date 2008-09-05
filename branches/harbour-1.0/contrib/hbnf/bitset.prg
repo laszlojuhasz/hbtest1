@@ -3,7 +3,7 @@
  */
 
 /*
- * File......: BITSET.PRG
+ * File......: bitset.prg
  * Author....: Forest Belt, Computer Diagnostic Services, Inc.
  * CIS ID....: ?
  *
@@ -50,8 +50,8 @@
  *     Note: Calls FT_ISBIT() which is also in this Library.
  *
  *     This function is presented to illustrate that bit-wise operations
- *     are possible with Clipper code.  For greater speed, write .C or
- *     .ASM versions and use the Clipper Extend system.
+ *     are possible with Clipper code.  For greater speed, write .c or
+ *     .asm versions and use the Clipper Extend system.
  *  $EXAMPLES$
  *     This code would set bit 4 in a byte represented by CHR(107):
  *
@@ -66,7 +66,7 @@
  *                                        // bit 5 set
  *
  *     For a demonstration of Clipper bit manipulations, compile and
- *     link the program BITTEST.PRG in the Nanforum Toolkit source code.
+ *     link the program bittest.prg in the Nanforum Toolkit source code.
  *  $SEEALSO$
  *     FT_BITCLR() FT_ISBIT()
  *  $END$

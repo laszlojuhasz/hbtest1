@@ -26,7 +26,7 @@
 #include   <windows.h>
 #include   <commctrl.h>
 #include   <shlobj.h>
-#include   <shellApi.h>
+#include   <shellapi.h>
 #include   <wininet.h>
 
 #include   "hbapi.h"
@@ -161,7 +161,7 @@ HB_FUNC( INTERNETCONNECT )
    );
 */
 //
-//    if FtpOpenFile( hInternet, 'Temp/Config.sys', GENERIC_WRITE )
+//    if FtpOpenFile( hInternet, 'temp/config.sys', GENERIC_WRITE )
 //       // take next step
 //    endif
 //
@@ -288,8 +288,8 @@ HB_FUNC( FTPCOMMAND )
    );
 */
 //
-//   #include  'WinTypes.ch'
-//   #include  'cStruct.ch'
+//   #include  "wintypes.ch"
+//   #include  "cstruct.ch"
 //
 //
 //   pragma pack(4)
@@ -497,7 +497,7 @@ HB_FUNC( FTPREMOVEDIRECTORY )
    );
 */
 //
-//   if FtpDeleteFile( hInternet, 'Temp\Config.sys' )
+//   if FtpDeleteFile( hInternet, 'temp\config.sys' )
 //      ? 'Sucess'
 //   endif
 //

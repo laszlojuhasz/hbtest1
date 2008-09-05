@@ -22,7 +22,7 @@ STATIC for, in, include, init, loop, local, using, static, return, recover
 Function Main()
 
 //just to prevent any disaster if someone will want to run it
-  IF( .T. )
+  IF .T.
     RETURN nil
   ENDIF
 
@@ -212,7 +212,7 @@ begin sequence
   break->break :=break->break +break->break
   BREAK
   break :=break[ 2 ] //not allowed in Clipper
-  bReak :=IIF( bReak=1, BREAK(0), BREAK(bReak) )
+  bReak :=IIF( bReak==1, BREAK(0), BREAK(bReak) )
 recover USING bReak
   BREAK( Break( break(0) ) )
 end

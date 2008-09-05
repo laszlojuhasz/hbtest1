@@ -3,7 +3,7 @@
  */
 
 /*
- * File......: GETENVRN.C
+ * File......: getenvrn.c
  * Author....: Rick Whitt
  * CIS ID....: 70672,605
  *
@@ -83,14 +83,14 @@
  *
  *        cEnvBlock := ""
  *        FT_GETE(@cEnvBlock)
- *        MEMOWRIT("ENVIRON.TXT", cEnvBlock)
+ *        MEMOWRIT("environ.txt", cEnvBlock)
  *
  *     Get the environment in Array form:
  *
  *        aEnvArray := ARRAY(FT_GETE())
  *        FT_GETE(aEnvArray)
- *        ? aEnvArray[1]       // "COMSPEC=C:\COMMAND.COM"
- *        ? aEnvArray[2]       // "PATH=C:\;C:\DOS;C:\UTIL;C:\CLIP50\BIN"
+ *        ? aEnvArray[1]       // "COMSPEC=C:\command.com"
+ *        ? aEnvArray[2]       // "PATH=C:\;C:\windows;C:\util;C:\harbour"
  *          ... etc ...
  *  $END$
  */
@@ -98,7 +98,7 @@
 #define HB_OS_WIN_32_USED
 #include "hbapi.h"
 
-#if defined(OS_UNIX_COMPATIBLE)
+#if defined(HB_OS_UNIX_COMPATIBLE)
 #   include <unistd.h>
 #   if defined( HB_OS_DARWIN )
 #      include <crt_externs.h>
@@ -127,7 +127,7 @@ HB_FUNC( FT_GETE )
    /* INTERNALS WARNING: All references to 'environ', strlen(), ;
       strcpy(), and strcat() are undocumented Clipper 5.0 internals.
     */
-#if defined(HB_OS_DOS) || defined(OS_UNIX_COMPATIBLE)
+#if defined(HB_OS_DOS) || defined(HB_OS_UNIX_COMPATIBLE)
    {
 
       char *buffer = NULL;
@@ -151,7 +151,7 @@ HB_FUNC( FT_GETE )
          /* add 1 more byte for final nul character */
          buffsize++;
          /* now allocate that much memory and make sure 1st byte is a nul */
-         buffer = ( char * ) hb_xalloc( buffsize + 1 );
+         buffer = ( char * ) hb_xgrab( buffsize + 1 );
          buffer[0] = '\0';
       }
 
@@ -164,9 +164,9 @@ HB_FUNC( FT_GETE )
          if( rettype == CHARTYPE )
          {
             /* tack string onto end of buffer */
-            strcat( buffer, environ[x] );
+            hb_strncat( buffer, environ[x], buffsize );
             /* add crlf at end of each string */
-            strcat( buffer, CRLF );
+            hb_strncat( buffer, CRLF, buffsize );
          }
          else if( rettype == ARRAYTYPE )
             /* store string to next array element */
@@ -204,29 +204,26 @@ HB_FUNC( FT_GETE )
       {
          for( sCurEnv = ( LPSTR ) lpEnviron; *sCurEnv; sCurEnv++ )
          {
+            if( !*sCurEnv )
+               /* null string, we're done */
+               break;
 
-            {
-               if( !*sCurEnv )
-                  /* null string, we're done */
-                  break;
-               /* add length of this string plus 2 for the crlf */
-               buffsize += ( strlen( ( char * ) sCurEnv ) + 2 );
-            }
-            /* add 1 more byte for final nul character */
-            buffsize++;
+            /* add length of this string plus 2 for the crlf */
+            buffsize += ( strlen( ( char * ) sCurEnv ) + 2 );
 
-            /* now allocate that much memory and make sure 1st byte is a nul */
-            buffer = ( char * ) hb_xalloc( buffsize );
-            strcpy( buffer, "\0" );
             while( *sCurEnv )
                sCurEnv++;
          }
+         /* add 1 more byte for final nul character */
+         buffsize++;
+
+         /* now allocate that much memory and make sure 1st byte is a nul */
+         buffer = ( char * ) hb_xgrab( buffsize + 1 );
+         buffer[0] = '\0';
       }
       x = 0;
       for( sCurEnv = ( LPSTR ) lpEnviron; *sCurEnv; sCurEnv++ )
       {
-
-
          if( !*sCurEnv )
             /* null string, we're done */
             break;
@@ -234,9 +231,9 @@ HB_FUNC( FT_GETE )
          if( rettype == CHARTYPE )
          {
             /* tack string onto end of buffer */
-            strcat( buffer, ( char * ) sCurEnv );
+            hb_strncat( buffer, ( char * ) sCurEnv, buffsize );
             /* add crlf at end of each string */
-            strcat( buffer, CRLF );
+            hb_strncat( buffer, CRLF, buffsize );
          }
 
          if( rettype == ARRAYTYPE )

@@ -1269,7 +1269,7 @@ typedef struct
    char * pszMask;
    BOOL bIncludeMask;
    BYTE * buffer;
-   FHANDLE fhnd;
+   HB_FHANDLE fhnd;
 } MEMVARSAVE_CARGO;
 
 /* saves a variable to a mem file already open */
@@ -1279,7 +1279,7 @@ static HB_DYNS_FUNC( hb_memvarSave )
    char * pszMask    = ( ( MEMVARSAVE_CARGO * ) Cargo )->pszMask;
    BOOL bIncludeMask = ( ( MEMVARSAVE_CARGO * ) Cargo )->bIncludeMask;
    BYTE * buffer     = ( ( MEMVARSAVE_CARGO * ) Cargo )->buffer;
-   FHANDLE fhnd      = ( ( MEMVARSAVE_CARGO * ) Cargo )->fhnd;
+   HB_FHANDLE fhnd   = ( ( MEMVARSAVE_CARGO * ) Cargo )->fhnd;
 
    /* NOTE: Harbour name lengths are not limited, but the .mem file
             structure is not flexible enough to allow for it.
@@ -1299,8 +1299,7 @@ static HB_DYNS_FUNC( hb_memvarSave )
          memset( buffer, 0, HB_MEM_REC_LEN );
 
          /* NOTE: Save only the first 10 characters of the name */
-         strncpy( ( char * ) buffer, pDynSymbol->pSymbol->szName, 10 );
-         buffer[ 10 ] = '\0';
+         hb_strncpy( ( char * ) buffer, pDynSymbol->pSymbol->szName, 10 );
 
          if( HB_IS_STRING( pItem ) && ( hb_itemGetCLen( pItem ) + 1 ) <= SHRT_MAX )
          {
@@ -1376,16 +1375,16 @@ HB_FUNC( __MVSAVE )
    {
       PHB_FNAME pFileName;
       char szFileName[ _POSIX_PATH_MAX + 1 ];
-      FHANDLE fhnd;
+      HB_FHANDLE fhnd;
 
       /* Generate filename */
 
       pFileName = hb_fsFNameSplit( hb_parc( 1 ) );
 
-      if( hb_set.HB_SET_DEFEXTENSIONS && pFileName->szExtension == NULL )
+      if( hb_set.HB_SET_DEFEXTENSIONS && ! pFileName->szExtension )
          pFileName->szExtension = ".mem";
 
-      if( pFileName->szPath == NULL )
+      if( ! pFileName->szPath )
          pFileName->szPath = hb_set.HB_SET_DEFAULT;
 
       hb_fsFNameMerge( szFileName, pFileName );
@@ -1450,7 +1449,7 @@ HB_FUNC( __MVRESTORE )
    {
       PHB_FNAME pFileName;
       char szFileName[ _POSIX_PATH_MAX + 1 ];
-      FHANDLE fhnd;
+      HB_FHANDLE fhnd;
 
       BOOL bAdditive = hb_parl( 2 );
 
@@ -1463,10 +1462,10 @@ HB_FUNC( __MVRESTORE )
 
       pFileName = hb_fsFNameSplit( hb_parc( 1 ) );
 
-      if( hb_set.HB_SET_DEFEXTENSIONS && pFileName->szExtension == NULL )
+      if( hb_set.HB_SET_DEFEXTENSIONS && ! pFileName->szExtension )
          pFileName->szExtension = ".mem";
 
-      if( pFileName->szPath == NULL )
+      if( ! pFileName->szPath )
          pFileName->szPath = hb_set.HB_SET_DEFAULT;
 
       hb_fsFNameMerge( szFileName, pFileName );

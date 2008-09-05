@@ -165,7 +165,7 @@ static USHORT  s_usUpdtRight;
 static CHAR_INFO * s_pCharInfoScreen = NULL;
 static ULONG   s_ulScreenBuffSize = 0;
 
-static FHANDLE s_hStdIn, s_hStdOut, s_hStdErr;
+static HB_FHANDLE s_hStdIn, s_hStdOut, s_hStdErr;
 
 static HANDLE  s_HInput  = INVALID_HANDLE_VALUE;
 static HANDLE  s_HOutput = INVALID_HANDLE_VALUE;
@@ -462,7 +462,7 @@ static void hb_gt_win_xScreenUpdate( void )
 {
    HB_TRACE(HB_TR_DEBUG, ("hb_gt_win_xScreenUpdate()"));
 
-   if( s_pCharInfoScreen != NULL )
+   if( s_pCharInfoScreen )
    {
       if( s_uiDispCount == 0 && s_usUpdtTop <= s_usUpdtBottom )
       {
@@ -587,7 +587,7 @@ static void hb_gt_win_xInitScreenParam( PHB_GT pGT )
 
       if( s_pCharInfoScreen == NULL || ulSize != s_ulScreenBuffSize )
       {
-         if( s_pCharInfoScreen != NULL )
+         if( s_pCharInfoScreen )
             hb_xfree( s_pCharInfoScreen );
          s_ulScreenBuffSize = ulSize;
          s_pCharInfoScreen = ( CHAR_INFO * ) hb_xgrab( s_ulScreenBuffSize );
@@ -631,7 +631,7 @@ static void hb_gt_win_xInitScreenParam( PHB_GT pGT )
       }
       HB_GTSELF_SETPOS( pGT, s_sCurRow, s_sCurCol );
    }
-   else if( s_pCharInfoScreen != NULL )
+   else if( s_pCharInfoScreen )
    {
       hb_xfree( s_pCharInfoScreen );
       s_ulScreenBuffSize = 0;
@@ -640,7 +640,7 @@ static void hb_gt_win_xInitScreenParam( PHB_GT pGT )
 
 /* *********************************************************************** */
 
-static void hb_gt_win_Init( PHB_GT pGT, FHANDLE hFilenoStdin, FHANDLE hFilenoStdout, FHANDLE hFilenoStderr )
+static void hb_gt_win_Init( PHB_GT pGT, HB_FHANDLE hFilenoStdin, HB_FHANDLE hFilenoStdout, HB_FHANDLE hFilenoStderr )
 {
    HB_TRACE(HB_TR_DEBUG, ("hb_gt_win_Init(%p,%p,%p,%p)", pGT, hFilenoStdin, hFilenoStdout, hFilenoStderr));
 
@@ -765,7 +765,7 @@ static void hb_gt_win_Exit( PHB_GT pGT )
 
    HB_GTSELF_REFRESH( pGT );
 
-   if( s_pCharInfoScreen != NULL )
+   if( s_pCharInfoScreen )
    {
       hb_xfree( s_pCharInfoScreen );
       s_pCharInfoScreen = NULL;
@@ -1364,7 +1364,7 @@ static int hb_gt_win_ReadKey( PHB_GT pGT, int iEventMask )
                clipKey = &extKeyTab[ extKey ];
             }
 
-            if( clipKey != NULL )
+            if( clipKey )
             {
                if( ( dwState & SHIFT_PRESSED ) && ( dwState & ( LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED ) ) )
                {
@@ -1719,7 +1719,7 @@ static void hb_gt_win_Redraw( PHB_GT pGT, int iRow, int iCol, int iSize )
 {
    HB_TRACE( HB_TR_DEBUG, ( "hb_gt_win_Redraw(%p,%d,%d,%d)", pGT, iRow, iCol, iSize ) );
 
-   if( iSize > 0 && s_pCharInfoScreen != NULL &&
+   if( iSize > 0 && s_pCharInfoScreen &&
        iRow < ( int ) _GetScreenHeight() && iCol < ( int ) _GetScreenWidth() )
    {
       BYTE bColor, bAttr;
@@ -1817,7 +1817,10 @@ HB_CALL_ON_STARTUP_END( _hb_startup_gt_Init_ )
 
 #if defined( HB_PRAGMA_STARTUP )
    #pragma startup _hb_startup_gt_Init_
-#elif defined(HB_MSC_STARTUP)
+#elif defined( HB_MSC_STARTUP )
+   #if defined( HB_OS_WIN_64 )
+      #pragma section( HB_MSC_START_SEGMENT, long, read )
+   #endif
    #pragma data_seg( HB_MSC_START_SEGMENT )
    static HB_$INITSYM hb_vm_auto__hb_startup_gt_Init_ = _hb_startup_gt_Init_;
    #pragma data_seg()

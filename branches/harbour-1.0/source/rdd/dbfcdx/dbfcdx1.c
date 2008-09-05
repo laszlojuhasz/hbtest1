@@ -1055,7 +1055,7 @@ static void hb_cdxIndexCheckBuffers( LPCDXINDEX pIndex )
  */
 static ULONG hb_cdxIndexGetAvailPage( LPCDXINDEX pIndex, BOOL bHeader )
 {
-   FHANDLE hFile = pIndex->hFile;
+   HB_FHANDLE hFile = pIndex->hFile;
    BYTE byBuf[4];
    ULONG ulPos;
 
@@ -1369,7 +1369,8 @@ static BOOL hb_cdxIndexUnLockRead( LPCDXINDEX pIndex )
 
    hb_cdxIndexPoolFree( pIndex, CDX_PAGECACHESIZE );
 
-   if ( pIndex->pArea->fShared && pIndex->fShared )
+   if ( pIndex->pArea->fShared && pIndex->fShared &&
+        !HB_DIRTYREAD( pIndex->pArea ) )
    {
 #ifdef HB_CDX_DBGCODE
       if ( pIndex->WrLck || ! pIndex->RdLck )
@@ -3628,7 +3629,7 @@ static LPCDXTAG hb_cdxTagNew( LPCDXINDEX pIndex, char *szTagName, ULONG TagHdr )
 
    pTag = ( LPCDXTAG ) hb_xgrab( sizeof( CDXTAG ) );
    memset( pTag, 0, sizeof( CDXTAG ) );
-   hb_strncpyUpperTrim( szName, szTagName, CDX_MAXTAGNAMELEN );
+   hb_strncpyUpperTrim( szName, szTagName, sizeof( szName ) - 1 );
    pTag->szName = hb_strdup( szName );
    pTag->pIndex = pIndex;
    pTag->AscendKey = pTag->UsrAscend = TRUE;
@@ -5063,7 +5064,7 @@ static LPCDXTAG hb_cdxFindTag( CDXAREAP pArea, PHB_ITEM pTagItem,
    LPCDXINDEX pIndex = pArea->lpIndexes;
    BOOL fBag;
 
-   hb_strncpyUpperTrim( szTag, hb_itemGetCPtr( pTagItem ), CDX_MAXTAGNAMELEN );
+   hb_strncpyUpperTrim( szTag, hb_itemGetCPtr( pTagItem ), sizeof( szTag ) - 1 );
    if( ! szTag[0] )
       iFind = hb_itemGetNI( pTagItem );
 
@@ -7146,7 +7147,7 @@ static ERRCODE hb_cdxZap ( CDXAREAP pArea )
 static ERRCODE hb_cdxOrderListAdd( CDXAREAP pArea, LPDBORDERINFO pOrderInfo )
 {
    USHORT uiFlags;
-   FHANDLE hFile;
+   HB_FHANDLE hFile;
    char szBaseName[ CDX_MAXTAGNAMELEN + 1 ];
    char szFileName[ _POSIX_PATH_MAX + 1 ];
    LPCDXINDEX pIndex, * pIndexPtr;
@@ -7485,12 +7486,12 @@ static ERRCODE hb_cdxOrderCreate( CDXAREAP pArea, LPDBORDERCREATEINFO pOrderInfo
 
    if ( pOrderInfo->atomBagName && pOrderInfo->atomBagName[0] )
    {
-      hb_strncpyUpperTrim( szTagName, ( char * ) pOrderInfo->atomBagName, CDX_MAXTAGNAMELEN );
+      hb_strncpyUpperTrim( szTagName, ( char * ) pOrderInfo->atomBagName, sizeof( szTagName ) - 1 );
       fNewFile = FALSE;
    }
    else
    {
-      hb_strncpy( szTagName, szCpndTagName, CDX_MAXTAGNAMELEN );
+      hb_strncpy( szTagName, szCpndTagName, sizeof( szTagName ) - 1 );
       fNewFile = TRUE;
    }
 
@@ -7520,7 +7521,7 @@ static ERRCODE hb_cdxOrderCreate( CDXAREAP pArea, LPDBORDERCREATEINFO pOrderInfo
 
    if ( !fOpenedIndex )
    {
-      FHANDLE hFile;
+      HB_FHANDLE hFile;
       BOOL bRetry, fShared = pArea->fShared && !fTemporary && !fExclusive;
 
       do
@@ -8541,7 +8542,7 @@ static ERRCODE hb_cdxRddInfo( LPRDDNODE pRDD, USHORT uiIndex, ULONG ulConnect, P
          hb_itemPutC( pItem, pData->szIndexExt[ 0 ] ? pData->szIndexExt : CDX_INDEXEXT );
          if( szNew )
          {
-            hb_strncpy( pData->szIndexExt, szNew, HB_MAX_FILE_EXT );
+            hb_strncpy( pData->szIndexExt, szNew, sizeof( pData->szIndexExt ) - 1 );
             hb_xfree( szNew );
          }
          break;
@@ -9642,10 +9643,13 @@ HB_CALL_ON_STARTUP_BEGIN( _hb_dbfcdx_rdd_init_ )
    hb_vmAtInit( hb_dbfcdxRddInit, NULL );
 HB_CALL_ON_STARTUP_END( _hb_dbfcdx_rdd_init_ )
 
-#if defined(HB_PRAGMA_STARTUP)
+#if defined( HB_PRAGMA_STARTUP )
    #pragma startup dbfcdx1__InitSymbols
    #pragma startup _hb_dbfcdx_rdd_init_
-#elif defined(HB_MSC_STARTUP)
+#elif defined( HB_MSC_STARTUP )
+   #if defined( HB_OS_WIN_64 )
+      #pragma section( HB_MSC_START_SEGMENT, long, read )
+   #endif
    #pragma data_seg( HB_MSC_START_SEGMENT )
    static HB_$INITSYM hb_vm_auto_dbfcdx1__InitSymbols = dbfcdx1__InitSymbols;
    static HB_$INITSYM hb_vm_auto_dbfcdx_rdd_init = _hb_dbfcdx_rdd_init_;

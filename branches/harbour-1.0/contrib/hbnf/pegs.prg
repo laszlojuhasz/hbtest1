@@ -3,7 +3,7 @@
  */
 
 /*
- * File......: PEGS.PRG
+ * File......: pegs.prg
  * Author....: Greg Lief
  * CIS ID....: 72460,1760
  *
@@ -182,7 +182,7 @@ return NIL
 
 
 static function DrawBox(nelement)
-setcolor(if(board_[nelement][4], '+w/rb', 'w/n'))
+setcolor(iif(board_[nelement][4], '+w/rb', 'w/n'))
 @ board_[nelement][1,1], board_[nelement][1,2], board_[nelement][1,3], ;
   board_[nelement][1,4] box "ÚÄ¿³ÙÄÀ³ "
 DevPos(board_[nelement][1,1] + 1, board_[nelement][1,2] + 2)

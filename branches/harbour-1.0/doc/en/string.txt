@@ -35,7 +35,7 @@
  *      lAlpha Logical true (.T.) or false (.F.).
  *  $DESCRIPTION$
  *      This function return a logical true (.T.) if the first character
- *      in <cString> is an alphabetic character.If not, the function will
+ *      in <cString> is an alphabetic character. If not, the function will
  *      return a logical false (.F.).
  *  $EXAMPLES$
  *      QOUT( "isalpha( 'hello' ) = ", isalpha( 'hello' ) )
@@ -44,7 +44,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This function is CA-Clipper compliant
+ *      This function is CA-Cl*pper compliant
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -69,8 +69,8 @@
  *      lDigit Logical true (.T.) or false (.F.).
  *  $DESCRIPTION$
  *      This function takes the caracter string <cString> and checks to
- *      see if the leftmost character is a digit,from 1 to 9.If so, the
- *      function will return a logical true (.T.);otherwise, it will
+ *      see if the leftmost character is a digit, from 1 to 9. If so, the
+ *      function will return a logical true (.T.); otherwise, it will
  *      return a logical false (.F.).
  *  $EXAMPLES$
  *      ? ISDIGIT( '12345' )      // .T.
@@ -79,7 +79,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This function is CA-Clipper compliant
+ *      This function is CA-Cl*pper compliant
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -104,8 +104,8 @@
  *      lUpper Logical true (.T.) or false (.F.).
  *  $DESCRIPTION$
  *      This function takes the caracter string <cString> and checks to
- *      see if the leftmost character is a uppercased letter.If so, the
- *      function will return a logical true (.T.);otherwise, it will
+ *      see if the leftmost character is a uppercased letter. If so, the
+ *      function will return a logical true (.T.); otherwise, it will
  *      return a logical false (.F.).
  *  $EXAMPLES$
  *      ? ISUPPER( 'Abcde' )    // .T.
@@ -114,7 +114,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This function is CA-Clipper compliant
+ *      This function is CA-Cl*pper compliant
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -139,8 +139,8 @@
  *      lLower Logical true (.T.) or false (.F.).
  *  $DESCRIPTION$
  *      This function takes the caracter string <cString> and checks to
- *      see if the leftmost character is a lowercased letter.If so, the
- *      function will return a logical true (.T.);otherwise, it will
+ *      see if the leftmost character is a lowercased letter. If so, the
+ *      function will return a logical true (.T.); otherwise, it will
  *      return a logical false (.F.).
  *  $EXAMPLES$
  *      ? islower( 'ABCde' )      // .F.
@@ -149,7 +149,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This function is CA-Clipper compliant
+ *      This function is CA-Cl*pper compliant
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -181,7 +181,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This functions is CA-CLIPPER compatible
+ *      This functions is CA-Cl*pper compatible
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -214,7 +214,7 @@
  *  $DESCRIPTION$
  *      This function searches the string <cString> for the characters in
  *      the first string <cSearch>. If the substring is not contained within
- *      the second expression,the function will return 0. The third and fourth
+ *      the second expression, the function will return 0. The third and fourth
  *      parameters lets you indicate a starting and end offset to search in.
  *  $EXAMPLES$
  *      QOUT( "at( 'cde', 'abcdefgfedcba' ) = '" +;
@@ -254,7 +254,7 @@
  *      RAT() return the location of beginnig position.
  *  $DESCRIPTION$
  *      This function searches througt <cString> for the first existence
- *      of <cSearch>.The search operation is performed from the right side
+ *      of <cSearch>. The search operation is performed from the right side
  *      of <cString> to the left. If the function is unable to find any
  *      occurence of <cSearch> in <cString>, the return value is 0.
  *  $EXAMPLES$
@@ -270,7 +270,7 @@
  *  $FILES$
  *      Library is rtl
  *  $SEEALSO$
- *      AT(),SUBSTR(),RIGHT()
+ *      AT(), SUBSTR(), RIGHT()
  *  $END$
  */
 
@@ -301,7 +301,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This functions is CA CLIPPER compatible
+ *      This functions is CA-Cl*pper compatible
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -339,7 +339,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This functions is CA CLIPPER compatible
+ *      This functions is CA-Cl*pper compatible
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -385,8 +385,8 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This functions is CA-Clipper compatible with the execption that
- *      CA-Clipper will generate an error if the passed string is longer
+ *      This functions is CA-Cl*pper compatible with the execption that
+ *      CA-Cl*pper will generate an error if the passed string is longer
  *      than 64Kb, and Harbour on some plataform is not limit by this size.
  *  $PLATFORMS$
  *      All
@@ -463,7 +463,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      CA-Clipper compatible.
+ *      CA-Cl*pper compatible.
  *  $FILES$
  *      Library is rtl
  *  $SEEALSO$
@@ -539,7 +539,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      CA-Clipper compatible (it was part of the samples).
+ *      CA-Cl*pper compatible (it was part of the samples).
  *  $FILES$
  *      Library is rtl
  *  $SEEALSO$
@@ -619,7 +619,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      LEN() is fully CA-Clipper compliant.
+ *      LEN() is fully CA-Cl*pper compliant.
  *  $FILES$
  *      Library is rtl
  *  $SEEALSO$
@@ -662,7 +662,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      EMPTY() is fully CA-Clipper compliant.
+ *      EMPTY() is fully CA-Cl*pper compliant.
  *  $FILES$
  *      Library is rtl
  *  $SEEALSO$
@@ -697,11 +697,11 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      DESCEND() is fully CA-Clipper compliant.
+ *      DESCEND() is fully CA-Cl*pper compliant.
  *  $FILES$
  *      Library is rtl
  *  $SEEALSO$
- *       INDEX,SEEK
+ *       INDEX, SEEK
  *  $END$
  */
 
@@ -801,7 +801,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This function is CA-Clipper compatible
+ *      This function is CA-Cl*pper compatible
  *  $PLATFORMS$
  *      ALL
  *  $FILES$
@@ -834,7 +834,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This function is CA-Clipper compatible
+ *      This function is CA-Cl*pper compatible
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -858,9 +858,9 @@
  *  $RETURNS$
  *      <cReturn> Character expression of that ASCII value
  *  $DESCRIPTION$
- *      This function returns the ASCII character code for <nAsciiNum>.The
+ *      This function returns the ASCII character code for <nAsciiNum>. The
  *      number expressed must be an interger value within the range of 0 to
- *      255 inclusive.The CHR() function will send the character returned
+ *      255 inclusive. The CHR() function will send the character returned
  *      to whatever device is presently set.
  *
  *      The CHR() function may be used for printing special codes as well
@@ -871,13 +871,13 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This function is Ca-Clipper compliant
+ *      This function is CA-Cl*pper compliant
  *  $PLATFORMS$
  *      All
  *  $FILES$
  *      Library is rtl
  *  $SEEALSO$
- *      ASC(),INKEY()
+ *      ASC(), INKEY()
  *  $END$
  */
 
@@ -903,7 +903,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This function is Ca-Clipper compliant
+ *      This function is CA-Cl*pper compliant
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -937,7 +937,7 @@
  *      of <xVal> will be a blank space. This character may be explicitly
  *      specified the value of <cFill>.
  *
- *      If the lenght of <xVal> is longer then <nWidth>,this function will
+ *      If the lenght of <xVal> is longer then <nWidth>, this function will
  *      truncate the string <xVal> from the leftmost side to the lenght of
  *      <nWidth>.
  *  $EXAMPLES$
@@ -949,7 +949,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This function is Ca-Clipper compilant
+ *      This function is CA-Cl*pper compilant
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -979,11 +979,11 @@
  *  $DESCRIPTION$
  *      This function takes an date,number,or character expression <xVal>
  *      and attempt to left-justify it within a string of a given width
- *      expressed as <nWidth>.The default character used to pad left side
- *      of <xVal> will be an blank space;however,this character may be
+ *      expressed as <nWidth>. The default character used to pad left side
+ *      of <xVal> will be an blank space; however, this character may be
  *      explicitly specified the value of <cFill>.
  *
- *      If the lenght of <xVal> is longer then <nWidth>,this function will
+ *      If the lenght of <xVal> is longer then <nWidth>, this function will
  *      truncate the string <xVal> from the leftmost side to the lenght of
  *      <nWidth>.
  *  $EXAMPLES$
@@ -995,7 +995,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This function is Ca-Clipper compilant
+ *      This function is CA-Cl*pper compilant
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -1025,11 +1025,11 @@
  *  $DESCRIPTION$
  *      This function takes an date,number,or character expression <xVal>
  *      and attempt to right-justify it within a string of a given width
- *      expressed as <nWidth>.The default character used to pad right side
- *      of <xVal> will be an blank space;however,this character may be
+ *      expressed as <nWidth>. The default character used to pad right side
+ *      of <xVal> will be an blank space; however, this character may be
  *      explicitly specified the value of <cFill>.
  *
- *      If the lenght of <xVal> is longer then <nWidth>,this function will
+ *      If the lenght of <xVal> is longer then <nWidth>, this function will
  *      truncate the string <xVal> from the leftmost side to the lenght of
  *      <nWidth>.
  *  $EXAMPLES$
@@ -1041,7 +1041,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This function is Ca-Clipper compilant
+ *      This function is CA-Cl*pper compilant
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -1077,7 +1077,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This function is Ca-Clipper compilant
+ *      This function is CA-Cl*pper compilant
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -1105,7 +1105,7 @@
  *      removed.
  *
  *      This function is indentical to RTRIM() and the opposite of LTRIM().
- *      Together with LTRIM(),this function equated to the ALLTRIM()
+ *      Together with LTRIM(), this function equated to the ALLTRIM()
  *      function.
  *  $EXAMPLES$
  *      ? RTRIM( "HELLO" )              //  "HELLO"
@@ -1117,7 +1117,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This function is Ca-Clipper compilant
+ *      This function is CA-Cl*pper compilant
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -1145,7 +1145,7 @@
  *      removed.
  *
  *      This function is indentical to RTRIM() and the opposite of LTRIM().
- *      Together with LTRIM(),this function equated to the ALLTRIM()
+ *      Together with LTRIM(), this function equated to the ALLTRIM()
  *      function.
  *  $EXAMPLES$
  *      ? TRIM( "HELLO" )     //  "HELLO"
@@ -1157,7 +1157,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This function is Ca-Clipper compilant
+ *      This function is CA-Cl*pper compilant
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -1185,7 +1185,7 @@
  *      fill character.
  *  $DESCRIPTION$
  *      This function returns a string composed of <nSize> repetitions of
- *      <cString>.The lenght of the character string returned by this
+ *      <cString>. The lenght of the character string returned by this
  *      function is limited to the memory avaliable.
  *
  *      A value of 0 for <nSize> will return a NULL string.
@@ -1197,7 +1197,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This function is Ca-Clipper compliant in all aspects, with the
+ *      This function is CA-Cl*pper compliant in all aspects, with the
  *      exception don't have the Clipper 64Kb string length.
  *  $PLATFORMS$
  *      All
@@ -1268,7 +1268,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This function is Ca-Clipper compliant in all aspects, with the
+ *      This function is CA-Cl*pper compliant in all aspects, with the
  *      exception don't have the Clipper 64Kb string length.
  *  $PLATFORMS$
  *      All
@@ -1304,7 +1304,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This function is Ca-Clipper compatible
+ *      This function is CA-Cl*pper compatible
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -1338,13 +1338,13 @@
  *      <cReturn>  Formated string
  *  $DESCRIPTION$
  *      This function searches for any occurence of <cLocString> in <cString>
- *      and replacesit with <cRepString>.If <cRepString> is not specified, a
+ *      and replacesit with <cRepString>. If <cRepString> is not specified, a
  *      NULL byte will replace <cLocString>.
  *
- *      If <nPos> is used,its value defines the first occurence to be
- *      replaced.The default value is 1.Additionally,if used,the value of
+ *      If <nPos> is used, its value defines the first occurence to be
+ *      replaced. The default value is 1. Additionally, if used, the value of
  *      <nOccurences> tell the function how many occurrences of <cLocString>
- *      in <cString> are to the replaced.The default of <nOccurences> is
+ *      in <cString> are to the replaced. The default of <nOccurences> is
  *      all occurrences.
  *  $EXAMPLES$
  *      ? STRTRAN( "Harbour  Power", "  ", " " )   // Harbour Power
@@ -1385,7 +1385,7 @@
  *
  *      Their are two components that can make up <cTemplate> : a function
  *      string and a template string.Function strings are those functions
- *      that globally tell what the format of <xExpression> should be.These
+ *      that globally tell what the format of <xExpression> should be. These
  *      functions are represented by a single character precede by the
  *      @ symbol.
  *
@@ -1396,8 +1396,8 @@
  *         and the template string if they are used in conjunction with
  *         one another.
  *
- *       - Second,if both components make up the value of <cTemplate>,the
- *         function string must precede the template string.Otherwise,the
+ *       - Second, if both components make up the value of <cTemplate>, the
+ *         function string must precede the template string. Otherwise, the
  *         function string may appear with out the template string and
  *         vice versa.
  *

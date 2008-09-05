@@ -63,7 +63,7 @@
 #  include <sys/stat.h>
 #endif
 
-#if !defined( HB_USE_LARGEFILE64 ) && defined( OS_UNIX_COMPATIBLE )
+#if !defined( HB_USE_LARGEFILE64 ) && defined( HB_OS_UNIX_COMPATIBLE )
    #if defined( __USE_LARGEFILE64 )
       /*
        * The macro: __USE_LARGEFILE64 is set when _LARGEFILE64_SOURCE is
@@ -119,7 +119,7 @@ HB_FOFFSET hb_fsFSize( BYTE * pszFileName, BOOL bUseDirEntry )
    }
    else
    {
-      FHANDLE hFileHandle = hb_fsOpen( pszFileName, 0 );
+      HB_FHANDLE hFileHandle = hb_fsOpen( pszFileName, 0 );
 
       if( hFileHandle != FS_ERROR )
       {

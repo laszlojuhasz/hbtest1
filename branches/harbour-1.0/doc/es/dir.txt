@@ -35,7 +35,7 @@
  *      __Dir() siempre retorna NIL.
  *  $DESCRIPTION$
  *      Si ninguna <cFileMask> es dada, __Dir() muestra informaci¢n acerca de
- *      todos los *.DBF en la ruta SET DEFAULT. Esta informaci¢n contiene:
+ *      todos los *.dbf en la ruta SET DEFAULT. Esta informaci¢n contiene:
  *      - Nombre del archivo
  *      - Numero de registros
  *      - Fecha de la ultima actualizaci¢n
@@ -59,7 +59,7 @@
  *
  *      // Lista todos los PRG de la librer¡a de ejecuci¢n (RTL) de Harbour
  *      // para sistemas operativos compatibles con DOS
- *      __Dir( "c:\harbour\source\rtl\*.prg" )
+ *      __Dir( "C:\harbour\source\rtl\*.prg" )
  *
  *      // Lista todos los archivos de la secci¢n p£blica sobre una m quina
  *      // tipo Unix
@@ -68,14 +68,14 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      Informaci¢n de DBF: CA-Clipper muestra nombres de archivos en el
+ *      Informaci¢n de DBF: CA-Cl*pper muestra nombres de archivos en el
  *      formato 8.3, Harbour muestra los primeros 15 caracteres si un nombre
  *      largo de archivo esta disponible.
  *
  *      Listado de archivos: para formatear los nombres mostrados usamos algo
  *      as¡ como:
  *      PADR( Nombre, 8 ) + " " + PADR( Ext, 3 )
- *      CA-Clipper usa nombres de archivo 8.3, con Harbour probablemente se
+ *      CA-Cl*pper usa nombres de archivo 8.3, con Harbour probablemente se
  *      podr¡a cortar los nombres largos de archivo para llenar este molde.
  *  $FILES$
  *      La librer¡a es rtl
@@ -101,7 +101,7 @@
  *      entonces SET DEFAULT es usado para mostrar archivos en la m scara.
  *  $DESCRIPTION$
  *      Si ninguna <cFileMask> es dada, __Dir() muestra informaci¢n acerca de
- *      todos los *.DBF en la ruta SET DEFAULT. esta informaci¢n contiene:
+ *      todos los *.dbf en la ruta SET DEFAULT. esta informaci¢n contiene:
  *      - Nombre del archivo
  *      - N£mero de registros
  *      - Fecha de la ultima actualizaci¢n
@@ -125,7 +125,7 @@
  *
  *      // Lista todos los PRG de la librer¡a de ejecuci¢n (RTL) de Harbour
  *      // para sistemas operativos compatibles con DOS
- *      __Dir( "c:\harbour\source\rtl\*.prg" )
+ *      __Dir( "C:\harbour\source\rtl\*.prg" )
  *
  *      // Lista todos los archivos de la secci¢n p£blica sobre una m quina
  *      // tipo Unix
@@ -134,14 +134,14 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      Informaci¢n de DBF: CA-Clipper muestra nombres de archivos en el
+ *      Informaci¢n de DBF: CA-Cl*pper muestra nombres de archivos en el
  *      formato 8.3, Harbour muestra los primeros 15 caracteres si un nombre
  *      largo de archivo est  disponible.
  *
  *      Listado de archivos: para formatear los nombres mostrados usamos algo
  *      as¡ como:
  *      PADR( Nombre, 8 ) + " " + PADR( Ext, 3 )
- *      CA-Clipper usa nombres de archivo 8.3, con Harbour probablemente se
+ *      CA-Cl*pper usa nombres de archivo 8.3, con Harbour probablemente se
  *      podr¡a cortar los nombres largos de archivo para llenar este molde.
  *  $SEEALSO$
  *      ADIR()*,DIRECTORY(),SET DEFAULT,__DIR()*
@@ -212,7 +212,7 @@
  *  $EXAMPLES$
  *      <fixed>
  *      LOCAL aNombre, aTamano, aFecha, aHora, aAtrib, nLen, i
- *      nLen := ADIR( "*.JPG" )   // Nro de archivos JPG files en directorio
+ *      nLen := ADIR( "*.jpg" )   // Nro de archivos JPG files en directorio
  *
  *      IF nLen > 0
  *         aNombre := Array( nLen )  // hace lugar para guardar la informac.
@@ -238,6 +238,6 @@
  *  $SEEALSO$
  *      ARRAY(),DIRECTORY(),SET DEFAULT
  *  $END$
- */  
+ */
 
 

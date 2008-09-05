@@ -64,7 +64,7 @@ HB_FUNC( MEMOREAD )
 
    if( pFileName )
    {
-      FHANDLE fhnd = hb_fsOpen( ( BYTE * ) hb_itemGetCPtr( pFileName ), FO_READ | FO_SHARED | FO_PRIVATE );
+      HB_FHANDLE fhnd = hb_fsOpen( ( BYTE * ) hb_itemGetCPtr( pFileName ), FO_READ | FO_SHARED | FO_PRIVATE );
 
       if( fhnd != FS_ERROR )
       {
@@ -76,7 +76,7 @@ HB_FUNC( MEMOREAD )
 
             /* Don't read the file terminating EOF character */
 
-            #if ! defined(OS_UNIX_COMPATIBLE)
+            #if ! defined(HB_OS_UNIX_COMPATIBLE)
             {
                BYTE byEOF = HB_CHAR_NUL;
 
@@ -115,7 +115,7 @@ static BOOL hb_memowrit( BOOL bWriteEOF )
 
    if( pFileName && pString )
    {
-      FHANDLE fhnd = hb_fsCreate( ( BYTE * ) hb_itemGetCPtr( pFileName ), FC_NORMAL );
+      HB_FHANDLE fhnd = hb_fsCreate( ( BYTE * ) hb_itemGetCPtr( pFileName ), FC_NORMAL );
 
       if( fhnd != FS_ERROR )
       {
@@ -125,7 +125,7 @@ static BOOL hb_memowrit( BOOL bWriteEOF )
 
          /* NOTE: CA-Cl*pper will add the EOF even if the write failed. [vszakats] */
          /* NOTE: CA-Cl*pper will not return .F. when the EOF could not be written. [vszakats] */
-#if ! defined(OS_UNIX_COMPATIBLE)
+#if ! defined(HB_OS_UNIX_COMPATIBLE)
          if( bWriteEOF )  /* if true, then write EOF */
          {
             BYTE byEOF = HB_CHAR_EOF;

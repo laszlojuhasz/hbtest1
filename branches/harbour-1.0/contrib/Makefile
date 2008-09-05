@@ -25,16 +25,16 @@ DIRS=\
 	hbtpathy \
 	hbvpdf \
 	hbw32 \
+	hbziparc \
 	rddado \
 	xhb \
 
 #	hbsqlit2 \
-#	hbw32ddr \
 #	hbwhat32 \
-#	hbziparch \
 
 # contribs with external dependencies
 DIRS +=\
+	gtalleg \
 	hbapollo \
 	hbcurl \
 	hbfbird \
@@ -51,6 +51,8 @@ else
 DIRS = $(HB_CONTRIBLIBS)
 
 endif
+
+DIRS += $(HB_CONTRIB_ADDONS)
 
 # DIRS += examples
 

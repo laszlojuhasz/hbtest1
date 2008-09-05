@@ -51,7 +51,7 @@
  */
 
 /*
- * File......: HBDOC.PRG
+ * File......: hbdoc.prg
  * Author....: Luiz Rafael Culik
  * Date......: $Date$
  * Revision..: $Revision$
@@ -97,27 +97,29 @@
  *
  *    V1.06
  *    2000/01/25 Fixed some error that was not generating a valid RTF File
- *    Removed Call TO HB_OEMTOANSI() on the rountines to generate the .Ngi
- *    and Rtf files.
- *    Added support to generate the Docs from .Txt files, See doc\Subcodes.txt
+ *    Removed Call TO HB_OEMTOANSI() on the rountines to generate the .ngi
+ *    and .rtf files.
+ *    Added support to generate the Docs from .txt files, See doc\subcodes.txt
  *    for header file.
  *
  *    V1.07
  *    Added back the "<" and ">" symbols
- *    Fixed the links on the Harbour.htm file           
+ *    Fixed the links on the harbour.htm file
  *    Fixed the help text when hbdoc is called with out any parameter
  */
-
-#ifdef __HARBOUR__
-#define NANFOR
-#endif
 
 #include "directry.ch"
 #include "fileio.ch"
 #include "inkey.ch"
-#include 'hbdocdef.ch'
-//  output lines on the screen
+#include "hbdocdef.ch"
 
+#define DELIM   "$"                 // keyword delimiter
+
+#define CRLF HB_OSNewLine()
+
+#xtranslate UPPERLOWER(<exp>) => (UPPER(SUBSTR(<exp>,1,1))+LOWER(SUBSTR(<exp>,2)))
+
+//  output lines on the screen
 #define INFILELINE   10
 #define MODULELINE   12
 #define LINELINE     14
@@ -150,16 +152,16 @@ MEMVAR lTroff
 MEMVAR aResult
 MEMVAR theHandle
  
-STATIC cTitle:=''
+STATIC cTitle:=""
 
 /*
 */
 
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 *+    Function MAIN()
 *+
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 FUNCTION MAIN( cFlags, cLinkName, cAtFile )
 
@@ -171,7 +173,7 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
    LOCAL cLast
    LOCAL nItem
    LOCAL nHpj
-   LOCAL cItem:=''
+   LOCAL cItem:=""
    LOCAL cFName 
    LOCAL cLName
    LOCAL aName 
@@ -386,7 +388,7 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
 
          //  Get the list of
 
-         //                aDirList=DIRECTORY(&cDir+aExtensions[i])
+         //                aDirList := DIRECTORY(&cDir+aExtensions[i])
          aDirList := DIRECTORY( aExtensions[ i ] )
 
          //  If there are any files then process them
@@ -544,22 +546,22 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
 
       NEXT
    ELSEIF lRtf
-      nHpj := FCREATE( 'harbour.hpj' )
-      FWRITE( nHpj, '[OPTIONS]' + CRLF )
-      FWRITE( nHpj, 'HCW=1' + CRLF )
-      FWRITE( nHpj, 'COMPRESS=60 Hall Zeck' + CRLF )
-      FWRITE( nHpj, 'LCID=0x416 0x0 0x0 ;Portugu阺 (brasileiro)' + CRLF )
-      FWRITE( nHpj, 'REPORT=Yes' + CRLF )
-      FWRITE( nHpj, 'CONTENTS=IDH_OVERVIEW' + CRLF )
-      FWRITE( nHpj, 'TITLE='+cTitle + CRLF )
-      FWRITE( nHpj, 'COPYRIGHT=Copyright (c) http://www.harbour-project.org/' + CRLF )
-      FWRITE( nHpj, 'HLP=.\'+ lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".hlp"+ CRLF )
-      FWRITE( nHpj, 'ROOT=\' + CURDIR() + "\RTF" + CRLF )
-      FWRITE( nHpj, 'CNT=.\'+ lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".cnt"+ CRLF )
-      FWRITE( nHpj, '[FILES]' + CRLF )
+      nHpj := FCREATE( "harbour.hpj" )
+      FWRITE( nHpj, "[OPTIONS]" + CRLF )
+      FWRITE( nHpj, "HCW=1" + CRLF )
+      FWRITE( nHpj, "COMPRESS=60 Hall Zeck" + CRLF )
+      FWRITE( nHpj, "LCID=0x416 0x0 0x0 ;Portugu阺 (brasileiro)" + CRLF )
+      FWRITE( nHpj, "REPORT=Yes" + CRLF )
+      FWRITE( nHpj, "CONTENTS=IDH_OVERVIEW" + CRLF )
+      FWRITE( nHpj, "TITLE="+cTitle + CRLF )
+      FWRITE( nHpj, "COPYRIGHT=Copyright (c) http://www.harbour-project.org/" + CRLF )
+      FWRITE( nHpj, "HLP=.\"+ lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".hlp"+ CRLF )
+      FWRITE( nHpj, "ROOT=\" + CURDIR() + "\RTF" + CRLF )
+      FWRITE( nHpj, "CNT=.\"+ lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".cnt"+ CRLF )
+      FWRITE( nHpj, "[FILES]" + CRLF )
       FWRITE( nHpj, "harbour.rtf" + CRLF )
-      FWRITE( nHpj, '[CONFIG]' + CRLF + 'contents()' + CRLF + 'prev()' + CRLF + 'next()' + CRLF + 'BrowseButtons()' + CRLF )
-      FWRITE( nHpj, '[WINDOWS]' + CRLF + 'Commands="Harbour Commands",(653,102,360,600),20736,(r14876671),(r12632256),f2' +;
+      FWRITE( nHpj, "[CONFIG]" + CRLF + "contents()" + CRLF + "prev()" + CRLF + "next()" + CRLF + "BrowseButtons()" + CRLF )
+      FWRITE( nHpj, "[WINDOWS]" + CRLF + 'Commands="Harbour Commands",(653,102,360,600),20736,(r14876671),(r12632256),f2' +;
                      CRLF +'API="Harbour Commands",(653,102,360,600),20736,(r14876671),(r12632256),f2' + CRLF +;
                      'Error="Harbour Run Time Errors",(653,102,360,600),20736,(r14876671),(r12632256),f2' + CRLF +;
                      'Tools="Harbour Tools",(653,102,360,600),20736,(r14876671),(r12632256),f2' + CRLF +;
@@ -567,39 +569,39 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
                      'Funca="Harbour Run Time Functions A-M",(653,102,360,600),20736,(r14876671),(r12632256),f2' + CRLF +;
                      'Funcn="Harbour Run Time Functions N-_",(653,102,360,600),20736,(r14876671),(r12632256),f2' + CRLF +;
                      'Main="Harbour",(117,100,894,873),60672,(r14876671),(r12632256),f2' + CRLF )
-      FWRITE( nHpj, '[MAP]'+CRLF)
+      FWRITE( nHpj, "[MAP]"+CRLF)
       for each ppp in aRtfid
       fwrite(nHpj, "#define "+ppp[1] +" " + str(ppp[2])+CRLF)
       next
 
       FCLOSE( nHpj )
       nHpj := FCREATE( lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".cnt"  )
-      FWRITE( nHpj, ':Base '+ lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".hlp"+ CRLF )
-      FWRITE( nHpj, ':Title '+cTitle+CRLF)
-      FWRITE( nHpj, ':Index '+lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +'='+lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".hlp"+ CRLF )
-      FWRITE( nHpj, '1 Harbour'+CRLF)
+      FWRITE( nHpj, ":Base "+ lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".hlp"+ CRLF )
+      FWRITE( nHpj, ":Title "+cTitle+CRLF)
+      FWRITE( nHpj, ":Index "+lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +"="+lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".hlp"+ CRLF )
+      FWRITE( nHpj, "1 Harbour"+CRLF)
       asort(      aWww,,,{|x,y| x[3]+x[1]<y[3]+y[1]})
       for ppp:=1 to len(aWww)
-          if aWww[ppp,3]=='Document'
-             fWrite( nHpj, '2 '+aWww[ppp,1]+"="+aWww[ppp,2]+">Main"+CRLF)
+          if aWww[ppp,3]=="Document"
+             fWrite( nHpj, "2 "+aWww[ppp,1]+"="+aWww[ppp,2]+">Main"+CRLF)
           endif
       Next
       asort(aWww,,,{|x,y| x[3]+x[1]<y[3]+y[1]})
-      FWRITE( nHpj, '1 Harbour Run Time Error'+CRLF)
+      FWRITE( nHpj, "1 Harbour Run Time Error"+CRLF)
       for ppp:=1 to len(aWww)
-          if aWww[ppp,3]=='Run Time Errors'
-             fWrite( nHpj, '2 '+aWww[ppp,1]+"="+aWww[ppp,2]+">Error"+CRLF)
+          if aWww[ppp,3]=="Run Time Errors"
+             fWrite( nHpj, "2 "+aWww[ppp,1]+"="+aWww[ppp,2]+">Error"+CRLF)
           endif
       Next
-      FWRITE( nHpj, '1 Harbour Runtime functions and Commands by Name'+CRLF)
+      FWRITE( nHpj, "1 Harbour Runtime functions and Commands by Name"+CRLF)
       asort(aWww,,,{|x,y| x[1]<y[1]})
       for ppp:=1 to len(aWww)
-          if aWww[ppp,3]!='Run Time Errors' .and. aWww[ppp,3] !="Document"  .and. aWww[ppp,3] !="The garbage collector"  .and. aWww[ppp,3] !="OOP Command" .and. aWww[ppp,3] !="Command"  .and. aWww[ppp,3] !="The idle states"
-             fWrite( nHpj, '2 '+aWww[ppp,1]+"="+aWww[ppp,2]+">Funca"+CRLF)
+          if aWww[ppp,3]!="Run Time Errors" .and. aWww[ppp,3] !="Document"  .and. aWww[ppp,3] !="The garbage collector"  .and. aWww[ppp,3] !="OOP Command" .and. aWww[ppp,3] !="Command"  .and. aWww[ppp,3] !="The idle states"
+             fWrite( nHpj, "2 "+aWww[ppp,1]+"="+aWww[ppp,2]+">Funca"+CRLF)
           endif
       Next
 
-      FWRITE( nHpj, '1 Harbour Runtime functions Category'+CRLF)
+      FWRITE( nHpj, "1 Harbour Runtime functions Category"+CRLF)
       asort(aWww,,,{|x,y| x[3]<y[3]})
 //        SET CONSOLE ON
       nItem := len(aResult)
@@ -607,27 +609,27 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
       for ppp:=1 to nItem
 
         cLast:=GetNextContent(ppp)
-        if cLast =='Statement' .or. cLast =="Command"
+        if cLast =="Statement" .or. cLast =="Command"
             WriteContentFile(aWww,cLast,nHpj)
         endif
       Next
 
-      FWRITE( nHpj, '1 Harbour Commands'+CRLF)
+      FWRITE( nHpj, "1 Harbour Commands"+CRLF)
       for ppp:=1 to len(aWww)
-          if aWww[ppp,3]=='Command'
-             fWrite( nHpj, '2 '+aWww[ppp,1]+"="+aWww[ppp,2]+">Commands"+CRLF)
+          if aWww[ppp,3]=="Command"
+             fWrite( nHpj, "2 "+aWww[ppp,1]+"="+aWww[ppp,2]+">Commands"+CRLF)
           endif
       Next
-      FWRITE( nHpj, '1 Harbour OOP commands'+CRLF)
+      FWRITE( nHpj, "1 Harbour OOP commands"+CRLF)
       for ppp:=1 to len(aWww)
-          if aWww[ppp,3]=='OOP Command'
-             fWrite( nHpj, '2 '+aWww[ppp,1]+"="+aWww[ppp,2]+">Class"+CRLF)
+          if aWww[ppp,3]=="OOP Command"
+             fWrite( nHpj, "2 "+aWww[ppp,1]+"="+aWww[ppp,2]+">Class"+CRLF)
           endif
       Next
-      FWRITE( nHpj, '1 The Garbage API'+CRLF)
+      FWRITE( nHpj, "1 The Garbage API"+CRLF)
       for ppp:=1 to len(aWww)
-          if aWww[ppp,3]=='The garbage collector'
-             fWrite( nHpj, '2 '+aWww[ppp,1]+"="+aWww[ppp,2]+">API"+CRLF)
+          if aWww[ppp,3]=="The garbage collector"
+             fWrite( nHpj, "2 "+aWww[ppp,1]+"="+aWww[ppp,2]+">API"+CRLF)
           endif
       Next
 
@@ -640,9 +642,9 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
             do while .T.
           citem:=adocinfo[1,1]
           AADD(aMetaContents,{"GENERATOR","HBDOC Harbour document Extractor"})
-          aadd(aMetaContents,{'Keywords',"Harbour project, Clipper, xBase, database, Free Software, GNU, compiler, cross platform, 32-bit, FiveWin,"+cItem})
-          ohtm:=THTML():new('htm\hb'+strtran(citem," ","")+'.htm',aMetaContents)
-          ohtm:WriteText('<h2>'+adocinfo[1,1]+'</h2><br>')
+          aadd(aMetaContents,{"Keywords","Harbour project, Clipper, xBase, database, Free Software, GNU, compiler, cross platform, 32-bit, FiveWin,"+cItem})
+          ohtm:=THTML():new("htm\hb"+strtran(citem," ","")+".htm",aMetaContents)
+          ohtm:WriteText("<h2>"+adocinfo[1,1]+"</h2><br>")
           ohtm:WriteText("<table>")
   
       for ppp:=1 to len(adocinfo)
@@ -655,12 +657,12 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
            citem:=adocinfo[ppp,1]
            aMetaContents:={}
           AADD(aMetaContents,{"GENERATOR","HBDOC Harbour document Extractor"})
-          aadd(aMetaContents,{'Keywords',"Harbour project, Clipper, xBase, database, Free Software, GNU, compiler, cross platform, 32-bit, FiveWin,"+cItem})
+          aadd(aMetaContents,{"Keywords","Harbour project, Clipper, xBase, database, Free Software, GNU, compiler, cross platform, 32-bit, FiveWin,"+cItem})
 
-           ohtm:=THTML():new('htm\hb'+strtran(adocinfo[ppp,1]," ","")+'.htm',aMetaContents)
+           ohtm:=THTML():new("htm\hb"+strtran(adocinfo[ppp,1]," ","")+".htm",aMetaContents)
 
-//                    oHtm:WriteMetaTag('Keywords',"Harbour project, Clipper, xBase, database, Free Software, GNU, compiler, cross platform, 32-bit, FiveWin,"+cItem)
-           ohtm:WriteText('<h2>'+adocinfo[ppp,1]+'</h2><br>')
+//                    oHtm:WriteMetaTag("Keywords","Harbour project, Clipper, xBase, database, Free Software, GNU, compiler, cross platform, 32-bit, FiveWin,"+cItem)
+           ohtm:WriteText("<h2>"+adocinfo[ppp,1]+"</h2><br>")
            ohtm:WriteText("<table>")
            oHtm:WritelinkTable(adocinfo[ppp,4],adocinfo[ppp,2],adocinfo[ppp,3])
            endif
@@ -673,13 +675,13 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
         ohtm:close()
            aMetaContents:={}
           AADD(aMetaContents,{"GENERATOR","HBDOC Harbour document Extractor"})
-          aadd(aMetaContents,{'Keywords',"Harbour project, Clipper, xBase, database, Free Software, GNU, compiler, cross platform, 32-bit, FiveWin,"+cItem})
+          aadd(aMetaContents,{"Keywords","Harbour project, Clipper, xBase, database, Free Software, GNU, compiler, cross platform, 32-bit, FiveWin,"+cItem})
 
       oHtm1 := THTML():New( "htm\harbour.htm" ,aMetaContents)
-//          oHtm:WriteMetaTag('Keywords',"Harbour project, Clipper, xBase, database, Free Software, GNU, compiler, cross platform, 32-bit, FiveWin,Harbour Documentation")
+//          oHtm:WriteMetaTag("Keywords","Harbour project, Clipper, xBase, database, Free Software, GNU, compiler, cross platform, 32-bit, FiveWin,Harbour Documentation")
       oHtm1:WriteTitle( "Harbour Reference Guide" )
       oHtm1:WriteText( "<H1>Harbour Reference Guide</H1>" )
-      oHtm1:WriteText( "<H2>Harbour</H2>" + hb_osnEwline() + '<UL>' )
+      oHtm1:WriteText( "<H2>Harbour</H2>" + hb_osnEwline() + "<UL>" )
       oHtm1:WriteLink( "overview", UpperLower( "Harbour Read me" ) )
       oHtm1:WriteLink( "license", UpperLower( "Harbour License" ) )
       oHtm1:WriteLink( "http://www.gnu.org/copyleft/gpl.html", "GNU License" )
@@ -690,46 +692,46 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
       ohtm1:WriteLink( "http://www.harbour-project.org","Harbour.org Web page")
       oHtm1:WriteText( "</UL>" )
       oHtm1:WriteText( "<H2>Alphabetical list of functions by Categorie</H2>" )
-      ohtm1:writetext('<ul>')
+      ohtm1:writetext("<ul>")
 
       nItem := len(aResult)
       asort(aResult,,,{|x,y| x<y})
       for ppp:=1 to nItem
 
         cLast:=GetNextContent(ppp)
-        if (cLast!='Run Time Errors' .and. cLast !="Document"  .and. cLast !="The garbage collector" .and. cLast !="The idle states") .and. (cLast !=  "Command" .and. clast !="OOP Command" .and. cLast !="Statement") .and. (! "CLASS" $ UPPER(cLast) .and. !"METHOD" $ UPPER(cLast))
-            ohtm1:WriteLink('hb'+strtran(aResult[ppp]," ","")+'.htm',aResult[ppp])
+        if (cLast!="Run Time Errors" .and. cLast !="Document"  .and. cLast !="The garbage collector" .and. cLast !="The idle states") .and. (cLast !=  "Command" .and. clast !="OOP Command" .and. cLast !="Statement") .and. (! "CLASS" $ UPPER(cLast) .and. !"METHOD" $ UPPER(cLast))
+            ohtm1:WriteLink("hb"+strtran(aResult[ppp]," ","")+".htm",aResult[ppp])
 
         endif
       Next
-      ohtm1:writetext('</ul>')
+      ohtm1:writetext("</ul>")
 
       oHtm1:WriteText( "<H2>Commands and Statements</H2>" )
-      ohtm1:writetext('<ul>')
+      ohtm1:writetext("<ul>")
 
       for ppp:=1 to nItem
 
         cLast:=GetNextContent(ppp)
         if cLast ==  "Command" .or. clast =="OOP Command" .or. cLast =="Statement"
-            ohtm1:WriteLink('hb'+strtran(aResult[ppp]," ","")+'.htm',aResult[ppp])
+            ohtm1:WriteLink("hb"+strtran(aResult[ppp]," ","")+".htm",aResult[ppp])
 
         endif
       Next
-      ohtm1:writetext('</ul>')
+      ohtm1:writetext("</ul>")
 
 
       oHtm1:WriteText( "<H2>Classes and method </H2>" )
-      ohtm1:writetext('<ul>')
+      ohtm1:writetext("<ul>")
 
       for ppp:=1 to nItem
 
         cLast:=GetNextContent(ppp)
         if "CLASS" $ UPPER(cLast) .or. "METHOD" $ UPPER(cLast)
-            ohtm1:WriteLink('hb'+strtran(aResult[ppp]," ","")+'.htm',aResult[ppp])
+            ohtm1:WriteLink("hb"+strtran(aResult[ppp]," ","")+".htm",aResult[ppp])
 
         endif
       Next
-      ohtm1:writetext('</ul>')
+      ohtm1:writetext("</ul>")
 
         ohtm1:close()
 
@@ -747,7 +749,7 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
 
    ELSEIF lWww2
       cFileName := "index.htm"
-      oHtmIndex := THTML():New('htm\' + cFileName)
+      oHtmIndex := THTML():New("htm\" + cFileName)
    
       // Add title to HTML
       oHtmIndex:WriteText("<title>Harbour - Reference Guide</title>")
@@ -792,23 +794,23 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
       oHtmIndex:WriteText("</html>")
    ELSEIF lChm
  
-      nHpj := FCREATE( 'chm\'+lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".hhp" )
+      nHpj := FCREATE( "chm\"+lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".hhp" )
 
-      FWRITE( nHpj, '[OPTIONS]' + CRLF )
-      FWRITE( nHpj, 'Compatibility=1.1 or later'+CRLF)
-      FWRITE( nHpj, 'Auto Index=Yes'+CRLF)
-      FWRITE( nHpj,'Full-text search=Yes'+CRLF)
-      FWRITE( nHpj, 'Language=0x416 Portugu阺 (brasileiro)' + CRLF )
-      FWRITE( nHpj, 'Contents file=.\'+ lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".hhc"+ CRLF )
-      FWRITE( nHpj, 'Compiled file=.\'+ lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".chm"+ CRLF )
-      FWRITE( nHpj, 'Display compile progress=No'+CRLF)
+      FWRITE( nHpj, "[OPTIONS]" + CRLF )
+      FWRITE( nHpj, "Compatibility=1.1 or later"+CRLF)
+      FWRITE( nHpj, "Auto Index=Yes"+CRLF)
+      FWRITE( nHpj,"Full-text search=Yes"+CRLF)
+      FWRITE( nHpj, "Language=0x416 Portugu阺 (brasileiro)" + CRLF )
+      FWRITE( nHpj, "Contents file=.\"+ lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".hhc"+ CRLF )
+      FWRITE( nHpj, "Compiled file=.\"+ lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".chm"+ CRLF )
+      FWRITE( nHpj, "Display compile progress=No"+CRLF)
       nPos:=aScan(awww,{|x| Upper(x[1])="OVERVIEW"})
       if nPos > 0
-         FWRITE( nHpj,'Default topic='+ lower(awww[npos,2])+".htm"+CRLF)
+         FWRITE( nHpj,"Default topic="+ lower(awww[npos,2])+".htm"+CRLF)
       Else
-         FWRITE( nHpj,'Default topic='+lower(awww[1,2]) +".htm"+CRLF)
+         FWRITE( nHpj,"Default topic="+lower(awww[1,2]) +".htm"+CRLF)
       Endif
-      FWRITE( nHpj, '[FILES]' + CRLF )
+      FWRITE( nHpj, "[FILES]" + CRLF )
       For nPos:=1 to len(aWww)
          FWRITE( nHpj, lower(awww[npos,2])+".htm" + CRLF )
       Next
@@ -816,15 +818,15 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
 
 
 
-          ohtm:=THTML():NewContent('chm\'+lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".hhc")
-          ohtm:WriteText('<!--Sitemap 1.0-->')
+          ohtm:=THTML():NewContent("chm\"+lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".hhc")
+          ohtm:WriteText("<!--Sitemap 1.0-->")
           ohtm:Addobject("text/site properties")
           oHtm:AddParam("FrameName","Ajuda")
           ohtm:EndObject()
           ohtm:WriteText("<ul>")
           oHtm:ListItem()
           oHtm:AddObject("text/sitemap")
-          oHTm:AddParam('Name','Harbour')
+          oHTm:AddParam("Name","Harbour")
           ohtm:EndObject()
           ohtm:WriteText("<ul>")
           writeChmContentFile(aDocinfo,"Document",oHtm)
@@ -833,7 +835,7 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
         ohtm:WriteText("<ul>")
           oHtm:ListItem()
           oHtm:AddObject("text/sitemap")
-          oHTm:AddParam('Name','Harbour Run Time Error')
+          oHTm:AddParam("Name","Harbour Run Time Error")
           ohtm:EndObject()
           ohtm:WriteText("<ul>")
           writeChmContentFile(aDocinfo,"Run Time Errors",oHtm)
@@ -842,12 +844,12 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
     oHtm:WriteText( "<UL>" )
           oHtm:ListItem()
           oHtm:AddObject("text/sitemap")
-          oHTm:AddParam('Name','Harbour Runtime functions and Commands by Name')
+          oHTm:AddParam("Name","Harbour Runtime functions and Commands by Name")
           ohtm:EndObject()
           ohtm:WriteText("<ul>")
           asort(aDocinfo,,,{|x,y|x[2]<y[2]})
           for ppp:=1 to len(aDocinfo)
-          if aDocInfo[ppp,1]!='Run Time Errors' .and. aDocInfo[ppp,1] !="Document"  .and. aDocInfo[ppp,1] !="The garbage collector"  .and. aDocInfo[ppp,1] !="OOP Command" .and. aDocInfo[ppp,1] !="Command"  .and. aDocInfo[ppp,1] !="The idle states"
+          if aDocInfo[ppp,1]!="Run Time Errors" .and. aDocInfo[ppp,1] !="Document"  .and. aDocInfo[ppp,1] !="The garbage collector"  .and. aDocInfo[ppp,1] !="OOP Command" .and. aDocInfo[ppp,1] !="Command"  .and. aDocInfo[ppp,1] !="The idle states"
                oHtm:Listitem()
                oHtm:AddObject("text/sitemap")
                oHtm:AddParam("Name",UpperLower(aDocinfo[ppp,2]))
@@ -871,15 +873,15 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
       for ppp:=1 to nItem
 
         cLast:=GetNextContent(ppp)
-        if cLast!='Run Time Errors' .and. cLast !="Document"  .and. cLast !="The garbage collector"  .and. cLast !="OOP Command" .and. cLast !="Command"  .and. cLast !="The idle states"
+        if cLast!="Run Time Errors" .and. cLast !="Document"  .and. cLast !="The garbage collector"  .and. cLast !="OOP Command" .and. cLast !="Command"  .and. cLast !="The idle states"
           ohtm:WriteText("<ul>")
           oHtm:ListItem()
           oHtm:AddObject("text/sitemap")
-          oHTm:AddParam('Name',cLast)
+          oHTm:AddParam("Name",cLast)
           ohtm:EndObject()
           ohtm:WriteText("<ul>")
         endif
-        if cLast!='Run Time Errors' .and. cLast !="Document"  .and. cLast !="The garbage collector"  .and. cLast !="OOP Command" .and. cLast !="Command"  .and. cLast !="The idle states"
+        if cLast!="Run Time Errors" .and. cLast !="Document"  .and. cLast !="The garbage collector"  .and. cLast !="OOP Command" .and. cLast !="Command"  .and. cLast !="The idle states"
         //    oHtm:WriteText( "<UL>" )
             WriteChmContentFile(aDocinfo,cLast,oHtm)
             oHtm:WriteText( "</UL>" )
@@ -892,7 +894,7 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
          oHtm:WriteText( "<UL>" )
           oHtm:ListItem()
           oHtm:AddObject("text/sitemap")
-          oHTm:AddParam('Name','Harbour Commands')
+          oHTm:AddParam("Name","Harbour Commands")
           ohtm:EndObject()
           ohtm:WriteText("<ul>")
         asort(aDocinfo,,,{|x,y| x[2]<y[2]})
@@ -902,7 +904,7 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
          oHtm:WriteText( "<UL>" )
           oHtm:ListItem()
           oHtm:AddObject("text/sitemap")
-          oHTm:AddParam('Name','Harbour OOP Commands')
+          oHTm:AddParam("Name","Harbour OOP Commands")
           ohtm:EndObject()
           ohtm:WriteText("<ul>")
         asort(aDocinfo,,,{|x,y| x[2]<y[2]})
@@ -912,7 +914,7 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
          oHtm:WriteText( "<UL>" )
           oHtm:ListItem()
           oHtm:AddObject("text/sitemap")
-          oHTm:AddParam('Name','The Garbage API')
+          oHTm:AddParam("Name","The Garbage API")
           ohtm:EndObject()
           ohtm:WriteText("<ul>")
         asort(aDocinfo,,,{|x,y| x[2]<y[2]})
@@ -923,7 +925,7 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
  
    ELSEIF lChm2
       cFileName := "index.htm"   
-      oHtmIndex := THTML():New('chm\' + cFileName)
+      oHtmIndex := THTML():New("chm\" + cFileName)
   
       // Add title to HTML 
       oHtmIndex:WriteText("<title>Harbour - Reference Guide</title>")  
@@ -967,43 +969,43 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
       oHtmIndex:WriteText("</div>") 
       oHtmIndex:WriteText("</html>")  
 
-      nHpj := FCREATE('chm\' + LOWER(SUBSTR(cLinkName,1,AT(".",cLinkName)-1)) +".hhp" ) 
-      FWRITE( nHpj, '[OPTIONS]' + CRLF )
-      FWRITE( nHpj, 'Compatibility=1.1 or later'+CRLF)
-      FWRITE( nHpj, 'Auto Index=Yes'+CRLF)
-      FWRITE( nHpj, 'Full-text search=Yes'+CRLF)
-      FWRITE( nHpj, 'Language=0x416 Portugu阺 (brasileiro)' + CRLF )
-      FWRITE( nHpj, 'Contents file=.\'+ lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".hhc"+ CRLF )
-      FWRITE( nHpj, 'Compiled file=.\'+ lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".chm"+ CRLF )
-      FWRITE( nHpj, 'Display compile progress=No'+CRLF)
+      nHpj := FCREATE("chm\" + LOWER(SUBSTR(cLinkName,1,AT(".",cLinkName)-1)) +".hhp" ) 
+      FWRITE( nHpj, "[OPTIONS]" + CRLF )
+      FWRITE( nHpj, "Compatibility=1.1 or later"+CRLF)
+      FWRITE( nHpj, "Auto Index=Yes"+CRLF)
+      FWRITE( nHpj, "Full-text search=Yes"+CRLF)
+      FWRITE( nHpj, "Language=0x416 Portugu阺 (brasileiro)" + CRLF )
+      FWRITE( nHpj, "Contents file=.\"+ lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".hhc"+ CRLF )
+      FWRITE( nHpj, "Compiled file=.\"+ lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".chm"+ CRLF )
+      FWRITE( nHpj, "Display compile progress=No"+CRLF)
       //nPos := aScan(aDocInfo, {|x| Upper(x[2] + ".htm") = "OVERVIEW"})
       //if nPos > 0
-         FWRITE( nHpj,'Default topic=index.htm' + CRLF)
+         FWRITE( nHpj,"Default topic=index.htm" + CRLF)
       //Else
-         //FWRITE( nHpj,'Default topic=' + lower(aDocInfo[1,2]) + CRLF)
+         //FWRITE( nHpj,"Default topic=" + lower(aDocInfo[1,2]) + CRLF)
       //Endif
-      FWRITE( nHpj, '[FILES]' + CRLF )
+      FWRITE( nHpj, "[FILES]" + CRLF )
       For nPos:=1 to len(aDocInfo)
          FWRITE( nHpj, lower(aDocInfo[npos,2]) + CRLF )
       Next
       FCLOSE( nHpj )
 
  
-      oHtm:=THTML():NewContent('chm\'+lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".hhc") 
-      oHtm:WriteText('<!--Sitemap 1.0-->')
+      oHtm:=THTML():NewContent("chm\"+lower(substr(cLinkName,1,AT(".",cLinkName)-1)) +".hhc") 
+      oHtm:WriteText("<!--Sitemap 1.0-->")
       oHtm:Addobject("text/site properties")
          oHtm:AddParam("FrameName","Ajuda")
       oHtm:EndObject()
       oHtm:WriteText("<ul>")
          oHtm:ListItem() 
          oHtm:AddObject("text/sitemap")
-         oHtm:AddParam('Name','Harbour Reference Guide')
+         oHtm:AddParam("Name","Harbour Reference Guide")
          oHtm:EndObject()
             oHtm:WriteText("<ul>")
                oHtm:ListItem() 
                oHtm:AddObject("text/sitemap")
-               oHtm:AddParam('Name', 'Alphabetical list of classes')
-               oHtm:AddParam('Local', 'index.htm')
+               oHtm:AddParam("Name", "Alphabetical list of classes")
+               oHtm:AddParam("Local", "index.htm")
                oHtm:EndObject() 
                   oHtm:WriteText("<ul>") 
 
@@ -1013,8 +1015,8 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
                      IF aDocInfo[nCount_1][3] = "C1"  
                         oHtm:ListItem()  
                         oHtm:AddObject("text/sitemap") 
-                        oHtm:AddParam('Name', aDocInfo[nCount_1][1])
-                        oHtm:AddParam('Local', aDocInfo[nCount_1][2])
+                        oHtm:AddParam("Name", aDocInfo[nCount_1][1])
+                        oHtm:AddParam("Local", aDocInfo[nCount_1][2])
                         oHtm:EndObject()
                         oHtm:WriteText("<ul>") 
                       
@@ -1022,8 +1024,8 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
                         IF LEN(aDocInfo[nCount_1][4]) > 0 
                            oHtm:ListItem()   
                            oHtm:AddObject("text/sitemap") 
-                           oHtm:AddParam('Name', "Methods")
-                           oHtm:AddParam('Local', LEFT(aDocInfo[nCount_1][2], LEN(aDocInfo[nCount_1][2]) - 4) + "_content.htm#methodlist")
+                           oHtm:AddParam("Name", "Methods")
+                           oHtm:AddParam("Local", LEFT(aDocInfo[nCount_1][2], LEN(aDocInfo[nCount_1][2]) - 4) + "_content.htm#methodlist")
                            oHtm:EndObject()
                            oHtm:WriteText("<ul>")
                               ASORT(aDocInfo[nCount_1][4],,, {|x, y| UPPER(x[1]) < UPPER(y[1]) .AND. UPPER(x[2]) < UPPER(y[2]) })  
@@ -1032,8 +1034,8 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
                                  IF aDocInfo[nCount_1][4][nCount_2, 1] = "Method" 
                                     oHtm:ListItem()  
                                     oHtm:AddObject("text/sitemap") 
-                                    oHtm:AddParam('Name', aDocInfo[nCount_1][4][nCount_2, 2])
-                                    oHtm:AddParam('Local', LEFT(aDocInfo[nCount_1][2], LEN(aDocInfo[nCount_1][2]) - 4) + "_content.htm#" + aDocInfo[nCount_1][4][nCount_2, 2])
+                                    oHtm:AddParam("Name", aDocInfo[nCount_1][4][nCount_2, 2])
+                                    oHtm:AddParam("Local", LEFT(aDocInfo[nCount_1][2], LEN(aDocInfo[nCount_1][2]) - 4) + "_content.htm#" + aDocInfo[nCount_1][4][nCount_2, 2])
                                     oHtm:EndObject()
                                  ENDIF 
                             
@@ -1045,8 +1047,8 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
                         IF LEN(aDocInfo[nCount_1][4]) > 0 
                            oHtm:ListItem()    
                            oHtm:AddObject("text/sitemap") 
-                           oHtm:AddParam('Name', "Properties")
-                           oHtm:AddParam('Local', LEFT(aDocInfo[nCount_1][2], LEN(aDocInfo[nCount_1][2]) - 4) + "_content.htm#methodlist")
+                           oHtm:AddParam("Name", "Properties")
+                           oHtm:AddParam("Local", LEFT(aDocInfo[nCount_1][2], LEN(aDocInfo[nCount_1][2]) - 4) + "_content.htm#methodlist")
                            oHtm:EndObject()
                            oHtm:WriteText("<ul>")
                               ASORT(aDocInfo[nCount_1][4],,, {|x, y| UPPER(x[1]) < UPPER(y[1]) .AND. UPPER(x[2]) < UPPER(y[2]) })  
@@ -1055,8 +1057,8 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
                                  IF aDocInfo[nCount_1][4][nCount_2, 1] = "Data" 
                                     oHtm:ListItem()  
                                     oHtm:AddObject("text/sitemap") 
-                                    oHtm:AddParam('Name', aDocInfo[nCount_1][4][nCount_2, 2])
-                                    oHtm:AddParam('Local', LEFT(aDocInfo[nCount_1][2], LEN(aDocInfo[nCount_1][2]) - 4) + "_content.htm#" + aDocInfo[nCount_1][4][nCount_2, 2])
+                                    oHtm:AddParam("Name", aDocInfo[nCount_1][4][nCount_2, 2])
+                                    oHtm:AddParam("Local", LEFT(aDocInfo[nCount_1][2], LEN(aDocInfo[nCount_1][2]) - 4) + "_content.htm#" + aDocInfo[nCount_1][4][nCount_2, 2])
                                     oHtm:EndObject()
                                  ENDIF 
                             
@@ -1073,8 +1075,8 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
                // WinAPI functions 
                oHtm:ListItem()  
                oHtm:AddObject("text/sitemap")
-               oHtm:AddParam('Name', 'Alphabetical list of WinAPI functions')
-               oHtm:AddParam('Local', 'index.htm')
+               oHtm:AddParam("Name", "Alphabetical list of WinAPI functions")
+               oHtm:AddParam("Local", "index.htm")
                oHtm:EndObject() 
                   oHtm:WriteText("<ul>") 
 
@@ -1084,8 +1086,8 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
                      IF aDocInfo[nCount_1][3] = "F2"  
                         oHtm:ListItem()  
                         oHtm:AddObject("text/sitemap") 
-                        oHtm:AddParam('Name', aDocInfo[nCount_1][1])
-                        oHtm:AddParam('Local', aDocInfo[nCount_1][2])
+                        oHtm:AddParam("Name", aDocInfo[nCount_1][1])
+                        oHtm:AddParam("Local", aDocInfo[nCount_1][2])
                         oHtm:EndObject()
                         //oHtm:WriteText("<ul>") 
 
@@ -1093,8 +1095,8 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
                         IF LEN(aDocInfo[nCount_1][4]) > 0 
                            oHtm:ListItem()   
                            oHtm:AddObject("text/sitemap") 
-                           oHtm:AddParam('Name', "Methods")
-                           oHtm:AddParam('Local', LEFT(aDocInfo[nCount_1][2], LEN(aDocInfo[nCount_1][2]) - 4) + "_content.htm#methodlist")
+                           oHtm:AddParam("Name", "Methods")
+                           oHtm:AddParam("Local", LEFT(aDocInfo[nCount_1][2], LEN(aDocInfo[nCount_1][2]) - 4) + "_content.htm#methodlist")
                            oHtm:EndObject()
                            oHtm:WriteText("<ul>")
                               ASORT(aDocInfo[nCount_1][4],,, {|x, y| UPPER(x[1]) < UPPER(y[1]) .AND. UPPER(x[2]) < UPPER(y[2]) })  
@@ -1103,8 +1105,8 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
                                  IF aDocInfo[nCount_1][4][nCount_2, 1] = "Method" 
                                     oHtm:ListItem()  
                                     oHtm:AddObject("text/sitemap") 
-                                    oHtm:AddParam('Name', aDocInfo[nCount_1][4][nCount_2, 2])
-                                    oHtm:AddParam('Local', LEFT(aDocInfo[nCount_1][2], LEN(aDocInfo[nCount_1][2]) - 4) + "_content.htm#" + aDocInfo[nCount_1][4][nCount_2, 2])
+                                    oHtm:AddParam("Name", aDocInfo[nCount_1][4][nCount_2, 2])
+                                    oHtm:AddParam("Local", LEFT(aDocInfo[nCount_1][2], LEN(aDocInfo[nCount_1][2]) - 4) + "_content.htm#" + aDocInfo[nCount_1][4][nCount_2, 2])
                                     oHtm:EndObject()
                                  ENDIF 
                             
@@ -1116,8 +1118,8 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
                         IF LEN(aDocInfo[nCount_1][4]) > 0 
                            oHtm:ListItem()    
                            oHtm:AddObject("text/sitemap") 
-                           oHtm:AddParam('Name', "Properties")
-                           oHtm:AddParam('Local', LEFT(aDocInfo[nCount_1][2], LEN(aDocInfo[nCount_1][2]) - 4) + "_content.htm#methodlist")
+                           oHtm:AddParam("Name", "Properties")
+                           oHtm:AddParam("Local", LEFT(aDocInfo[nCount_1][2], LEN(aDocInfo[nCount_1][2]) - 4) + "_content.htm#methodlist")
                            oHtm:EndObject()
                            oHtm:WriteText("<ul>")
                               ASORT(aDocInfo[nCount_1][4],,, {|x, y| UPPER(x[1]) < UPPER(y[1]) .AND. UPPER(x[2]) < UPPER(y[2]) })  
@@ -1126,8 +1128,8 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
                                  IF aDocInfo[nCount_1][4][nCount_2, 1] = "Data" 
                                     oHtm:ListItem()  
                                     oHtm:AddObject("text/sitemap") 
-                                    oHtm:AddParam('Name', aDocInfo[nCount_1][4][nCount_2, 2])
-                                    oHtm:AddParam('Local', LEFT(aDocInfo[nCount_1][2], LEN(aDocInfo[nCount_1][2]) - 4) + "_content.htm#" + aDocInfo[nCount_1][4][nCount_2, 2])
+                                    oHtm:AddParam("Name", aDocInfo[nCount_1][4][nCount_2, 2])
+                                    oHtm:AddParam("Local", LEFT(aDocInfo[nCount_1][2], LEN(aDocInfo[nCount_1][2]) - 4) + "_content.htm#" + aDocInfo[nCount_1][4][nCount_2, 2])
                                     oHtm:EndObject()
                                  ENDIF 
                             
@@ -1180,21 +1182,21 @@ FUNCTION MAIN( cFlags, cLinkName, cAtFile )
          SET ALTERNATE TO "assembl.bat" ADDITIVE
          SET ALTERNATE ON
          SET CONSOLE OFF
-         ? 'Copy ngi\overview.ngi .'
-         ? 'Copy ngi\License.ngi  .'
-         ? 'Copy ngi\Funcam.txt   .'
-         ? 'Copy ngi\funcn_.txt   .'
-         ? 'copy ngi\comm.txt     .'
-         ? 'Compiling Sources'
-         ? 'ngxc overview.ngi'
-         ? 'ngxc license.ngi'
-         ? 'ngxc funcam.txt'
-         ? 'ngxc funcn_.txt '
-         ? 'ngxc comm.txt'
-         ? 'Linking the Guide'
-         ? 'ngxl '+cLinkName
-         ? 'del ngi\*.*'
-         ? 'del *.ngo'
+         ? "Copy ngi\overview.ngi ."
+         ? "Copy ngi\license.ngi  ."
+         ? "Copy ngi\funcam.txt   ."
+         ? "Copy ngi\funcn_.txt   ."
+         ? "copy ngi\comm.txt     ."
+         ? "Compiling Sources"
+         ? "ngxc overview.ngi"
+         ? "ngxc license.ngi"
+         ? "ngxc funcam.txt"
+         ? "ngxc funcn_.txt "
+         ? "ngxc comm.txt"
+         ? "Linking the Guide"
+         ? "ngxl "+cLinkName
+         ? "del ngi\*.*"
+         ? "del *.ngo"
       ENDIF
 
       @ INFILELINE,  0 CLEAR TO INFILELINE, MAXCOL()
@@ -1303,7 +1305,7 @@ RETURN NIL
 
 //  End of MAIN()
 
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 *+    Function ListAsArray2()
 *+
@@ -1312,7 +1314,7 @@ RETURN NIL
 *+                ( genos2.prg   )   1 - function procos2also()
 *+                ( gentrf.prg   )   1 - function proctroffalso()
 *+
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 FUNCTION ListAsArray2( cList, cDelimiter )
 
@@ -1331,14 +1333,14 @@ FUNCTION ListAsArray2( cList, cDelimiter )
    //
 RETURN aList        // Return the array
 
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 *+    Function StripNgControls()
 *+
 *+    Called from ( genhpc.prg   )   3 - function processfiles()
 *+                ( gentrf.prg   )   2 - function processtroff()
 *+
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 FUNCTION StripNgControls( cString )
 
@@ -1387,7 +1389,7 @@ FUNCTION StripNgControls( cString )
 
 RETURN cString
 
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 *+    Function StripFiles()
 *+
@@ -1402,7 +1404,7 @@ RETURN cString
 *+                ( genrtf.prg   )   1 - function processrtf()
 *+                ( gentrf.prg   )   1 - function processtroff()
 *+
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 FUNCTION StripFiles( cString )
 
@@ -1444,11 +1446,11 @@ RETURN cString
 
 //  End of StripFiles
 
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 *+    Function FirstNB()
 *+
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 FUNCTION FirstNB( cString )
 
@@ -1496,7 +1498,7 @@ RETURN nReturn
 *
 */
 
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 *+    Function ListAsArray()
 *+
@@ -1504,7 +1506,7 @@ RETURN nReturn
 *+                ( genng1.prg   )   1 - function procngialso()
 *+                ( hbdoc.prg    )   1 - function main()
 *+
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 FUNCTION ListAsArray( cList, cDelimiter )
 
@@ -1523,7 +1525,7 @@ FUNCTION ListAsArray( cList, cDelimiter )
    //
 RETURN aList        // Return the array
 
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 *+    Function ReadLN()
 *+
@@ -1556,26 +1558,26 @@ RETURN aList        // Return the array
 *+                ( hbdoc.prg    )   1 - function readatfile()
 *+                                   2 - function fill_link_info()
 *+
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 FUNCTION ReadLN( leof )
 
    LOCAL cBuffer := ""
 
-   cBuffer := FT_FREADLN()
+   cBuffer := FReadLn()
    FT_FSKIP( 1 )
    lEof := FT_FEOF()
 
 RETURN cBuffer
 //  End of ReadLN
 
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 *+    Function ReadAtFile()
 *+
 *+    Called from ( hbdoc.prg    )   1 - function main()
 *+
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 FUNCTION ReadAtFile( cAtFile )
 
@@ -1627,11 +1629,11 @@ RETURN aDirList
 
 //  End of ReadAtFile
 
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 *+    Function WRITE_ERROR()
 *+
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 FUNCTION WRITE_ERROR( cDescrip, cBadLine, nLineCnt, nMax, cFile )
 
@@ -1672,13 +1674,13 @@ FUNCTION WRITE_ERROR( cDescrip, cBadLine, nLineCnt, nMax, cFile )
 
 RETURN NIL
 
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 *+    Function fill_link_info()
 *+
 *+    Called from ( hbdoc.prg    )   1 - function main()
 *+
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 FUNCTION fill_link_info( cLinkName )
 
@@ -1728,7 +1730,7 @@ FUNCTION fill_link_info( cLinkName )
 
       IF AT( "!MENU", cBuffer ) > 0
          lMenuMode := .T.
-         cBuffer   := UPPER( ReadLN( @lEof ) )
+         cBuffer   := ReadLN( @lEof )
       ELSEIF LEFT( cBuffer, 1 ) == "!"
          lMenuMode := .F.
       ENDIF
@@ -1740,12 +1742,13 @@ FUNCTION fill_link_info( cLinkName )
       IF .NOT. EMPTY( cBuffer ) .AND. lMenuMode
          cSpace    := AT( "  ", cBuffer )
          cCategory := UPPER( RTRIM( LEFT( cBuffer, cSpace - 1 ) ) )
-         cFile     := UPPER( LTRIM( SUBSTR( cBuffer, cSpace ) ) )
+         cFile     := LTRIM( SUBSTR( cBuffer, cSpace ) )
          IF lGetType
-            cCompiler := IIF( ".NGO" $ cFile, "NGXC", "EHC" )
-            lGetType  := .NOT. ( ".NGO" $ cFile .OR. "EHO" $ cFile )
+            cCompiler := IIF( ".ngo" $ Lower( cFile ), "NGXC", "EHC" )
+            lGetType  := .NOT. ( ".ngo" $ Lower( cFile ) .OR. ".eho" $ Lower( cFile ) )
          ENDIF
-         cFile := STRTRAN( cFile, IIF( cCompiler = "NGXC", ".NGO", ".EHO" ), ".TXT" )
+         cFile := STRTRAN( cFile, IIF( cCompiler == "NGXC", ".ngo", ".eho" ), ".txt" )
+         cFile := STRTRAN( cFile, IIF( cCompiler == "NGXC", ".NGO", ".EHO" ), ".txt" )
          AADD( aLinkInfo, { cCategory, cFile, .F. } )
       ENDIF
 
@@ -1758,14 +1761,12 @@ FUNCTION fill_link_info( cLinkName )
 
 RETURN cCompiler
 
-*+ EOF: HBDOC.PRG
-
 STATIC FUNCTION ReadLinkFile( cFile )
 
-   LOCAL cBuffer   := ''
+   LOCAL cBuffer   := ""
    LOCAL NPOS      := 0
    Local cLine
-   Local cVer:=''
+   Local cVer:=""
    LOCAL aLocDoc   := {}
    Local nH:=FT_FUSE(cFile) 
    DO WHILE FREADline( nH, @cBuffer, 4096 )
@@ -1774,17 +1775,17 @@ STATIC FUNCTION ReadLinkFile( cFile )
    ENDDO
 
    FT_FUSE()
-    frename(CFILE,substr(cfile,1,at('.',cFile)-1)+'.old')
+    frename(CFILE,substr(cfile,1,at(".",cFile)-1)+".old")
     cVer:=docver()
     nH:=fcreate(cfile)
         for nPos:=1 to len(aLocdoc)
             cLine:=alocdoc[nPos]
             if at("%HB_VERSION%",cLine)>0
-                cLine:=strtran(cLine,'%HB_VERSION%',cVer)
+                cLine:=strtran(cLine,"%HB_VERSION%",cVer)
             endif
             IF AT("%HB_BLDDATE%",cLine)>0
                 SET CENTURY ON
-                cLine:=strtran(cLine,'%HB_BLDDATE%',DTOC(date()))
+                cLine:=strtran(cLine,"%HB_BLDDATE%",DTOC(date()))
                 SET CENTURY Off
             endif
             FWRITE(nH,cLine+HB_OSNEWLINE())
@@ -1795,7 +1796,7 @@ RETURN nil
 
 FUNCTION DocVer()
 local cVersion:=version()
-local cReturn:=''
+local cReturn:=""
 cReturn:=substr(cVersion,9,4)
 
 RETURN cReturn
@@ -1811,9 +1812,9 @@ for nCount:=1 to Len(aWww)
     endif
 Next
 asort(aTemp,,,{|x,y| x[2]<y[2]})
-    fWrite( nFile, '2 '+cCat+CRLF)
+    fWrite( nFile, "2 "+cCat+CRLF)
 for nCount:=1 to Len(aTemp)
-    fWrite( nFile, '3 '+aTemp[nCount,1]+"="+aTemp[nCount,2]+">Funca"+CRLF)
+    fWrite( nFile, "3 "+aTemp[nCount,1]+"="+aTemp[nCount,2]+">Funca"+CRLF)
 next
 return nil
 
@@ -1856,4 +1857,57 @@ for nCount:=1 to Len(aTemp)
          Endif
 next
 return nil
-    
+
+FUNCTION TeeFiles()
+
+   LOCAL i
+   LOCAL nFiles      := LEN( aDirList )
+   LOCAL cFileName 
+   LOCAL lDoc
+   LOCAL cBuffer
+   LOCAL nReadHandle
+   LOCAL nSourceHandle
+   LOCAL nDocHandle
+   LOCAL cDoc        := DELIM + "DOC" + DELIM                  // DOC keyword
+   LOCAL cEnd        := DELIM + "END" + DELIM                  // END keyword
+
+   FOR i := 1 TO nFiles
+
+      cFileName   := aDirList[ i, F_NAME ]
+      nReadHandle := fopen( cFileName )
+      nSourceHandle := fcreate( "teesrcs\" + cFileName )
+      nDocHandle := fcreate( "teedocs\" + cFileName )
+   
+      lDoc := .F.
+   
+      DO WHILE freadline( nReadHandle, @cBuffer, 256 )
+
+         IF AT( cDoc, cBuffer ) > 0
+            lDoc    := .T.
+         ELSEIF AT( cEnd, cBuffer ) > 0
+            lDoc    := .F.
+            cBuffer += CRLF
+            FWRITE( nDocHandle, cBuffer, len( cBuffer ) )
+            freadline( nReadHandle, @cBuffer, 256 )
+            cBuffer += CRLF
+            FWRITE( nDocHandle, cBuffer, len( cBuffer ) )
+            LOOP            
+         ENDIF
+
+         cBuffer += CRLF
+
+         IF lDoc
+            FWRITE( nDocHandle, cBuffer, len( cBuffer ) )
+         ELSE
+            FWRITE( nSourceHandle, cBuffer, len( cBuffer ) )
+         ENDIF
+
+      ENDDO
+   
+      fclose( nReadHandle )
+      fclose( nSourceHandle )
+      fclose( nDocHandle )
+
+   NEXT
+
+   RETURN NIL

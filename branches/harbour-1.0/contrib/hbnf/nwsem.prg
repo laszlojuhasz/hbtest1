@@ -3,7 +3,7 @@
  */
 
 /*
- * File......: NWSEM.PRG
+ * File......: nwsem.prg
  * Author....: Glenn Scott
  * CIS ID....: 71620,1521
  *
@@ -44,7 +44,7 @@
 #define INT21    33
 
 #xcommand DEFAULT <v1> TO <x1> [, <vN> TO <xN> ];
-      => IIF((<v1>)=NIL,<v1>:=<x1>,NIL) [; IF((<vN>)=NIL,<vN>:=<xN>,NIL)]
+      => IIF((<v1>)=NIL,<v1>:=<x1>,NIL) [; iif((<vN>)=NIL,<vN>:=<xN>,NIL)]
 
 #define WAIT_SEMAPHORE    2
 #define SIGNAL_SEMAPHORE  3

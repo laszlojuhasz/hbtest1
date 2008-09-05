@@ -8,7 +8,7 @@
    Donated to the public domain on 2001-03-15 by David G. Holm <dholm@jsd-llc.com>
 */
 
-#include <hbclass.ch>
+#include "hbclass.ch"
 
 class Twirler
    var n_Row
@@ -28,7 +28,7 @@ method new( nRow, nCol, cTitle, cChars, nSmooth ) class Twirler
    ::n_Row := nRow
    ::n_Col := nCol
    ::n_Smooth := nSmooth
-   ::c_Chars := IF( EMPTY( cChars ), "|/-\", cChars )
+   ::c_Chars := iif( EMPTY( cChars ), "|/-\", cChars )
    ::c_Title := cTitle
    IF EMPTY( ::c_Title )
       ::c_Title := ""

@@ -61,7 +61,7 @@ static HB_GT_FUNCS   SuperTable;
 #define HB_GTSUPER   (&SuperTable)
 #define HB_GTID_PTR  (&s_GtId)
 
-static FHANDLE s_hStdIn, s_hStdOut, s_hStdErr;
+static HB_FHANDLE s_hStdIn, s_hStdOut, s_hStdErr;
 static BOOL s_fStdInTTY = FALSE, s_fStdOutTTY = FALSE, s_fStdErrTTY = FALSE;
 
 /* does terminal works in Unicode (UTF-8) mode? */
@@ -566,7 +566,7 @@ static int hb_sln_isUTF8( int iStdOut, int iStdIn )
 /* *********************************************************************** */
 
 /* I think this function should not be void. It should be BOOL */
-static void hb_gt_sln_Init( PHB_GT pGT, FHANDLE hFilenoStdin, FHANDLE hFilenoStdout, FHANDLE hFilenoStderr )
+static void hb_gt_sln_Init( PHB_GT pGT, HB_FHANDLE hFilenoStdin, HB_FHANDLE hFilenoStdout, HB_FHANDLE hFilenoStderr )
 {
    BOOL gt_Inited = FALSE;
 
@@ -1068,7 +1068,10 @@ HB_CALL_ON_STARTUP_END( _hb_startup_gt_Init_ )
 
 #if defined( HB_PRAGMA_STARTUP )
    #pragma startup _hb_startup_gt_Init_
-#elif defined(HB_MSC_STARTUP)
+#elif defined( HB_MSC_STARTUP )
+   #if defined( HB_OS_WIN_64 )
+      #pragma section( HB_MSC_START_SEGMENT, long, read )
+   #endif
    #pragma data_seg( HB_MSC_START_SEGMENT )
    static HB_$INITSYM hb_vm_auto__hb_startup_gt_Init_ = _hb_startup_gt_Init_;
    #pragma data_seg()

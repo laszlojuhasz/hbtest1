@@ -25,8 +25,8 @@
 ######################################################################
 
 %define name      harbour-ce
-%define version   1.0.0
-%define releasen  0
+%define version   1.0.1
+%define releasen  dev
 %define hb_pref   hbce
 %define hb_ccpath /opt/mingw32ce/bin
 %define hb_ccpref arm-wince-mingw32ce-
@@ -60,13 +60,13 @@ BuildRoot:      /tmp/%{name}-%{version}-root
 %define         _noautoreq    'libharbour.*'
 
 %description
-Harbour is a CA-Clipper compatible compiler for multiple platforms. This
+Harbour is a CA-Cl*pper compatible compiler for multiple platforms. This
 package includes a compiler, pre-processor, header files, virtual machine
 and libraries for creating WinCE application in Linux box using MinGW-CE
 GCC port.
 
 %description -l pl
-Harbour to kompatybilny z jêzykiem CA-Clipper kompilator rozwijany na
+Harbour to kompatybilny z jêzykiem CA-Cl*pper kompilator rozwijany na
 wielu ró¿nych platformach. Ten pakiet zawiera kompilator, preprocesor,
 zbiory nag³ówkowe, wirtualn± maszynê oraz biblioteki pozwalaj±ce na
 tworzenie aplikacji dla WinCE-PocketPC przy u¿yciu MinGW-CE GCC.
@@ -94,7 +94,7 @@ make -r
 
 export HB_HOST_BUILD=lib
 export HB_ARCHITECTURE=w32
-export HB_COMPILER=cemgw
+export HB_COMPILER=mingwce
 
 mkdir -p source/pp/${HB_ARCHITECTURE}/${HB_COMPILER}
 ln -s ../../linux/gcc/hbpp source/pp/${HB_ARCHITECTURE}/${HB_COMPILER}/hbpp.exe
@@ -117,8 +117,7 @@ export HB_GT_LIB=gtwvt
 export HB_BIN_INSTALL=%{_bindir}
 export HB_INC_INSTALL=%{_includedir}/%{name}
 export HB_LIB_INSTALL=%{_libdir}/%{name}
-export HB_GTALLEG=%{?_with_allegro:yes}
-export HB_CONTRIBLIBS="hbct hbmzip hbtip xhb hbbtree hbmisc hbvpdf hbgt hbbmcdx hbclipsm gtwvg hbw32 rddado %{!?_without_nf:hbnf} %{?_with_odbc:hbodbc} %{?_with_curl:hbcurl} %{?_with_ads:rddads} %{?_with_gd:hbgd} %{?_with_pgsql:hbpgsql} %{?_with_mysql:hbmysql}"
+export HB_CONTRIBLIBS="gtwvg hbbmcdx hbbtree hbclipsm hbct hbgt hbmisc hbmzip hbtip hbvpdf hbw32 hbziparc rddado xhb %{!?_without_nf:hbnf} %{?_with_odbc:hbodbc} %{?_with_curl:hbcurl} %{?_with_ads:rddads} %{?_with_gd:hbgd} %{?_with_pgsql:hbpgsql} %{?_with_mysql:hbmysql} %{?_with_allegro:gtalleg}"
 
 make -r
 
@@ -142,15 +141,14 @@ export PATH="$CCPATH$PATH"
 
 export HB_HOST_BUILD=lib
 export HB_ARCHITECTURE=w32
-export HB_COMPILER=cemgw
+export HB_COMPILER=mingwce
 export HB_MT=no
 export HB_XBUILD=wce
 export HB_GT_LIB=gtwvt
 export HB_BIN_INSTALL=%{_bindir}
 export HB_INC_INSTALL=%{_includedir}/%{name}
 export HB_LIB_INSTALL=%{_libdir}/%{name}
-export HB_GTALLEG=%{?_with_allegro:yes}
-export HB_CONTRIBLIBS="hbct hbmzip hbtip xhb hbbtree hbmisc hbvpdf hbgt hbbmcdx hbclipsm gtwvg hbw32 rddado %{!?_without_nf:hbnf} %{?_with_odbc:hbodbc} %{?_with_curl:hbcurl} %{?_with_ads:rddads} %{?_with_gd:hbgd} %{?_with_pgsql:hbpgsql} %{?_with_mysql:hbmysql}"
+export HB_CONTRIBLIBS="gtwvg hbbmcdx hbbtree hbclipsm hbct hbgt hbmisc hbmzip hbtip hbvpdf hbw32 hbziparc rddado xhb %{!?_without_nf:hbnf} %{?_with_odbc:hbodbc} %{?_with_curl:hbcurl} %{?_with_ads:rddads} %{?_with_gd:hbgd} %{?_with_pgsql:hbpgsql} %{?_with_mysql:hbmysql} %{?_with_allegro:gtalleg}"
 
 export _DEFAULT_BIN_DIR=$HB_BIN_INSTALL
 export _DEFAULT_INC_DIR=$HB_INC_INSTALL
@@ -198,7 +196,7 @@ executable. The executable will be given the basename of the first object
 file if not directly set by the "-o" command line switch.
 
 "%{hb_pref}mk" tries to produce an executable from your .prg file. It's a simple
-equivalent of cl.bat from the CA-Clipper distribution.
+equivalent of cl.bat from the CA-Cl*pper distribution.
 
 All these scripts accept command line switches:
 -o<outputfilename>      # output file name
@@ -349,6 +347,7 @@ rm -fR $RPM_BUILD_ROOT
 %{_libdir}/%{name}/libhbgt.a
 %{_libdir}/%{name}/libhbbmcdx.a
 %{_libdir}/%{name}/libhbclipsm.a
+%{_libdir}/%{name}/libhbziparc.a
 
 %defattr(755,root,root,755)
 %{_libdir}/%{name}/*.dll

@@ -63,7 +63,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      __XSaveScreen() works exactly like CA-Clipper's __XSaveScreen()
+ *      __XSaveScreen() works exactly like CA-Cl*pper's __XSaveScreen()
  *  $PLATFORMS$
  *      __XSaveScreen() is part of the GT API, and supported only by some
  *      platforms.
@@ -105,7 +105,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      __XSaveScreen() works exactly like CA-Clipper's __XSaveScreen()
+ *      __XSaveScreen() works exactly like CA-Cl*pper's __XSaveScreen()
  *  $PLATFORMS$
  *      __XSaveScreen() is part of the GT API, and supported only by some
  *      platforms.
@@ -148,7 +148,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      __XRestScreen() works exactly like CA-Clipper's __XRestScreen()
+ *      __XRestScreen() works exactly like CA-Cl*pper's __XRestScreen()
  *  $PLATFORMS$
  *      __XRestScreen() is part of the GT API, and supported only by some
  *      platforms.
@@ -190,7 +190,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      Rest Screen() works exactly like CA-Clipper's Rest Screen
+ *      Rest Screen() works exactly like CA-Cl*pper's Rest Screen
  *  $PLATFORMS$
  *      Rest Screen is part of the GT API, and supported only by some
  *      platforms.
@@ -326,7 +326,7 @@
  *  $FILES$
  *      Library is rtl
  *  $COMPLIANCE$
- *      __NONOALERT() is an undocumented CA-Clipper function and exist only
+ *      __NONOALERT() is an undocumented CA-Cl*pper function and exist only
  *      if HB_C52_UNDOC was defined during the compilation of
  *      source/rtl/alert.prg
  *  $END$
@@ -368,7 +368,7 @@
  *  $COMPLIANCE$
  *      This is an add-on Operating System Tool function.
  *  $PLATFORMS$
- *      Under OS_UNIX_COMPATIBLE operating system the return value is the
+ *      Under HB_OS_UNIX_COMPATIBLE operating system the return value is the
  *      Line-Feed (0x0a) character CHR(10), with other operating systems
  *      (like DOS) the return value is the Carriage-Return plus Line-Feed
  *      (0x0d 0x0a) characters CHR(13)+CHR(10).
@@ -408,7 +408,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      Was not part of CA-Clipper.
+ *      Was not part of CA-Cl*pper.
  *  $FILES$
  *      Library is rtl
  *  $SEEALSO$
@@ -449,8 +449,8 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      DEVOUTPICT() is mostly CA-Clipper compliant. Any differences are due
- *      to enhancements in the Harbour TRANSFORM() over CA-Clipper.
+ *      DEVOUTPICT() is mostly CA-Cl*pper compliant. Any differences are due
+ *      to enhancements in the Harbour TRANSFORM() over CA-Cl*pper.
  *  $FILES$
  *      Library is rtl
  *  $SEEALSO$
@@ -477,7 +477,7 @@
  *  $STATUS$
  *      S
  *  $COMPLIANCE$
- *      __INPUT() is fully CA-Clipper compliant.
+ *      __INPUT() is fully CA-Cl*pper compliant.
  *  $FILES$
  *      Library is rtl
  *  $SEEALSO$
@@ -507,7 +507,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      __TextSave() is an Undocumented CA-Clipper function
+ *      __TextSave() is an Undocumented CA-Cl*pper function
  *  $PLATFORMS$
  *      ALL
  *  $FILES$
@@ -537,7 +537,7 @@
  *  $STATUS$
  *       R
  *  $COMPLIANCE$
- *      __TextRestore() is an Undocumented CA-Clipper function
+ *      __TextRestore() is an Undocumented CA-Cl*pper function
  *  $PLATFORMS$
  *       All
  *  $FILES$
@@ -575,7 +575,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      __WAIT() is fully CA-Clipper compliant.
+ *      __WAIT() is fully CA-Cl*pper compliant.
  *  $FILES$
  *      Library is rtl
  *  $SEEALSO$
@@ -620,7 +620,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      OUTSTD() works exactly as in CA-Clipper
+ *      OUTSTD() works exactly as in CA-Cl*pper
  *  $PLATFORMS$
  *  $FILES$
  *      Library is rtl
@@ -653,7 +653,7 @@
  *      take varying length when converted into string depending on its
  *      source (see STR() for detail).
  *
- *      There is an undocumented CA-Clipper command line switch //STDERR
+ *      There is an undocumented CA-Cl*pper command line switch //STDERR
  *      which can set the file handle to write output from OUTERR(). If not
  *      specified the default STDERR is used, //STDERR or //STDERR:0 set
  *      OUTERR() to output to the same file handle as OUTSTD(), //STDERR:n
@@ -667,7 +667,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      OUTERR() works exactly as in CA-Clipper
+ *      OUTERR() works exactly as in CA-Cl*pper
  *  $PLATFORMS$
  *  $FILES$
  *      Library is rtl
@@ -688,12 +688,12 @@
  *  $ARGUMENTS$
  *      None
  *  $DESCRIPTION$
- *      This command issue an form-feed command to the printer.If the printer
+ *      This command issue an form-feed command to the printer. If the printer
  *      is not properly hooked up to the computer,an error will not be
  *      generated and the command will be ignored.
  *
  *      Once completed,the values of PROW() and PCOL(),the row and column
- *      indicators to the printer,will be set to 0.Their values,however,may
+ *      indicators to the printer,will be set to 0. Their values,however,may
  *      be manipulated before or after ussuing an EJECT by using the DEVPOS()
  *      function.
  *
@@ -717,7 +717,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This command is Ca-Clipper compliant
+ *      This command is CA-Cl*pper compliant
  *  $PLATFORMS$
  *      All
  *  $SEEALSO$
@@ -739,14 +739,14 @@
  *  $RETURNS$
  *      <nPosition>  Current column position
  *  $DESCRIPTION$
- *      This function returns the current cursor column position.The value
+ *      This function returns the current cursor column position. The value
  *      for this function can range between 0 and MAXCOL().
  *  $EXAMPLES$
  *      ? Col()
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This Functions is Ca-Clipper compliant
+ *      This Functions is CA-Cl*pper compliant
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -770,14 +770,14 @@
  *  $RETURNS$
  *      <nPosition>  Current screen row position
  *  $DESCRIPTION$
- *      This function returns the current cursor row location.The value
+ *      This function returns the current cursor row location. The value
  *      for this function can range between 0 and MAXCOL().
  *  $EXAMPLES$
  *      ? Row()
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This Functions is Ca-Clipper compliant
+ *      This Functions is CA-Cl*pper compliant
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -802,18 +802,18 @@
  *      <nPosition>  The maximun number of columns possible in current video
  *      mode
  *  $DESCRIPTION$
- *      This function returns the current cursor column position.The value
+ *      This function returns the current cursor column position. The value
  *      for this function can range between 0 and MAXCOL().
  *  $EXAMPLES$
  *      ? MAXCol()
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This Functions is Ca-Clipper compliant.
+ *      This Functions is CA-Cl*pper compliant.
  *  $PLATFORMS$
  *      It works in all platform with some remarks:Under Linux and OS/2 the
  *      number of columns avaliable depends of the current Terminal screen
- *      size.Under Win32, the return value of MAXCOL() function is only
+ *      size. Under Win32, the return value of MAXCOL() function is only
  *      affected if called after an SETMODE() function
  *  $FILES$
  *      Library is rtl
@@ -837,18 +837,18 @@
  *      <nPosition>  The maximun number of rows possible in current video
  *      mode
  *  $DESCRIPTION$
- *      This function returns the current cursor row location.The value
+ *      This function returns the current cursor row location. The value
  *      for this function can range between 0 and MAXCOL().
  *  $EXAMPLES$
  *      ? MAXROW()
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      This Functions is Ca-Clipper compliant
+ *      This Functions is CA-Cl*pper compliant
  *  $PLATFORMS$
  *      It works in all platform with some remarks:Under Linux and OS/2 the
  *      number of columns avaliable depends of the current Terminal screen
- *      size.Under Win32, the return value of MAXROW() function is only
+ *      size. Under Win32, the return value of MAXROW() function is only
  *      affected if called after an SETMODE() function
  *  $FILES$
  *      Library is rtl

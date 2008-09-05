@@ -53,7 +53,7 @@ HB_FUNC( CHOOSEFONT )
 
 //----------------------------------------------------------------------------
 
-// to be called called via FindText (in WinCDlg.Prg)
+// to be called called via FindText (in wincdlg.prg)
 
 HB_FUNC( _FINDTEXT )
 {
@@ -78,7 +78,7 @@ HB_FUNC( _FINDTEXT )
 
 //----------------------------------------------------------------------------
 
-// to be called called via FindText (in WinCDlg.Prg)
+// to be called called via FindText (in wincdlg.prg)
 
 HB_FUNC( _REPLACETEXT )
 {
@@ -192,14 +192,14 @@ HB_FUNC( CHOOSECOLOR )
 
 //----------------------------------------------------------------------------
 
-// to be called via GetOpenFileName in WinCDlg.Prg
+// to be called via GetOpenFileName in wincdlg.prg
 
 HB_FUNC( _GETOPENFILENAME )
 {
    OPENFILENAME ofn;
-   char *szFileName =(char*) hb_xgrab( hb_parcsiz(2));
+   char *szFileName = ( char * ) hb_xgrab( hb_parclen( 2 ) + 1 );
 
-   strcpy( szFileName, hb_parcx( 2 ) );
+   hb_strncpy( szFileName, hb_parcx( 2 ), hb_parclen( 2 ) );
 
    ZeroMemory( &ofn, sizeof(ofn) );
    ofn.hInstance       = GetModuleHandle(NULL)  ;
@@ -231,15 +231,15 @@ HB_FUNC( _GETOPENFILENAME )
 
 //----------------------------------------------------------------------------
 
-// to be called via GetSaveFileName in WinCDlg.Prg
+// to be called via GetSaveFileName in wincdlg.prg
 
 HB_FUNC( _GETSAVEFILENAME )
 {
     OPENFILENAME ofn;
-    char szFileName[MAX_PATH+1] ;
-    strcpy( szFileName, hb_parc (2) );
-    ZeroMemory(&ofn, sizeof(ofn));
-    ofn.hInstance       = GetModuleHandle(NULL)  ;
+    char szFileName[ MAX_PATH + 1 ];
+    hb_strncpy( szFileName, hb_parc( 2 ), sizeof( szFileName ) - 1 );
+    ZeroMemory( &ofn, sizeof( ofn ) );
+    ofn.hInstance       = GetModuleHandle(NULL);
     ofn.lStructSize     = sizeof(ofn);
     ofn.hwndOwner       = ISNIL   (1)  ? GetActiveWindow() : (HWND) hb_parnl(1);
     ofn.lpstrTitle      = hb_parc (3);

@@ -3,7 +3,7 @@
  */
 
 /*
- * File......: SAVEARR.PRG
+ * File......: savearr.prg
  * Author....: David Barrett
  * CIS ID....: 72037,105
  *
@@ -41,11 +41,11 @@ MEMVAR lRet
                 {'Invoice 2', DATE(), 234.98, .F.},;
                 {'Invoice 3', DATE() + 1, 0, .T.}  }, aSave
  LOCAL nErrorCode := 0
- FT_SAVEARR(aArray,'INVOICE.DAT',@nErrorCode)
+ FT_SAVEARR(aArray,'invoice.dat',@nErrorCode)
  IF nErrorCode = 0
    CLS
    DispArray(aArray)
-   aSave := FT_RESTARR('INVOICE.DAT',@nErrorCode)
+   aSave := FT_RESTARR('invoice.dat',@nErrorCode)
    IF nErrorCode = 0
      DispArray(aSave)
    ELSE
@@ -65,7 +65,7 @@ MEMVAR lRet
      ?? '  '
      ?? STR(aTest[nk, 3])
      ?? '  '
-     ?? IF(aTest[nk, 4], 'true', 'false')
+     ?? iif(aTest[nk, 4], 'true', 'false')
    NEXT
  RETURN Nil
 #endif
@@ -113,9 +113,9 @@ MEMVAR lRet
  *                {'Invoice 2',DATE(),234.98,.F.},;
  *                {'Invoice 3',DATE() + 1,0,.T.}  }
  *    nErrorCode := 0
- *    FT_SAVEARR(aArray,'INVOICE.DAT',@nErrorCode)
+ *    FT_SAVEARR(aArray,'invoice.dat',@nErrorCode)
  *    IF nErrorCode = 0
- *      aSave := FT_RESTARR('INVOICE.DAT',@nErrorCode)
+ *      aSave := FT_RESTARR('invoice.dat',@nErrorCode)
  *      IF nErrorCode # 0
  *         ? 'Error restoring array'
  *      ENDIF
@@ -174,7 +174,7 @@ STATIC FUNCTION _ftsavesub(xMemVar, nHandle, nErrorCode)
      CASE cValType = "L"
        nLen := 1
        FWrite(nHandle, L2Bin(nLen), 4)
-       FWrite(nHandle, IF(xMemVar, "T", "F") )
+       FWrite(nHandle, iif(xMemVar, "T", "F") )
      CASE cValType = "N"
        cString := STR(xMemVar)
        nLen := LEN(cString)
@@ -220,9 +220,9 @@ STATIC FUNCTION _ftsavesub(xMemVar, nHandle, nErrorCode)
  *                {'Invoice 2',DATE(),234.98,.F.},;
  *                {'Invoice 3',DATE() + 1,0,.T.}  }
  *    nErrorCode := 0
- *    FT_SAVEARR(aArray,'INVOICE.DAT',@nErrorCode)
+ *    FT_SAVEARR(aArray,'invoice.dat',@nErrorCode)
  *    IF nErrorCode = 0
- *      aSave := FT_RESTARR('INVOICE.DAT',@nErrorCode)
+ *      aSave := FT_RESTARR('invoice.dat',@nErrorCode)
  *      IF nErrorCode # 0
  *         ? 'Error restoring array'
  *      ENDIF

@@ -1935,8 +1935,7 @@ static InOutBase *create_ioBase( char *term, int infd, int outfd, int errfd,
       {
          if ( ( i = ptr - term ) >= sizeof( buf ) )
             i = sizeof( buf ) - 1;
-         strncpy( buf, term, i );
-         buf[i] = '\0';
+         hb_strncpy( buf, term, i );
          if ( i )
             crsterm = buf;
       }
@@ -2446,7 +2445,7 @@ void HB_GT_FUNC( gt_CatchSignal( int iSig ) )
 
 /* *********************************************************************** */
 
-static void hb_gt_crs_Init( PHB_GT pGT, FHANDLE hFilenoStdin, FHANDLE hFilenoStdout, FHANDLE hFilenoStderr )
+static void hb_gt_crs_Init( PHB_GT pGT, HB_FHANDLE hFilenoStdin, HB_FHANDLE hFilenoStdout, HB_FHANDLE hFilenoStderr )
 {
    InOutBase *ioBase;
 
@@ -2824,10 +2823,10 @@ static BOOL hb_gt_crs_SetDispCP( PHB_GT pGT, char *pszTermCDP, char *pszHostCDP,
             char *pszHostLetters = ( char * ) hb_xgrab( cdpHost->nChars * 2 + 1 );
             char *pszTermLetters = ( char * ) hb_xgrab( cdpTerm->nChars * 2 + 1 );
 
-            strncpy( pszHostLetters, cdpHost->CharsUpper, cdpHost->nChars + 1 );
-            strncat( pszHostLetters, cdpHost->CharsLower, cdpHost->nChars + 1 );
-            strncpy( pszTermLetters, cdpTerm->CharsUpper, cdpTerm->nChars + 1 );
-            strncat( pszTermLetters, cdpTerm->CharsLower, cdpTerm->nChars + 1 );
+            hb_strncpy( pszHostLetters, cdpHost->CharsUpper, cdpHost->nChars * 2 );
+            hb_strncat( pszHostLetters, cdpHost->CharsLower, cdpHost->nChars * 2 );
+            hb_strncpy( pszTermLetters, cdpTerm->CharsUpper, cdpTerm->nChars * 2 );
+            hb_strncat( pszTermLetters, cdpTerm->CharsLower, cdpTerm->nChars * 2 );
 
             setDispTrans( s_ioBase, pszHostLetters, pszTermLetters, fBox ? 1 : 0 );
 
@@ -2868,10 +2867,10 @@ static BOOL hb_gt_crs_SetKeyCP( PHB_GT pGT, char *pszTermCDP, char *pszHostCDP )
          char *pszHostLetters = ( char * ) hb_xgrab( cdpHost->nChars * 2 + 1 );
          char *pszTermLetters = ( char * ) hb_xgrab( cdpTerm->nChars * 2 + 1 );
 
-         strncpy( pszHostLetters, cdpHost->CharsUpper, cdpHost->nChars + 1 );
-         strncat( pszHostLetters, cdpHost->CharsLower, cdpHost->nChars + 1 );
-         strncpy( pszTermLetters, cdpTerm->CharsUpper, cdpTerm->nChars + 1 );
-         strncat( pszTermLetters, cdpTerm->CharsLower, cdpTerm->nChars + 1 );
+         hb_strncpy( pszHostLetters, cdpHost->CharsUpper, cdpHost->nChars * 2 );
+         hb_strncat( pszHostLetters, cdpHost->CharsLower, cdpHost->nChars * 2 );
+         hb_strncpy( pszTermLetters, cdpTerm->CharsUpper, cdpTerm->nChars * 2 );
+         hb_strncat( pszTermLetters, cdpTerm->CharsLower, cdpTerm->nChars * 2 );
 
          setKeyTrans( s_ioBase, ( unsigned char * ) pszTermLetters,
                       ( unsigned char * ) pszHostLetters );
@@ -3014,7 +3013,10 @@ HB_CALL_ON_STARTUP_END( _hb_startup_gt_Init_ )
 
 #if defined( HB_PRAGMA_STARTUP )
    #pragma startup _hb_startup_gt_Init_
-#elif defined(HB_MSC_STARTUP)
+#elif defined( HB_MSC_STARTUP )
+   #if defined( HB_OS_WIN_64 )
+      #pragma section( HB_MSC_START_SEGMENT, long, read )
+   #endif
    #pragma data_seg( HB_MSC_START_SEGMENT )
    static HB_$INITSYM hb_vm_auto__hb_startup_gt_Init_ = _hb_startup_gt_Init_;
    #pragma data_seg()

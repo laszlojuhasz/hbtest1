@@ -161,7 +161,7 @@
 
 #endif
 
-#if !defined( HB_USE_LARGEFILE64 ) && defined( OS_UNIX_COMPATIBLE )
+#if !defined( HB_USE_LARGEFILE64 ) && defined( HB_OS_UNIX_COMPATIBLE )
    #if defined( __USE_LARGEFILE64 )
       /*
        * The macro: __USE_LARGEFILE64 is set when _LARGEFILE64_SOURCE is
@@ -466,7 +466,7 @@ static BOOL hb_fsFindNextLow( PHB_FFIND ffind )
 
       if( bFound )
       {
-         hb_strncpy( ffind->szName, info->entry.ff_name, _POSIX_PATH_MAX );
+         hb_strncpy( ffind->szName, info->entry.ff_name, sizeof( ffind->szName ) - 1 );
          ffind->size = info->entry.ff_fsize;
 
          raw_attr = info->entry.ff_attrib;
@@ -531,7 +531,7 @@ static BOOL hb_fsFindNextLow( PHB_FFIND ffind )
       
          stat( info->entry.achName, &sStat );
       
-         hb_strncpy( ffind->szName, info->entry.achName, _POSIX_PATH_MAX );
+         hb_strncpy( ffind->szName, info->entry.achName, sizeof( ffind->szName ) - 1 );
          ffind->size = sStat.st_size;
       
          raw_attr = info->entry.attrFile;
@@ -601,7 +601,7 @@ static BOOL hb_fsFindNextLow( PHB_FFIND ffind )
 
          if( bFound )
          {
-            hb_strncpy( ffind->szName, info->pFindFileData.cFileName, _POSIX_PATH_MAX );
+            hb_strncpy( ffind->szName, info->pFindFileData.cFileName, sizeof( ffind->szName ) - 1 );
 
             if( info->pFindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
                ffind->size = 0;
@@ -665,7 +665,7 @@ static BOOL hb_fsFindNextLow( PHB_FFIND ffind )
          
          /* hb_strncpy( string, pszFileName, sizeof( string ) - 1 ); */
          hb_strncpy( string, ffind->pszFileMask, sizeof( string ) - 1 ); 
-         pos = strrchr( string, OS_PATH_DELIMITER );
+         pos = strrchr( string, HB_OS_PATH_DELIM_CHR );
          if( pos )
          {
             hb_strncpy( info->pattern, pos + 1, sizeof( info->pattern ) - 1 );
@@ -676,7 +676,7 @@ static BOOL hb_fsFindNextLow( PHB_FFIND ffind )
          {
             hb_strncpy( info->pattern, string, sizeof( info->pattern ) - 1 );
             dirname[ 0 ] = '.';
-            dirname[ 1 ] = OS_PATH_DELIMITER;
+            dirname[ 1 ] = HB_OS_PATH_DELIM_CHR;
             dirname[ 2 ] = '\0';
          }
 
@@ -686,7 +686,7 @@ static BOOL hb_fsFindNextLow( PHB_FFIND ffind )
          hb_strncpy( info->path, dirname, sizeof( info->path ) - 1 );
       }
 
-      if( info->dir != NULL && info->pattern[ 0 ] != '\0' )
+      if( info->dir && info->pattern[ 0 ] != '\0' )
       {
          while( ( info->entry = readdir( info->dir ) ) != NULL )
          {
@@ -715,7 +715,7 @@ static BOOL hb_fsFindNextLow( PHB_FFIND ffind )
             if( stat( dirname, &sStat ) == 0 )
 #endif
             {
-               hb_strncpy( ffind->szName, info->entry->d_name, _POSIX_PATH_MAX );
+               hb_strncpy( ffind->szName, info->entry->d_name, sizeof( ffind->szName ) - 1 );
                ffind->size = sStat.st_size;
 
                raw_attr = sStat.st_mode;
@@ -831,11 +831,11 @@ HB_EXPORT BOOL hb_fsFindNext( PHB_FFIND ffind )
 
 HB_EXPORT void hb_fsFindClose( PHB_FFIND ffind )
 {
-   if( ffind != NULL )
+   if( ffind )
    {
       /* Do platform dependant cleanup */
 
-      if( ffind->info != NULL )
+      if( ffind->info )
       {
          PHB_FFIND_INFO info = ( PHB_FFIND_INFO ) ffind->info;
 
@@ -870,7 +870,7 @@ HB_EXPORT void hb_fsFindClose( PHB_FFIND ffind )
 
 #elif defined(HB_OS_UNIX)
 
-         if( info->dir != NULL )
+         if( info->dir )
          {
             closedir( info->dir );
          }

@@ -3,12 +3,16 @@
  */
 
 /* Use this format for the entry headers:
-   YYYY-MM-DD HH:MM UTC[-|+]hhmm Your Full Name <your_email@address>
+   YYYY-MM-DD HH:MM UTC[-|+]hhmm Your Full Name (your_email address)
    For example:
-   2008-12-31 13:59 UTC+0100 Foo Bar <foo.bar@foobar.org>
+   2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
-; Merging changes to 1.0 branch from trunk r9176 to r9310.
+2008-09-05 01:40 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * Pass 2: All file/dir deletions, additions, renames were added 
+     in the previous commit, now comes all file changes in trunk
+     between r9176 and r9310, in one, second pass.
+     See below the original entries.
 
 2008-09-05 01:14 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
    - make_vcce.bat
@@ -280,6 +284,3042 @@
    + config/w32/msvcce.cf
      * Pass 1: File/dir deletions, additions, renames 
        between r9176 and r9310 in trunk.
+
+2008-09-04 19:30 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/rdd/dbfntx/dbfntx1.c
+    ! fixed typo in previous commit
+
+2008-09-04 19:08 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/rdd/dbfntx/dbfntx1.c
+  * harbour/source/rdd/dbfcdx/dbfcdx1.c
+    ! fixed dirty index reading, thx Miguel for bug report
+
+  * harbour/source/compiler/hbmain.c
+    * removed old comment and hack
+
+2008-09-04 15:58 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * config/w32/msvc.cf
+   * config/w32/msvcce.cf
+     * Synced with latest non-GNU changes.
+
+2008-09-04 09:43 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * make_vc.mak
+   * contrib/mtpl_vc.mak
+     + -w34701 VC flag added to enabled warning 4701 (uninitialized vars) on -W3 level.
+     % -FD VC flag removed. This is only needed for IDEs.
+     % -Gs VC flag moved to the common section.
+     % VC flags synced in contrib with core.
+     + TOFIX added for WinCE command line. It's full of stuff which is _probably_ not needed.
+     + NOTE added about MSDN page explaining VC switches.
+     ; NOTE: -W4 and -Wp64 are recommended for MSVC.
+     ; TOFIX: There are still a few uninit vars warnings:
+              harboury.c(7226) : warning C4701: potentially uninitialized local variable 'hb_complval' used
+              macroy.c(3095) : warning C4701: potentially uninitialized local variable 'hb_macrolval' used
+              dbffpt1.c(2671) : warning C4701: potentially uninitialized local variable 'ulType' used
+              dbffpt1.c(2614) : warning C4701: potentially uninitialized local variable 'ulSize' used
+              dbffpt1.c(3073) : warning C4701: potentially uninitialized local variable 'ulOldSize' used
+              dbffpt1.c(3083) : warning C4701: potentially uninitialized local variable 'ulBlock' used
+              dbffpt1.c(3652) : warning C4701: potentially uninitialized local variable 'pBlock' used
+
+   * source/rdd/workarea.c
+     ! Fixed DBI_POSITIONED value returned.
+
+   * include/hbsetup.h
+   * source/vm/pvalue.c
+   * source/rtl/fserror.c
+   * source/rtl/accept.c
+   * source/rtl/descend.c
+   * source/rtl/inkey.c
+   * source/rtl/dates.c
+   * source/rtl/fkmax.c
+   * source/rtl/natmsg.c
+   * source/rtl/hbinet.c
+   * source/rtl/dates.c
+     ! Fixed some MSVS2008 -W4 warnings (we use -W3 as the default).
+     ; NOTE: There is a lot more of these.
+
+   * source/rtl/dates.c
+     * Formatting.
+
+2008-09-03 23:06 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbziparc/hbziparc.prg
+     ! Fix to one of the rarely used function names.
+
+   * contrib/gtalleg/gtalleg.c
+   * contrib/hbw32/dllcall.c
+   * contrib/hbcurl/hbcurl.c
+   * contrib/hbfimage/fi_winfu.c
+   * contrib/hbfimage/fi_wrp.c
+   * source/vm/memvars.c
+   * source/rtl/gtwin/gtwin.c
+   * source/rtl/math.c
+   * source/rtl/gtclip.c
+   * source/rtl/fstemp.c
+   * source/rtl/is.c
+   * source/rtl/xsavescr.c
+   * source/rtl/fkmax.c
+   * source/rtl/langapi.c
+   * source/rtl/hbrandom.c
+   * source/rtl/hbinet.c
+   * source/rtl/hbffind.c
+     * Minor formatting, code style/format cleanup (!=/== NULL mostly).
+
+   * source/compiler/genc.c
+     * Minor; empty line added to .c output.
+
+2008-09-03 20:03 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbziparc/hbziparc.prg
+     ! Some formatting to docs.
+     + Now .zip extension will only be added if _SET_DEFEXTENSIONS 
+       is TRUE (the default).
+
+2008-09-03 19:41 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbziparc/hbziparc.prg
+     ! RTE fixed when not specifying some optional params.
+     ! Fixed to parse the right array, and thus not exluding 
+       all filenames to be zipped.
+     ; Disclaimer: I'm not a user of these functions, and 
+       I've admittedly not tested them besides tests/unzipa.prg 
+       and tests/zipa.prg (which are pretty basic cases), so 
+       bumps are expected. If you find some bugs, please try 
+       to provide patches to fix them. Thanks.
+
+2008-09-03 16:36 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbziparc/make_b32.bat
+   * contrib/hbziparc/make_vc.bat
+     % Special C flags not needed anymore.
+
+   - contrib/hbziparc/hbzipold.cpp
+   + contrib/hbziparc/hbzipcpp.old
+     * Renamed to not look like something live.
+
+2008-09-03 16:02 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * harbour-ce-spec
+   * make_deb.sh
+   * harbour-w32-spec
+   * harbour.spec
+   * contrib/Makefile
+   * contrib/make_b32_all.bat
+   * contrib/make_gcc_all.sh
+   * contrib/make_vc_all.bat
+   + contrib/hbziparc
+   - contrib/hbziparch
+     + hbziparc readded to default contrib list, as it 
+       creates no more harm now.
+     ; NOTE: And now that this is about ready, we might 
+             step forward to develop a .7z interface ;)
+
+2008-09-03 15:47 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbziparch/Makefile
+   * contrib/hbziparch/common.mak
+   + contrib/hbziparch/hbziparc.prg
+   - contrib/hbziparch/hbzipnew.cpp
+   + contrib/hbziparch/hbzipold.cpp
+   * contrib/hbziparch/tests/bld_b32.bat
+   * contrib/hbziparch/tests/bld_vc.bat
+   - contrib/hbziparch/Wildcard.h
+   - contrib/hbziparch/ZipString.h
+   - contrib/hbziparch/FileInfo.h
+   - contrib/hbziparch/ZipFileMapping_lnx.h
+   - contrib/hbziparch/ZipMutex_win.h
+   - contrib/hbziparch/ZipPathComponent.h
+   - contrib/hbziparch/Aes.h
+   - contrib/hbziparch/BaseLibCompressor.cpp
+   - contrib/hbziparch/zlib
+   - contrib/hbziparch/ZipCentralDir.h
+   - contrib/hbziparch/RandomPool.h
+   - contrib/hbziparch/ZipPathComponent_win.cpp
+   - contrib/hbziparch/ZipString_stl.h
+   - contrib/hbziparch/ZipPlatform_win.cpp
+   - contrib/hbziparch/std_mfc.h
+   - contrib/hbziparch/DeflateCompressor.h
+   - contrib/hbziparch/ZipCrc32Cryptograph.h
+   - contrib/hbziparch/Wildcard.cpp
+   - contrib/hbziparch/ZipString.cpp
+   - contrib/hbziparch/FileFilter.h
+   - contrib/hbziparch/ZipMutex.h
+   - contrib/hbziparch/ZipCompatibility.cpp
+   - contrib/hbziparch/ZipFileMapping_win.h
+   - contrib/hbziparch/ZipExtraData.cpp
+   - contrib/hbziparch/Sha1.h
+   - contrib/hbziparch/ZipArchive.cpp
+   - contrib/hbziparch/ZipFileHeader.h
+   - contrib/hbziparch/DirEnumerator.cpp
+   - contrib/hbziparch/DeflateCompressor.cpp
+   - contrib/hbziparch/ZipBaseException.h
+   - contrib/hbziparch/std_stl.h
+   - contrib/hbziparch/_features.h
+   - contrib/hbziparch/ZipFileMapping.h
+   - contrib/hbziparch/BaseLibCompressor.h
+   - contrib/hbziparch/FileFilter.cpp
+   - contrib/hbziparch/ZipException.h
+   - contrib/hbziparch/ZipCryptograph.h
+   - contrib/hbziparch/ZipAbstractFile.h
+   - contrib/hbziparch/ZipStorage.h
+   - contrib/hbziparch/ZipStringStoreSettings.h
+   - contrib/hbziparch/stdafx.h
+   - contrib/hbziparch/ZipCompatibility.h
+   - contrib/hbziparch/ZipExtraData.h
+   - contrib/hbziparch/ZipMemFile.h
+   - contrib/hbziparch/Hmac.cpp
+   - contrib/hbziparch/Bzip2Compressor.h
+   - contrib/hbziparch/ZipExport.h
+   - contrib/hbziparch/ZipArchive.h
+   - contrib/hbziparch/ZipExtraField.cpp
+   - contrib/hbziparch/ZipFileHeader.cpp
+   - contrib/hbziparch/ZipPlatform.h
+   - contrib/hbziparch/ZipAesCryptograph.cpp
+   - contrib/hbziparch/ZipException.cpp
+   - contrib/hbziparch/ZipCompressor.h
+   - contrib/hbziparch/ZipFile_stl.cpp
+   - contrib/hbziparch/DirEnumerator.h
+   - contrib/hbziparch/ZipCryptograph.cpp
+   - contrib/hbziparch/ZipStorage.cpp
+   - contrib/hbziparch/ZipAutoBuffer.h
+   - contrib/hbziparch/ZipCollections_mfc.h
+   - contrib/hbziparch/ZipFile_mfc.h
+   - contrib/hbziparch/resource.h
+   - contrib/hbziparch/ZipCallbackProvider.h
+   - contrib/hbziparch/ZipMemFile.cpp
+   - contrib/hbziparch/Bzip2Compressor.cpp
+   - contrib/hbziparch/ZipCollections.h
+   - contrib/hbziparch/ZipFile.h
+   - contrib/hbziparch/Aes.cpp
+   - contrib/hbziparch/ZipCentralDir.cpp
+   - contrib/hbziparch/RandomPool.cpp
+   - contrib/hbziparch/ZipMutex_lnx.h
+   - contrib/hbziparch/Hmac.h
+   - contrib/hbziparch/ZipExtraField.h
+   - contrib/hbziparch/ZipCompressor.cpp
+   - contrib/hbziparch/License.txt
+   - contrib/hbziparch/ZipCrc32Cryptograph.cpp
+   - contrib/hbziparch/ZipAesCryptograph.h
+   - contrib/hbziparch/ZipPathComponent_lnx.cpp
+   - contrib/hbziparch/ZipPlatformComm.cpp
+   - contrib/hbziparch/ZipString_mfc.h
+   - contrib/hbziparch/ZipCallback.h
+   - contrib/hbziparch/ZipAutoBuffer.cpp
+   - contrib/hbziparch/ZipFile_mfc.cpp
+   - contrib/hbziparch/ZipCollections_stl.h
+   - contrib/hbziparch/BytesWriter.h
+   - contrib/hbziparch/ZipPlatform_lnx.cpp
+   - contrib/hbziparch/_platform.h
+   - contrib/hbziparch/ZipFile_stl.h
+   - contrib/hbziparch/readme.txt
+   - contrib/hbziparch/Sha1.cpp
+     + Added .prg level implementation of old hbziparch interface.
+       It's based on Toninhos functions sent to the list, but 
+       synced with old interface and extended with new features, 
+       fixes and all the remaining interface functions, and old 
+       doc.
+       There are some non-implemented stuff, and a couple of 
+       NOTEs and TOFIXes, if someone wants, these can be addressed.
+       (some not, as hbmzip doesn't support multi-volume archives.)
+     ; NOTE: This implementation is based on hbmzip.lib, so you 
+             MUST link it, to make it work. INCOMPATIBLE.
+     * Library renamed from hbziparch -> hbziparc to be short 
+       filename. The dir itself will also be renamed so.
+       INCOMPATIBLE.
+     * Make files modified to compile on all platforms and to 
+       pull hbmzip to build tests.
+     - Removed ZipArchive sources.
+     ; Temporarily kept hbzipold.cpp to serve as reference.
+     ; TOFIX: There is a problem with the loop adding new 
+              files to the .zip.
+
+2008-09-03 15:15 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbziparch/Makefile
+   * contrib/hbziparch/common.mak
+   - contrib/hbziparch/hbziparc.c
+   - contrib/hbziparch/hbxdirec.c
+   * contrib/hbziparch/hbzipnew.cpp
+     * Merged Harbour C parts to .cpp file.
+     * Made full low-level interface static.
+
+2008-09-03 15:05 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbziparch/hbziparc.c
+   * contrib/hbziparch/hbzipnew.cpp
+     ! Some fixes to prev.
+
+2008-09-03 12:34 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbziparch/hbziparc.c
+   * contrib/hbziparch/hbzipnew.cpp
+     ! Some fixes and further reduction.
+
+2008-09-03 10:28 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbziparch/hbziparc.c
+   * contrib/hbziparch/hbzipnew.cpp
+     % Merged slightly different internal functions, thus 
+       removing significant redundancy.
+       Higher level hb_unzipFile(), hb_unzipFileIndex(), hb_unzipAllFile()
+       are now functionally the same, since the only difference was 
+       how the file list parameter was handled.
+     ! Removed any remaining Win32 dependency.
+
+2008-09-02 23:37 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbziparch/hbziparc.c
+   * contrib/hbziparch/hbzipnew.cpp
+     * Complete cleanup/refactor/fixes.
+       (original functions and internal logic was kept, 
+       except some shady path/curdir manipulations, which 
+       were removed, along with any directory changes)
+       The code got significantly easier to oversee, so if 
+       someone wants to find out how this interface works, 
+       now the code is much easier to read. If we want to 
+       keep this in Harbour, maybe we could just swap the 
+       low-level interface to utilize hbmzip calls instead 
+       of ZipArchive ones. We would lose the segmented 
+       archive feature though, but I'm not sure how 
+       important this is these days, when there is no 
+       floppy disk anymore.
+       Code size is now 40% smaller than in 1.0.0.
+       It's still far from being perfect, but now it's at 
+       least possible to fix.
+
+2008-09-02 10:23 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * utils/hbmake/hbmake.prg
+     ; Applied patch by Bill Robertson:
+     ! Fixed previously introduced (by me actually) bug. Thanks.
+     % Removed "non-extended" codepath, since it was never used.
+     ! UI elements fixed to properly accomodate to any 
+       screen dimensions.
+
+   * utils/hbmake/hbmake.prg
+     ! Fixed to not change casing of files, plus a few other minor fixes.
+     ! Made one filename comparison multiplatform by using hb_FileMatch()
+     ; Added TOFIXes where filename comparison is not multiplatform.
+     % Removed some dead or commented code.
+
+2008-09-01 21:52 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   - contrib/hbw32ddr
+   * contrib/Makefile
+   * contrib/make_b32_all.bat
+   * contrib/make_gcc_all.sh
+   * contrib/make_vc_all.bat
+     - Removed contrib hbw32ddr.
+       For those wanting to peek into this code, or 
+       pick up development, the exact source can be 
+       found in Harbour 1.0.0 release.
+
+2008-09-01 21:33 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbziparch/hbziparc.c
+   * contrib/hbziparch/hbzipnew.cpp
+     % Cleanups, optimizations, fixes. Now it's possible to 
+       oversee what the code actually tries to do.
+     * Statics reduced to one, not changing current dir anymore.
+     ; It may happen that something is not working as it was, please test.
+       Path handling is/was very shady. Unix support is (and was) 
+       not working at places.
+     ; NOTE: 'Kiss of death' change.
+             Please be prepared that I plan to remove hbziparch 
+             from the repository sometimes this week. If you have 
+             a strong reason not to do so (or some alternative 
+             proposal), pls write to the list.
+             If someone wants to continue using it, it can be accessed 
+             from past revisions of the SVN, or the 1.0.0 binary and 
+             source releases.
+             Someone could as well upload the lastest (or latest stable) 
+             revision to our website.
+
+2008-09-01 15:57 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   - contrib/hbziparch/hbziparc.h
+   * contrib/hbziparch/hbziparc.c
+   * contrib/hbziparch/hbzipnew.cpp
+   * contrib/hbziparch/tests/unzipa.prg
+     % Further cleanups, optimizations.
+     % Removed adding current directory to .zip filename 
+       if it didn't contain a path. If a file doesn't contain 
+       path, the OS will create it by default in the current dir.
+       If someone knows why this hack was there, please tell.
+
+2008-09-01 12:39 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbziparch/hbziparc.c
+   * contrib/hbziparch/hbzipnew.cpp
+     * One variable rename missed from previous commit.
+
+2008-09-01 12:33 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbziparch/hbziparc.h
+   * contrib/hbziparch/hbziparc.c
+   * contrib/hbziparch/hbzipnew.cpp
+     ! Fixed several potential leaks.
+     % Optimized out several unnecessary allocations.
+     % Optimized out several unnecessary string copying.
+     % Cleaned all global variables.
+     % Cleaned all static variables in C code.
+     % Using HB_ERR_FUNCNAME.
+     ! Returning empty values instead of NULL.
+     ! Fixed potential GPFs.
+     ! Using manifest constants instead of literals.
+     * Cleaned header file and constant usage.
+     * Other minor fixes and optimizations.
+     * Formatting.
+     ; The code is still a mess.
+
+2008-09-01 09:42 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbziparch/hbziparc.h
+   * contrib/hbziparch/hbziparc.c
+   * contrib/hbziparch/hbzipnew.cpp
+   * contrib/hbziparch/hbxdirec.c
+     % Cleanups: Unused headers, types, one #define, 
+       one BCC582 warning, one Linux/GCC/MinGW #ifdef oddness.
+     ; NOTE: Need to test this on Linux.
+
+   * utils/hbmake/hbmake.prg
+     ; Applied cleanup and fix patch from Bill Robertson:
+     ! LIBFILES -> HBLIBS
+       EXTERNLIB -> CONTRIBLIB
+       EXTLIBFILES -> CONTRIBLIBS
+     * ALLLIB = $(USERLIBS) $(LIBFILES) ... ->
+       ALLLIB = $(USERLIBS) $(CONTRIBLIBS) $(HBLIBS) ...
+     % Removed CONTRIBLIB = YES from makefile output as it did nothing.
+     % Combined two ShowHelp() secs into one and put together 
+       with ShowCredits() at top of program.
+     % Simplied Flag checks somewhat but it's still awkward. I fixed 
+       a mingw bug where a flag was set to .t. in one place and .f. 
+       later because of inconsistent use of letters, capitals/lower, etc. 
+       Still lots of checking for lower(...), upper(...), etc. of the 
+       command-line params.
+     * Changed Help screen to reflect current program options better.
+     * Made some alert message a little clearer and minor formatting.
+     ! Initalized s_nMakeFileHandle to F_ERROR and reset it to F_ERROR 
+       whenever the file was closed. Didn't seem to be a current problem, 
+       just good practice.
+
+   * utils/hbmake/hbmake.prg
+     * Removed separate /credits switch and added content to 
+       main help screen.
+     % Removed a few CLS commands from command-line orientated 
+       places.
+     % Removed -elx and -ex from help screen (as these are the 
+       same as -el and -e). They are still accepted though.
+
+   * source/compiler/hbusage.c
+     + Added Bill Robertson to credits list.
+
+2008-08-31 16:59 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * hbwhat32/whtdate.c
+   * hbwhat32/whthead.c
+   * hbwhat32/whtbrsh.c
+   * hbwhat32/whtgdi.c
+   * hbwhat32/whtmisc.c
+   * hbwhat32/whttab.c
+   * hbwhat32/whtbmp.c
+   * hbwhat32/whtkbrd.c
+     % Using hb_arraySet*() instead of hb_arraySet()
+
+2008-08-31 16:26 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * utils/hbdoc/bld_vc.bat
+   * utils/hbmake/bld_vc.bat
+     % Minor cleanup.
+
+   * contrib/hbwhat32/whticon.c
+   * contrib/hbwhat32/whtcret.c
+   * contrib/hbwhat32/whthead.c
+   * contrib/hbwhat32/whtmous.c
+   * contrib/hbwhat32/whtmeta.c
+   * contrib/hbwhat32/whtrgn.c
+   * contrib/hbwhat32/whttbar.c
+   * contrib/hbwhat32/whtrect.c
+   * contrib/hbwhat32/whtbrsh.c
+   * contrib/hbwhat32/whtgdi.c
+   * contrib/hbwhat32/whtview.c
+   * contrib/hbwhat32/whtlv.c
+   * contrib/hbwhat32/whtwnd.c
+   * contrib/hbwhat32/whtcomm.c
+   * contrib/hbwhat32/whtprn.c
+   * contrib/hbwhat32/whttab.c
+   * contrib/hbwhat32/whtfont.c
+   * contrib/hbwhat32/whtbmp.c
+   * contrib/hbwhat32/whtpen.c
+   * contrib/hbwhat32/whtkbrd.c
+   * contrib/hbwhat32/whttext.c
+   * contrib/hbwhat32/whtdc.c
+   * contrib/hbwhat32/whtdraw.c
+   * contrib/hbnf/fttext.c
+   * contrib/hbnf/peek.c
+   * contrib/hbnf/ontick.c
+   * contrib/hbnf/origin.c
+   * contrib/hbnf/mouse.c
+   * contrib/hbnf/poke.c
+     ! Fixed to use Harbour API instead of legacy Clipper API.
+
+   + contrib/hbbtree/tests/bld_b32.bat
+   + contrib/hbbtree/tests/bld_vc.bat
+   + contrib/hbbtree/tests/bld_djgp.bat
+   - contrib/hbbtree/tests/mktest.bat
+   * contrib/hbbtree/tests/ctest.c
+     + Added make files.
+     * Minor cleanups.
+     ; One of the tests fail.
+
+   * contrib/hbbtree/tbtree.prg
+     ! Fixed crash due to scope problem in class declaration.
+
+   * contrib/examples/pe/editorlo.c
+     ! #include <x> -> #include "x" for Harbour headers.
+
+2008-08-31 10:53 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbole/oleauto.prg
+   * contrib/hbw32/w32_tole.prg
+     * MessageBox() calls converted to Alert()s.
+       A #translate added for the to be reconverted to MessageBox(), 
+       since I'm not sure why should we use MessageBox()es here?
+       IMO it'd be better to throw RTEs, or handle these cases more 
+       "natively". Opinions?
+
+   * contrib/hbole/oleauto.prg
+     + Modified to generate RTE when the object could not 
+       be created, so that it works more like OLE in hbw32.lib, 
+       and the test doesn't crash in this case. I don't have 
+       Excel, and this is what I could fix without it.
+
+   * contrib/hbw32/w32_tole.prg
+   * contrib/hbw32/w32_ole.c
+     ! Typos, minor formatting.
+
+   * common.mak
+   * source/hbpcre/Makefile
+   * source/hbpcre/cnv_hb2o.bat
+   * source/hbpcre/cnv_o2hb.bat
+   - source/hbpcre/ucpinter.h
+   - source/hbpcre/ucptable.h
+   - source/hbpcre/pcrefind.c
+   + source/hbpcre/pcreucd.c
+   * source/hbpcre/pcrevutf.c
+   * source/hbpcre/pcre.h
+   * source/hbpcre/pcreconf.c
+   * source/hbpcre/pcreinfo.c
+   * source/hbpcre/pcremktb.c
+   * source/hbpcre/config.h
+   * source/hbpcre/pcrenewl.c
+   * source/hbpcre/pcreoutf.c
+   * source/hbpcre/chartabs.c
+   * source/hbpcre/pcrerefc.c
+   * source/hbpcre/pcreget.c
+   * source/hbpcre/pcrefinf.c
+   * source/hbpcre/pcretryf.c
+   * source/hbpcre/pcreexec.c
+   * source/hbpcre/pcreinal.h
+   * source/hbpcre/pcretabs.c
+   * source/hbpcre/pcredfa.c
+   * source/hbpcre/pcrever.c
+   * source/hbpcre/pcrecomp.c
+   * source/hbpcre/pcrexcls.c
+   * source/hbpcre/pcrestud.c
+   * source/hbpcre/ucp.h
+     + Updated to PCRE 7.8 RC1
+       (will be updated to final pretty soon)
+       This version contains the small patches we 
+       so far had locally in Harbour. Thanks to 
+       Philip Hazel for applying them.
+
+2008-08-30 11:58 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * include/hbsetup.ch
+     + Added HB_LEGACY_OFF macro to turn off HB_LEGACY_LEVEL.
+
+   * utils/hbmake/hbmake.prg
+     * Two minor cleanups.
+
+   * doc/en/hb_apiit.txt
+   * source/vm/eval.c
+     * PEVALINFO -> PHB_EVALINFO
+     * EVALINFO -> HB_EVALINFO
+
+   * contrib/hbct/ctwin.c
+   * contrib/hbct/keyset.c
+   * contrib/hbct/misc3.c
+   * contrib/hbnf/numlock.c
+   * contrib/hbnf/shift.c
+   * contrib/hbnf/alt.c
+   * contrib/hbnf/ctrl.c
+   * contrib/hbnf/caplock.c
+     * GTI_* -> HB_GTI_*
+
+   * source/rtl/spfiles.c
+     * FHANDLE -> HB_FHANDLE
+
+2008-08-29 14:45 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * utils/hbmake/hbmake.prg
+     ; Applied patch created by Bill Robertson:
+     * The following functions aren't used in hbmake and were removed:
+       FindCfile(), TestforPrg(), AsDll(), ExtenPrg(), GetMakeDir()
+
+2008-08-29 11:29 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbcompdf.h
+  * harbour/source/compiler/hbmain.c
+  * harbour/source/compiler/harbour.yyc
+  * harbour/source/compiler/harbour.y
+    ! removed all classes and functions static declarations
+    ! fixed cleanup code for classes and functions declarations
+
+2008-08-29 10:40 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   + config/w32/mingwce.cf
+   - config/w32/cemgw.cf
+   * harbour-ce-spec
+   * make_xmingwce.sh
+   * bin/hb-mkslib.sh
+   * bin/hb-func.sh
+   * bin/postinst.sh
+   * source/vm/Makefile
+     * Renamed 'cemgw' HB_COMPILER name to 'mingwce' 
+       for consistency.
+
+2008-08-29 10:35 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * ChangeLog
+     ! Minor typo.
+
+   * utils/hbmake/hbmake.prg
+     % Minor cleanup.
+
+   * source/common/hbver.c
+     * Further cleanup of constant usage.
+     + Changed Borland to CodeGear to BCC5.9 and above.
+       (borrowed from xhb / Andi Jahja)
+
+   * config/w32/gcc.cf
+   * config/w32/dm.cf
+     * contrib syslibs moved to separate lines.
+
+2008-08-28 20:17 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * make_vc.bat
+   - make_vcce.bat
+     + Added some additional information how to create WinCE 
+       builds using make_vc.bat.
+     - Deleted make_vcce.bat
+
+2008-08-28 20:00 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * source/rtl/gtchrmap.c
+   * source/rtl/hbgtcore.c
+   * source/vm/hvm.c
+     + Added three TOFIXes regarding namespace violations.
+       s_pszLinkedMain        -> hb_vm_pszLinkedMain
+       s_defaultGT            -> hb_gt_szNameDefault
+       s_szDefaultCharMapFile -> hb_gt_szCharMapFileDefault
+       TOFIX: These should be fixed in 1.1 (or maybe even in 
+              1.0.1 if this isn't such a big problem for 3rd 
+              parties).
+
+2008-08-28 18:31 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/gtwvg/wvgutils.c
+     ! Fixed to use documented Harbour API hb_winmainArgGet() 
+       instead of the (since cleaned away) undocumented Harbour 
+       global variable hb_hInstance.
+
+2008-08-28 12:22 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbfimage/fi_winfu.c
+     ! Added CBM_INIT definition for Pellec C in WinCE mode.
+       [UNDONE. CreateDIBitmap() also doesn't exist in WinCE. ]
+
+2008-08-28 12:20 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * make_vc.bat
+     * Updated usage text.
+
+   * include/hbwince.h
+     ! Fix for Pelles C 5.0 in WinCE/ARM mode.
+
+   * include/hbsetup.h
+     + Detecting Pelles C 5.0 in ARM mode as HB_WINCE.
+
+   * ChangeLog
+     - Removed some advices not valid anymore from previous entry.
+
+   * contrib/mtpl_b32.bat
+   * contrib/mtpl_vc.bat
+     * Synced with /make_*.bat so that the name of the .mak 
+       file is now hard-wired instead of being HB_CC_NAME dependent.
+       This way contribs may be built for WinCE in the future 
+       (this still needs adding WinCE support to mtpl_vc.mak).
+
+   * contrib/mtpl_gcc.sh
+     + Darwin autodetection was missing.
+
+   * contrib/hbfimage/fi_winfu.c
+     ! Added CBM_INIT definition for Pellec C in WinCE mode.
+
+   * source/rtl/gtclip.c
+     + Added GMEM_MOVEABLE definition for Pelles C in WinCE mode.
+
+   + config/w32/poccce.cf
+     + Added Pellec C WinCE make file.
+
+   + config/w32/msvcce.cf
+     + Added WinCE GNU make file for MSVC. Untested, probably not working, 
+       this is just a small step to make the GNU-make equal in feature 
+       with the non-GNU make one.
+
+   * config/w32/bcc32.cf
+     * Minor sync of C options with non-GNU make file.
+
+   * config/w32/msvc.cf
+     * Attempt to sync C options with non-GNU make file.
+
+   * contrib/hbfbird/firebird.c
+     * Minor formatting.
+
+   ; NOTE1: For better consistency I'd like to rename GNU make compiler names
+            'mingw32' to 'mingw' (they've dropped '32' long ago), and 
+            'cemgw' to 'mingwce'.
+   ; NOTE2: Pelles C WinCE build still generates following errors:
+       POLINK: error: Unresolved external symbol 'GetModuleFileNameA'.
+       POLINK: error: Unresolved external symbol 'RegOpenKeyExA'.
+       ../../math.c(605): error #3120: [asm] Symbol 'inf' is undefined.
+       contrib\gtwvg\gtwvg.h(78): fatal error #1035: Can't find include file <olectl.h>.
+       ../../ctmath2.c(324): error #3120: [asm] Symbol 'inf' is undefined.
+       ../../win32.c(70): error #2048: Undeclared identifier 'CS_OWNDC'.
+       ../../win32.c(75): error #2048: Undeclared identifier 'IDI_APPLICATION'.
+       ../../win32.c(75): error #2140: Type error in argument 2 to 'LoadIconA'; found 'int', expected 'const char *'.
+       ../../win32.c(181): error #2048: Undeclared identifier 'MFS_DISABLED'.
+       ../../win32.c(194): warning #2027: Missing prototype for 'InsertMenuItem'.
+       ../../win32.c(219): warning #2027: Missing prototype for 'SetMenu'.
+       ../../odbc.c(94): fatal error #1035: Can't find include file <sql.h>.
+       contrib\hbsqlit3\sqlite3\sqlite3.c(9936): warning #2027: Missing prototype for 'localtime'. [ ... ]
+       ../../w32_ole.c(403): error #2152: Unknown field 'pllVal' of 'union (no name)'.
+       ../../w32_ole.c(403): error #2168: Operands of = have incompatible types 'int' and 'long long int *'.
+       ../../w32_ole.c(408): error #2152: Unknown field 'llVal' of 'union (no name)'.
+       ../../w32_ole.c(786): error #2152: Unknown field 'pllVal' of 'union (no name)'.
+       ../../w32_ole.c(786): error #2144: Type error: pointer expected.
+       ../../w32_ole.c(792): error #2152: Unknown field 'llVal' of 'union (no name)'.
+       ../../hbsyslog.c(31): error #2140: Type error in argument 2 to 'RegisterEventSourceW'; found 'const char *', expected 'const wchar_t *'.
+       ../../hbsyslog.c(97): error #2140: Type error in argument 8 to 'ReportEventW'; found 'const char * *', expected 'const wchar_t * *'.
+       ../../firebird.c(448): error #2149: Undefined size for 'times' with type '(incomplete) struct tm'.
+       ../../firebird.c(479): error #2152: Unknown field 'tm_year' of '(incomplete) struct tm'.
+       ../../firebird.c(480): error #2152: Unknown field 'tm_mon' of '(incomplete) struct tm'.
+       ../../firebird.c(481): error #2152: Unknown field 'tm_mday' of '(incomplete) struct tm'.
+       ../../firebird.c(482): error #2152: Unknown field 'tm_hour' of '(incomplete) struct tm'.
+       ../../firebird.c(483): error #2152: Unknown field 'tm_min' of '(incomplete) struct tm'.
+       ../../firebird.c(484): error #2152: Unknown field 'tm_sec' of '(incomplete) struct tm'.
+       ../../firebird.c(493): error #2152: Unknown field 'tm_year' of '(incomplete) struct tm'.
+       ../../firebird.c(493): error #2152: Unknown field 'tm_mon' of '(incomplete) struct tm'.
+       ../../firebird.c(493): error #2152: Unknown field 'tm_mday' of '(incomplete) struct tm'.
+       ../../firebird.c(502): error #2152: Unknown field 'tm_hour' of '(incomplete) struct tm'.
+       ../../firebird.c(503): error #2152: Unknown field 'tm_min' of '(incomplete) struct tm'.
+       ../../firebird.c(504): error #2152: Unknown field 'tm_sec' of '(incomplete) struct tm'.
+       ../../fi_winfu.c(97): warning #2027: Missing prototype for 'CreateDIBitmap'.
+       ../../fi_winfu.c(98): error #2048: Undeclared identifier 'CBM_INIT'.
+       ../../fi_winfu.c(99): error #2168: Operands of = have incompatible types 'HBITMAP' and 'int'.
+       ../../fi_winfu.c(150): warning #2027: Missing prototype for 'GetDIBits'.
+       [ lots of them with hbmysql ]
+
+2008-08-28 01:20 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * make_b32.bat
+   * make_vc.bat
+     * exit_err.bat -> hbmkpost.bat
+       Please update your environment if you used this feature.
+       INCOMPATIBLE.
+
+   * make_vcce.bat
+     ! Adjusted to latest change.
+
+   * make_gnu.bat
+     * Minor formatting.
+
+2008-08-28 01:14 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * make_b32.bat
+   * make_vc.bat
+     ! Made makefile name independent of the HB_CC_NAME envvar.
+       NOTE: If this poses a limitation for someone, please shout, 
+             we may add an additional variable to control/override 
+             makefile name (but it cannot directly depend on 
+             HB_CC_NAME now that make_vc.mak and make_vcce.mak 
+             got merged.)
+
+2008-08-27 21:56 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   + config/w32/poccce.cf
+     + Added POCC GNU make file for WinCE.
+       It has quite some errors yet.
+
+2008-08-27 21:30 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * make_vcce.bat
+     ! Fixed.
+
+   * contrib/rddads/make_vc.bat
+     ! Undone previous modification. Quotes are needed to support 
+       dirs containing spaces (this is actually the case for the 
+       default install dir of ACE SDK).
+
+2008-08-27 17:05 UTC+0100 JF Lefebvre (Mafact) (jfl at mafact dot com)
+   * contrib/rddads/make_vc.bat
+     * small typo in set _HB_LIB_INSTALL="%HB_LIB_INSTALL%
+       _HB_LIB_INSTALL=%HB_LIB_INSTALL% 
+
+2008-08-27 12:05 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * source/compiler/hbcomp.c
+     * Changed the default -gc generation mode for real.
+
+2008-08-27 11:22 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/examples/rdddbt/dbfdbt1.c
+   * contrib/gtalleg/gtalleg.c
+   * contrib/gtwvg/gtwvg.c
+   * contrib/hbbmcdx/bmdbfcdx.c
+   * contrib/hbbtree/hb_btree.c
+   * contrib/hbct/ctwin.c
+   * contrib/rddads/ads1.c
+   * source/codepage/cp_tpl.c
+   * source/codepage/cpbg866.c
+   * source/codepage/cpbgiso.c
+   * source/codepage/cpbgmik.c
+   * source/codepage/cpbgwin.c
+   * source/codepage/cpcs852.c
+   * source/codepage/cpcsiso.c
+   * source/codepage/cpcskam.c
+   * source/codepage/cpcswin.c
+   * source/codepage/cpde850.c
+   * source/codepage/cpdeiso.c
+   * source/codepage/cpdewin.c
+   * source/codepage/cpel737.c
+   * source/codepage/cpelwin.c
+   * source/codepage/cpes850.c
+   * source/codepage/cpesmwin.c
+   * source/codepage/cpeswin.c
+   * source/codepage/cpfr850.c
+   * source/codepage/cphr1250.c
+   * source/codepage/cphr437.c
+   * source/codepage/cphr852.c
+   * source/codepage/cphu852.c
+   * source/codepage/cphu852s.c
+   * source/codepage/cphuiso.c
+   * source/codepage/cphuisos.c
+   * source/codepage/cphuwin.c
+   * source/codepage/cphuwins.c
+   * source/codepage/cpit437.c
+   * source/codepage/cpit850.c
+   * source/codepage/cpitisb.c
+   * source/codepage/cpitiso.c
+   * source/codepage/cpltwin.c
+   * source/codepage/cppl852.c
+   * source/codepage/cppliso.c
+   * source/codepage/cpplmaz.c
+   * source/codepage/cpplwin.c
+   * source/codepage/cppt850.c
+   * source/codepage/cpptiso.c
+   * source/codepage/cpru866.c
+   * source/codepage/cpruiso.c
+   * source/codepage/cprukoi.c
+   * source/codepage/cpruwin.c
+   * source/codepage/cpsk852.c
+   * source/codepage/cpskiso.c
+   * source/codepage/cpskkam.c
+   * source/codepage/cpskwin.c
+   * source/codepage/cpsl437.c
+   * source/codepage/cpsl852.c
+   * source/codepage/cpsliso.c
+   * source/codepage/cpslwin.c
+   * source/codepage/cpsrwin.c
+   * source/codepage/cpsv850.c
+   * source/codepage/cpsvclip.c
+   * source/codepage/cpsvwin.c
+   * source/codepage/cptr857.c
+   * source/codepage/cptrwin.c
+   * source/codepage/cpua866.c
+   * source/codepage/cpuakoi.c
+   * source/codepage/cpuawin.c
+   * source/lang/msg_tpl.c
+   * source/lang/msgbe866.c
+   * source/lang/msgbewin.c
+   * source/lang/msgbg866.c
+   * source/lang/msgbgiso.c
+   * source/lang/msgbgmik.c
+   * source/lang/msgbgwin.c
+   * source/lang/msgca.c
+   * source/lang/msgcs852.c
+   * source/lang/msgcsiso.c
+   * source/lang/msgcskam.c
+   * source/lang/msgcswin.c
+   * source/lang/msgde.c
+   * source/lang/msgdewin.c
+   * source/lang/msgel.c
+   * source/lang/msgelwin.c
+   * source/lang/msgeo.c
+   * source/lang/msges.c
+   * source/lang/msgeswin.c
+   * source/lang/msgeu.c
+   * source/lang/msgfr.c
+   * source/lang/msggl.c
+   * source/lang/msghe862.c
+   * source/lang/msghewin.c
+   * source/lang/msghr437.c
+   * source/lang/msghr852.c
+   * source/lang/msghriso.c
+   * source/lang/msghrwin.c
+   * source/lang/msghu852.c
+   * source/lang/msghucwi.c
+   * source/lang/msghuiso.c
+   * source/lang/msghuwin.c
+   * source/lang/msgid.c
+   * source/lang/msgis850.c
+   * source/lang/msgit.c
+   * source/lang/msgko.c
+   * source/lang/msgltwin.c
+   * source/lang/msgnl.c
+   * source/lang/msgpl852.c
+   * source/lang/msgpliso.c
+   * source/lang/msgplmaz.c
+   * source/lang/msgplwin.c
+   * source/lang/msgpt.c
+   * source/lang/msgro.c
+   * source/lang/msgru866.c
+   * source/lang/msgrukoi.c
+   * source/lang/msgruwin.c
+   * source/lang/msgsk852.c
+   * source/lang/msgskiso.c
+   * source/lang/msgskkam.c
+   * source/lang/msgskwin.c
+   * source/lang/msgsl437.c
+   * source/lang/msgsl852.c
+   * source/lang/msgsliso.c
+   * source/lang/msgslwin.c
+   * source/lang/msgsr852.c
+   * source/lang/msgsriso.c
+   * source/lang/msgsrwin.c
+   * source/lang/msgtr857.c
+   * source/lang/msgtrwin.c
+   * source/lang/msgua866.c
+   * source/lang/msguakoi.c
+   * source/lang/msguawin.c
+   * source/lang/msgzhb5.c
+   * source/lang/msgzhgb.c
+   * source/pp/pplib3.c
+   * source/rdd/dbf1.c
+   * source/rdd/dbfcdx/dbfcdx1.c
+   * source/rdd/dbffpt/dbffpt1.c
+   * source/rdd/dbfntx/dbfntx1.c
+   * source/rdd/delim1.c
+   * source/rdd/sdf1.c
+   * source/rtl/gt_tpl/gt_tpl.c
+   * source/rtl/gtcgi/gtcgi.c
+   * source/rtl/gtcrs/gtcrs.c
+   * source/rtl/gtdos/gtdos.c
+   * source/rtl/gtgui/gtdef.c
+   * source/rtl/gtgui/gtgui.c
+   * source/rtl/gtos2/gtos2.c
+   * source/rtl/gtpca/gtpca.c
+   * source/rtl/gtsln/gtsln.c
+   * source/rtl/gtstd/gtstd.c
+   * source/rtl/gttrm/gttrm.c
+   * source/rtl/gtxwc/gtxwc.c
+   * source/rtl/hbregex.c (added as separate, next commit)
+     ! Fix for MSVC 64-bit C mode startup procedure.
+
+2008-08-27 03:57 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * utils/hbmake/hbmake.prg
+     ; Applied patches made by Bill Robertson. (Thanks!)
+     % Removed Function C( STRING ) as it was only used in the function, 
+       Attention(), to center a line on the screen.
+     % Removed Static Function IsWin() since it wasn't being used.
+     ! Replace all remaining calls to hb_OSNewLine() with s_cEOL.
+     ! Changed some calls from OutStd() to OutErr() since they were 
+       essentially errors mesages.
+     % Replaced some long series of FWrite()s with a single FWrite() 
+       where convientent so I could see what was being written to 
+       the makefile easier.
+     ! Replaced some comparisons from '=' to '=='.
+
+2008-08-27 02:47 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * source/rtl/filesys.c
+     ! Disabled hb_fsPOpen() body for __CYGWIN__.
+       This way __CYGWIN__ compiles cleanly.
+       (although I'm not sure how important Cygwin support is)
+
+2008-08-27 01:46 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * source/rtl/hbinet.c
+     ! Bad workaround for the '__WSAFDIsSet unresolved' problem 
+       in Pelles C 5.00.13 AMD64 mode, to make final executables 
+       link at all. Some hbinet.c features (or the whole module) 
+       won't properly work though.
+       This possible bug has been reported on the Pellec C forums:
+       http://forum.pellesc.de/index.php?topic=2590.0
+
+2008-08-27 00:54 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * include/hbinit.h
+   * source/rtl/gtwin/gtwin.c
+   * source/rtl/gtwvt/gtwvt.c
+   * source/compiler/genc.c
+     + Enabled init functions for MSVC 64-bit in C mode.
+     ; NOTE: You get the idea, please comment. If there is 
+             no simpler/easier/shorter way to achieve this, 
+             I'll update the rest 150 files, too.
+
+2008-08-26 22:41 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/gtalleg/Makefile
+     * Excluded for POCC and XCC.
+
+   * contrib/gtalleg/ssf.h
+     ! Setting platform before include Allegro headers.
+       (I'm not sure this is necessary for all platforms, 
+       but it surely is for BCC and MinGW).
+
+   * contrib/gtwvg/gtwvg.h
+     ! __MINGW__ -> __MINGW32__. __MINGW__ is not #defined by MinGW.
+
+2008-08-26 22:23 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbct/atnum.c
+     ! Workaround for PelleC 5.00.1 bug in AMD64 mode.
+       'fatal error: Internal error: reduce_tree()'
+       I didn't test if it actually works, but at least now 
+       is compiles.
+       Bug reported on Pelles C forum.
+
+2008-08-26 22:13 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * source/common/hbver.c
+     * hb_verCompiler() buffer size cleanup.
+
+   * source/rtl/hbinet.c
+     * Minor formatting.
+
+   * utils/hbmake/hbmake.prg
+     * PRG -> .prg on some screen messages.
+
+   * config/w32/xcc.cf
+   * config/w32/pocc.cf
+     + Added ws2_32.lib. Didn't solve the problem, but 
+       as per MS docs of some functions we use, we should 
+       use this instead of wsock2 (everywhere actually) 
+       [and ws2 instead of winsock for WinCE]. Someone pls 
+       correct me if I'm wrong, or if there is any reason 
+       we're using both and/or the older one?
+
+   * config/w32/pocc.cf
+     - Removed C switch -Zx (Enable Pelles C extensions).
+       We don't need this.
+
+2008-08-26 15:14 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * source/common/hbver.c
+     + Show bitness for all (non-DJGPP) compilers.
+     ! Fixed to show "Windows Server 2003 / XP x64" when 
+       Windows 5.2 is detected.
+
+2008-08-26 13:24 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * source/compiler/hbmain.c
+     ! Text casing fixed in some warning messages.
+     ! Attempted to update hardcoded declarations for TGET methods.
+       Some of them were removed, for some of them the parameter list 
+       was updated to be in sync with current tget.prg.
+
+   * contrib/gtalleg/gtalleg.c
+   * contrib/gtwvg/gtwvg.c
+   * contrib/hbbmcdx/bmdbfcdx.c
+   * contrib/hbbmcdx/hbbmcdx.h
+   * contrib/hbbtree/hb_btree.c
+   * contrib/hbct/ctnet.c
+   * contrib/hbct/ctstrfil.c
+   * contrib/hbct/ctwin.c
+   * contrib/hbcurl/hbcurl.c
+   * contrib/hbgd/gdwrp.c
+   * contrib/hbmzip/hbmzip.c
+   * contrib/hbnf/fttext.c
+   * contrib/hbtip/utils.c
+   * contrib/xhb/freadlin.c
+   * contrib/xhb/hbxml.c
+   * contrib/xhb/hbxml.h
+   * doc/codestyl.txt
+   * doc/en/garbage.txt
+   * doc/en/hb_apifs.txt
+   * include/hbapigt.h
+   * include/hbchksum.h
+   * include/hbdbsort.h
+   * include/hbgtcore.h
+   * include/hbrddcdx.h
+   * include/hbrdddbf.h
+   * include/hbrdddel.h
+   * include/hbrddntx.h
+   * include/hbrddsdf.h
+   * include/hbset.h
+   * include/hbsxfunc.h
+   * source/rdd/dbf1.c
+   * source/rdd/dbfcdx/dbfcdx1.c
+   * source/rdd/dbffpt/dbffpt1.c
+   * source/rdd/dbfntx/dbfntx1.c
+   * source/rdd/dbsql.c
+   * source/rdd/hbsix/sxcompr.c
+   * source/rdd/hbsix/sxsem.c
+   * source/rdd/hsx/hsx.c
+   * source/rtl/console.c
+   * source/rtl/copyfile.c
+   * source/rtl/fssize.c
+   * source/rtl/fstemp.c
+   * source/rtl/gt_tpl/gt_tpl.c
+   * source/rtl/gtapi.c
+   * source/rtl/gtcgi/gtcgi.c
+   * source/rtl/gtcrs/gtcrs.c
+   * source/rtl/gtdos/gtdos.c
+   * source/rtl/gtos2/gtos2.c
+   * source/rtl/gtpca/gtpca.c
+   * source/rtl/gtsln/gtsln.c
+   * source/rtl/gtstd/gtstd.c
+   * source/rtl/gttrm/gttrm.c
+   * source/rtl/gtwin/gtwin.c
+   * source/rtl/gtwvt/gtwvt.c
+   * source/rtl/gtxwc/gtxwc.c
+   * source/rtl/hbgtcore.c
+   * source/rtl/hbmd5.c
+   * source/rtl/isprint.c
+   * source/rtl/memofile.c
+   * source/rtl/philes.c
+   * source/rtl/set.c
+   * source/vm/memvars.c
+   * source/vm/runner.c
+   * utils/hbdoc/hbdfrdln.c
+   * utils/hbmake/hbmfrdln.c
+     * FHANDLE -> HB_FHANDLE
+     * hbct: HB_ITEM_PTR -> PHB_ITEM
+
+2008-08-26 12:50 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/compiler/hbmain.c
+    ! reset class and functions static declarations to avoid GPF
+      when more then one file is compiled with -w3 switch
+      NOTE: Whole this code will have to be removed and written
+            from scratch
+
+2008-08-26 11:57 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/compiler/hbmain.c
+    ! fixed GPF when more then one file was compiled with -w3 switch
+
+2008-08-26 10:35 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   - source/rtl/gtalleg
+   + contrib/gtalleg
+   * TODO
+   * doc/dirstruc.txt
+   * include/hbgtcore.h
+   * contrib/gtalleg/Makefile
+   * contrib/gtalleg/make_b32.bat
+   * contrib/gtalleg/make_vc.bat
+   * contrib/gtalleg/make_gcc.sh
+   * contrib/make_b32_all.bat
+   * contrib/make_vc_all.bat
+   * contrib/make_gcc_all.sh
+   * contrib/Makefile
+   * config/hpux/gcc.cf
+   * config/hpux/global.cf
+   * config/darwin/gcc.cf
+   * config/darwin/global.cf
+   * config/dos/global.cf
+   * config/linux/gcc.cf
+   * config/linux/global.cf
+   * config/sunos/gcc.cf
+   * config/sunos/global.cf
+   * config/bsd/gcc.cf
+   * config/bsd/global.cf
+   * config/w32/global.cf
+   * harbour-ce-spec
+   * harbour-w32-spec
+   * harbour.spec
+     * GTALLEG moved to contrib to make it possible to build 
+       using the non-GNU make system, also to align the build 
+       process with other 3rd party package dependent parts 
+       of Harbour.
+       HB_INC_ALLEGRO or HB_DIR_ALLEGRO may be used to point 
+       to Allegro package directory. This is generally necessary 
+       on non-*nix systems.
+     ; NOTE: Review and test build processes and modified files, 
+             and unmodified, but potentially related files:
+             bin/hb-func.sh
+             make_gnu.sh
+             make_rpm.sh
+             make_rpmce.sh
+             make_rpmw32.sh
+
+2008-08-26 09:00 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * include/hbsetup.h
+     + Added small table (partly from MS KB) about _MSC_VER 
+       values and MS product names, as we know them.
+
+   * common.mak
+   * utils/hbdoc/Makefile
+   * utils/hbdoc/bld_b32.bat
+   * utils/hbdoc/bld_vc.bat
+   * utils/hbdoc/hbdoc.prg
+   * utils/hbdoc/genasc.prg
+   * utils/hbdoc/genchm.prg
+   * utils/hbdoc/genhpc.prg
+   * utils/hbdoc/genhtm.prg
+   * utils/hbdoc/genng.prg
+   * utils/hbdoc/genos2.prg
+   * utils/hbdoc/genpdf1.prg
+   * utils/hbdoc/genrtf.prg
+   * utils/hbdoc/gentrf.prg
+   - utils/hbdoc/rtf.prg
+   - utils/hbdoc/os2.prg
+   - utils/hbdoc/teeasc.prg
+   - utils/hbdoc/ng.prg
+   - utils/hbdoc/html.prg
+   - utils/hbdoc/troff.prg
+     ! Removed non-ASCII drawing chars from comments.
+     % Removed STATIC var from THTML class.
+     % Merged separate support classes to their gen*.prg.
+
+2008-08-26 08:10 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * utils/hbmake/hbmake.prg
+     ! Some liblists synced with xhb / hbmake.
+
+2008-08-26 02:43 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/xhb/hbcrypt.c
+   * contrib/hbw32/tprinter.c
+   * contrib/hbw32/w32_ole.c
+   * contrib/hbw32/w32_prn.c
+   * contrib/hbfbird/tests/testapi.c
+   * contrib/hbziparch/hbziparc.c
+   * contrib/hbziparch/hbzipnew.cpp
+   * contrib/hbhpdf/harupdf.c
+   * contrib/hbfimage/fi_winfu.c
+   * contrib/hbfimage/fi_wrp.c
+   * contrib/hbgf/hbgfw32/win32.c
+   * contrib/hbgf/hbgfos2/os2pm.c
+   * source/rtl/filesys.c
+   * utils/hbtest/rt_miscc.c
+     * // -> ANSI comments.
+     ; NOTE: hbwhat32 and gtwvg remain with //.
+
+2008-08-26 00:43 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * make_vc.bat
+   * make_vcce.bat
+   * make_vc.mak
+   - make_vcce.mak
+     % make_vcce functionality merged into make_vc.
+     * make_vcce.bat changed to a stub calling make_vc.bat.
+     ; WinCE builds can be triggered using envvars:
+       set HB_BUILD_WINCE=yes
+       set HB_CC_NAME=vcce
+       Please update your environment and test WinCE builds 
+       after this change.
+
+   * make_vc.mak
+   * contrib/mtpl_vc.mak
+     * Changed HB_VISUALC_VER default to 80.
+       It was 60 for non-WinCE builds and contribs, 
+       80 for WinCE builds. Now it is 80 for all 
+       these cases.
+
+   * make_b32.mak
+     * Minor comment visual sync with make_vc.mak.
+
+2008-08-25 23:30 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * doc/cmdline.txt
+   * doc/hrb_faq.txt
+   * doc/en/cmdline.txt
+   * doc/en/dir.txt
+   * doc/en/file.txt
+   * doc/en/set.txt
+   * doc/es/cmdline.txt
+   * doc/es/dir.txt
+   * doc/es/file.txt
+   * doc/whatsnew.txt
+   * contrib/hbct/disk.c
+   * contrib/hbodbc/odbc.txt
+   * contrib/hbwhat32/whtmapi.c
+   * contrib/hbwhat32/whtsys.c
+   * contrib/hbwhat32/whtinet.c
+   * contrib/hbziparch/hbziparc.c
+   * contrib/hbnf/chdir.c
+   * contrib/hbnf/tempfile.prg
+   * contrib/hbnf/ftisprn.c
+   * contrib/hbnf/getenvrn.c
+   * contrib/hbnf/mkdir.c
+   * contrib/hbnf/rmdir.c
+   * contrib/hbpgsql/readme.txt
+   * contrib/hbclipsm/environ.c
+   * contrib/hbclipsm/tests/testenv.prg
+   * contrib/hbgd/tests/gdtest.prg
+   * contrib/hbgd/tests/test_out.prg
+   * contrib/hbgd/tests/gdtestcl.prg
+   * contrib/hbgd/tests/testdpi.prg
+   * contrib/hbgd/tests/counter.prg
+   * contrib/hbtip/thtml.prg
+   * contrib/hbvpdf/hbvpdf.prg
+   * contrib/hbvpdf/tests/pdf_demo.prg
+   * contrib/hbvpdf/hbvpdft.prg
+   * contrib/examples/guestbk/guestbk.prg
+   * contrib/examples/pe/editorlo.c
+   * utils/hbdoc/genos2.prg
+   * utils/hbdoc/hbdoc.prg
+   * utils/hbmake/hbmake.prg
+     ! Filename casing fixes. (nothing critical)
+
+2008-08-25 22:49 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * include/hbsetup.h
+     ! Fixed OS_UNIX_COMPATIBLE
+     + Small comments added.
+     ; NOTE: I'd like to do the following global renames:
+             HB_WINCE     -> HB_OS_WIN_CE
+             HB_OS_WIN_32 -> HB_OS_WIN
+             Opinions? Especially on the latter.
+
+   * include/hbdefs.h
+   * include/hbinit.h
+   * contrib/hbodbc/odbc.c
+     * _WIN64 -> HB_OS_WIN_64
+
+2008-08-25 22:49 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * make_vcce.mak
+     ! Do not explicitly #define HB_WINCE. This should be 
+       autodetected in hbsetup.h.
+
+   * include/hbsetup.h
+     % Minor cleanup.
+
+2008-08-25 22:35 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * include/hbsetup.h
+   * source/common/hbver.c
+     - Removed HB_OS_MAC support. It was nothing more than a simple
+       detection and a static version string, so we didn't lose much.
+
+2008-08-25 22:25 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * make_vcce.mak
+     ! Attempt to fix /MANIFEST:NO warnings for MSVC 6.0.
+     ! Attempt to fix WinCE .dll linking error.
+     ; Jose, another test would be great.
+
+   * make_vc.bat
+   * make_vc.mak
+   * make_vcce.bat
+   * make_vcce.mak
+     * Some syncing and minor fixes in comments.
+
+2008-08-25 21:56 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * make_vcce.mak
+     ! Fixed system library list to not contain gdi32.lib.
+       This lib was previously used for harbour.dll generation, 
+       so I wonder if it was correct, but probably not.
+       It would be great if someone could try an MSVC WinCE .dll
+       build using the option:
+       set HB_BUILD_DLL=yes
+
+2008-08-25 20:44 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * config/w32/mingw32.cf
+     % -mno-cygwin options removed. No longer needed. If someone 
+       wants to compile a mingw build using cygwin, this option 
+       should be explicitly specified as C_USR/L_USR and 'gcc' 
+       should be used as a compiler. But this setup is barely 
+       supported in Harbour, so don't expect it to work.
+       This option may also be needed to compile Harbour using 
+       Cygnus MinGW32 2.95.
+       (Rather, install MinGW 3.x or newer)
+
+2008-08-25 20:36 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * utils/hbmake/hbmake.prg
+     ! Harbour executable detection cleanups and fix to look 
+       into current dir and detect Darwin as a Unix platform.
+       (usable state is still very far)
+
+2008-08-25 20:14 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/contrib/hbw32/w32_ole.c
+    * removed hack with malloc()/free() directly used to avoid
+      memory leak reports - it's not necessary in Harbour.
+
+  * harbour/contrib/hbfbird/firebird.c
+  * harbour/contrib/examples/pp/hbppcore.c
+    ! fixed buffer size calculation in hbstrnc*() functions
+
+  * harbour/contrib/hbziparch/hbzipnew.cpp
+    % use hb_strdup() instead of hb_xgrab()/hb_strncpy()
+
+  * harbour/contrib/hbnf/getenvrn.c
+    ! use hb_xgrab() instead of hb_xalloc() - the returned value
+      was not checked and internal error is for sure better then
+      GPF on NULL pointer
+
+  * harbour/source/rdd/dbfntx/dbfntx1.c
+    ! use memcpy() instead of hb_strncpy() to avoid problems when
+      there is no place for tailing 0
+
+2008-08-25 19:49 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * include/hbsetup.h
+     ! Fixed problem where Darwin autodetection went wrong 
+       between 1.0.0rc2 -> 1.0.0.
+     * HB_OS_DARWIN added to the HB_OS_UNIX detection list.
+       (no functional difference, just makes it more clear.)
+     % HB_OS_OS2_EMX removed. It was unused.
+
+   * source/compiler/gencobj.c
+   * include/hbsetup.h
+     % Removed OS_DOS_COMPATIBLE.
+       It's equivalent to !defined(HB_OS_UNIX_COMPATIBLE).
+
+2008-08-25 18:28 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * source/common/hbver.c
+     ! Fix to commit '2008-07-11 18:20 UTC+0200' which 
+       effectively disabled Vista/2008 detection for 
+       everything but MSVC (>1400) compilers.
+
+2008-08-25 17:13 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * common.mak
+   * utils/hbmake/Makefile
+   * utils/hbmake/bld_b32.bat
+   * utils/hbmake/bld_vc.bat
+   * utils/hbmake/hbmake.prg
+   - utils/hbmake/hbmutils.prg
+     * hbmutils.prg merged into hbmake.prg.
+
+2008-08-25 17:05 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * utils/hbdoc/bld_vc.bat
+   * utils/hbdoc/bld_b32.bat
+   * utils/hbmake/bld_b32.bat
+   * utils/hbmake/bld_vc.bat
+     + Harbour option: /w3
+     - Harbour option: /gc0 (now default)
+
+   * common.mak
+   * utils/hbmake/Makefile
+   * utils/hbmake/bld_b32.bat
+   * utils/hbmake/bld_vc.bat
+   * utils/hbmake/hbmake.prg
+   - utils/hbmake/pickarry.prg
+     % Eliminated all STATIC vars in pickarry.prg.
+     * pickarry.prg merged into hbmake.prg.
+
+2008-08-25 16:37 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * common.mak
+   * utils/hbmake/Makefile
+   * utils/hbmake/bld_b32.bat
+   * utils/hbmake/bld_vc.bat
+   * utils/hbmake/hbmake.prg
+   * utils/hbmake/hbmutils.prg
+   * utils/hbmake/tmake.prg
+   - utils/hbmake/ft_funcs.prg
+   - utils/hbmake/tmake.prg
+     ! Applied patches sent by Bill Robertson.
+       ft_funcs.prg got replaced by standard file handling 
+       functions and HB_FREADLINE(), EOL handling fixes, 
+       typos and other fixes.
+       Many thanks Bill.
+     * Eliminated STATIC var in tmake.prg
+     * Merged tmake.prg into hbmake.prg. (this was the 
+       easiest way to make the new s_aEOL variable available 
+       to this module.)
+     ; Please test.
+
+   * common.mak
+   * utils/hbdoc/Makefile
+   * utils/hbdoc/bld_b32.bat
+   * utils/hbdoc/bld_vc.bat
+   + utils/hbdoc/hbdfrdln.c
+     + Added HB_FREADLINE() to hbdoc, too. It's not 
+       used, just a small help to allow using it here, 
+       too, instead of ft_funcs.prg.
+
+2008-08-25 16:01 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/source/vm/macro.c
+  * harbour/source/vm/hvm.c
+    ! fixed _FIELD indirectly used as alias, f.e.:
+         ? ("_FIELD")->NAME
+      or:
+         M->var := "_FIELD"
+         ? ("&var")->NAME
+
+  * harbour/include/hbclass.ch
+  * harbour/include/common.ch
+    * use a little bit simpler form for HB_SYMBOL_UNUSED()
+
+  * harbour/contrib/hbw32/w32_ole.c
+  * harbour/contrib/hbole/ole2.c
+    ! fixed numeric to pointer casting
+    * accept both pointer and numeric values as window handle
+      for easier code migration
+
+2008-08-25 14:46 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * source/vm/cmdarg.c
+     ! hb_hInstance, hb_hPrevInstance, s_iCmdShow, s_WinMainParam
+       vars marked as 'static', hb_ prefix changed to s_.
+       NOTE: This may pose a problem if some 3rd party code 
+             was relying on the names or the fact that these 
+             vars were exported by incident (since they were 
+             not declared in any Harbour headers.)
+             [INCOMPATIBLE]
+
+   * contrib/hbwhat32/whtmain.c
+     ! Removed WinMain() function and some global vars colliding 
+       with some Harbour core ones.
+     * HINSTANCE(), HPREVINSTANCE(), NCMDSHOW() functions now 
+       use Harbour API calls to retrieve values.
+
+2008-08-25 14:12 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * make_vc.mak
+   * make_vcce.mak
+     % Cleaned list of system libraries for VC. winspool.lib 
+       removed, the rest documented.
+     * Syncing between VC and VCCE.
+     ; NOTE: WinCE system lib list didn't get anything removed 
+             (just added), but nevertheless pls test it.
+
+   * ChangeLog
+     * Some cleanups (regarding my entries).
+
+   * source/pp/hbpp.c
+     ! Comment typo.
+
+   * source/rtl/gtclip.c
+     ! Fixed for __CYGWIN__.
+
+   * contrib/hbw32/dllcall.c
+     ! Disabled asm parts for __CYGWIN__ to make it compile.
+
+   * config/w32/gcc.cf
+     ! Added missing system lib wsock32 for Cygwin.
+
+   * config/w32/gcc.cf
+   * config/w32/cemgw.cf
+   * config/w32/mingw32.cf
+   * config/w32/owatcom.cf
+   * config/w32/pocc.cf
+   * config/w32/watcom.cf
+   * config/w32/xcc.cf
+     * Attempt to sort out system libs needed for core from 
+       those needed for contribs. No system libraries have 
+       been removed or added so far. [ I wonder why we need to 
+       include contrib sys lib dependencies here, when Harbour 
+       GNU make system doesn't build any contrib dependent 
+       executables. Also, some ws2_32.lib seems definitely 
+       superfluous. ]
+
+   ; TOFIX: (for __CYGWIN__)
+     ../../filesys.c: In function `hb_fsPOpen':
+     ../../filesys.c:577: warning: passing arg 1 of `pipe' from incompatible pointer type
+
+2008-08-25 14:09 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/tests/rddtest/rddmktst.prg
+  * harbour/tests/rddtest/adscl52.prg
+  * harbour/tests/rddtest/adscl53.prg
+  * harbour/tests/rddtest/ntxcl52.prg
+  * harbour/tests/rddtest/ntxcl53.prg
+  * harbour/tests/rddtest/cdxcl52.prg
+  * harbour/tests/rddtest/rddtst.prg
+  * harbour/tests/rddtest/cdxcl53.prg
+    * added copyright note. It's my code.
+
+  * harbour/source/debug/dbgentry.c
+    ! strip function name from module name used to initialize
+      global and file wide variables. It fixes presenting file
+      wide static variables in debugger.
+
+  * harbour/source/debug/debugger.prg
+    % minor optimization
+
+2008-08-24 21:10 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbw32/w32_ole.c
+   * contrib/hbole/ole2.c
+     ! 64-bit fix for MessageBox() Harbour level functions.
+     * Formatting.
+
+2008-08-24 20:40 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbole/ole2.c
+     ! Fixed GPF reported by Guillermo.
+       (introduced in 1.0.0rc2 when switching from parnl to 
+       parptr as 64-bit cleanup, two calls were missed from 
+       the update).
+     ! Fixed another potential problem.
+
+2008-08-24 18:18 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * source/compiler/cmdcheck.c
+   * source/compiler/hbusage.c
+     * Changed default .c code generation option to -gc0 (from -gc2).
+       So now the default is 'compact' (faster/smaller) instead of 
+       'verbose' (good to inspect/debug how Harbour pcode works).
+
+   * make_b32.mak
+   * make_gcc.mak
+   * make_vc.mak
+   * make_vcce.mak
+   * contrib/mtpl_b32.mak
+   * contrib/mtpl_gcc.mak
+   * contrib/mtpl_vc.mak
+     % Removed explicit -gc0 switches from Harbour command lines.
+
+   * make_vcce.mak
+     % Removed unnecessary -DHB_WINCE from Harbour command line.
+
+2008-08-24 13:15 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * source/vm/runner.c
+   * source/vm/fm.c
+   * source/common/hbver.c
+   * source/rtl/hbgtcore.c
+   * source/rtl/gtwvt/gtwvt.c
+   * source/rdd/dbfntx/dbfntx1.c
+   * source/rdd/workarea.c
+   * source/rdd/wacore.c
+   * source/rdd/sdf1.c
+   * source/rdd/dbfcdx/dbfcdx1.c
+   * source/rdd/delim1.c
+   * source/rdd/dbf1.c
+   * source/rdd/wafunc.c
+   * source/rdd/dbffpt/dbffpt1.c
+   * source/compiler/hbmain.c
+   * source/compiler/fixflex.c
+   * source/compiler/gencobj.c
+   * source/compiler/genc.c
+   * source/compiler/harbour.yyc
+   * source/compiler/harbour.y
+   * contrib/hbct/disk.c
+   * contrib/hbwhat32/whtcdlg.c
+   * contrib/gtwvg/gtwvg.c
+   * contrib/rddads/adsfunc.c
+   * contrib/rddads/ads1.c
+   * contrib/hbbmcdx/bmdbfcdx.c
+   * contrib/examples/pp/hbppcomp.c
+     * hb_strncpy()/hb_strncat() size parameter changed from 
+       CONSTANT to 'sizeof( dest ) - 1', where applicable.
+     ! hbct/VOLUME() buffer overrun fixed.
+     ; NOTE: dbfntx1.c has a couple of places where I wasn't 
+             sure of the intention, so I left them unchanged.
+
+2008-08-24 11:47 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbmisc/spd.c
+     ! strcpy() -> hb_strncpy()
+       Patch by Xavi. Many thanks.
+
+2008-08-23 12:52 UTC-0500 Teo Fonrouge (teo/at/windtelsoft/dot/com)
+  * harbour.spec
+    * added missing contrib libs needed to build rpm packages:
+      libhbmsql.a, libhbsqlit3.a, libhbtpathy.a
+
+2008-08-23 19:00 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * source/common/hbwince.c
+     ! strcpy() -> hb_strncpy()
+     ; TOFIX: Only spd.c and dbgentry.c have some remaining strcpy() 
+              calls.
+
+2008-08-23 16:52 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * tests/multifnc/t0.prg
+   * tests/multifnc/t1.prg
+   * tests/multifnc/t2.prg
+   * source/rdd/usrrdd/example/exmemo.prg
+   * source/rdd/usrrdd/example/exhsx.prg
+   * source/rdd/usrrdd/example/exfcm.prg
+   * source/rdd/usrrdd/example/exrlx.prg
+   * contrib/xhb/hbsyslog.c
+   * contrib/rddado/tests/mysql3.prg
+   * contrib/rddado/tests/access1.prg
+   * contrib/rddado/tests/access2.prg
+   * contrib/rddado/tests/mysql1.prg
+   * contrib/hbpgsql/tests/tstpgrdd.prg
+     ! SVN headers.
+
+   * contrib/hbwhat32/Makefile
+   * contrib/hbwhat32/common.mak
+   - contrib/hbwhat32/wintypes.ch
+     - Removed wintypes.ch, as it collides with a header with 
+       the same name (and similar content) in xhb. It will 
+       now use the xhb one, since it already relied on other 
+       xhb headers anyway.
+       If anyone wants to sort this out properly, pls do.
+
+2008-08-23 16:40 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbgt/Makefile
+   * contrib/hbgt/common.mak
+   - contrib/hbgt/strdiff.c
+   + contrib/hbgt/strdiffg.c
+   - contrib/hbgt/charmix.c
+   + contrib/hbgt/charmixg.c
+   - contrib/hbgt/asciisum.c
+   + contrib/hbgt/asciisgt.c
+   - contrib/hbgt/ascpos.c
+   + contrib/hbgt/ascposgt.c
+   * contrib/hbgf/hbgfos2/Makefile
+   - contrib/hbgf/hbgfos2/tmenuitm.prg
+   + contrib/hbgf/hbgfos2/tmenuit.prg
+     ! Some files renamed to not collide with each other 
+       on non-GNU make systems.
+
+   * contrib/examples/hscript/cgi.ch
+   * contrib/examples/hscript/dir.hs
+   * contrib/examples/hscript/multiply.hs
+   * contrib/examples/hscript/ugly.hs
+   * contrib/examples/hscript/hello.hs
+   * contrib/examples/guestbk/guestbk.ini
+     + Added SVN headers.
+
+   + source/rtl/gtalleg/common.mak
+   + source/rtl/gtalleg/make_gcc.sh
+   + source/rtl/gtalleg/make_b32.bat
+   + source/rtl/gtalleg/make_vc.bat
+     + Added non-GNU make file as an ugly hack to 
+       build them on Windows systems.
+
+   - tests/altd.prg
+   + tests/altdtest.prg
+     * Rename.
+
+   * include/hbver.h
+   * harbour-ce-spec
+   * harbour-w32-spec
+   * harbour.spec
+     * Version changed to '1.0.1dev'.
+       Trunk will need to be synced to tag/1.0.
+
+   * common.mak
+     + Added version to harbour.dll: harbour-101-b32/vc.dll
+     ; Work in progress. Pls comment.
+
+2008-08-23 13:05 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   + contrib/hbnf/tests/ftgete.prg
+     + Added test.
+
+   * contrib/hbwhat32/Makefile
+   * contrib/hbwhat32/common.mak
+   + contrib/hbwhat32/whtbmp.c
+   + contrib/hbwhat32/whtbrsh.c
+   + contrib/hbwhat32/whtcall.c
+   + contrib/hbwhat32/whtcdlg.c
+   + contrib/hbwhat32/whtclpb.c
+   + contrib/hbwhat32/whtcomm.c
+   + contrib/hbwhat32/whtcret.c
+   + contrib/hbwhat32/whtdate.c
+   + contrib/hbwhat32/whtdc.c
+   + contrib/hbwhat32/whtdir.c
+   + contrib/hbwhat32/whtdlg.c
+   + contrib/hbwhat32/whtdll.c
+   + contrib/hbwhat32/whtdraw.c
+   + contrib/hbwhat32/whtfont.c
+   + contrib/hbwhat32/whtgdi.c
+   + contrib/hbwhat32/whthead.c
+   + contrib/hbwhat32/whticon.c
+   + contrib/hbwhat32/whtilst.c
+   + contrib/hbwhat32/whtinet.c
+   + contrib/hbwhat32/whtini.c
+   + contrib/hbwhat32/whtkbrd.c
+   + contrib/hbwhat32/whtlv.c
+   + contrib/hbwhat32/whtmain.c
+   + contrib/hbwhat32/whtmapi.c
+   + contrib/hbwhat32/whtmem.c
+   + contrib/hbwhat32/whtmenu.c
+   + contrib/hbwhat32/whtmeta.c
+   + contrib/hbwhat32/whtmisc.c
+   + contrib/hbwhat32/whtmmcap.c
+   + contrib/hbwhat32/whtmous.c
+   + contrib/hbwhat32/whtmsg.c
+   + contrib/hbwhat32/whtpen.c
+   + contrib/hbwhat32/whtprn.c
+   + contrib/hbwhat32/whtrect.c
+   + contrib/hbwhat32/whtreg.c
+   + contrib/hbwhat32/whtrgn.c
+   + contrib/hbwhat32/whtscrlb.c
+   + contrib/hbwhat32/whtseria.c
+   + contrib/hbwhat32/whtshell.c
+   + contrib/hbwhat32/whtsock.c
+   + contrib/hbwhat32/whtsys.c
+   + contrib/hbwhat32/whttab.c
+   + contrib/hbwhat32/whttbar.c
+   + contrib/hbwhat32/whttext.c
+   + contrib/hbwhat32/whttree.c
+   + contrib/hbwhat32/whtview.c
+   + contrib/hbwhat32/whtwnd.c
+   - contrib/hbwhat32/_winbmp.c
+   - contrib/hbwhat32/_winbrsh.c
+   - contrib/hbwhat32/_wincall.c
+   - contrib/hbwhat32/_wincdlg.c
+   - contrib/hbwhat32/_winclpb.c
+   - contrib/hbwhat32/_wincomm.c
+   - contrib/hbwhat32/_wincret.c
+   - contrib/hbwhat32/_windate.c
+   - contrib/hbwhat32/_windc.c
+   - contrib/hbwhat32/_windir.c
+   - contrib/hbwhat32/_windlg.c
+   - contrib/hbwhat32/_windll.c
+   - contrib/hbwhat32/_windraw.c
+   - contrib/hbwhat32/_winfont.c
+   - contrib/hbwhat32/_wingdi.c
+   - contrib/hbwhat32/_winhead.c
+   - contrib/hbwhat32/_winicon.c
+   - contrib/hbwhat32/_winilst.c
+   - contrib/hbwhat32/_wininet.c
+   - contrib/hbwhat32/_winini.c
+   - contrib/hbwhat32/_winkbrd.c
+   - contrib/hbwhat32/_winlv.c
+   - contrib/hbwhat32/_winmain.c
+   - contrib/hbwhat32/_winmapi.c
+   - contrib/hbwhat32/_winmem.c
+   - contrib/hbwhat32/_winmenu.c
+   - contrib/hbwhat32/_winmeta.c
+   - contrib/hbwhat32/_winmisc.c
+   - contrib/hbwhat32/_winmmcap.c
+   - contrib/hbwhat32/_winmous.c
+   - contrib/hbwhat32/_winmsg.c
+   - contrib/hbwhat32/_winpen.c
+   - contrib/hbwhat32/_winprn.c
+   - contrib/hbwhat32/_winrect.c
+   - contrib/hbwhat32/_winreg.c
+   - contrib/hbwhat32/_winrgn.c
+   - contrib/hbwhat32/_winscrlb.c
+   - contrib/hbwhat32/_winserial.c
+   - contrib/hbwhat32/_winshell.c
+   - contrib/hbwhat32/_winsock.c
+   - contrib/hbwhat32/_winsys.c
+   - contrib/hbwhat32/_wintab.c
+   - contrib/hbwhat32/_wintbar.c
+   - contrib/hbwhat32/_wintext.c
+   - contrib/hbwhat32/_wintree.c
+   - contrib/hbwhat32/_winview.c
+   - contrib/hbwhat32/_winwnd.c
+     * Renamed hbwhat32 files to not have a leading underscore 
+       and long filenames.
+
+2008-08-23 11:38 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * source/pp/hbpp.c
+   * source/vm/cmdarg.c
+   * source/vm/memvars.c
+   * source/rtl/dates.c
+   * source/rtl/fstemp.c
+   * source/rtl/gtchrmap.c
+   * source/rtl/gtcrs/gtcrs.c
+   * source/rtl/gtpca/gtpca.c
+   * source/rtl/gtstd/gtstd.c
+   * source/rdd/dbf1.c
+   * source/rdd/dbfntx/dbfntx1.c
+   * contrib/hbct/disk.c
+   * contrib/hbfbird/firebird.c
+   * contrib/hbw32/w32_ole.c
+   * contrib/xhb/hboutdbg.c
+   * contrib/examples/pp/hbppcore.c
+     * strncpy() -> hb_strncpy()
+     * strncat() -> hb_strncat()
+     ! In most of these places the terminating zero 
+       was not explicitly set by the caller before.
+
+   * contrib/hbnf/getenvrn.c
+   * contrib/hbw32/dllcall.c
+   * contrib/hbw32/w32_ole.c
+   * contrib/hbwhat32/_wincdlg.c
+   * contrib/hbwhat32/_windll.c
+   * contrib/hbwhat32/_winmain.c
+   * contrib/hbziparch/hbzipnew.cpp
+     ! strcpy() -> hb_strncpy()
+     ! strcat() -> hb_strncat()
+     ; TOFIX1: There are still two strcpy()s left in SQL_SPRINTF().
+               Xavi, could you pls take a look at it?
+     ; TOFIX2: There are still a few strcpy()s in hbwince.c and 
+               dbgentry.c.
+
+   * source/pp/hbpp.c
+   * source/rtl/gtcrs/gtcrs.c
+   * source/rtl/gtpca/gtpca.c
+   * source/rtl/gtstd/gtstd.c
+   * contrib/hbfbird/firebird.c
+   * contrib/hbwhat32/_wincdlg.c
+   * contrib/hbwhat32/_windll.c
+     ! Fixed wrong buffer sizes (or no buffer limits) in some 
+       string copy operations (potential buffer overruns).
+
+   * contrib/hbnf/getenvrn.c
+     ! Fixed bad leak in FT_GETE() on Win32 systems.
+
+   * source/rtl/fstemp.c
+     ! hb_fsTempName(): Fixed potential buffer overrun by one byte.
+     * Minor formatting.
+
+   * source/rtl/fstemp.c
+   * source/rtl/hbffind.c
+   * contrib/xhb/hboutdbg.c
+     * Using sizeof() instead of explicit size in string copy operations.
+     ; TODO: There is a lot more to fix like this.
+
+2008-08-22 22:51 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * utils/hbtest/rt_array.prg
+     + Added failing test case of doing AEval() 
+       and resizing the evaluated array in the 
+       eval codeblock.
+     ; TOFIX
+
+   * utils/hbdoc/ft_funcs.prg
+   * utils/hbdoc/hbdoc.prg
+   * utils/hbmake/ft_funcs.prg
+   * utils/hbmake/hbmutils.prg
+     ! Two EOL handling fixes applied.
+       Thanks to Bill Robertson.
+     ; Please test.
+
+   * contrib/xhb/Makefile
+   * contrib/xhb/common.mak
+   + contrib/xhb/arrayblk.prg
+     + Added HB_ARRAYBLOCK() from xhb.
+
+2008-08-22 17:03 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/make_gcc_all.sh
+     + Added darwin autodetection.
+
+   * contrib/Makefile
+     + Added HB_CONTRIB_ADDONS envvar which enables building 
+       local custom contribs stored in the contrib dir.
+       A separate dir may be better, but we will see.
+
+   * utils/hbtest/hbtest.prg
+     * Changed test .dbf filename casing to lowercase.
+
+   + tests/rddtest
+   + tests/rddtest/rddmktst.prg
+   + tests/rddtest/adscl52.prg
+   + tests/rddtest/adscl53.prg
+   + tests/rddtest/ntxcl52.prg
+   + tests/rddtest/ntxcl53.prg
+   + tests/rddtest/cdxcl52.prg
+   + tests/rddtest/rddtst.prg
+   + tests/rddtest/make_c52.bat
+   + tests/rddtest/cdxcl53.prg
+   + tests/rddtest/make_c53.bat
+     + Added RDD tests from xhb.
+
+2008-08-22 14:56 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * source/rtl/gtalleg/ssf.h
+     ! Fixed to compile with BCC.
+
+   * source/rtl/gtalleg/Makefile
+     ! Missing SVN header.
+     % Removed obsolete HB_MULTI_GT #define.
+
+   * source/rtl/gtalleg/gtalleg.c
+   * utils/hbmake/hbmake.prg
+     ! Typos.
+
+2008-08-22 11:30 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * source/rtl/gtalleg/gtalleg.c
+     * GFX_* -> HB_GFX_*
+     ; (untested)
+
+2008-08-22 11:20 UTC+0100 JF Lefebvre (MAFACT) (jfl at mafact dot com)
+   * utils/hbdoc/hbdoc.prg 
+   * utils/hbmake/Makefile
+   * utils/hbmake/hbmake.prg
+     % removing 'ANNOUNCE RDDSYS', not anymore needed
+       causing some problem with msvc linking.
+   * debug/debugger.prg 
+     % changing all GTI_ by HB_GTI_
+
+2008-08-22 09:32 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * common.mak
+   * source/vm/debug.c
+   * source/vm/hvm.c
+   * source/vm/Makefile
+   + source/vm/debugold.c
+     + Added some HB_DBG_*() functions for compatibility 
+       with certain 3rd party libs. They are marked with 
+       HB_LEGACY_LEVEL, and will be removed (pbly at 1.1.0), 
+       so everyone is encouraged to use __DBG*() version 
+       for Harbour versions above 0x010000 (or not use 
+       them at all, if this is possible). If these functions 
+       are indeed needed for some functionality, it'd be 
+       good to hear about it, maybe there is a solution 
+       which doesn't require internals.
+
+   * utils/hbdoc/ft_funcs.prg
+   * utils/hbmake/ft_funcs.prg
+     * Using FS_* manifest constants.
+
+2008-08-22 08:20 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * common.mak
+   * make_b32.mak
+   * make_gcc.mak
+   * make_vc.mak
+   * make_vcce.mak
+   * utils/hbdoc/Makefile
+   * utils/hbdoc/bld_b32.bat
+   * utils/hbdoc/bld_vc.bat
+   * utils/hbdoc/hbdoc.prg
+   * utils/hbmake/Makefile
+   * utils/hbmake/bld_b32.bat
+   * utils/hbmake/bld_vc.bat
+   * utils/hbmake/hbmake.prg
+     % Reduced executable size of hbmake and hbdoc
+       (by 20%) by excluding unused libs and RDD stuff.
+     % Optimized local non-GNU make files to work 
+       faster and generate faster executables.
+
+   * utils/hbdoc/hbdocdef.ch
+     % Removed unused macro.
+     * minor formatting.
+
+2008-08-21 18:52 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * common.mak
+   * utils/hbdoc/Makefile
+   * utils/hbdoc/bld_b32.bat
+   * utils/hbdoc/bld_vc.bat
+   - utils/hbdoc/fclass1.prg
+   - utils/hbdoc/ffile1.prg
+   * utils/hbdoc/ft_funcs.prg
+   * utils/hbmake/Makefile
+   * utils/hbmake/bld_vc.bat
+   * utils/hbmake/bld_b32.bat
+   - utils/hbmake/fclass1.prg
+   - utils/hbmake/ffile1.prg
+   * utils/hbmake/ft_funcs.prg
+   * utils/hbmake/pickarry.prg
+   - utils/hbmake/prb_stak.prg
+   - utils/hbmake/pickfile.prg
+     % Removed unused modules.
+     % Replaced module with simple constructs.
+     * Merged file handling classes and functions into 
+       one file, for easier syncing.
+
+2008-08-21 18:06 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * utils/hbdoc/fclass1.prg
+   * utils/hbdoc/ffile1.prg
+   * utils/hbdoc/ft_funcs.prg
+   * utils/hbmake/fclass1.prg
+   * utils/hbmake/tmake.prg
+   * utils/hbmake/ffile1.prg
+   * utils/hbmake/ft_funcs.prg
+   * utils/hbmake/pickarry.prg
+   * utils/hbmake/pickfile.prg
+   * utils/hbmake/hbmutils.prg
+   * utils/hbmake/hbmake.prg
+     * Cleanups.
+     ! Fixed open bug from previous commit (hopefully).
+
+   * common.mak
+   * utils/hbmake/Makefile
+   * utils/hbmake/bld_b32.bat
+   * utils/hbmake/bld_vc.bat
+   - utils/hbmake/readline.c
+   + utils/hbmake/hbmfrdln.c
+   * utils/hbmake/hbmlang.c
+   + utils/hbmake/hbmgauge.c
+     * readline.c -> hbmfrdln.c
+       (made fully identical to /contrib/xhb/freadlin.c)
+     * GAUGE*() stuff moved into separate file.
+       (separate file is fully identical to /contrib/hbclipsm/gauge.c)
+     ! GAUGE*() function copyright restored to original.
+
+2008-08-21 14:11 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * include/hbcomp.h
+     * Minor formatting (alignment).
+
+   * ChangeLog
+     ! Added missing file from previous entry.
+
+   * contrib/hbclipsm/gauge.c
+     ! Fixed very old bug (too small buffer for snprintf()).
+     * Minor adjustment to Harbour percentage var retrieval.
+
+   * common.mak
+   * utils/hbmake/Makefile
+   * utils/hbmake/bld_b32.bat
+   * utils/hbmake/bld_vc.bat
+   - utils/hbmake/checkdef.ch
+   - utils/hbmake/checks.ch
+   - utils/hbmake/checks.prg
+   * utils/hbmake/fclass1.prg
+   * utils/hbmake/ffile1.prg
+   * utils/hbmake/ft_funcs.prg
+   - utils/hbmake/hbdocdef.ch
+   * utils/hbmake/hbmake.prg
+   * utils/hbmake/hbmlang.c
+   * utils/hbmake/hbmutils.prg
+   * utils/hbmake/Makefile
+   * utils/hbmake/pickfile.prg
+   * utils/hbmake/prb_stak.prg
+   - utils/hbmake/radiodef.ch
+   - utils/hbmake/radios.ch
+   - utils/hbmake/radios.prg
+   * utils/hbmake/readline.c
+   * utils/hbmake/tmake.prg
+   * utils/hbdoc/fclass1.prg
+   * utils/hbdoc/ffile1.prg
+   * utils/hbdoc/ft_funcs.prg
+   * utils/hbdoc/genasc.prg
+   * utils/hbdoc/genchm.prg
+   * utils/hbdoc/genhpc.prg
+   * utils/hbdoc/genhtm.prg
+   * utils/hbdoc/genng.prg
+   * utils/hbdoc/genos2.prg
+   * utils/hbdoc/genpdf1.prg
+   * utils/hbdoc/genrtf.prg
+   * utils/hbdoc/gentrf.prg
+   * utils/hbdoc/hbdoc.prg
+   * utils/hbdoc/hbdocdef.ch
+     * Cleanups.
+     % Removed unused parts.
+     ! GAUGE*() functions synced with hbclipsm.lib.
+     * Removed hbclip.ch requirement when compiled 
+       with CA-Cl*pper. (not tested)
+
+2008-08-21 10:28 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * include/dbinfo.ch
+   * include/dbstruct.ch
+   * include/hbgtinfo.ch
+   * include/hblang.ch
+   * include/setcurs.ch
+     ! Added "also used from C code" comments.
+
+   * utils/hbmake/ffile1.prg
+   * utils/hbdoc/ffile1.prg
+     ! Minor cleanup.
+
+   * include/hbgfxdef.ch
+   * include/hbgtinfo.ch
+     * Marked old GTI_*, GFX_* macros with HB_LEGACY_LEVEL.
+       (Old macro HB_GT_NO_XHB no longer works)
+
+   * include/hbsetup.ch
+     + Added HB_LEGACY_LEVEL macro. Currently turned on.
+       Will be turned off later, and completely removed 
+       as a final step. Times are not defined for these 
+       yet. Please prepare to modify your code to not 
+       use old legacy stuff.
+       NOTE: C code using legacy Clipper (.api) headers are
+             unaffected.
+
+   * include/hbapirdd.h
+     * Marked HARBOUR_* macros with HB_LEGACY_LEVEL
+
+   * include/hbsetup.h
+     * Marked OS_UNIX_COMPATIBLE, OS_PATH_DELIMITER 
+       macros with HB_LEGACY_LEVEL.
+
+   * include/hbapifs.h
+   * source/rtl/filesys.c
+     * Marked hb_fileNameConv() as HB_LEGACY_LEVEL.
+     ; 3rd party and app developers should switch to 
+       hb_fsNameConv().
+
+   * source/rtl/box.c
+   * source/rtl/console.c
+   * source/rtl/filesys.c
+   * source/rtl/gtapi.c
+   * source/rtl/hbgtcore.c
+   * contrib/hbclipsm/gauge.c
+   * contrib/hbclipsm/status.c
+   * contrib/hbct/ctwin.c
+   * source/rtl/set.c
+   * utils/hbmake/hbmlang.c
+     * Updated core/contrib sources to use non-legacy names:
+       HB_CLRSTR_LEN, HB_EVALINFO, PHB_EVALINFO, HB_FHANDLE
+     ; TODO: FHANDLE -> HB_FHANDLE is incomplete yet.
+
+   * include/hbdefs.h
+     * Minor formatting.
+
+   * include/hbmath.h
+     ! #include <hbmath.ch> -> #include "hbmath.ch"
+
+   * contrib/hbmysql/mysql.c
+     + function SQLFETCHR() updated to allow fetching binary (BLOB) 
+       fields. [Thanks to Mitja Podgornik]
+
+   * include/hbapifs.h
+   * include/hbapigt.h
+   * include/hbapiitm.h
+   * include/hbdefs.h
+   * include/item.api
+   * include/filesys.api
+   * include/gt.api
+     * FHANDLE      -> HB_FHANDLE
+     * EVALINFO     -> HB_EVALINFO
+     * PEVALINFO    -> PHB_EVALINFO
+     * EVALINFO_PTR -> marked as legacy
+     * CLR_STRLEN   -> HB_CLRSTR_LEN
+     ; Old names are still working if HB_LEGACY_LEVEL 
+       is #defined, and by default now it is.
+     ; It's highly recommended to change all 3rd party and 
+       app C code to use the new #defines/types/functions.
+     ; NOTE1: There are some more names which are still 
+              in the legacy "namespace", and gradually 
+              I'd like to clean some of these as well. The most 
+              important would be the type names, as these 
+              are currently colliding with multiple external 
+              packages, like windows.h, and it also makes it 
+              impossible to compile hbfimage on certain systems.
+     ; NOTE2: I'd also like to move the *_PTR (like HB_ITEM_PTR) 
+              names to legacy status as we don't really use 
+              them except in a few VM files, and we have PHB_* 
+              as a wide-spread (and shorter) replacement.
+     ; NOTE3: We may also use HB_LEGACY_LEVEL to obolete other 
+              legacy or unsafe functions, with better new 
+              alternatives.
+     ; NOTE4: Here's a more or less complete list of names 
+              that _may_ cause such problems:
+              ; Type related stuff
+                - TRUE, FALSE
+                - BOOL, BYTE, SCHAR, UINT, USHORT
+                - INT_MAX, INT_MIN
+                - INT16, INT16_MAX, INT16_MIN
+                - INT24_MAX, INT24_MIN
+                - INT32, INT32_MAX, INT32_MIN
+                - INT64, INT64_MAX, INT64_MIN
+                - LONG, LONG_MAX, LONG_MIN
+                - LONGLONG, LONGLONG_MAX, LONGLONG_MIN
+                - SHORT, SHRT_MAX, SHRT_MIN
+                - UCHAR, UCHAR_MAX
+                - UINT16, UINT16_MAX
+                - UINT24_MAX
+                - UINT32, UINT32_MAX
+                - UINT64, UINT64_MAX
+                - ULONG, ULONG_MAX
+                - ULONGLONG, ULONGLONG_MAX
+              ; Some hacks currently used:
+                - HB_DONT_DEFINE_BASIC_TYPES
+                - HB_DONT_DEFINE_BOOL
+                - HB_OS_WIN_32_USED ->
+                  (include <windows.h> locally where needed)
+              ; Compiler related stuff:
+                - VS_*, VU_*, VT_*, FUN_*
+                - *COMDECLARED, *COMCLASS, *COMSYMBOL
+                - VAR, PVAR
+                - _FUNC, PFUNCTION
+                - _INLINE, PINLINE
+                - _FUNCALL, PFUNCALL
+                - _EXTERN, PEXTERN
+                - AUTOOPEN, PAUTOOPEN
+                - FUNCTIONS
+                - INLINES
+                - FUNCALLS
+                - SYMBOLS
+              ; Clipper compatibility #defines,
+                better be moved behind a compatibility layer:
+                - F_ERROR, FS_ERROR
+                - IS*()
+                - E_*, EF_*
+                - FL_*, FLX_*, FO_*, FXO_*
+                - _B_*
+                - FC_*, FS_*, FD_*
+                - INKEY_*, K_*
+                - ES_*, EG_*
+                - SC_*
+                - DBS_*
+              ; + All RDD related stuff, including "dbinfo.ch" constants.
+
+2008-08-20 23:06 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/mtpl_b32.mak
+   * contrib/mtpl_gcc.mak
+   * contrib/mtpl_vc.mak
+     ! Added -km switch to contribs by default.
+       This way it's synced with the GNU-make system, too.
+
+   * utils/hbdoc/hbdocdef.ch
+   * utils/hbdoc/fclass1.prg
+   * utils/hbdoc/ffile1.prg
+   * utils/hbdoc/ft_funcs.prg
+   * utils/hbmake/hbdocdef.ch
+   * utils/hbmake/fclass1.prg
+   * utils/hbmake/ffile1.prg
+   * utils/hbmake/ft_funcs.prg
+     * Cleanups, optimizations (in ft_funcs.prg)
+     ! Synced these for common files to be completely 
+       identical. In fact this is a fix, as their name 
+       is common so they were "randomly" interchanged 
+       along the non-GNU build process even before.
+       There was only one very small functional difference, 
+       though.
+     ; Please test.
+
+2008-08-20 19:07 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * source/debug/dbgentry.c
+     ! HB_DBG_*() -> __DBG*().
+     ; I somehow completely missed this file from recent 
+       update, thanks Bill.
+
+2008-08-20 12:50 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * tests/longdev.prg
+   * tests/hbpptest/hbpptest.prg
+   * tests/testcgi.prg
+   * tests/foreach.prg
+   * tests/onidle.prg
+   * tests/tstchbx.prg
+   * tests/codebl.prg
+   * tests/tstdbi.prg
+   * tests/vmasort.prg
+   * tests/tstasort.prg
+   * tests/testbrw.prg
+   * tests/inkeytst.prg
+   * tests/testrdd2.prg
+   * tests/keywords.prg
+   * tests/testhtml.prg
+   * tests/readhrb.prg
+   * tests/stripem.prg
+   * tests/wvtext.prg
+   * tests/testpre.prg
+   * tests/seconds.prg
+   * tests/fsplit.prg
+   * tests/mousetst.prg
+   * contrib/hbmysql/tmysql.prg
+   * contrib/hbct/numconv.prg
+   * contrib/hbct/ctmisc.prg
+   * contrib/hbodbc/todbc.prg
+   * contrib/hbapollo/tests/apollo.prg
+   * contrib/hbnf/acctyear.prg
+   * contrib/hbnf/acctadj.prg
+   * contrib/hbnf/nwsem.prg
+   * contrib/hbnf/week.prg
+   * contrib/hbnf/acctmnth.prg
+   * contrib/hbnf/savearr.prg
+   * contrib/hbnf/madd.prg
+   * contrib/hbnf/mouse1.prg
+   * contrib/hbnf/month.prg
+   * contrib/hbnf/findith.prg
+   * contrib/hbnf/acctweek.prg
+   * contrib/hbnf/pegs.prg
+   * contrib/hbnf/acctqtr.prg
+   * contrib/hbnf/nooccur.prg
+   * contrib/hbnf/dayofyr.prg
+   * contrib/hbnf/menu1.prg
+   * contrib/hbnf/sqzn.prg
+   * contrib/hbnf/asum.prg
+   * contrib/hbnf/aavg.prg
+   * contrib/hbnf/any2any.prg
+   * contrib/hbnf/adessort.prg
+   * contrib/hbnf/amedian.prg
+   * contrib/hbnf/blink.prg
+   * contrib/hbnf/qtr.prg
+   * contrib/hbnf/aredit.prg
+   * contrib/hbnf/xbox.prg
+   * contrib/hbnf/ftround.prg
+   * contrib/hbnf/invclr.prg
+   * contrib/hbnf/tempfile.prg
+   * contrib/hbnf/diskfunc.prg
+   * contrib/hbnf/mouse2.prg
+   * contrib/hbnf/daytobow.prg
+   * contrib/hbnf/anomatch.prg
+   * contrib/hbnf/datecnfg.prg
+   * contrib/hbnf/tbwhile.prg
+   * contrib/hbnf/year.prg
+   * contrib/hbnf/elapsed.prg
+   * contrib/hbnf/dfile.prg
+   * contrib/hbnf/clrsel.prg
+   * contrib/hbmisc/twirler.prg
+   * contrib/hbmisc/fileread.prg
+   * contrib/hbmisc/stringp.prg
+   * contrib/hbgf/hbgfw32/winctrl.prg
+   * contrib/hbgf/hbgfw32/form.prg
+   * contrib/hbgf/hbgfos2/winctrl.prg
+   * contrib/hbgf/hbgfos2/tform.prg
+   * contrib/hbtip/httpcln.prg
+   * contrib/hbvpdf/hbvpdf.prg
+   * contrib/hbvpdf/hbvpdft.prg
+   * contrib/examples/guestbk/guestbk.prg
+   * contrib/examples/pe/editorhi.prg
+     * Some more general code cleanups ( if() -> iif() ).
+
+2008-08-20 11:50 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * tests/onidle.prg
+   * tests/codebloc.prg
+   * tests/keywords.prg
+   * tests/wvtext.prg
+   * tests/test_all.prg
+   * tests/ainstest.prg
+   * doc/es/compiler.txt
+   * doc/es/file.txt
+   * contrib/hbct/numconv.prg
+   * contrib/hbct/tests/expomant.prg
+   * contrib/hbwhat32/whatutil.prg
+   * contrib/hbwhat32/winrbar.prg
+   * contrib/hbwhat32/wintabs.prg
+   * contrib/hbwhat32/wincomm.prg
+   * contrib/hbwhat32/wincdlg.prg
+   * contrib/hbwhat32/wintbar.prg
+   * contrib/hbwhat32/_wininet.c
+   * contrib/hbwhat32/wincore.prg
+   * contrib/hbw32/w32_ole.c
+   * contrib/hbapollo/tests/apollo.prg
+   * contrib/hbnf/dispmsg.prg
+   * contrib/hbnf/fttext.c
+   * contrib/hbnf/mouse1.prg
+   * contrib/hbnf/menu1.prg
+   * contrib/hbnf/sleep.prg
+   * contrib/hbnf/xbox.prg
+   * contrib/hbnf/popadder.prg
+   * contrib/hbnf/mouse2.prg
+   * contrib/hbnf/pchr.prg
+   * contrib/hbhpdf/tests/harupdf.prg
+   * contrib/gtwvg/wvgclass.prg
+   * contrib/gtwvg/tests/demowvg.prg
+   * contrib/gtwvg/wvgpaint.prg
+   * contrib/rddads/tests/testmg.prg
+   * contrib/hbclipsm/tests/testgaug.prg
+   * contrib/hbfimage/tests/fitest.prg
+   * contrib/hbmisc/twirler.prg
+   * contrib/hbtip/httpcln.prg
+   * contrib/hbtip/ftpcln.prg
+   * contrib/hbvpdf/hbvpdft.prg
+   * utils/hbmake/hbmake.prg
+     * Some more general code cleanups.
+     * iif(), quote char, #include, filename-casing, = usage cleanups, 
+       hardcoded absolute paths, non-ASCII drawing chars in source.
+       Using mixed-case filenames to #include .ch files breaks on 
+       non-WinDOS platforms.
+
+2008-08-20 10:22 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * utils/hbdoc/hbdoc.prg
+   * utils/hbdoc/gentrf.prg
+   * utils/hbmake/hbmake.prg
+     * Some more general code cleanups.
+
+2008-08-20 10:09 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbmzip/hbmzip.c
+   * contrib/hbmzip/readme.txt
+     ! Typos.
+
+   * utils/hbdoc/rtf.prg
+   * utils/hbdoc/fclass1.prg
+   * utils/hbdoc/genos2.prg
+   * utils/hbdoc/genng.prg
+   * utils/hbdoc/genasc.prg
+   * utils/hbdoc/genchm.prg
+   * utils/hbdoc/os2.prg
+   * utils/hbdoc/html.prg
+   * utils/hbdoc/genhpc.prg
+   * utils/hbdoc/ng.prg
+   * utils/hbdoc/ffile1.prg
+   * utils/hbdoc/ft_funcs.prg
+   * utils/hbdoc/hbdoc.prg
+   * utils/hbdoc/troff.prg
+   * utils/hbdoc/genhtm.prg
+   * utils/hbdoc/genpdf1.prg
+   * utils/hbdoc/gentrf.prg
+   * utils/hbdoc/genrtf.prg
+   * utils/hbmake/fclass1.prg
+   * utils/hbmake/tmake.prg
+   * utils/hbmake/ffile1.prg
+   * utils/hbmake/ft_funcs.prg
+   * utils/hbmake/pickarry.prg
+   * utils/hbmake/pickfile.prg
+   * utils/hbmake/hbmutils.prg
+   * utils/hbmake/hbmake.prg
+     ! Fixed problems reported by Bill Robertson. (Thanks)
+     * Some general code cleanups.
+
+2008-08-19 17:17 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * doc/en/string.txt
+   * doc/en/rddord.txt
+   * doc/hbmake.txt
+     * More cleanups, formatting (filename casing, CA-Cl*pper, etc).
+
+2008-08-19 17:06 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * doc/en/string.txt
+   * doc/en/rddord.txt
+   * doc/en/treport.txt
+   * doc/en/memvar2.txt
+   * doc/en/terminal.txt
+   * doc/en/rddmisc.txt
+   * doc/en/setmode.txt
+   * doc/en/rdddb.txt
+   * doc/en/tbrowse.txt
+   * doc/en/set.txt
+   * doc/en/sayget.txt
+   * doc/es/treport.txt
+   * ChangeLog
+   * utils/hbtest/rt_misc.prg
+     * More cleanups, formatting (filename casing, CA-Cl*pper, etc).
+
+2008-08-19 16:16 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * doc/en/diskspac.txt
+   * doc/en/string.txt
+   * doc/en/rddord.txt
+   * doc/en/terminal.txt
+   * doc/en/rddmisc.txt
+   * doc/en/datetime.txt
+   * doc/en/array.txt
+   * doc/en/rdddb.txt
+   * doc/en/menu.txt
+   * doc/en/file.txt
+   * doc/en/eval.txt
+   * ChangeLog
+   * contrib/hbodbc/todbc.prg
+   * contrib/hbodbc/tests/odbcdemo.prg
+   * contrib/hbtpathy/readme.txt
+   * utils/hbmake/pickfile.prg
+     * More cleanups, formatting (filename casing, CA-Cl*pper, etc).
+
+2008-08-19 14:58 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * make_deb.sh
+     * Removed wrong comment recently added.
+       (we will need to fix hbfimage compilation anyway)
+
+   * harbour-ce-spec
+   * harbour-w32-spec
+   * harbour.spec
+   * debian/control
+   * include/vm.api
+   * include/extend.api
+   * include/button.ch
+   * include/hbstack.h
+   * include/item.api
+   * include/rdd.api
+   * include/gt.api
+   * include/dbinfo.ch
+   * include/error.api
+   * include/filesys.api
+   * include/hbapigt.h
+   * include/clipdefs.h
+   * include/assert.ch
+   * include/fm.api
+   * include/extend.h
+   * source/compiler/genhrb.c
+   * config/os2/install.cf
+   * tests/db_brows.prg
+   * tests/debugtst.prg
+   * tests/ac_test.prg
+   * tests/testhtml.prg
+   * tests/tstcolor.prg
+   * doc/hdr_tpl.txt
+   * doc/man/harbour.1
+   * doc/dirstruc.txt
+   * doc/howtobld.txt
+   * doc/en/diskspac.txt
+   * doc/en/string.txt
+   * doc/en/rddord.txt
+   * doc/en/math.txt
+   * doc/en/error.txt
+   * doc/en/treport.txt
+   * doc/en/memvar2.txt
+   * doc/en/terminal.txt
+   * doc/en/dir.txt
+   * doc/en/rddmisc.txt
+   * doc/en/var.txt
+   * doc/en/nation.txt
+   * doc/en/dbstrux.txt
+   * doc/en/datetime.txt
+   * doc/en/memo.txt
+   * doc/en/tgetlist.txt
+   * doc/en/tlabel.txt
+   * doc/en/hb_compa.txt
+   * doc/en/array.txt
+   * doc/en/rdddb.txt
+   * doc/en/dbsdf.txt
+   * doc/en/tbrowse.txt
+   * doc/en/hvm.txt
+   * doc/en/input.txt
+   * doc/en/dbdelim.txt
+   * doc/en/browse.txt
+   * doc/en/menu.txt
+   * doc/en/file.txt
+   * doc/en/binnum.txt
+   * doc/en/tclass.txt
+   * doc/en/set.txt
+   * doc/en/misc.txt
+   * doc/en/sayget.txt
+   * doc/en/readme.txt
+   * doc/es/diskspac.txt
+   * doc/es/tlabel.txt
+   * doc/es/array.txt
+   * doc/es/dbsdf.txt
+   * doc/es/tbrowse.txt
+   * doc/es/math.txt
+   * doc/es/hvm.txt
+   * doc/es/treport.txt
+   * doc/es/input.txt
+   * doc/es/dbdelim.txt
+   * doc/es/browse.txt
+   * doc/es/memvar2.txt
+   * doc/es/command.txt
+   * doc/es/dir.txt
+   * doc/es/file.txt
+   * doc/es/eval.txt
+   * doc/es/binnum.txt
+   * doc/es/nation.txt
+   * doc/es/var.txt
+   * doc/es/tclass.txt
+   * doc/es/dbstrux.txt
+   * doc/es/misc.txt
+   * doc/es/datetime.txt
+   * doc/es/sayget.txt
+   * doc/es/memo.txt
+   * doc/es/readme.txt
+   * doc/es/tgetlist.txt
+   * doc/readme.txt
+   * contrib/hbct/ctnet.c
+   * contrib/hbct/video.c
+   * contrib/hbct/dattime3.c
+   * contrib/hbct/color.c
+   * contrib/hbnf/acctyear.prg
+   * contrib/hbnf/byteneg.prg
+   * contrib/hbnf/isshare.prg
+   * contrib/hbnf/sinkey.prg
+   * contrib/hbnf/dhkey.h
+   * contrib/hbnf/kspeed.c
+   * contrib/hbnf/prtscr.c
+   * contrib/hbnf/descendn.c
+   * contrib/hbnf/peek.c
+   * contrib/hbnf/scancode.prg
+   * contrib/hbnf/vidmode.prg
+   * contrib/hbnf/nwsem.prg
+   * contrib/hbnf/acctadj.prg
+   * contrib/hbnf/week.prg
+   * contrib/hbnf/vidcur.prg
+   * contrib/hbnf/iamidle.c
+   * contrib/hbnf/prtesc.prg
+   * contrib/hbnf/miltime.prg
+   * contrib/hbnf/proper.c
+   * contrib/hbnf/acctmnth.prg
+   * contrib/hbnf/savearr.prg
+   * contrib/hbnf/rand1.prg
+   * contrib/hbnf/madd.prg
+   * contrib/hbnf/dispmsg.prg
+   * contrib/hbnf/settime.prg
+   * contrib/hbnf/restsets.prg
+   * contrib/hbnf/page.prg
+   * contrib/hbnf/byt2bit.prg
+   * contrib/hbnf/setkeys.c
+   * contrib/hbnf/month.prg
+   * contrib/hbnf/byt2hex.prg
+   * contrib/hbnf/findith.prg
+   * contrib/hbnf/at2.prg
+   * contrib/hbnf/acctweek.prg
+   * contrib/hbnf/dispc.c
+   * contrib/hbnf/gcd.prg
+   * contrib/hbnf/pegs.prg
+   * contrib/hbnf/min2dhm.prg
+   * contrib/hbnf/acctqtr.prg
+   * contrib/hbnf/numlock.c
+   * contrib/hbnf/dosver.prg
+   * contrib/hbnf/nooccur.prg
+   * contrib/hbnf/dayofyr.prg
+   * contrib/hbnf/metaph.prg
+   * contrib/hbnf/ontick.c
+   * contrib/hbnf/menu1.prg
+   * contrib/hbnf/byteand.prg
+   * contrib/hbnf/sqzn.prg
+   * contrib/hbnf/bytexor.prg
+   * contrib/hbnf/ftidle.c
+   * contrib/hbnf/workdays.prg
+   * contrib/hbnf/byteor.prg
+   * contrib/hbnf/asum.prg
+   * contrib/hbnf/shift.c
+   * contrib/hbnf/sleep.prg
+   * contrib/hbnf/wda.prg
+   * contrib/hbnf/aavg.prg
+   * contrib/hbnf/woy.prg
+   * contrib/hbnf/origin.c
+   * contrib/hbnf/any2any.prg
+   * contrib/hbnf/chdir.c
+   * contrib/hbnf/adessort.prg
+   * contrib/hbnf/setdate.prg
+   * contrib/hbnf/netpv.prg
+   * contrib/hbnf/amedian.prg
+   * contrib/hbnf/blink.prg
+   * contrib/hbnf/stod.c
+   * contrib/hbnf/vertmenu.prg
+   * contrib/hbnf/qtr.prg
+   * contrib/hbnf/linked.prg
+   * contrib/hbnf/n2color.c
+   * contrib/hbnf/aredit.prg
+   * contrib/hbnf/alt.c
+   * contrib/hbnf/xbox.prg
+   * contrib/hbnf/ftround.prg
+   * contrib/hbnf/hex2dec.prg
+   * contrib/hbnf/nwuid.prg
+   * contrib/hbnf/dectobin.prg
+   * contrib/hbnf/bitset.prg
+   * contrib/hbnf/aemaxlen.prg
+   * contrib/hbnf/nwlstat.prg
+   * contrib/hbnf/invclr.prg
+   * contrib/hbnf/ctrl.c
+   * contrib/hbnf/lastday.prg
+   * contrib/hbnf/tempfile.prg
+   * contrib/hbnf/diskfunc.prg
+   * contrib/hbnf/scregion.prg
+   * contrib/hbnf/mouse2.prg
+   * contrib/hbnf/d2e.prg
+   * contrib/hbnf/ftisprn.c
+   * contrib/hbnf/pickday.prg
+   * contrib/hbnf/firstday.prg
+   * contrib/hbnf/daytobow.prg
+   * contrib/hbnf/anomatch.prg
+   * contrib/hbnf/pvid.prg
+   * contrib/hbnf/isbiton.prg
+   * contrib/hbnf/color2n.c
+   * contrib/hbnf/isbit.prg
+   * contrib/hbnf/putkey.c
+   * contrib/hbnf/cntryset.prg
+   * contrib/hbnf/datecnfg.prg
+   * contrib/hbnf/getenvrn.c
+   * contrib/hbnf/easter.prg
+   * contrib/hbnf/bytenot.prg
+   * contrib/hbnf/ntow.prg
+   * contrib/hbnf/poke.c
+   * contrib/hbnf/aeminlen.prg
+   * contrib/hbnf/floptst.prg
+   * contrib/hbnf/pchr.prg
+   * contrib/hbnf/savesets.prg
+   * contrib/hbnf/mkdir.c
+   * contrib/hbnf/year.prg
+   * contrib/hbnf/caplock.c
+   * contrib/hbnf/rmdir.c
+   * contrib/hbnf/calendar.prg
+   * contrib/hbnf/e2d.prg
+   * contrib/hbnf/elapsed.prg
+   * contrib/hbnf/sysmem.prg
+   * contrib/hbnf/bitclr.prg
+   * contrib/hbnf/eltime.prg
+   * contrib/hbnf/aading.prg
+   * contrib/hbnf/dfile.prg
+   * contrib/hbnf/elapmil.prg
+   * contrib/hbnf/setlastk.c
+   * contrib/hbnf/pending.prg
+   * contrib/hbnf/clrsel.prg
+   * contrib/rddads/doc/en/adsfuncs.txt
+   * contrib/rddads/doc/en/readme.txt
+   * contrib/hbclip/hbclip.ch
+   * contrib/hbclip/readme.txt
+   * contrib/hbmisc/doc/en/ht_dbf.txt
+   * utils/hbdoc/rtf.prg
+   * utils/hbdoc/fclass1.prg
+   * utils/hbdoc/genos2.prg
+   * utils/hbdoc/genng.prg
+   * utils/hbdoc/genasc.prg
+   * utils/hbdoc/genchm.prg
+   * utils/hbdoc/os2.prg
+   * utils/hbdoc/ng.prg
+   * utils/hbdoc/genhpc.prg
+   * utils/hbdoc/html.prg
+   * utils/hbdoc/ffile1.prg
+   * utils/hbdoc/ft_funcs.prg
+   * utils/hbdoc/hbdoc.prg
+   * utils/hbdoc/troff.prg
+   * utils/hbdoc/genhtm.prg
+   * utils/hbdoc/genpdf1.prg
+   * utils/hbdoc/gentrf.prg
+   * utils/hbdoc/genrtf.prg
+   * utils/hbmake/fclass1.prg
+   * utils/hbmake/prb_stak.prg
+   * utils/hbmake/ffile1.prg
+   * utils/hbmake/ft_funcs.prg
+   * utils/hbmake/pickfile.prg
+   * utils/hbmake/hbmutils.prg
+     * More cleanups, formatting (filename casing, CA-Cl*pper, etc).
+
+2008-08-19 11:53 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * config/w32/install.cf
+   * doc/hbmake.txt
+   * doc/whatsnew.txt
+   * doc/man/hbdoc.1
+   * doc/en/tlabel.txt
+   * doc/en/set.txt
+   * doc/en/readme.txt
+   * doc/es/tlabel.txt
+   * doc/es/rdd.txt
+   * doc/es/hbpplib.txt
+   * doc/es/treport.txt
+   * doc/es/dirstruc.txt
+   * doc/es/dir.txt
+   * doc/es/file.txt
+   * doc/es/readme.txt
+   * source/rtl/setkey.c
+   * source/rtl/tclass.prg
+   * source/compiler/cmdcheck.c
+   * contrib/hbmysql/utils/dbf2mysq.prg
+   * contrib/hbw32ddr/readme.txt
+   * contrib/hbodbc/odbc.txt
+   * contrib/hbodbc/readme.txt
+   * contrib/hbwhat32/_wincdlg.c
+   * contrib/hbtpathy/ChangeLog
+   * contrib/hbsqlit2/tests/hbsqlite.prg
+   * contrib/hbapollo/ChangeLog
+   * contrib/hbnf/byteneg.prg
+   * contrib/hbnf/savearr.prg
+   * contrib/hbnf/fttext.c
+   * contrib/hbnf/restsets.prg
+   * contrib/hbnf/byt2bit.prg
+   * contrib/hbnf/byt2hex.prg
+   * contrib/hbnf/ftint86.ch
+   * contrib/hbnf/byteand.prg
+   * contrib/hbnf/bytexor.prg
+   * contrib/hbnf/byteor.prg
+   * contrib/hbnf/origin.c
+   * contrib/hbnf/bitset.prg
+   * contrib/hbnf/popadder.prg
+   * contrib/hbnf/menutonf.prg
+   * contrib/hbnf/ftattr.c
+   * contrib/hbnf/isbit.prg
+   * contrib/hbnf/putkey.c
+   * contrib/hbnf/getenvrn.c
+   * contrib/hbnf/bytenot.prg
+   * contrib/hbnf/savesets.prg
+   * contrib/hbnf/tbwhile.prg
+   * contrib/hbnf/ftmenuto.ch
+   * contrib/hbnf/bitclr.prg
+   * contrib/hbnf/readme.txt
+   * contrib/rddads/doc/en/adsfuncs.txt
+   * contrib/rddads/doc/en/readme.txt
+   * contrib/rddads/readme.txt
+   * contrib/hbgd/ChangeLog
+   * contrib/hbgd/readme.txt
+   * contrib/hbmisc/hb_f.c
+   * contrib/hbtip/utils.c
+   * contrib/hbbtree/doc/hb_btree.txt
+   * contrib/examples/guestbk/guestbk.txt
+   * contrib/examples/hscript/readme.txt
+   * utils/hbdoc/genos2.prg
+   * utils/hbdoc/genng.prg
+   * utils/hbdoc/genasc.prg
+   * utils/hbdoc/genchm.prg
+   * utils/hbdoc/genhpc.prg
+   * utils/hbdoc/html.prg
+   * utils/hbdoc/ft_funcs.prg
+   * utils/hbdoc/hbdoc.prg
+   * utils/hbdoc/genpdf1.prg
+   * utils/hbdoc/gentrf.prg
+   * utils/hbdoc/genrtf.prg
+   * utils/hbmake/checks.prg
+   * utils/hbmake/ft_funcs.prg
+   * utils/hbmake/radios.prg
+   * utils/hbmake/hbmake.prg
+     ! Some more filename casing related cleanups.
+
+2008-08-17 17:30 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * include/hbstack.h
+   * include/hbsetup.h
+   * include/hbapi.h
+   * source/rtl/filesys.c
+   * contrib/gtwvg/tests/demowvg.prg
+   * contrib/hbct/tests/ctwtest.prg
+   * contrib/hbgd/ChangeLog
+   * contrib/hbodbc/sql.ch
+   * contrib/rddads/ads.ch
+   * contrib/rddads/ads1.c
+     ! Some more filename casing related cleanups.
+
+2008-08-17 17:00 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/examples/guestbk/guestbk.ini
+   * contrib/examples/guestbk/testcgi.prg
+   * contrib/examples/hscript/hscript.prg
+   * contrib/examples/pp/hbppdef.h
+   * contrib/examples/pp/hbpptbl.c
+   * contrib/gtwvg/tests/demowvg.prg
+   * contrib/gtwvg/wvgclass.prg
+   * contrib/hbapollo/tests/apollo.prg
+   * contrib/hbgd/ChangeLog
+   * contrib/hbgt/doc/gendoc.bat
+   * contrib/hbmisc/doc/gendoc.bat
+   * contrib/hbvpdf/hbvpdf.prg
+   * contrib/hbvpdf/hbvpdft.prg
+   * contrib/hbwhat32/_winclpb.c
+   * contrib/hbwhat32/_windate.c
+   * contrib/hbwhat32/_windc.c
+   * contrib/hbwhat32/_windir.c
+   * contrib/hbwhat32/_windraw.c
+   * contrib/hbwhat32/_wingdi.c
+   * contrib/hbwhat32/_winmisc.c
+   * contrib/hbwhat32/_winpen.c
+   * contrib/hbwhat32/_winprn.c
+   * contrib/hbwhat32/_winrect.c
+   * contrib/hbwhat32/_winrgn.c
+   * contrib/hbwhat32/_winsock.c
+   * contrib/hbwhat32/_wintbar.c
+   * contrib/hbwhat32/import.ch
+   * contrib/hbwhat32/sqltypes.ch
+   * contrib/hbwhat32/windebug.prg
+   * contrib/hbwhat32/winerror.prg
+   * contrib/hbwhat32/winini.prg
+   * contrib/hbwhat32/winrbar.prg
+   * contrib/hbwhat32/winstruc.ch
+   * contrib/hbwhat32/wintbar.prg
+   * contrib/hbziparch/hbziparc.c
+   * contrib/rddads/doc/gendoc.bat
+   * doc/cmdline.txt
+   * doc/dirstruc.txt
+   * doc/en/cmdline.txt
+   * doc/en/dbstrux.txt
+   * doc/en/dir.txt
+   * doc/en/file.txt
+   * doc/en/rddord.txt
+   * doc/es/dbstrux.txt
+   * doc/es/file.txt
+   * doc/es/hbpplib.txt
+   * doc/howtomak.txt
+   * doc/hrb_faq.txt
+   * doc/windll.txt
+   * include/dbinfo.ch
+   * source/debug/dbghelp.prg
+   * source/vm/classes.c
+   * source/vm/hvm.c
+   * tests/keywords.ch
+   * tests/output.prg
+   * tests/statics1.prg
+   * tests/statics2.prg
+   * tests/test_all.prg
+   * tests/testcgi.prg
+   * tests/testpre.prg
+   * tests/testrdd2.prg
+   * utils/hbmake/hbmake.prg
+   * utils/hbmake/hbmutils.prg
+     ! Some filename casing related fixes, cleanups.
+     * Some non-ASCII drawing chars in comments changed to ASCII ones.
+
+2008-08-17 09:48 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * include/hbapirdd.h
+   * include/hbsetup.h
+     + Added the most commonly used old #defines for compatibility:
+       - HARBOUR_MAX_RDD_DRIVERNAME_LENGTH
+       - HARBOUR_MAX_RDD_ALIAS_LENGTH
+       - OS_UNIX_COMPATIBLE
+       - OS_PATH_DELIMITER
+       Please try not to use these anymore, as they will be removed 
+       in version 1.1.
+
+2008-08-17 08:59 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * doc/dirstruc.txt
+     * Updated to reflect current state. [Chen Kedem]
+
+   * contrib/examples/pp/hbppcore.c
+   * contrib/examples/pp/pp.c
+   * contrib/hbct/disk.c
+   * contrib/hbct/files.c
+   * contrib/hbnf/getenvrn.c
+   * contrib/hbw32/tprinter.c
+   * contrib/hbziparch/hbxdirec.c
+   * contrib/hbziparch/hbziparc.c
+   * contrib/rddads/ads1.c
+   * contrib/rddads/adsfunc.c
+   * doc/en/terminal.txt
+   * include/hb_io.h
+   * include/hbapifs.h
+   * include/hbapirdd.h
+   * include/hbdefs.h
+   * include/hbsetup.h
+   * include/hbwince.h
+   * source/common/hbfsapi.c
+   * source/compiler/gencobj.c
+   * source/compiler/hbcomp.c
+   * source/compiler/hbusage.c
+   * source/debug/dbgentry.c
+   * source/main/harbour.c
+   * source/pp/hbpp.c
+   * source/pp/ppcore.c
+   * source/rdd/dbcmd.c
+   * source/rdd/dbf1.c
+   * source/rdd/delim1.c
+   * source/rdd/sdf1.c
+   * source/rdd/usrrdd/usrrdd.c
+   * source/rdd/wacore.c
+   * source/rdd/wafunc.c
+   * source/rdd/workarea.c
+   * source/rtl/console.c
+   * source/rtl/copyfile.c
+   * source/rtl/defpath.c
+   * source/rtl/direct.c
+   * source/rtl/disksphb.c
+   * source/rtl/file.c
+   * source/rtl/filesys.c
+   * source/rtl/fssize.c
+   * source/rtl/fstemp.c
+   * source/rtl/gtos2/gtos2.c
+   * source/rtl/gtpca/gtpca.c
+   * source/rtl/gtstd/gtstd.c
+   * source/rtl/gttrm/gttrm.c
+   * source/rtl/hbffind.c
+   * source/rtl/hbinet.c
+   * source/rtl/memofile.c
+   * source/rtl/philes.c
+   * source/rtl/seconds.c
+   * source/rtl/set.c
+   * source/vm/hvm.c
+   * source/vm/main.c
+     * Changed some macros to be in the HB_ namespace, to be 
+       possibly shorter, more unified and clearer.
+       OS_UNIX_COMPATIBLE                -> HB_OS_UNIX_COMPATIBLE
+       OS_PATH_LIST_SEPARATOR            -> HB_OS_PATH_LIST_SEP_CHR
+       OS_PATH_DELIMITER                 -> HB_OS_PATH_DELIM_CHR
+       OS_PATH_DELIMITER_STRING          -> HB_OS_PATH_DELIM_STR
+       OS_PATH_DELIMITER_LIST            -> HB_OS_PATH_DELIM_LIST
+       OS_FILE_MASK                      -> HB_OS_ALLFILE_MASK
+       OS_DRIVE_DELIMITER                -> HB_OS_DRIVE_DELIM_CHR
+       OS_HAS_DRIVE_LETTER               -> HB_OS_HAS_DRIVE_LETTER
+       OS_OPT_DELIMITER_LIST             -> HB_OS_OPT_DELIM_LIST
+       OS_EOL_LEN                        -> HB_OS_EOL_LEN
+       HARBOUR_GCC_OS2                   -> HB_OS_OS2_GCC
+       HARBOUR_START_PROCEDURE           -> HB_START_PROCEDURE
+       HARBOUR_MAIN_STD                  -> HB_MAIN_STD
+       HARBOUR_MAIN_WIN                  -> HB_MAIN_WIN
+       HARBOUR_MAX_RDD_DRIVERNAME_LENGTH -> HB_RDD_MAX_DRIVERNAME_LEN
+       HARBOUR_MAX_RDD_ALIAS_LENGTH      -> HB_RDD_MAX_ALIAS_LEN
+       HARBOUR_MAX_RDD_AREA_NUM          -> HB_RDD_MAX_AREA_NUM
+     ; INCOMPATIBLE change, please update your sources, a simple 
+       case-sensitive search and replace on .c/.cpp/.h/.hpp files 
+       will be enough for most sources.
+
+2008-08-16 16:16 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * make_b32.mak
+   * make_gcc.mak
+   * make_vc.mak
+   * make_vcce.mak
+   * include/hbdefs.h
+   * source/vm/mainwin.c
+   * source/vm/hvm.c
+   * source/hbpcre/_hbconf.h
+   * source/hbzlib/ChangeLog
+   * source/hbzlib/zconf.h
+   * utils/hbmake/hbmake.prg
+     * __EXPORT__ -> HB_DYNLIB
+
+2008-08-16 16:16 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * config/os2/gcc.cf
+     % Cleaned include path for OS/2/GCC.
+       David, please test it if it still builds successfully.
+
+   * make_b32.mak
+   * make_gcc.mak
+   * make_vc.mak
+   * make_vcce.mak
+   * utils/hbmake/hbmake.prg
+     % Removed using -D__EXPORT__ from any Harbour command lines, 
+       as this switch has no effect on the .prg level.
+
+2008-08-16 13:19 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * doc/linux1st.txt
+     + Added some quick openSUSE package requirement information.
+
+   * config/rules.cf
+     ! Fixed .prg rule to add PRG_USR after the built-in rules, 
+       to allow overriding them. This way it's also in sync with 
+       non-GNU make files.
+
+2008-08-16 03:10 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * make_rpm.sh
+   * harbour.spec
+     ! Added hbsqlit3, hbmsql to the contrib list.
+     ! Added hbhpdf (libharu) detection and build.
+     ; Untested
+
+2008-08-16 02:19 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbmzip/hbmzip.c
+     ! Fixed potential GPF in executable type detection.
+       Fixes GCC 4.3.1 warnings in openSUSE 11.
+
+   * dos/whatsnew.txt
+     ! Minor typos.
+
+   * tests/debugtst.prg
+   * tests/funcarr.prg
+   * tests/inherit.prg
+   * tests/objarr.prg
+   * tests/objasign.prg
+   * doc/en/hvm.txt
+   * doc/es/hvm.txt
+   * include/hbextern.ch
+   * source/vm/debug.c
+   * source/vm/hvm.c
+   * source/debug/dbgtobj.prg
+   * source/debug/debugger.prg
+   * source/rtl/altd.prg
+     * Harbour level HB_DBG_*() functions renamed to __DBG*() to 
+       reflect their internal nature.
+     - Removed old __VM*() synonyms to Harbour level __DBG*() functions.
+       INCOMPATIBLE.
+     ! Fixed a few minor doc bugs along the way.
+
+2008-08-14 18:15 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * ChangeLog
+     + Added entry for yesterday's syncing/tagging.
+
+   * make_deb.sh
+     ! Removed hbsqlit2 from contrib list.
+     + Added libharu detection.
+     + Added FreeImage detection (commented).
+     * Contrib list more or less ordered by alphabet.
+     ; [ QUESTION: Do we need to keep this logic duplicated here, 
+       if we now have the detection logic and contrib list 
+       embedded into the make system anyway? ]
+
+   * doc/linux1st.txt
+     * Synced with make_deb.sh.
+
+2008-08-14 00:08 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/bin/hb-func.sh
+    ! updated SunOS and HPUX library list
+    ! allow to set startup .prg function in DJGPP builds
+
+  * harbour/include/hbdefs.h
+    ! defined HARBOUR_START_PROCEDURE procedure for DMC
+      it fixes problem with executing final applications
+
+  * harbour/config/w32/dm.cf
+    ! disabled -o+time - with this switch wrong code is generated
+      what can be seen in HBRUN
 
 2008-08-13 17:41 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
    * SVN

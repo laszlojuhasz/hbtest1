@@ -50,7 +50,7 @@
  *
  *      // list all PRG files in Harbour Run-Time library
  *      // for DOS compatible operating systems
- *      __Dir( "c:\harbour\source\rtl\*.prg" )
+ *      __Dir( "C:\harbour\source\rtl\*.prg" )
  *
  *      // list all files in the public section on a Unix like machine
  *      __Dir( "/pub" )
@@ -58,12 +58,12 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      DBF information: CA-Clipper displays 8.3 file names, Harbour displays
+ *      DBF information: CA-Cl*pper displays 8.3 file names, Harbour displays
  *      the first 15 characters of a long file name if available.
  *
  *      File listing: To format file names displayed we use something like:
  *      PadR( Name, 8 ) + " " + PadR( Ext, 3 )
- *      CA-Clipper use 8.3 file name, with Harbour it would probably cut
+ *      CA-Cl*pper use 8.3 file name, with Harbour it would probably cut
  *      long file names to feet this template.
  *  $FILES$
  *      Library is rtl
@@ -107,7 +107,7 @@
  *
  *      // list all PRG files in Harbour Run-Time library
  *      // for DOS compatible operating systems
- *        Dir  "c:\harbour\source\rtl\*.prg"
+ *        Dir  "C:\harbour\source\rtl\*.prg"
  *
  *      // list all files in the public section on a Unix like machine
  *        Dir  "/pub"
@@ -115,12 +115,12 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      DBF information: CA-Clipper displays 8.3 file names, Harbour displays
+ *      DBF information: CA-Cl*pper displays 8.3 file names, Harbour displays
  *      the first 15 characters of a long file name if available.
  *
  *      File listing: To format file names displayed we use something like:
  *      PadR( Name, 8 ) + " " + PadR( Ext, 3 )
- *      CA-Clipper use 8.3 file name, with Harbour it would probably cut
+ *      CA-Cl*pper use 8.3 file name, with Harbour it would probably cut
  *      long file names to feet this template.
  *  $SEEALSO$
  *      ADIR(),DIRECTORY(),SET DEFAULT,__DIR()*
@@ -180,7 +180,7 @@
  *  $EXAMPLES$
     <fixed>
  *      LOCAL aName, aSize, aDate, aTime, aAttr, nLen, i
- *      nLen := ADIR( "*.JPG" )     // Number of JPG files in this directory
+ *      nLen := ADIR( "*.jpg" )     // Number of JPG files in this directory
  *      IF nLen > 0
  *         aName := Array( nLen )   // make room to store the information
  *         aSize := Array( nLen )

@@ -3,7 +3,7 @@
  */
 
 /*
- * File......: TEMPFILE.PRG
+ * File......: tempfile.prg
  * Author....: Glenn Scott
  * CIS ID....: 71620,1521
  *
@@ -84,7 +84,7 @@
  *
  *     Create a unique file on another drive, but do not hide it:
  *
- *            myFile := FT_TEMPFIL("e:\nanfor\src\")
+ *            myFile := FT_TEMPFIL("E:\nanfor\src\")
  *  $END$
  */
 
@@ -152,7 +152,7 @@
 
   cPath = alltrim( cPath )
 
-  nHandle := HB_FTempCreate( cPath, nil, if( lHide, FC_HIDDEN, FC_NORMAL ), @cFile )
+  nHandle := HB_FTempCreate( cPath, nil, iif( lHide, FC_HIDDEN, FC_NORMAL ), @cFile )
 
   if !hb_isbyref( @nHandle )
      fclose( nHandle )

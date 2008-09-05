@@ -86,7 +86,6 @@ HB_EXTERN_BEGIN
 #define HB_GT_xvt    HB_GT_XVT
 #define HB_GT_xwc    HB_GT_XWC
 #define HB_GT_gui    HB_GT_GUI
-#define HB_GT_alleg  HB_GT_ALLEG
 
 /* These hacks are needed to force preprocessing if id/x is also a macro */
 #define _HB_GT_PREF_( id )      _HB_GT_PREF__( id )
@@ -117,7 +116,7 @@ struct _HB_GT_BASE;
 
 typedef struct
 {
-   void     (* Init) ( HB_GT_PTR, FHANDLE, FHANDLE, FHANDLE );
+   void     (* Init) ( HB_GT_PTR, HB_FHANDLE, HB_FHANDLE, HB_FHANDLE );
    void     (* Exit) ( HB_GT_PTR );
    void *   (* New) ( HB_GT_PTR );
    void     (* Free) ( HB_GT_PTR );
@@ -316,9 +315,9 @@ typedef struct _HB_GT_BASE
    USHORT         uiExtCount;
    USHORT         uiClearChar;
    BYTE           bClearColor;
-   FHANDLE        hStdIn;
-   FHANDLE        hStdOut;
-   FHANDLE        hStdErr;
+   HB_FHANDLE     hStdIn;
+   HB_FHANDLE     hStdOut;
+   HB_FHANDLE     hStdErr;
 
    BOOL           fDispTrans;
    PHB_CODEPAGE   cdpTerm;

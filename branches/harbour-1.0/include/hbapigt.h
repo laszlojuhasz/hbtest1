@@ -82,7 +82,11 @@ HB_EXTERN_BEGIN
 #include "hbgtinfo.ch"
 
 /* maximum length of color string */
-#define CLR_STRLEN              64
+#define HB_CLRSTR_LEN           64
+
+#ifdef HB_LEGACY_LEVEL
+   #define CLR_STRLEN              HB_CLRSTR_LEN
+#endif
 
 /* attributes for color strings, these are the same as the ones in color.ch
    but prefixed with HB_ to avoid collision. */
@@ -136,7 +140,7 @@ typedef struct
 
 /* Public interface. These should never change, only be added to. */
 
-extern HB_EXPORT ERRCODE hb_gtInit( FHANDLE hFilenoStdin, FHANDLE hFilenoStdout, FHANDLE hFilenoStderr );
+extern HB_EXPORT ERRCODE hb_gtInit( HB_FHANDLE hFilenoStdin, HB_FHANDLE hFilenoStdout, HB_FHANDLE hFilenoStderr );
 extern HB_EXPORT ERRCODE hb_gtExit( void );
 extern HB_EXPORT ERRCODE hb_gtBox( SHORT uiTop, SHORT uiLeft, SHORT uiBottom, SHORT uiRight, BYTE * pbyFrame );
 extern HB_EXPORT ERRCODE hb_gtBoxD( SHORT uiTop, SHORT uiLeft, SHORT uiBottom, SHORT uiRight );
@@ -240,7 +244,7 @@ typedef struct
 } HB_GT_CORD;
 typedef HB_GT_CORD * PHB_GT_CORD;
 
-/* Undocumented CA-Clipper 5.x GT API calls */
+/* Undocumented CA-Cl*pper 5.x GT API calls */
 
 #define HB_GT_WND void
 #define HB_GT_RGB void

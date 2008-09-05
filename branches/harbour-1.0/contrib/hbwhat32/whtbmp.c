@@ -20,7 +20,7 @@ Modified and non-API functions:
 #define _WIN32_WINNT   0x0400
 
 #include <windows.h>
-#include "item.api"
+#include "hbapiitm.h"
 #include "hbapi.h"
 
 extern PHB_ITEM Rect2Array( RECT *rc  );
@@ -76,23 +76,16 @@ HB_FUNC( DRAWBITMAP )
 
 HB_FUNC( GETBITMAPSIZE )
 {
-   PHB_ITEM aArray = _itemArrayNew(2) ;
-   PHB_ITEM tmp ;
+   PHB_ITEM aArray = hb_itemArrayNew( 2 );
    BITMAP bm;
-   HBITMAP hBmp = (HBITMAP) hb_parnl(1);
+   HBITMAP hBmp = ( HBITMAP ) hb_parnl( 1 );
 
-   GetObject(hBmp, sizeof(bm), &bm);
+   GetObject( hBmp, sizeof( bm ), &bm );
 
-   tmp = _itemPutNL( NULL, bm.bmWidth );
-   hb_arraySet( aArray, 1, tmp );
-   _itemRelease( tmp );
+   hb_arraySetNL( aArray, 1, bm.bmWidth );
+   hb_arraySetNL( aArray, 2, bm.bmHeight );
 
-   tmp = _itemPutNL( NULL, bm.bmHeight );
-   hb_arraySet( aArray, 2, tmp );
-   _itemRelease( tmp );
-
-  _itemReturn( aArray );
-  _itemRelease( aArray );
+   hb_itemReturnRelease( aArray );
 }
 
 //-----------------------------------------------------------------------------
@@ -103,16 +96,10 @@ HB_FUNC( GETBITMAPSIZE )
 
 HB_FUNC( GETBITMAPDIMENSIONEX )
 {
-   SIZE  Size  ;
-   PHB_ITEM aSize ;
+   SIZE Size;
 
-   if  ( GetBitmapDimensionEx( (HBITMAP) hb_parnl( 1 ), &Size )  )
-   {
-      aSize = Size2Array( &Size ) ;
-      _itemReturn( aSize );
-      _itemRelease( aSize );
-   }
-
+   if( GetBitmapDimensionEx( ( HBITMAP ) hb_parnl( 1 ), &Size ) )
+      hb_itemReturnRelease( Size2Array( &Size ) );
 }
 
 
@@ -125,9 +112,7 @@ HB_FUNC( GETBITMAPDIMENSIONEX )
 
 HB_FUNC( SETBITMAPDIMENSIONEX )
 {
-   SIZE Size  ;
-   PHB_ITEM aSize;
-   PHB_ITEM temp;
+   SIZE Size;
 
    if ( SetBitmapDimensionEx( (HBITMAP) hb_parnl( 1 ),
                                   hb_parni( 2 )          ,
@@ -135,21 +120,12 @@ HB_FUNC( SETBITMAPDIMENSIONEX )
                                   &Size
                                   ) )
    {
-
-   aSize = hb_itemArrayNew(2);
-
-   temp = _itemPutNL( NULL, Size.cx );
-   hb_arraySet( aSize, 1, temp );
-   hb_itemRelease( temp );
-
-   temp = _itemPutNL( NULL, Size.cy );
-   hb_arraySet( aSize, 2, temp );
-   hb_itemRelease( temp );
-
-   hb_itemReturn( aSize );
-   hb_itemRelease( aSize );
-
-
+      PHB_ITEM aSize = hb_itemArrayNew( 2 );
+      
+      hb_arraySetNL( aSize, 1, Size.cx );
+      hb_arraySetNL( aSize, 2, Size.cy );
+      
+      hb_itemReturnRelease( aSize );
    }
 
 }

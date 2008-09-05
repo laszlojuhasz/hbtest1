@@ -77,7 +77,7 @@ mk_hbgetlibs()
     if [ -z "$@" ]
     then
         libs=""
-        if [ "$HB_COMPILER" != "cemgw" ]
+        if [ "$HB_COMPILER" != "mingwce" ]
         then
             libs="$libs gtwin"
         fi
@@ -94,7 +94,7 @@ mk_hbgetlibsctb()
     if [ -z "$@" ]
     then
         libs=""
-        if [ "$HB_COMPILER" = "cemgw" ]
+        if [ "$HB_COMPILER" = "mingwce" ]
         then
             libs="$libs gtwin"
         fi
@@ -154,22 +154,26 @@ mk_hbtools()
     fi
     if [ "${HB_COMPILER}" = "mingw32" ]; then
         HB_SYS_LIBS="${HB_SYS_LIBS} -luser32 -lwinspool -lgdi32 -lcomctl32 -lcomdlg32 -lole32 -loleaut32 -luuid -lwsock32 -lws2_32"
-    elif [ "${HB_COMPILER}" = "cemgw" ]; then
+    elif [ "${HB_COMPILER}" = "mingwce" ]; then
         HB_SYS_LIBS="${HB_SYS_LIBS} -lwininet -lws2 -lcommdlg -lcommctrl -luuid -lole32"
     elif [ "${HB_COMPILER}" = "djgpp" ]; then
         HB_SYS_LIBS="${HB_SYS_LIBS}"
     else
+        HB_CRS_LIB=""
         if [ "${HB_ARCHITECTURE}" = "linux" ]; then
             HB_SYS_LIBS="${HB_SYS_LIBS} -ldl"
-        fi
-        if [ "${HB_ARCHITECTURE}" = "sunos" ]; then
+        elif [ "${HB_ARCHITECTURE}" = "sunos" ]; then
             HB_SYS_LIBS="${HB_SYS_LIBS} -lrt"
+            HB_SYS_LIBS="${HB_SYS_LIBS} -lsocket -lnsl -lresolv"
             HB_CRS_LIB="curses"
-        elif [ -n "${HB_CURSES_VER}" ]; then
+        elif [ "${HB_ARCHITECTURE}" = "hpux" ]; then
+            HB_SYS_LIBS="${HB_SYS_LIBS} -lrt"
+        fi
+        if [ -n "${HB_CURSES_VER}" ]; then
             HB_CRS_LIB="${HB_CURSES_VER}"
         elif [ "${HB_NCURSES_194}" = "yes" ]; then
             HB_CRS_LIB="ncur194"
-        else
+        elif [ -z "${HB_CRS_LIB}" ]; then
             HB_CRS_LIB="ncurses"
         fi
         HB_SLN_LIB="slang"
@@ -498,7 +502,7 @@ if [ "\${HB_COMPILER}" = "mingw32" ]; then
     elif [ "\${HB_MODE}" = "std" ]; then
         l="hbmainstd"
     fi
-elif [ "\${HB_COMPILER}" = "cemgw" ]; then
+elif [ "\${HB_COMPILER}" = "mingwce" ]; then
     if [ "\${HB_MODE}" = "std" ]; then
         l="hbmainstd"
     else
@@ -514,7 +518,7 @@ l="hbfm"
 [ "\${HB_MT}" = "MT" ] && [ -f "\${HB_LIB_INSTALL}/lib\${l}mt.a" ] && l="\${l}mt"
 if [ -f "\${HB_LIB_INSTALL}/lib\${l}.a" ] && \\
    ( [ -n "\${HB_FM_REQ}" ] || [ "\${HB_STATIC}" = "yes" ] ) && \\
-   ( [ "\${HB_COMPILER}" != "cemgw" ] || [ "\${HB_FM_REQ}" = "STAT" ] ); then
+   ( [ "\${HB_COMPILER}" != "mingwce" ] || [ "\${HB_FM_REQ}" = "STAT" ] ); then
     if [ "\${HB_STATIC}" = "yes" ] && [ "\${HB_FM_REQ}" = "STAT" ]; then
         HARBOUR_LIBS="-l\${l} \${HARBOUR_LIBS}"
     else
@@ -562,12 +566,10 @@ hb_cmp()
 
 hb_link()
 {
-    if [ "\${HB_COMPILER}" != "djgpp" ]; then
-        if [ -n "\${HB_MAIN_FUNC}" ]; then
-            HB_MAIN_FUNC="@\${HB_MAIN_FUNC}"
-        elif [ -f "\${FOUTO}" ]; then
-            HB_MAIN_FUNC=\`hb_lnk_main "\${FOUTO}"\`
-        fi
+    if [ -n "\${HB_MAIN_FUNC}" ]; then
+        HB_MAIN_FUNC="@\${HB_MAIN_FUNC}"
+    elif [ "\${HB_COMPILER}" != "djgpp" ] && [ -f "\${FOUTO}" ]; then
+        HB_MAIN_FUNC=\`hb_lnk_main "\${FOUTO}"\`
     fi
     if [ -n "\${HB_LNK_REQ}" ] || [ -n "\${HB_GT_REQ}" ] || [ -n "\${HB_MAIN_FUNC}" ]; then
         hb_lnk_request > \${_TMP_FILE_}

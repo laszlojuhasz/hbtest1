@@ -47,17 +47,17 @@
  *  $EXAMPLES$
  *     // Create a new file that contain the same structure
  *      USE TEST
- *      __dbCopyStruct( "MyCopy.DBF" )
+ *      __dbCopyStruct( "mycopy.dbf" )
  *
  *      // Create a new file that contain part of the original structure
  *      LOCAL aList
  *      USE TEST
  *      aList := { "NAME" }
- *      __dbCopyStruct( "OnlyName.DBF", aList )
+ *      __dbCopyStruct( "onlyname.dbf", aList )
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      __dbCopyStruct() works exactly like CA-Clipper's __dbCopyStruct()
+ *      __dbCopyStruct() works exactly like CA-Cl*pper's __dbCopyStruct()
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -105,7 +105,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      COPY STRUCTURE works exactly as in CA-Clipper
+ *      COPY STRUCTURE works exactly as in CA-Cl*pper
  *  $PLATFORMS$
  *      All
  *  $SEEALSO$
@@ -179,7 +179,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      __dbCopyXStruct() works exactly like CA-Clipper's __dbCopyXStruct()
+ *      __dbCopyXStruct() works exactly like CA-Cl*pper's __dbCopyXStruct()
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -251,7 +251,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      COPY STRUCTURE EXTENDED works exactly as in CA-Clipper
+ *      COPY STRUCTURE EXTENDED works exactly as in CA-Cl*pper
  *  $PLATFORMS$
  *      All
  *  $SEEALSO$
@@ -360,7 +360,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      __dbCreate() works exactly as in CA-Clipper
+ *      __dbCreate() works exactly as in CA-Cl*pper
  *  $PLATFORMS$
  *      All
  *  $FILES$
@@ -433,7 +433,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      CREATE works exactly as in CA-Clipper
+ *      CREATE works exactly as in CA-Cl*pper
  *  $PLATFORMS$
  *      All
  *  $SEEALSO$
@@ -498,7 +498,7 @@
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      CREATE FROM works exactly as in CA-Clipper
+ *      CREATE FROM works exactly as in CA-Cl*pper
  *  $PLATFORMS$
  *      All
  *  $SEEALSO$
@@ -574,11 +574,11 @@
  *      USE TEST
  *      aStruct := DBSTRUCT()
  *      aList := { "NAME" }
- *      DBCREATE( "OnlyName.DBF", __FLEDIT( aStruct, aList ) )
+ *      DBCREATE( "onlyname.dbf", __FLEDIT( aStruct, aList ) )
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      CA-Clipper has internal undocumented function named __FLEDIT(),
+ *      CA-Cl*pper has internal undocumented function named __FLEDIT(),
  *      in Harbour we name it __dbStructFilter(). The new name gives a better
  *      description of what this function does. In Harbour __FLEDIT() simply
  *      calls __dbStructFilter() and therefor the later is the recommended
@@ -661,11 +661,11 @@
  *      USE TEST
  *      aStruct := DBSTRUCT()
  *      aList := { "NAME" }
- *      DBCREATE( "OnlyName.DBF", __dbStructFilter( aStruct, aList ) )
+ *      DBCREATE( "onlyname.dbf", __dbStructFilter( aStruct, aList ) )
  *  $STATUS$
  *      R
  *  $COMPLIANCE$
- *      __dbStructFilter() is a Harbour extension. CA-Clipper has an internal
+ *      __dbStructFilter() is a Harbour extension. CA-Cl*pper has an internal
  *      undocumented function named __FLEDIT() that does exactly the same
  *      thing. The new name gives a better description of what this function does.
  *  $PLATFORMS$

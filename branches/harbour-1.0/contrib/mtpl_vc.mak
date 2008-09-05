@@ -113,18 +113,19 @@ HB_BUILD_MODE  = C
 
 # Visual C++ version
 !ifndef HB_VISUALC_VER
-HB_VISUALC_VER = 60
+HB_VISUALC_VER = 80
 !endif
 
 # C Compiler Flags
 !if $(HB_VISUALC_VER) >= 80
-CFLAGS_VER     = -Ot2b1 -FD -Gs -D_CRT_SECURE_NO_DEPRECATE
+CFLAGS_VER     = -Ot2b1 -EHs-c- -D_CRT_SECURE_NO_DEPRECATE
 !else
-CFLAGS_VER     = -Ogt2yb1p -GX- -G6 -YX -FD -Gs
+CFLAGS_VER     = -Ogt2yb1p -GX- -G6 -YX
 !endif
 #-----------
 
-CFLAGS         = -I$(INCLUDE_DIR) $(CFLAGS_VER) -W3 -nologo -T$(HB_BUILD_MODE) $(C_USR) $(CFLAGS)
+CFLAGS         = -nologo -W3 -w34701 -Gs -I$(INCLUDE_DIR) $(CFLAGS_VER) -T$(HB_BUILD_MODE) \
+                 $(C_USR) $(CFLAGS) -I$(OBJ_DIR)
 
 #-----------
 !if "$(HB_BUILD_DEBUG)" == "yes"
@@ -140,7 +141,7 @@ CFLAGS         = -MT$(DBGMARKER) $(CFLAGS)
 #**********************************************************
 
 CLIBFLAGS      = -c $(CFLAGS) $(CLIBFLAGS)
-HARBOURFLAGS   = -i$(INCLUDE_DIR) -n -q0 -w3 -es2 -gc0 $(PRG_USR) $(HARBOURFLAGS)
+HARBOURFLAGS   = -i$(INCLUDE_DIR) -n -q0 -w3 -es2 -km $(PRG_USR) $(HARBOURFLAGS)
 LDFLAGS        =  $(LDFLAGS)
 
 #**********************************************************

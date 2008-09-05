@@ -4,7 +4,7 @@
 
 /*
  * Harbour Project source code:
- * Compatibility header file for CA-Clipper Terminal API
+ * Compatibility header file for CA-Cl*pper Terminal API
  *
  * Copyright 1999-2001 Viktor Szakats <viktor.szakats@syenar.hu>
  * www - http://www.harbour-project.org
@@ -57,6 +57,10 @@
 
 #include "clipdefs.h"
 #include "hbapigt.h"
+
+#ifndef HB_LEGACY_LEVEL
+#define CLR_STRLEN      HB_CLRSTR_LEN
+#endif
 
 #define _gtBox          hb_gtBox
 #define _gtBoxD         hb_gtBoxD

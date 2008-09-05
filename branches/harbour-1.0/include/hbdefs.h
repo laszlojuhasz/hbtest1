@@ -67,16 +67,16 @@
     ( defined( __BORLANDC__ ) && __BORLANDC__ >= 1410 ) || \
     ( defined( __GNUC__ ) && \
       ( defined( HB_OS_LINUX ) || defined( HB_OS_DARWIN ) ) )
-#   include <stdint.h>
-    /* workaround for BCC 5.8 bug */
-#   if ( defined( __BORLANDC__ ) && __BORLANDC__ >= 1410 )
-#      undef INT32_MIN
-#      define INT32_MIN ((int32_t) (-INT32_MAX-1))
-#      undef INT64_MIN
-#      define INT64_MIN (9223372036854775807i64-1)
-#      undef INT64_MAX
-#      define INT64_MAX 9223372036854775807i64
-#   endif
+   #include <stdint.h>
+   /* workaround for BCC 5.8 bug */
+   #if ( defined( __BORLANDC__ ) && __BORLANDC__ >= 1410 )
+      #undef INT32_MIN
+      #define INT32_MIN ((int32_t) (-INT32_MAX-1))
+      #undef INT64_MIN
+      #define INT64_MIN (9223372036854775807i64-1)
+      #undef INT64_MAX
+      #define INT64_MAX 9223372036854775807i64
+   #endif
 #endif
 
 /*
@@ -84,8 +84,8 @@
 #define HB_LONG_LONG_OFF
 */
 
-#if defined( HB_OS_WIN_32 ) || defined( _WIN64 )
-   #if defined( _WIN64 )
+#if defined( HB_OS_WIN_32 ) || defined( HB_OS_WIN_64 )
+   #if defined( HB_OS_WIN_64 )
       #undef HB_LONG_LONG_OFF
       #define HB_STRICT_ALIGNMENT
       #if !defined( HB_OS_WIN_32 )
@@ -286,7 +286,7 @@
  * below are some hacks which don't have to be true on some machines
  * please update it if necessary
  */
-#if defined( _WIN64 )
+#if defined( HB_OS_WIN_64 )
 #  define HB_ARCH_64BIT
 #elif ULONG_MAX > UINT_MAX && UINT_MAX > USHRT_MAX
 #  define HB_ARCH_64BIT
@@ -314,7 +314,7 @@
 #  endif
 #endif
 
-#if UINT_MAX == 0xffffffff
+#if UINT_MAX == 0xFFFFFFFF
 #  if !defined( UINT32 )
       typedef UINT         UINT32;
 #  endif
@@ -330,7 +330,7 @@
 #  if !defined( INT32_MIN )
 #     define INT32_MIN     INT_MIN
 #  endif
-#elif ULONG_MAX == 0xffffffff
+#elif ULONG_MAX == 0xFFFFFFFF
 #  if !defined( UINT32 )
       typedef ULONG        UINT32;
 #  endif
@@ -361,7 +361,7 @@
 #  define INT24_MIN     -8388608L
 #endif
 
-#if defined( HB_ARCH_64BIT ) && !defined( _WIN64 )
+#if defined( HB_ARCH_64BIT ) && !defined( HB_OS_WIN_64 )
 #  if !defined( UINT64 )
      typedef ULONG        UINT64;
 #  endif
@@ -531,7 +531,7 @@ typedef unsigned long HB_COUNTER;
 #endif
 
 /* type for memory pointer diff */
-#if defined( _WIN64 )
+#if defined( HB_OS_WIN_64 )
    typedef LONGLONG HB_PTRDIFF;
 #else
    typedef long HB_PTRDIFF;
@@ -547,16 +547,20 @@ typedef unsigned long HB_COUNTER;
 
 #if defined( HB_WIN32_IO )
 #if 1
-   typedef HB_PTRDIFF FHANDLE;
+   typedef HB_PTRDIFF HB_FHANDLE;
 #else
-   typedef void * FHANDLE;
+   typedef void * HB_FHANDLE;
 #endif
    typedef HB_PTRDIFF HB_NHANDLE;
-#  define hb_numToHandle( h )   ( ( FHANDLE ) ( HB_NHANDLE ) ( h ) )
+#  define hb_numToHandle( h )   ( ( HB_FHANDLE ) ( HB_NHANDLE ) ( h ) )
 #else
-   typedef int FHANDLE;
+   typedef int HB_FHANDLE;
    typedef int HB_NHANDLE;
 #  define hb_numToHandle( h )   ( ( int ) ( h ) )
+#endif
+
+#ifdef HB_LEGACY_LEVEL
+   #define FHANDLE                 HB_FHANDLE
 #endif
 
 /* maximum length of double number in decimal representation:
@@ -1156,8 +1160,8 @@ typedef unsigned long HB_COUNTER;
  *
  * By default we are using automatic lookup (symbol not defined)
 */
-#if defined(__WATCOMC__) || ( defined(__GNUC__) && !defined(__DJGPP__) && !defined(HARBOUR_GCC_OS2) )
-   #define HARBOUR_START_PROCEDURE "MAIN"
+#if defined(__WATCOMC__) || defined(__DMC__) || ( defined(__GNUC__) && !defined(__DJGPP__) && !defined(HB_OS_OS2_GCC) )
+   #define HB_START_PROCEDURE "MAIN"
 #endif
 
 #if defined(HB_FUNC_CALLCONV)
@@ -1169,7 +1173,7 @@ typedef unsigned long HB_COUNTER;
 typedef HARBOUR ( * PHB_FUNC )( void );
 typedef PHB_FUNC HB_FUNC_PTR;
 
-#if defined( __EXPORT__ )
+#if defined( HB_DYNLIB )
    #if defined( __RSXNT__ )
       /* RSXNT does not support any type of export keyword.
          Exported (i.e., public) names can be obtained via

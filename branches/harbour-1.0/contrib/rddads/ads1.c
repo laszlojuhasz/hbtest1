@@ -787,7 +787,7 @@ static ERRCODE adsGoTo( ADSAREAP pArea, ULONG ulRecNo )
    HB_TRACE(HB_TR_DEBUG, ("adsGoTo(%p, %lu)", pArea, ulRecNo));
 
    /* -----------------7/19/2001 3:04PM-----------------
-     The following call is a necessary workaround for ACE32.DLL
+     The following call is a necessary workaround for ace32.dll
      prior to 6.1.  There were bugs where
      AdsGotoRecord() can FAIL to move the record pointer
      after some sequences of setting/clearing relations.
@@ -2865,7 +2865,7 @@ static ERRCODE adsOpen( ADSAREAP pArea, LPDBOPENINFO pOpenInfo )
    /* See adsGettValue() for why we don't use pArea->uiMaxFieldNameLength here */
    UNSIGNED16 pusBufLen, pusType, pusDecimals;
    DBFIELDINFO dbFieldInfo;
-   char szAlias[ HARBOUR_MAX_RDD_ALIAS_LENGTH + 1 ], * szFile;
+   char szAlias[ HB_RDD_MAX_ALIAS_LEN + 1 ], * szFile;
    BOOL fDictionary = FALSE;
 
    HB_TRACE(HB_TR_DEBUG, ("adsOpen(%p)", pArea));
@@ -2962,7 +2962,7 @@ static ERRCODE adsOpen( ADSAREAP pArea, LPDBOPENINFO pOpenInfo )
    /* Set default alias if necessary */
    if( !pOpenInfo->atomAlias )
    {
-      UNSIGNED16 uiAliasLen = HARBOUR_MAX_RDD_ALIAS_LENGTH;
+      UNSIGNED16 uiAliasLen = HB_RDD_MAX_ALIAS_LEN;
       if( AdsGetTableAlias( hTable, ( UNSIGNED8 * ) szAlias, &uiAliasLen ) == AE_SUCCESS )
          pOpenInfo->atomAlias = ( BYTE * ) szAlias;
       else
@@ -3167,18 +3167,18 @@ static ERRCODE adsSysName( ADSAREAP pArea, BYTE * pBuffer )
    switch( u16TableType )
    {
       case ADS_NTX:
-         hb_strncpy( ( char * ) pBuffer, "ADSNTX", HARBOUR_MAX_RDD_DRIVERNAME_LENGTH );
+         hb_strncpy( ( char * ) pBuffer, "ADSNTX", HB_RDD_MAX_DRIVERNAME_LEN );
          break;
       case ADS_CDX:
-         hb_strncpy( ( char * ) pBuffer, "ADSCDX", HARBOUR_MAX_RDD_DRIVERNAME_LENGTH );
+         hb_strncpy( ( char * ) pBuffer, "ADSCDX", HB_RDD_MAX_DRIVERNAME_LEN );
          break;
 #if ADS_LIB_VERSION >= 900
       case ADS_VFP:
-         hb_strncpy( ( char * ) pBuffer, "ADSVFP", HARBOUR_MAX_RDD_DRIVERNAME_LENGTH );
+         hb_strncpy( ( char * ) pBuffer, "ADSVFP", HB_RDD_MAX_DRIVERNAME_LEN );
          break;
 #endif
       case ADS_ADT:
-         hb_strncpy( ( char * ) pBuffer, "ADSADT", HARBOUR_MAX_RDD_DRIVERNAME_LENGTH );
+         hb_strncpy( ( char * ) pBuffer, "ADSADT", HB_RDD_MAX_DRIVERNAME_LEN );
          break;
    }
 
@@ -3434,7 +3434,7 @@ static ERRCODE adsOrderListFocus( ADSAREAP pArea, LPDBORDERINFO pOrderInfo )
          /* ADS can't handle a space-padded string--we have to trim it */
          hb_strncpyUpperTrim( ( char * ) pucTagName,
                               hb_itemGetCPtr( pOrderInfo->itmOrder ),
-                              ADS_MAX_TAG_NAME );
+                              sizeof( pucTagName ) - 1 );
          if( !pucTagName[ 0 ] )
          {
             pArea->hOrdCurrent = 0;
@@ -3623,7 +3623,7 @@ static ERRCODE adsOrderDestroy( ADSAREAP pArea, LPDBORDERINFO pOrderInfo )
 
       hb_strncpyUpperTrim( ( char * ) pucTagName,
                            hb_itemGetCPtr( pOrderInfo->itmOrder ),
-                           ADS_MAX_TAG_NAME );
+                           sizeof( pucTagName ) - 1 );
       u32RetVal = AdsGetIndexHandle( pArea->hTable, pucTagName, &hIndex );
 
       if( u32RetVal != AE_SUCCESS )
@@ -3670,7 +3670,7 @@ static ERRCODE adsOrderInfo( ADSAREAP pArea, USHORT uiIndex, LPDBORDERINFO pOrde
 
          hb_strncpyUpperTrim( ( char * ) pucTagName,
                               hb_itemGetCPtr( pOrderInfo->itmOrder ),
-                              ADS_MAX_TAG_NAME );
+                              sizeof( pucTagName ) - 1 );
          u32RetVal = AdsGetIndexHandle( pArea->hTable, pucTagName, &hIndex );
       }
       else if( HB_IS_NUMERIC( pOrderInfo->itmOrder ) )
@@ -4785,10 +4785,13 @@ HB_CALL_ON_STARTUP_BEGIN( _hb_ads_rdd_init_ )
    hb_vmAtInit( hb_adsRddInit, NULL );
 HB_CALL_ON_STARTUP_END( _hb_ads_rdd_init_ )
 
-#if defined(HB_PRAGMA_STARTUP)
+#if defined( HB_PRAGMA_STARTUP )
    #pragma startup ads1__InitSymbols
    #pragma startup _hb_ads_rdd_init_
-#elif defined(HB_MSC_STARTUP)
+#elif defined( HB_MSC_STARTUP )
+   #if defined( HB_OS_WIN_64 )
+      #pragma section( HB_MSC_START_SEGMENT, long, read )
+   #endif
    #pragma data_seg( HB_MSC_START_SEGMENT )
    static HB_$INITSYM hb_vm_auto_ads1__InitSymbols = ads1__InitSymbols;
    static HB_$INITSYM hb_vm_auto_ads_rdd_init = _hb_ads_rdd_init_;

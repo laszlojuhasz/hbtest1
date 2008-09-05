@@ -3,7 +3,7 @@
  */
 
 /*
- * File......: DAYTOBOW.PRG
+ * File......: daytobow.prg
  * Author....: Jo W. French dba Practical Computing
  * CIS_ID....: 74731,1751
  *
@@ -70,10 +70,13 @@ FUNCTION FT_DAYTOBOW( dGivenDate )
 
   nDOW_Start := FT_DATECNFG()[2]
 
-  IF(VALTYPE(dGivenDate) != 'D', dGivenDate := DATE(), )
+  IF VALTYPE(dGivenDate) != 'D'
+    dGivenDate := DATE()
+  ENDIF
 
   nRetVal := DOW( dGivenDate ) - nDOW_Start
-  IF( nRetVal < 0, nRetVal += 7, )
+  IF nRetVal < 0
+    nRetVal += 7
+  ENDIF
 
 RETURN nRetVal
-

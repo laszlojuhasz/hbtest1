@@ -1588,7 +1588,7 @@ static LPTAGINFO hb_ntxTagLoad( LPNTXINDEX pIndex, ULONG ulBlock,
 static void hb_ntxIndexTagAdd( LPNTXINDEX pIndex, LPTAGINFO pTag )
 {
    LPCTXHEADER lpCTX = ( LPCTXHEADER ) pIndex->HeaderBuff;
-   int iTags = HB_GET_LE_UINT16( lpCTX->ntags ), i;
+   int iTags = HB_GET_LE_UINT16( lpCTX->ntags ), iLen, i;
    LPCTXTAGITEM pTagItem = ( LPCTXTAGITEM ) lpCTX->tags;
 
    for( i = 0; i < iTags; pTagItem++, i++ )
@@ -1600,7 +1600,11 @@ static void hb_ntxIndexTagAdd( LPNTXINDEX pIndex, LPTAGINFO pTag )
    {
       ++iTags;
       HB_PUT_LE_UINT16( lpCTX->ntags, iTags );
-      strncpy( ( char * ) pTagItem->tag_name, pTag->TagName, NTX_MAX_TAGNAME );
+      iLen = ( int ) strlen( pTag->TagName );
+      if( iLen > NTX_MAX_TAGNAME )
+         iLen = NTX_MAX_TAGNAME;
+      memcpy( pTagItem->tag_name, pTag->TagName, iLen );
+      memset( pTagItem->tag_name + iLen, 0, sizeof( pTagItem->tag_name ) - iLen );
    }
    HB_PUT_LE_UINT32( pTagItem->tag_header, pTag->HeadBlock );
    pIndex->Update = TRUE;
@@ -1652,7 +1656,7 @@ static ERRCODE hb_ntxTagHeaderSave( LPTAGINFO pTag )
 {
    LPNTXINDEX pIndex = pTag->Owner;
    NTXHEADER Header;
-   int iSize = 12, type, version = 0;
+   int iSize = 12, type, version = 0, iLen;
    ULONG next = 0;
 
    if( pIndex->Compound )
@@ -1708,11 +1712,24 @@ static ERRCODE hb_ntxTagHeaderSave( LPTAGINFO pTag )
       Header.unique[0]  = pTag->UniqueKey ? 1 : 0;
       Header.descend[0] = pTag->AscendKey ? 0 : 1;
       Header.custom[0]  = pTag->Custom    ? 1 : 0;
-      strncpy( ( char * ) Header.key_expr, pTag->KeyExpr, NTX_MAX_EXP );
+      iLen = ( int ) strlen( pTag->KeyExpr );
+      if( iLen > NTX_MAX_EXP )
+         iLen = NTX_MAX_EXP;
+      memcpy( Header.key_expr, pTag->KeyExpr, iLen );
       if( pTag->ForExpr )
-         strncpy( ( char * ) Header.for_expr, pTag->ForExpr, NTX_MAX_EXP );
+      {
+         iLen = ( int ) strlen( pTag->ForExpr );
+         if( iLen > NTX_MAX_EXP )
+            iLen = NTX_MAX_EXP;
+         memcpy( Header.for_expr, pTag->ForExpr, iLen );
+      }
       if( pTag->fTagName )
-         strncpy( ( char * ) Header.tag_name, pTag->TagName, NTX_MAX_TAGNAME );
+      {
+         iLen = ( int ) strlen( pTag->TagName );
+         if( iLen > NTX_MAX_TAGNAME )
+            iLen = NTX_MAX_TAGNAME;
+         memcpy( Header.tag_name, pTag->TagName, iLen );
+      }
       iSize = sizeof( NTXHEADER );
    }
 
@@ -2072,7 +2089,8 @@ static BOOL hb_ntxIndexUnLockRead( LPNTXINDEX pIndex )
    if( pIndex->lockRead < 0 )
       hb_errInternal( 9106, "hb_ntxIndexUnLockRead: bad count of locks.", NULL, NULL );
 
-   if( pIndex->lockRead || pIndex->lockWrite || !pIndex->fShared )
+   if( pIndex->lockRead || pIndex->lockWrite || !pIndex->fShared ||
+       HB_DIRTYREAD( pIndex->Owner ) )
    {
       fOK = TRUE;
    }
@@ -6274,7 +6292,7 @@ static ERRCODE ntxOrderCreate( NTXAREAP pArea, LPDBORDERCREATEINFO pOrderInfo )
    }
    else
    {
-      FHANDLE hFile;
+      HB_FHANDLE hFile;
       BOOL bRetry, fOld, fShared = pArea->fShared && !fTemporary && !fExclusive;
       USHORT uiFlags = FO_READWRITE | ( fShared ? FO_DENYNONE : FO_EXCLUSIVE );
 
@@ -7233,7 +7251,7 @@ static ERRCODE ntxCountScope( NTXAREAP pArea, void * pPtr, LONG * plRecNo )
 static ERRCODE ntxOrderListAdd( NTXAREAP pArea, LPDBORDERINFO pOrderInfo )
 {
    USHORT uiFlags;
-   FHANDLE hFile;
+   HB_FHANDLE hFile;
    char szFileName[ _POSIX_PATH_MAX + 1 ], szTagName[ NTX_MAX_TAGNAME + 1 ];
    LPNTXINDEX pIndex, *pIndexPtr;
    ERRCODE errCode;
@@ -7495,7 +7513,7 @@ static ERRCODE ntxRddInfo( LPRDDNODE pRDD, USHORT uiIndex, ULONG ulConnect, PHB_
          hb_itemPutC( pItem, pData->szIndexExt[ 0 ] ? pData->szIndexExt : NTX_INDEXEXT );
          if( szNew )
          {
-            hb_strncpy( pData->szIndexExt, szNew, HB_MAX_FILE_EXT );
+            hb_strncpy( pData->szIndexExt, szNew, sizeof( pData->szIndexExt ) - 1 );
             hb_xfree( szNew );
          }
          break;
@@ -7746,10 +7764,13 @@ HB_CALL_ON_STARTUP_BEGIN( _hb_dbfntx_rdd_init_ )
    hb_vmAtInit( hb_dbfntxRddInit, NULL );
 HB_CALL_ON_STARTUP_END( _hb_dbfntx_rdd_init_ )
 
-#if defined(HB_PRAGMA_STARTUP)
+#if defined( HB_PRAGMA_STARTUP )
    #pragma startup dbfntx1__InitSymbols
    #pragma startup _hb_dbfntx_rdd_init_
-#elif defined(HB_MSC_STARTUP)
+#elif defined( HB_MSC_STARTUP )
+   #if defined( HB_OS_WIN_64 )
+      #pragma section( HB_MSC_START_SEGMENT, long, read )
+   #endif
    #pragma data_seg( HB_MSC_START_SEGMENT )
    static HB_$INITSYM hb_vm_auto_dbfntx1__InitSymbols = dbfntx1__InitSymbols;
    static HB_$INITSYM hb_vm_auto_dbfntx_rdd_init = _hb_dbfntx_rdd_init_;

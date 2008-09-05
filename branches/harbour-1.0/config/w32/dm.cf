@@ -16,7 +16,9 @@ CC_IN = -c
 CC_OUT = -o
 CPPFLAGS = -I. -I$(HB_INC_COMPILE)
 
-CFLAGS = -6 -cpp -mn -o+time -x
+CFLAGS = -6 -cpp -mn -x
+# disabled - it causes that wrong code is generated
+#CFLAGS += -o+time
 # Suppressing "possible extraneous ';'" warnings. [vszakats]
 #CFLAGS += -w7
 
@@ -53,7 +55,8 @@ ifneq ($(LNK_USR_LIB),)
 LINKLIBS += $(foreach lib, $(LNK_USR_LIB), $(lib)$(LIB_EXT))
 endif
 
-SYSLIBS = kernel32 user32 winspool gdi32 comctl32 comdlg32 ole32 oleaut32 uuid wsock32 advapi32
+SYSLIBS = kernel32 user32 gdi32 wsock32 advapi32
+SYSLIBS += winspool comctl32 comdlg32 ole32 oleaut32 uuid
 LINKLIBS += $(SYSLIBS)
 
 

@@ -588,11 +588,11 @@ static ULONG hb_translateExtAttr( const char* szFileName, ULONG ulExtAttr )
    iLen = ( int ) strlen( szFileName );
    if( iLen > 4 )
    {
-      if( hb_stricmp( szFileName - 4, ".exe" ) == 0 ||
-          hb_stricmp( szFileName - 4, ".com" ) == 0 ||
-          hb_stricmp( szFileName - 4, ".bat" ) == 0 ||
-          hb_stricmp( szFileName - 4, ".cmd" ) == 0 ||
-          hb_stricmp( szFileName - 3, ".sh" ) == 0 )
+      if( hb_stricmp( szFileName + iLen - 4, ".exe" ) == 0 ||
+          hb_stricmp( szFileName + iLen - 4, ".com" ) == 0 ||
+          hb_stricmp( szFileName + iLen - 4, ".bat" ) == 0 ||
+          hb_stricmp( szFileName + iLen - 4, ".cmd" ) == 0 ||
+          hb_stricmp( szFileName + iLen - 3, ".sh" ) == 0 )
       {
          ulExtAttr |= 0x00490000; /* --x--x--x */
       }
@@ -614,7 +614,7 @@ static ULONG hb_translateExtAttr( const char* szFileName, ULONG ulExtAttr )
 static int hb_zipStoreFile( zipFile hZip, const char* szFileName, const char* szName, const char* szPassword, const char* szComment )
 {
    char          * szZipName, * pString;
-   FHANDLE       hFile;
+   HB_FHANDLE    hFile;
    ULONG         ulLen, ulExtAttr;
    zip_fileinfo  zfi;
    int           iResult;
@@ -888,7 +888,7 @@ static int hb_unzipExtractCurrentFile( unzFile hUnzip, const char* szFileName, c
    char           cSep, * pString;
    unz_file_info  ufi;
    int            iResult;
-   FHANDLE        hFile;
+   HB_FHANDLE     hFile;
 
    iResult = unzGetCurrentFileInfo( hUnzip, &ufi, szName, _POSIX_PATH_MAX, 
                                     NULL, 0, NULL, 0 );
@@ -908,7 +908,7 @@ static int hb_unzipExtractCurrentFile( unzFile hUnzip, const char* szFileName, c
    ulLen = strlen( szName );
 
    /* Test shows that files in subfolders can be stored to zip file without 
-      explicitly adding folder. So, let's create a requred path */
+      explicitly adding folder. So, let's create a required path */
 
    ulPos = 1;
    while( ulPos < ulLen )
@@ -1092,7 +1092,7 @@ static int hb_zipDeleteFile( const char* szZipFile, const char* szFileMask )
    char szTempFile[ _POSIX_PATH_MAX + 1 ];
    char szCurrFile[ _POSIX_PATH_MAX + 1 ];
    PHB_FNAME pFileName;
-   FHANDLE hFile;
+   HB_FHANDLE hFile;
    unzFile hUnzip;
    zipFile hZip;
    unz_global_info ugi;

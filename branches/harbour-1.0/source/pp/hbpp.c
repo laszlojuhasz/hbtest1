@@ -61,13 +61,13 @@
 
 /*
  * library functions used by PP core code
- * necessary to create stand alone binries
+ * necessary to create standalone binaries
  */
 void * hb_xgrab( ULONG ulSize ) { return malloc( ulSize ); }
 void * hb_xrealloc( void * pMem, ULONG ulSize ) { return realloc( pMem, ulSize ); }
 void hb_xfree( void * pMem ) { free( pMem ); }
 BYTE * hb_fsNameConv( BYTE * szFileName, BOOL * pfFree ) { if( pfFree ) * pfFree = FALSE; return szFileName; }
-int hb_setGetDirSeparator( void ) { return OS_PATH_DELIMITER; }
+int hb_setGetDirSeparator( void ) { return HB_OS_PATH_DELIM_CHR; }
 int hb_verSvnID( void ) { return 0; }
 
 /*
@@ -171,11 +171,11 @@ static int hb_pp_writeRules( FILE * fout, PHB_PP_RULE pFirst, char * szName )
       if( pRule->pMatch )
          snprintf( szMatch, sizeof( szMatch ), "s_%cm%03d", szName[0], iRule );
       else
-         strncpy( szMatch, "NULL   ", sizeof( szResult ) );
+         hb_strncpy( szMatch, "NULL   ", sizeof( szMatch ) - 1 );
       if( pRule->pResult )
          snprintf( szResult, sizeof( szResult ), "s_%cr%03d", szName[0], iRule );
       else
-         strncpy( szResult, "NULL   ", sizeof( szResult ) );
+         hb_strncpy( szResult, "NULL   ", sizeof( szResult ) - 1 );
 
       ulRepeatBits = 0;
       for( u = 0, ulBit = 1; u < pRule->markers; ++u, ulBit <<= 1 )

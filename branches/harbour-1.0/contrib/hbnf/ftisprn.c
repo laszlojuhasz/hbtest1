@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * FT_ISPRINT()
  *
- * Copyright 1999-2007 Viktor Szakats <viktor.szakats@syenar.hu>
+ * Copyright 1999-2008 Viktor Szakats (harbour.01 syenar hu)
  * www - http://www.harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,7 +50,7 @@
  *
 */
 
-/* File......: ISPRINT.ASM
+/* File......: isprint.asm
 * Author....: Ted Means
 * CIS ID....: 73067,3332
 *
@@ -133,7 +133,7 @@
 *        Qout( "Check the device on COM2.  Something is wrong." )
 *     ENDIF
 *
-*     IF ! FT_ISPRINT( "A:\NUL" )
+*     IF ! FT_ISPRINT( "A:\nul" )
 *        Qout( "Oops, better check drive A!" )
 *     ENDIF
 *  $END$

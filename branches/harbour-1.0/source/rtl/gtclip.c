@@ -56,6 +56,14 @@
 #define HB_OS_WIN_32_USED
 #include "hbgtcore.h"
 
+#if defined( __CYGWIN__ )
+   #include <wchar.h>
+#elif defined( __POCC__ ) && defined( HB_WINCE )
+   #ifndef GMEM_MOVEABLE
+      #define GMEM_MOVEABLE       2
+   #endif
+#endif
+
 /* TODO: add protection for MT mode */
 static char *     s_szClipboardData;
 static ULONG      s_ulClipboardLen;
@@ -138,7 +146,7 @@ BOOL hb_gt_w32_getClipboard( UINT uFormat, char ** pszClipData, ULONG *pulLen )
       if( hglb )
       {
          LPTSTR lptstr = ( LPTSTR ) GlobalLock( hglb );
-         if( lptstr != NULL )
+         if( lptstr )
          {
             switch( uFormat )
             {

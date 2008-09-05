@@ -58,7 +58,7 @@
 HB_EXTERN_BEGIN
 
 #if defined(HB_WINCE)
-#  undef  OS_HAS_DRIVE_LETTER
+#  undef  HB_OS_HAS_DRIVE_LETTER
 
 /* defined(__CEGCC__) || defined(__MINGW32CE__) */
 
@@ -152,16 +152,31 @@ extern char *strerror( int errnum );
    BOOL  WINAPI Arc( HDC hdc, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4);
 
    #if defined( __POCC__ ) || defined( __XCC__ )
+      #ifndef GlobalAlloc
       #define GlobalAlloc(flags, cb)      LocalAlloc(flags, cb)
+      #endif
+      #ifndef GlobalLock
       #define GlobalLock(lp)              LocalLock(lp)
+      #endif
+      #ifndef GlobalUnlock
       #define GlobalUnlock(lp)            LocalUnlock(lp)
+      #endif
+      #ifndef GlobalSize
       #define GlobalSize(lp)              LocalSize(lp)
+      #endif
+      #ifndef GlobalFree
       #define GlobalFree(h)               LocalFree(h)
+      #endif
+      #ifndef GlobalReAlloc
       #define GlobalReAlloc(h, cb, flags) LocalReAlloc(h, cb, flags)
+      #endif
+      #ifndef GlobalHandle
       #define GlobalHandle(lp)            LocalHandle(lp)
+      #endif
+      #ifndef GlobalFlags
       #define GlobalFlags(lp)             LocalFlags(lp)
    #endif
-
+   #endif
 #endif /* HB_OS_WIN_32_USED && _MSC_VER */
 
 #endif /* HB_WINCE */

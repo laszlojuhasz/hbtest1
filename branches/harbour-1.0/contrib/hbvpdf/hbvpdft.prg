@@ -2,7 +2,7 @@
  * $Id$
  */
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 //
 //    Program Cl_Pdf.prg   
 //
@@ -10,7 +10,7 @@
 //
 //    Class Code : Pritpal Bedi . http://www.vouchcac.com 
 //
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifndef __HARBOUR__
    #ifndef __XPP__
@@ -20,7 +20,7 @@
 
 
 #ifdef __HARBOUR__             //  Harbour and xHarbour
-   #include      'hbclass.ch'
+   #include      "hbclass.ch"
 #endif
 
 #ifdef __XPP__             //  xBase++
@@ -30,14 +30,14 @@
 #endif
 
 #ifdef __CLP__             //  Clipper
-   #include     'class(y).ch'
+   #include     "class(y).ch"
 #endif
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
-#include             'hbvpdf.ch'
+#include             "hbvpdf.ch"
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 CREATE CLASS tPdf
 
@@ -121,7 +121,7 @@ METHOD Execute
 
 ENDCLASS
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:Init( cFile, nLen, lOptimize )
@@ -192,7 +192,7 @@ fwrite( ::aReport[ HANDLE ], cTemp )
 
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:AtSay( cString, nRow, nCol, cUnits, lExact, cId )
@@ -268,7 +268,7 @@ DEFAULT cId    TO ""
 
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:Normal()
@@ -290,7 +290,7 @@ local cName := ::GetFontInfo( "NAME" )
    ENDIF
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:Italic()
@@ -312,7 +312,7 @@ local cName := ::GetFontInfo( "NAME" )
    ENDIF
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:Bold()
@@ -325,7 +325,7 @@ local cName := ::GetFontInfo( "NAME" )
       ::aReport[ FONTNAME ] := 2
    ELSEIF cName == "Helvetica"
       ::aReport[ FONTNAME ] := 6
-   ELSEIF cName == 'Courier'
+   ELSEIF cName == "Courier"
       ::aReport[ FONTNAME ] := 10    // Courier // 0.04
    ENDIF
 
@@ -336,7 +336,7 @@ local cName := ::GetFontInfo( "NAME" )
 
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:BoldItalic()
@@ -349,7 +349,7 @@ IF     cName == "Times"
    ::aReport[ FONTNAME ] := 4
 ELSEIF cName == "Helvetica"
    ::aReport[ FONTNAME ] := 8
-ELSEIF cName == 'Courier'
+ELSEIF cName == "Courier"
    ::aReport[ FONTNAME ] := 12 // 0.04
 ENDIF
 
@@ -360,7 +360,7 @@ ENDIF
 
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:BookAdd( cTitle, nLevel, nPage, nLine )
@@ -372,7 +372,7 @@ aadd( ::aReport[ BOOKMARK ], { nLevel, alltrim( cTitle ), 0, 0, 0, 0, 0, 0, nPag
 
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:BookClose( )
@@ -384,7 +384,7 @@ METHOD BookClose( )
 
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:BookOpen( )
@@ -396,7 +396,7 @@ METHOD BookOpen( )
 
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:Box( x1, y1, x2, y2, nBorder, nShade, cUnits, cColor, cId )
@@ -447,9 +447,9 @@ DEFAULT cColor  TO ""
       IF nBorder > 0
 /*
             1
-         ÚÄÄÄÄÄ¿
+         Ú-----¿
        4 ³     ³ 2
-         ÀÄÄÄÄÄÙ
+         À-----Ù
             3
 */
          ::aReport[ PAGEBUFFER ] += CRLF + "0 g " + ltrim(str( y1 )) + " " + ltrim(str( ::aReport[ PAGEY ] - x1 )) + " " + ltrim(str( y2 - y1 )) + " -" + ltrim(str( nBorder )) + " re f"
@@ -460,7 +460,7 @@ DEFAULT cColor  TO ""
    ENDIF
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:Box1( nTop, nLeft, nBottom, nRight, nBorderWidth, cBorderColor, cBoxColor )
@@ -491,7 +491,7 @@ DEFAULT cBoxColor to chr(255) + chr(255) + chr(255)
                          CRLF + "B"
 return nil
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:Center( cString, nRow, nCol, cUnits, lExact, cId )
@@ -523,7 +523,7 @@ DEFAULT nCol TO IIF( cUnits == "R", ::aReport[ REPORTWIDTH ] / 2, ::aReport[ PAG
    ::AtSay( cString, ::R2M( nRow ), IIF( cUnits == "R", ::aReport[ PDFLEFT ] + ( ::aReport[ PAGEX ] / 72 * 25.4 - 2 * ::aReport[ PDFLEFT ] ) * nCol / ::aReport[ REPORTWIDTH ], nCol ) - nLen, "M", lExact )
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:Close()
@@ -669,7 +669,7 @@ local nI, cTemp, nCurLevel, nObj1, nLast, nCount, nFirst, nRecno, nBooklen
 
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:Image( cFile, nRow, nCol, cUnits, nHeight, nWidth, cId )
@@ -713,7 +713,7 @@ DEFAULT cId TO  ""
 
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:Length( cString )
@@ -740,7 +740,7 @@ local nWidth := 0.00, nI, nLen, nArr, nAdd := ( ::aReport[ FONTNAME ] - 1 ) % 4
    Next
 RETURN nWidth
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:NewLine( n )
@@ -758,7 +758,7 @@ DEFAULT n TO 1
 
 RETURN ::aReport[ REPORTLINE ]
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:NewPage( _cPageSize, _cPageOrient, _nLpi, _cFontName, _nFontType, _nFontSize )
@@ -798,7 +798,7 @@ DEFAULT _nFontSize   TO ::aReport[ FONTSIZE ]
 
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:PageSize( _cPageSize )
@@ -842,7 +842,7 @@ DEFAULT _cPageSize TO "LETTER"
 
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:PageOrient( _cPageOrient )
@@ -856,7 +856,7 @@ DEFAULT _cPageOrient TO "P"
    ::PageSize( ::aReport[ PAGESIZE ] )
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:PageNumber( n )
@@ -870,7 +870,7 @@ DEFAULT n TO 0
    ENDIF
 RETURN ::aReport[ REPORTPAGE ]
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:Reverse( cString )
@@ -880,7 +880,7 @@ METHOD Reverse( cString )
 
 RETURN cString + chr(255)
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:RJust( cString, nRow, nCol, cUnits, lExact, cId )
@@ -913,7 +913,7 @@ DEFAULT lExact TO .f.
    ::AtSay( cString, ::R2M( nRow ), IIF( cUnits == "R", ::aReport[ PDFLEFT ] + ( ::aReport[ PAGEX ] / 72 * 25.4 - 2 * ::aReport[ PDFLEFT ] ) * nCol / ::aReport[ REPORTWIDTH ] - nAdj, nCol ) - nLen, "M", lExact )
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:SetFont( _cFont, _nType, _nSize, cId )
@@ -947,7 +947,7 @@ DEFAULT _nSize TO 10
    ENDIF
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:SetLPI(_nLpi)
@@ -964,7 +964,7 @@ DEFAULT _nLpi TO 6
    ::PageSize( ::aReport[ PAGESIZE ] )
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:StringB( cString )
@@ -977,7 +977,7 @@ cString := strtran( cString, ")", "\)" )
 
 RETURN cString
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:TextCount( cString, nTop, nLeft, nLength, nTab, nJustify, cUnits )
@@ -987,7 +987,7 @@ METHOD TextCount( cString, nTop, nLeft, nLength, nTab, nJustify, cUnits )
 
 RETURN ::Text( cString, nTop, nLeft, nLength, nTab, nJustify, cUnits, .f. )
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:Text( cString, nTop, nLeft, nLength, nTab, nJustify, cUnits, cColor, lPrint )
@@ -1000,7 +1000,7 @@ local nI, cTemp, cToken, k, nL, nRow, nLines, nLineLen, nStart
 local lParagraph, nSpace, nNew, nTokenLen, nCRLF, nTokens, nLen
 
 DEFAULT nTab     TO -1
-DEFAULT cUnits   TO 'R'
+DEFAULT cUnits   TO "R"
 DEFAULT nJustify TO 4 
 DEFAULT lPrint   TO .t.
 DEFAULT cColor   TO ""
@@ -1106,7 +1106,7 @@ DEFAULT cColor   TO ""
 
 RETURN nLines
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:UnderLine( cString )
@@ -1116,7 +1116,7 @@ METHOD UnderLine( cString )
 
 RETURN cString + chr(254)
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:OpenHeader( cFile )
@@ -1126,14 +1126,14 @@ METHOD OpenHeader( cFile )
 
 local nErrorCode := 0, nAt, cCmd 
 
-DEFAULT cFile TO ''
+DEFAULT cFile TO ""
 
    IF !empty( cFile )
       cFile := alltrim( cFile )
       IF len( cFile ) > 12 .or. ;
-         at( ' ', cFile ) > 0 .or. ;
-         ( at( ' ', cFile ) == 0 .and. len( cFile ) > 8 ) .or. ;
-         ( ( nAt := at( '.', cFile )) > 0 .and. len( substr( cFile, nAt + 1 )) > 3 )
+         at( " ", cFile ) > 0 .or. ;
+         ( at( " ", cFile ) == 0 .and. len( cFile ) > 8 ) .or. ;
+         ( ( nAt := at( ".", cFile )) > 0 .and. len( substr( cFile, nAt + 1 )) > 3 )
          
          cCmd := "copy " + cFile + " temp.tmp > nul"
          RunExternal( cCmd )
@@ -1149,7 +1149,7 @@ DEFAULT cFile TO ''
 
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:EditOnHeader()
@@ -1162,7 +1162,7 @@ METHOD EditOnHeader()
 
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:EditOffHeader()
@@ -1175,7 +1175,7 @@ METHOD EditOffHeader()
 
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:CloseHeader()
@@ -1187,7 +1187,7 @@ METHOD CloseHeader()
    ::aReport[ MARGINS ] := .f.
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:DeleteHeader( cId )
@@ -1206,7 +1206,7 @@ local nRet := -1, nId
    ENDIF
 RETURN nRet
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:EnableHeader( cId )
@@ -1223,7 +1223,7 @@ local nId
    ENDIF
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:DisableHeader( cId )
@@ -1240,7 +1240,7 @@ local nId
    ENDIF
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:SaveHeader( cFile )
@@ -1250,14 +1250,14 @@ METHOD SaveHeader( cFile )
 
 local nErrorCode := 0, cCmd
 
-Array2File( 'temp.tmp', ::aReport[ HEADER ] )
+Array2File( "temp.tmp", ::aReport[ HEADER ] )
 
 cCmd := "copy temp.tmp " + cFile + " > nul"
 RunExternal( cCmd )
 
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:Header( cFunction, cId, arr )
@@ -1299,7 +1299,7 @@ local nId, nI, nLen, nIdLen
    ENDIF
 RETURN cId
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:DrawHeader()
@@ -1357,7 +1357,7 @@ local nI, _nFont, _nSize, nLen := len( ::aReport[ HEADER ] )
    ENDIF
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:Margins( nTop, nLeft, nBottom )
@@ -1535,7 +1535,7 @@ local nI, nLen := len( ::aReport[ HEADER ] ), nTemp, aTemp, nHeight
 
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:CreateHeader( _file, _size, _orient, _lpi, _width )
@@ -1635,7 +1635,7 @@ DEFAULT _width TO 200
    ::SaveHeader( _file )
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:ImageInfo( cFile )
@@ -1643,7 +1643,7 @@ METHOD tPdf:ImageInfo( cFile )
 METHOD ImageInfo( cFile ) 
 #endif
 
-local cTemp := upper(substr( cFile, rat('.', cFile) + 1 )), aTemp := {}
+local cTemp := upper(substr( cFile, rat(".", cFile) + 1 )), aTemp := {}
    do case
    case cTemp == "TIF"
       aTemp := ::TIFFInfo( cFile )
@@ -1652,7 +1652,7 @@ local cTemp := upper(substr( cFile, rat('.', cFile) + 1 )), aTemp := {}
    endcase
 RETURN aTemp
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:TIFFInfo( cFile )
@@ -1670,11 +1670,11 @@ local nWidth := 0, nHeight := 0, nBits := 0, nFrom := 0, nLength := 0, xRes := 0
 
    nHandle := fopen( cFile )
 
-   c2 := '  '
+   c2 := "  "
    fread( nHandle, @c2, 2 )
    fread( nHandle, @c2, 2 )
 
-   cIFDNext := '    '
+   cIFDNext := "    "
    fread( nHandle, @cIFDNext, 4 )
 
    cTemp  := space(12)
@@ -1712,10 +1712,10 @@ local nWidth := 0, nHeight := 0, nBits := 0, nFrom := 0, nLength := 0, xRes := 0
          IF nFieldType ==  ASCII
             --nCount
          ENDIF
-         cTag := ''
+         cTag := ""
          do case
          case nTag == 256
-            cTag := 'ImageWidth'
+            cTag := "ImageWidth"
 
             IF nFieldType ==  SHORT
                nWidth := bin2w( substr( cValues, 1, 2 ))
@@ -1724,7 +1724,7 @@ local nWidth := 0, nHeight := 0, nBits := 0, nFrom := 0, nLength := 0, xRes := 0
             ENDIF
 
          case nTag == 257
-            cTag := 'ImageLength'
+            cTag := "ImageLength"
             IF nFieldType ==  SHORT
                nHeight := bin2w(substr( cValues, 1, 2 ))
             ELSEIF nFieldType ==  LONG
@@ -1732,32 +1732,32 @@ local nWidth := 0, nHeight := 0, nBits := 0, nFrom := 0, nLength := 0, xRes := 0
             ENDIF
 
          case nTag == 258
-            cTag := 'BitsPerSample'
+            cTag := "BitsPerSample"
             nTemp := 0
             IF nFieldType == SHORT
                nTemp := bin2w( cValues )
             ENDIF
             nBits := nTemp
          case nTag == 259
-            cTag := 'Compression'
+            cTag := "Compression"
             nTemp := 0
             IF nFieldType == SHORT
                nTemp := bin2w( cValues )
             ENDIF
          case nTag == 262
-            cTag := 'PhotometricInterpretation'
+            cTag := "PhotometricInterpretation"
             nTemp := -1
             IF nFieldType == SHORT
                nTemp := bin2w( cValues )
             ENDIF
          case nTag == 264
-            cTag := 'CellWidth'
+            cTag := "CellWidth"
          case nTag == 265
-            cTag := 'CellLength'
+            cTag := "CellLength"
          case nTag == 266
-            cTag := 'FillOrder'
+            cTag := "FillOrder"
          case nTag == 273
-            cTag := 'StripOffsets'
+            cTag := "StripOffsets"
             IF nFieldType ==  SHORT
                nFrom := bin2w(substr( cValues, 1, 2 ))
             ELSEIF nFieldType ==  LONG
@@ -1765,11 +1765,11 @@ local nWidth := 0, nHeight := 0, nBits := 0, nFrom := 0, nLength := 0, xRes := 0
             ENDIF
 
          case nTag == 277
-            cTag := 'SamplesPerPixel'
+            cTag := "SamplesPerPixel"
          case nTag == 278
-            cTag := 'RowsPerStrip'
+            cTag := "RowsPerStrip"
          case nTag == 279
-            cTag := 'StripByteCounts'
+            cTag := "StripByteCounts"
             IF nFieldType ==  SHORT
                nLength := bin2w(substr( cValues, 1, 2 ))
             ELSEIF nFieldType ==  LONG
@@ -1779,37 +1779,37 @@ local nWidth := 0, nHeight := 0, nBits := 0, nFrom := 0, nLength := 0, xRes := 0
             nLength *= nCount // Count all strips !!!
 
          case nTag == 282
-            cTag := 'XResolution'
+            cTag := "XResolution"
             xRes := bin2l(substr( cValues, 1, 4 ))
          case nTag == 283
-            cTag := 'YResolution'
+            cTag := "YResolution"
             yRes := bin2l(substr( cValues, 1, 4 ))
          case nTag == 284
-            cTag := 'PlanarConfiguration'
+            cTag := "PlanarConfiguration"
          case nTag == 288
-            cTag := 'FreeOffsets'
+            cTag := "FreeOffsets"
          case nTag == 289
-            cTag := 'FreeByteCounts'
+            cTag := "FreeByteCounts"
          case nTag == 296
-            cTag := 'ResolutionUnit'
+            cTag := "ResolutionUnit"
             nTemp := 0
             IF nFieldType == SHORT
                nTemp := bin2w( cValues )
             ENDIF
          case nTag == 305
-            cTag := 'Software'
+            cTag := "Software"
          case nTag == 306
-            cTag := 'DateTime'
+            cTag := "DateTime"
          case nTag == 315
-            cTag := 'Artist'
+            cTag := "Artist"
          case nTag == 320
-            cTag := 'ColorMap'
+            cTag := "ColorMap"
          case nTag == 338
-            cTag := 'ExtraSamples'
+            cTag := "ExtraSamples"
          case nTag == 33432
-            cTag := 'Copyright'
+            cTag := "Copyright"
          otherwise
-            cTag := 'Unknown'
+            cTag := "Unknown"
          endcase
       next
       fread( nHandle, @cIFDNext, 4 )
@@ -1827,7 +1827,7 @@ local nWidth := 0, nHeight := 0, nBits := 0, nFrom := 0, nLength := 0, xRes := 0
 
 return aTemp
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:JPEGInfo( cFile )
@@ -1865,7 +1865,7 @@ local nLength := 0, xRes := 0, yRes := 0, aTemp := {}
 
 return aTemp
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:BookCount( nRecno, nCurLevel )
@@ -1888,7 +1888,7 @@ local nTempLevel := 0, nCount := 0, nLen := len( ::aReport[ BOOKMARK ] )
    enddo
 return -1 * nCount
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:BookFirst( nRecno, nCurLevel, nObj )
@@ -1905,7 +1905,7 @@ local nFirst := 0, nLen := len( ::aReport[ BOOKMARK ] )
    ENDIF
 return IIF( nFirst == 0, nFirst, nObj + nFirst )
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:BookLast( nRecno, nCurLevel, nObj )
@@ -1927,7 +1927,7 @@ local nLast := 0, nLen := len( ::aReport[ BOOKMARK ] )
    ENDIF
 return IIF( nLast == 0, nLast, nObj + nLast )
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:BookNext( nRecno, nCurLevel, nObj )
@@ -1951,7 +1951,7 @@ local nTempLevel := 0, nNext := 0, nLen := len( ::aReport[ BOOKMARK ] )
    enddo
 return IIF( nNext == 0, nNext, nObj + nNext )
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:BookParent( nRecno, nCurLevel, nObj )
@@ -1972,7 +1972,7 @@ local nParent := 0
    enddo
 return IIF( nParent == 0, nObj - 1, nObj + nParent )
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:BookPrev( nRecno, nCurLevel, nObj )
@@ -1997,7 +1997,7 @@ local nPrev := 0
    enddo
 return IIF( nPrev == 0, nPrev, nObj + nPrev )
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:CheckLine( nRow )
@@ -2012,7 +2012,7 @@ METHOD CheckLine( nRow )
    ::aReport[ REPORTLINE ] := nRow
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:GetFontInfo( cParam )
@@ -2035,7 +2035,7 @@ local cRet
 
 return cRet
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:M2R( mm )
@@ -2045,7 +2045,7 @@ METHOD M2R( mm )
 
 return int( ::aReport[ LPI ] * mm / 25.4 )
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:M2X( n )
@@ -2055,7 +2055,7 @@ METHOD M2X( n )
 
 return n * 72 / 25.4
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:M2Y( n ) 
@@ -2065,7 +2065,7 @@ METHOD M2Y( n )
 
 return ::aReport[ PAGEY ] -  n * 72 / 25.4
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:R2D( nRow )
@@ -2075,7 +2075,7 @@ METHOD R2D( nRow )
 
 return ::aReport[ PAGEY ] - nRow * 72 / ::aReport[ LPI ]
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:R2M( nRow )
@@ -2085,7 +2085,7 @@ METHOD R2M( nRow )
 
 return 25.4 * nRow / ::aReport[ LPI ]
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:X2M( n )
@@ -2095,7 +2095,7 @@ METHOD X2M( n )
 
 return n * 25.4 / 72
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:TextPrint( nI, nLeft, lParagraph, nJustify, nSpace, nNew, nLength, nLineLen, nLines, nStart, cString, cDelim, cColor, lPrint )
@@ -2146,7 +2146,7 @@ local nFinish, nL, nB, nJ, cToken, nRow
 
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:TextNextPara( cString, cDelim, nI )
@@ -2166,7 +2166,7 @@ local nAt, cAt, nCRLF, nNew, nRat, nRet := 0
    ENDIF
 return nRet
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:ClosePage()
@@ -2307,7 +2307,7 @@ local cTemp, cBuffer, nBuffer, nRead, nI, k, nImage, nFont, nImageHandle
           "/Type /XObject" + CRLF + ;
           "/Subtype /Image" + CRLF + ;
           "/Name /Image" + ltrim(str(nI)) + CRLF + ;
-          "/Filter [" + IIF( at( ".JPG", upper( ::aReport[ IMAGES ][ nI ][ 1 ]) ) > 0, " /DCTDecode", "" ) + " ]" + CRLF + ;
+          "/Filter [" + IIF( at( ".jpg", lower( ::aReport[ IMAGES ][ nI ][ 1 ]) ) > 0, " /DCTDecode", "" ) + " ]" + CRLF + ;
           "/Width " + ltrim(str( ::aReport[ IMAGES ][ nI ][ 3 ][ IMAGE_WIDTH ] )) + CRLF + ;
           "/Height " + ltrim(str( ::aReport[ IMAGES ][ nI ][ 3 ][ IMAGE_HEIGHT ] )) + CRLF + ;
           "/BitsPerComponent " + ltrim(str( ::aReport[ IMAGES ][ nI ][ 3 ][ IMAGE_BITS ] )) + CRLF + ;
@@ -2355,26 +2355,26 @@ local cTemp, cBuffer, nBuffer, nRead, nI, k, nImage, nFont, nImageHandle
 
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:FilePrint( cFile )
 #else
 METHOD FilePrint( cFile ) 
 #endif
-local cPathAcro := "c:\progra~1\Adobe\Acroba~1.0\Reader"
+local cPathAcro := "C:\progra~1\Adobe\Acroba~1.0\Reader"
 local cRun := cPathAcro + "\AcroRd32.exe /t " + cFile + " " + ;
             chr(34) + "HP LaserJet 5/5M PostScript" + chr(34) + " " + ;
             chr(34) + "LPT1" + chr(34)
 
-IF ( ! RunExternal( cRun, 'print' ) )
+IF ( ! RunExternal( cRun, "print" ) )
    alert( "Error printing to PDF reader." )
    break
 ENDIF
 
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 #ifdef __XPP__
 METHOD tPdf:Execute( cFile )
@@ -2382,34 +2382,34 @@ METHOD tPdf:Execute( cFile )
 METHOD Execute( cFile ) 
 #endif
 //  Replace cPathAcro with the path at your system
-local cPathAcro := "c:\progra~1\Adobe\Acroba~1.0\Reader"
+local cPathAcro := "C:\progra~1\Adobe\Acroba~1.0\Reader"
 local cRun := cPathAcro + "\AcroRd32.exe /t " + cFile + " " + chr(34) + "HP LaserJet 5/5M PostScript" + chr(34) + " " + chr(34) + "LPT1" + chr(34)
 
-IF (! RunExternal( cRun, 'open', cFile ) )
+IF (! RunExternal( cRun, "open", cFile ) )
    alert("Error printing to PDF reader.")
    break
 ENDIF
 
 RETURN self
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
+//-------------------------\\
+//-------------------------\\
 
 static function FilePos( nHandle )
 return ( FSEEK( nHandle, 0, FS_RELATIVE ) )
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 /*
 static function stuff( cStr, nBeg, nDel, cIns )
 return PosIns( PosDel( cStr, nBeg, nDel ), cIns, nBeg )
 */
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 static function Chr_RGB( cChar )
 return str(asc( cChar ) / 255, 4, 2)
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 static function TimeAsAMPM( cTime )
    IF VAL(cTime) < 12
@@ -2422,7 +2422,7 @@ static function TimeAsAMPM( cTime )
    cTime := left( cTime, 5 ) + substr( cTime, 10 )
 return cTime
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 static function FileSize( cFile )
 
@@ -2435,22 +2435,22 @@ static function FileSize( cFile )
 
 return ( nLength )
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 static FUNCTION NumToken( cString, cDelimiter )
 RETURN AllToken( cString, cDelimiter )
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 static FUNCTION Token( cString, cDelimiter, nPointer )
 RETURN AllToken( cString, cDelimiter, nPointer, 1 )
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 static function AtToken( cString, cDelimiter, nPointer )
 return AllToken( cString, cDelimiter, nPointer, 2 )
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 static function AllToken( cString, cDelimiter, nPointer, nAction )
 local nTokens := 0
@@ -2495,7 +2495,7 @@ ENDDO
 
 RETURN cRet
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 //
 // next 3 function written by Peter Kulek
 // modified for compatibility with common.ch by V.K.
@@ -2506,7 +2506,7 @@ local nBytes := 0
 local i
 local lOpen  := ( hFile != nil )
 
-nDepth := if( ISNUMBER( nDepth ), nDepth, 0 )
+nDepth := iif( ISNUMBER( nDepth ), nDepth, 0 )
 //if hFile == NIL
 if !lOpen
    if ( hFile := fCreate( cFile,FC_NORMAL ) ) == -1
@@ -2528,7 +2528,7 @@ endif
 
 return( nBytes )
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 static function WriteData(hFile,xData)
 local cData  := valtype(xData)
@@ -2540,7 +2540,7 @@ local cData  := valtype(xData)
    elseif ISDATE( xData )
        cData += i2bin( 8 )+dtos(xData)
    elseif ISLOGICAL(xData)
-       cData += i2bin( 1 )+if( xData,'T','F' )
+       cData += i2bin( 1 )+iif( xData,"T","F" )
    elseif ISARRAY( xData )
        cData += i2bin( len( xData ) )
    else
@@ -2549,7 +2549,7 @@ local cData  := valtype(xData)
 
 return( fWrite( hFile, cData, len( cData ) ) )
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 static function File2Array( cFile, nLen, hFile )
 LOCAL cData,cType,nDataLen,nBytes
@@ -2563,7 +2563,7 @@ if hFile == NIL        // First Timer
    endif
    cData := space( 3 )
    fRead( hFile, @cData, 3 )
-   if left( cData,1 ) != 'A'     //  If format of file != array
+   if !( left( cData,1 ) == "A" )     //  If format of file != array
       fClose( hFile )            //////////
       return( aRay )
    endif
@@ -2578,7 +2578,7 @@ do while nDepth < nLen
     endif
     cType    := padl( cData,1 )
     nDataLen := bin2i( right( cData,2 ) )
-    if cType != 'A'
+    if !( cType == "A" )
        cData := space( nDataLen )
        nBytes:= fRead( hFile, @cData, nDataLen )
        if nBytes < nDataLen
@@ -2587,15 +2587,15 @@ do while nDepth < nLen
     endif
     nDepth++
     aadd( aRay,NIL )
-    if cType=='C'
+    if cType=="C"
         aRay[ nDepth ] := cData
-    elseif cType=='N'
+    elseif cType=="N"
         aRay[ nDepth ] := val(cData)
-    elseif cType=='D'
+    elseif cType=="D"
         aRay[ nDepth ] := ctod( left( cData, 4 ) + "/" + substr( cData, 5, 2 ) + "/" + substr( cData, 7, 2 )) //stod(cData)
-    elseif cType=='L'
-        aRay[ nDepth ] := ( cData=='T' )
-    elseif cType=='A'
+    elseif cType=="L"
+        aRay[ nDepth ] := ( cData=="T" )
+    elseif cType=="A"
         aRay[ nDepth ] := File2Array( , nDataLen, hFile )
     endif
 enddo
@@ -2606,7 +2606,7 @@ endif
 
 return ( aRay )
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 static FUNCTION NumAt( cSearch, cString )
 
@@ -2618,13 +2618,13 @@ static FUNCTION NumAt( cSearch, cString )
 
 RETURN n
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\
 
 static function RunExternal( cCmd, cVerb, cFile )
 local lRet := .t.
 
 #ifdef __CLP__
-   lRet := SwpRunCmd( cCmd, 0, '', '' )
+   lRet := SwpRunCmd( cCmd, 0, "", "" )
 #endif
 
 #ifdef __HARBOUR__
@@ -2644,4 +2644,4 @@ local lRet := .t.
 
 return lRet
 
-//ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ\\
+//-------------------------\\

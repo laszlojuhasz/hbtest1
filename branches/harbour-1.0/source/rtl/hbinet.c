@@ -65,7 +65,7 @@
 #include "hbapierr.h"
 
 /* Compile in Unix mode under Cygwin */
-#ifdef OS_UNIX_COMPATIBLE
+#ifdef HB_OS_UNIX_COMPATIBLE
   #undef HB_OS_WIN_32
 #endif
 
@@ -81,7 +81,7 @@
    #include <string.h>
 
    #if defined( HB_OS_WIN_32 )
-      #define _WINSOCKAPI_  /* Prevents inclusion of Winsock.h in Windows.h */
+      #define _WINSOCKAPI_  /* Prevents inclusion of winsock.h in windows.h */
       #define HB_SOCKET_T SOCKET
       #include <winsock2.h>
       #include <windows.h>
@@ -180,7 +180,7 @@
    #include <errno.h>
 #endif
 
-#if defined( HB_OS_UNIX ) || defined( OS_UNIX_COMPATIBLE ) || defined( HB_OS_BSD ) || defined(HB_OS_OS2)
+#if defined( HB_OS_UNIX ) || defined( HB_OS_UNIX_COMPATIBLE ) || defined( HB_OS_BSD ) || defined(HB_OS_OS2)
    #include <sys/time.h>
 #endif
 
@@ -211,6 +211,15 @@
     * for was created in the window of POSIX madness.
     */
    #define socklen_t int
+#endif
+
+#if (__POCC__ >= 500) && defined( HB_OS_WIN_64 )
+   /* TOFIX: Bad workaround for the '__WSAFDIsSet unresolved' problem 
+             in Pelles C 5.00.13 AMD64 mode, to make final executables 
+             link at all. Some hbinet.c features (or the whole module) 
+             won't properly work though. [vszakats] */
+   #undef FD_ISSET
+   #define FD_ISSET( s, f ) ( 0 )
 #endif
 
 #ifdef HB_OS_LINUX
@@ -330,7 +339,7 @@ static struct hostent * hb_getHosts( char * name, HB_SOCKET_STRUCT *Socket )
 
    /* TOFIX: make it MT safe */
 
-   /* let's see if name is an IP address; not necessary on linux */
+   /* let's see if name is an IP address; not necessary on Linux */
 #if defined(HB_OS_WIN_32) || defined(HB_OS_OS2)
    ULONG ulAddr;
 
@@ -353,7 +362,7 @@ static struct hostent * hb_getHosts( char * name, HB_SOCKET_STRUCT *Socket )
       Host = gethostbyname( name );
    }
 
-   if( Host == NULL && Socket != NULL )
+   if( Host == NULL && Socket )
    {
 #if defined(HB_OS_WIN_32)
       HB_SOCKET_SET_ERROR2( Socket, WSAGetLastError() , "Generic error in gethostbyname()" );
@@ -500,7 +509,7 @@ static HB_GARBAGE_FUNC( hb_inetSocketFinalize )
       Socket->com = ( HB_SOCKET_T ) -1;
    }
 
-   if( Socket->caPeriodic != NULL )
+   if( Socket->caPeriodic )
    {
       hb_itemRelease( Socket->caPeriodic );
       Socket->caPeriodic = NULL;
@@ -705,7 +714,7 @@ HB_FUNC( HB_INETTIMEOUT )
 {
    HB_SOCKET_STRUCT *Socket = HB_PARSOCKET( 1 );
 
-   if( Socket != NULL )
+   if( Socket )
    {
       hb_retni( Socket->timeout );
       if( ISNUM( 2 ) )
@@ -925,7 +934,7 @@ static void s_inetRecvInternal( int iMode )
          iTimeElapsed += Socket->timeout;
 
          /* if we have a caPeriodic, timeLimit is our REAL timeout */
-         if( Socket->caPeriodic != NULL )
+         if( Socket->caPeriodic )
          {
             hb_execFromArray( Socket->caPeriodic );
 
@@ -985,8 +994,8 @@ static void s_inetRecvPattern( char *szPattern )
    PHB_ITEM pMaxSize    = hb_param( 3, HB_IT_NUMERIC );
    PHB_ITEM pBufferSize = hb_param( 4, HB_IT_NUMERIC );
 
-   char cChar;
-   char *Buffer;
+   char cChar = '\0';
+   char * Buffer;
    int iAllocated, iBufferSize, iMax;
    int iLen = 0, iPatLen;
    int iPos = 0, iTimeElapsed;
@@ -1041,7 +1050,7 @@ static void s_inetRecvPattern( char *szPattern )
       {
          iTimeElapsed += Socket->timeout;
 
-         if( Socket->caPeriodic != NULL )
+         if( Socket->caPeriodic )
          {
             hb_execFromArray( Socket->caPeriodic );
             /* do we continue? */
@@ -1137,9 +1146,9 @@ HB_FUNC( HB_INETRECVENDBLOCK )
    PHB_ITEM pMaxSize    = hb_param( 4, HB_IT_NUMERIC );
    PHB_ITEM pBufferSize = hb_param( 5, HB_IT_NUMERIC );
 
-   char cChar;
-   char *Buffer;
-   char **Proto;
+   char cChar = '\0';
+   char * Buffer;
+   char ** Proto;
    int iAllocated, iBufferSize, iMax;
    int iLen;
    int iPos = 0;
@@ -1228,7 +1237,7 @@ HB_FUNC( HB_INETRECVENDBLOCK )
       else
       {
          iTimeElapsed += Socket->timeout;
-         if( Socket->caPeriodic != NULL )
+         if( Socket->caPeriodic )
          {
             hb_execFromArray( Socket->caPeriodic );
 
@@ -1247,7 +1256,7 @@ HB_FUNC( HB_INETRECVENDBLOCK )
          int protos;
          bProtoFound = 0;
 
-         for( protos=0; protos < iprotos; protos++ )
+         for( protos = 0; protos < iprotos; protos++ )
          {
             if( cChar == Proto[protos][iprotosize[protos]-1] && iprotosize[protos] <= iPos )
             {
@@ -1558,14 +1567,10 @@ HB_FUNC( HB_INETSERVER )
       return;
    }
 
-   if( Socket != NULL )
-   {
+   if( Socket )
       HB_SOCKET_ZERO_ERROR( Socket );
-   }
    else
-   {
       HB_SOCKET_INIT( Socket, pSocket );
-   }
 
    /* Creates comm socket */
 #if defined(HB_OS_WIN_32)
@@ -1722,7 +1727,7 @@ HB_FUNC( HB_INETCONNECT )
       return;
    }
 
-   if( Socket != NULL )
+   if( Socket )
    {
       if( Socket->com != ( HB_SOCKET_T ) -1 )
       {
@@ -1732,15 +1737,13 @@ HB_FUNC( HB_INETCONNECT )
       HB_SOCKET_ZERO_ERROR( Socket );
    }
    else
-   {
       HB_SOCKET_INIT( Socket, pSocket );
-   }
 
    Host = hb_getHosts( szHost, Socket );
 
    /* error had been set by get hosts */
 
-   if( Host != NULL )
+   if( Host )
    {
       /* Creates comm socket */
 #if defined(HB_OS_WIN_32)
@@ -1785,7 +1788,7 @@ HB_FUNC( HB_INETCONNECTIP )
       return;
    }
 
-   if( Socket != NULL )
+   if( Socket )
    {
       if( Socket->com != ( HB_SOCKET_T ) -1 )
       {
@@ -2068,7 +2071,7 @@ HB_FUNC( HB_INETDGRAMRECV )
                (struct sockaddr *) &Socket->remote, &iDtLen );
       }
       iTimeElapsed += Socket->timeout;
-      if( Socket->caPeriodic != NULL )
+      if( Socket->caPeriodic )
       {
          hb_execFromArray( Socket->caPeriodic );
          /* do we continue? */

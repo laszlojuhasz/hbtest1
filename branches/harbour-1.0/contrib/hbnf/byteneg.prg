@@ -3,7 +3,7 @@
  */
 
 /*
- * File......: BYTENEG.PRG
+ * File......: byteneg.prg
  * Author....: Forest Belt, Computer Diagnostic Services, Inc.
  * CIS ID....: ?
  *
@@ -47,8 +47,8 @@
  *     assembler instruction.
  *
  *     This function is presented to illustrate that bit-wise operations
- *     are possible with Clipper code.  For greater speed, write .C or
- *     .ASM versions and use the Clipper Extend system.
+ *     are possible with Clipper code.  For greater speed, write .c or
+ *     .asm versions and use the Clipper Extend system.
  *  $EXAMPLES$
  *     This code performs a bit-wise NEG on byte represented by CHR(32):
  *
@@ -56,7 +56,7 @@
  *          ? asc(cNewByte)                  // result: 224
  *
  *     For a demonstration of Clipper bit manipulations, compile and
- *     link the program BITTEST.PRG in the Nanforum Toolkit source code.
+ *     link the program bittest.prg in the Nanforum Toolkit source code.
  *  $SEEALSO$
  *     FT_BYTEOR() FT_BYTEXOR() FT_BYTENOT() FT_BYTEAND()
  *  $END$

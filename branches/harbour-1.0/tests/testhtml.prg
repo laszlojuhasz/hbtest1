@@ -4,7 +4,7 @@
 
 /*
 *
-*  TestHTML.PRG
+*  testhtml.prg
 *  Harbour Test of a HTML-Generator class.
 *
 *  1999/05/30  First implementation.
@@ -119,7 +119,7 @@ STATIC FUNCTION AddPara( cPara, cAlign )
    LOCAL Self := QSelf()
 
    //Default( cAlign, "Left" ) // removed Patrick Mast 2000-06-07
-   cAlign:=If(cAlign==NIL,"Left",cAlign) //Added Patrick Mast 2000-06-17
+   cAlign:=iif(cAlign==NIL,"Left",cAlign) //Added Patrick Mast 2000-06-17
 
    ::cBody := ::cBody + ;
       "<P ALIGN='" + cAlign + "'>" + s_cNewLine + ;

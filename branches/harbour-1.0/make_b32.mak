@@ -44,12 +44,12 @@
 #       HB_BUILD_VERBOSE  - enables echoing commands being executed
 #       HB_REBUILD_PARSER - If set to yes force preprocessing new rules by
 #                           bison (you must use bison 2.3 or later)
-#       BCCDLL_WITH_DYNRT - If set to -tWR causes that harbour-bc.dll
-#                           will use dynamic runtime library (recommended)
 #       HB_INSTALL_PREFIX - Path to instalation directory into which
 #                           Harbour will be installed when the command
 #                           "make_bc.bat install" is lauched. Defaults
 #                           to current directory
+#       BCCDLL_WITH_DYNRT - If set to -tWR causes that harbour-bc.dll
+#                           will use dynamic runtime library (recommended)
 
 #**********************************************************
 
@@ -139,15 +139,15 @@ CFLAGS      = -I$(INCLUDE_DIR) $(C_USR) $(CFLAGS) -I$(OBJ_DIR)
 
 CLIBFLAGS      = -c -q -d -w -w-sig- $(CFLAGS) $(CLIBFLAGS)
 CLIBFLAGSxxx   =  $(BCCDLL_WITH_DYNRT) $(CLIBFLAGS: -tWM= )
-CLIBFLAGSDLL   = -D__EXPORT__ -tWM $(CLIBFLAGSxxx) $(CLIBFLAGSDLL)
+CLIBFLAGSDLL   = -DHB_DYNLIB -tWM $(CLIBFLAGSxxx) $(CLIBFLAGSDLL)
 CEXEFLAGSDLL   = -tWM $(CLIBFLAGSxxx) $(CEXEFLAGSDLL)
 
 #**********************************************************
 
 # Harbour Compiler Flags
-HBFLAGSCMN     = -i$(INCLUDE_DIR) -q0 -w3 -es2 -gc0 -km $(PRG_USR)
+HBFLAGSCMN     = -i$(INCLUDE_DIR) -q0 -w3 -es2 -km $(PRG_USR)
 HARBOURFLAGS   = -n $(HBFLAGSCMN) $(HARBOURFLAGS)
-HARBOURFLAGSDLL= -D__EXPORT__ -n1 $(HBFLAGSCMN) $(HARBOURFLAGSDLL)
+HARBOURFLAGSDLL= -n1 $(HBFLAGSCMN) $(HARBOURFLAGSDLL)
 
 #**********************************************************
 
@@ -510,7 +510,7 @@ $(CFLAGS)
 -e$(HBDOC_EXE)
 $(**: = ^
 )
-$(STANDARD_STATIC_HBLIBS) $(HBDOC_LIBS)
+$(MINIMAL_STATIC_HBLIBS) $(HBDOC_LIBS)
 !
 #**********************************************************
 # HBMAKE build rule
@@ -523,7 +523,7 @@ $(CFLAGS)
 -e$(HBMAKE_EXE)
 $(**: = ^
 )
-$(STANDARD_STATIC_HBLIBS)
+$(MINIMAL_STATIC_HBLIBS)
 !
 #**********************************************************
 

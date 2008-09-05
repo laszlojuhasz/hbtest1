@@ -50,6 +50,8 @@
  *
  */
 
+/* NOTE: This file is also used by C code. */
+
 #ifndef HB_DBINFO_CH_
 #define HB_DBINFO_CH_
 
@@ -300,7 +302,7 @@
 #define DBI_RM_COUNT            158  /* number of records set in record map */
 #define DBI_RM_HANDLE           159  /* get/set record map filter handle */
 
-/* BLOB support - definitions for internal use by BLOB.CH */
+/* BLOB support - definitions for internal use by blob.ch */
 #define DBI_BLOB_DIRECT_EXPORT  201
 #define DBI_BLOB_DIRECT_GET     202
 #define DBI_BLOB_DIRECT_IMPORT  203
@@ -310,7 +312,7 @@
 #define DBI_BLOB_ROOT_LOCK      207
 #define DBI_BLOB_ROOT_UNLOCK    208
 
-/* CA-CLIPPER documented for public use */
+/* CA-Cl*pper documented for public use */
 #define DBI_BLOB_DIRECT_LEN     209
 #define DBI_BLOB_DIRECT_TYPE    210
 #define DBI_BLOB_INTEGRITY      211

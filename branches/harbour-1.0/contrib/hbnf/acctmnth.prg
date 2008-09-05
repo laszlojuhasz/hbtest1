@@ -3,7 +3,7 @@
  */
 
 /*
- * File......: ACCTMNTH.PRG
+ * File......: acctmnth.prg
  * Author....: Jo W. French dba Practical Computing
  * CIS ID....: 74731,1751
  *
@@ -124,7 +124,9 @@ FUNCTION FT_ACCTMONTH(dGivenDate,nMonthNum)
  
   lIsMonth := ( VALTYPE(nMonthNum) == 'N' )
   IF lIsMonth
-    IF( nMonthNum < 1 .OR. nMonthNum > 12 , nMonthNum := 12, )
+    IF nMonthNum < 1 .OR. nMonthNum > 12
+      nMonthNum := 12
+    ENDIF
     aRetVal    := FT_MONTH(dGivenDate, nMonthNum)
     nYTemp     := VAL(SUBSTR(aRetVal[1],1,4))
     nMTemp     := VAL(SUBSTR(aRetVal[1],5,2))
@@ -135,5 +137,3 @@ FUNCTION FT_ACCTMONTH(dGivenDate,nMonthNum)
   aRetVal[1] := STR(nYTemp,4) + PADL(LTRIM(STR(nMTemp,2)), 2, '0')
  
 RETURN aRetVal
-
-

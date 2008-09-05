@@ -90,7 +90,7 @@ void hb_compGenCCode( HB_COMP_DECL, PHB_FNAME pFileName )       /* generates the
 
       fprintf( yyc, "/*\n * %s\n", szHrb );
       fprintf( yyc, " * %s\n", szCmp );
-      fprintf( yyc, " * Generated C source from \"%s\"\n */\n", HB_COMP_PARAM->szFile );
+      fprintf( yyc, " * Generated C source from \"%s\"\n */\n\n", HB_COMP_PARAM->szFile );
 
       hb_xfree( szCmp );
       hb_xfree( szHrb );
@@ -167,7 +167,7 @@ void hb_compGenCCode( HB_COMP_DECL, PHB_FNAME pFileName )       /* generates the
       /* writes the symbol table */
       /* Generate the wrapper that will initialize local symbol table
        */
-      hb_strncpyUpper( szModulname, pFileName->szName, _POSIX_PATH_MAX );
+      hb_strncpyUpper( szModulname, pFileName->szName, sizeof( szModulname ) - 1 );
       /* replace non ID characters in name of local symbol table by '_' */
       {
          int iLen = strlen( szModulname ), i;
@@ -384,9 +384,12 @@ static void hb_writeEndInit( HB_COMP_DECL, FILE* yyc, char * szModulname, char *
    hb_compGenCString( yyc, ( BYTE * ) szSourceFile, strlen( szSourceFile ) );
    fprintf( yyc, ", 0x%lx, 0x%04x )\n\n", 0L, HB_PCODE_VER );
 
-   fprintf( yyc, "#if defined(HB_PRAGMA_STARTUP)\n"
+   fprintf( yyc, "#if defined( HB_PRAGMA_STARTUP )\n"
                  "   #pragma startup hb_vm_SymbolInit_%s%s\n"
-                 "#elif defined(HB_MSC_STARTUP)\n"
+                 "#elif defined( HB_MSC_STARTUP )\n"
+                 "   #if defined( HB_OS_WIN_64 )\n"
+                 "      #pragma section( HB_MSC_START_SEGMENT, long, read )\n"
+                 "   #endif\n"
                  "   #pragma data_seg( HB_MSC_START_SEGMENT )\n"
                  "   static HB_$INITSYM hb_vm_auto_SymbolInit_%s%s = hb_vm_SymbolInit_%s%s;\n"
                  "   #pragma data_seg()\n"

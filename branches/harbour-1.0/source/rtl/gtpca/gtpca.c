@@ -71,7 +71,7 @@
 #include <ctype.h>
 #include <string.h>
 
-#if defined( OS_UNIX_COMPATIBLE ) || defined( __DJGPP__ )
+#if defined( HB_OS_UNIX_COMPATIBLE ) || defined( __DJGPP__ )
    #include <unistd.h>  /* read() function requires it */
    #include <termios.h>
    #include <sys/ioctl.h>
@@ -94,33 +94,33 @@ static HB_GT_FUNCS   SuperTable;
 #define HB_GTSUPER   (&SuperTable)
 #define HB_GTID_PTR  (&s_GtId)
 
-static const BYTE s_szBell[] = { HB_CHAR_BEL, 0 };
-static const int  s_AnsiColors[] = { 0, 4, 2, 6, 1, 5, 3, 7 };
+static const BYTE   s_szBell[] = { HB_CHAR_BEL, 0 };
+static const int    s_AnsiColors[] = { 0, 4, 2, 6, 1, 5, 3, 7 };
 
-static FHANDLE s_hFilenoStdin;
-static FHANDLE s_hFilenoStdout;
-static FHANDLE s_hFilenoStderr;
-static int     s_iRow;
-static int     s_iCol;
-static int     s_iLineBufSize = 0;
-static BYTE *  s_sLineBuf;
-static BYTE *  s_szCrLf;
-static ULONG   s_ulCrLf;
-static int     s_iCurrentSGR, s_iFgColor, s_iBgColor, s_iBold, s_iBlink, s_iAM;
-static int     s_iCursorStyle;
-static BOOL    s_bStdinConsole;
-static BOOL    s_bStdoutConsole;
-static BOOL    s_bStderrConsole;
-static BOOL    s_fDispTrans;
-static PHB_CODEPAGE  s_cdpTerm;
-static PHB_CODEPAGE  s_cdpHost;
-static BYTE    s_keyTransTbl[ 256 ];
+static HB_FHANDLE   s_hFilenoStdin;
+static HB_FHANDLE   s_hFilenoStdout;
+static HB_FHANDLE   s_hFilenoStderr;
+static int          s_iRow;
+static int          s_iCol;
+static int          s_iLineBufSize = 0;
+static BYTE *       s_sLineBuf;
+static BYTE *       s_szCrLf;
+static ULONG        s_ulCrLf;
+static int          s_iCurrentSGR, s_iFgColor, s_iBgColor, s_iBold, s_iBlink, s_iAM;
+static int          s_iCursorStyle;
+static BOOL         s_bStdinConsole;
+static BOOL         s_bStdoutConsole;
+static BOOL         s_bStderrConsole;
+static BOOL         s_fDispTrans;
+static PHB_CODEPAGE s_cdpTerm;
+static PHB_CODEPAGE s_cdpHost;
+static BYTE         s_keyTransTbl[ 256 ];
 
-static int     s_iOutBufSize = 0;
-static int     s_iOutBufIndex = 0;
-static BYTE *  s_sOutBuf;
+static int          s_iOutBufSize = 0;
+static int          s_iOutBufIndex = 0;
+static BYTE *       s_sOutBuf;
 
-#if defined( OS_UNIX_COMPATIBLE ) || defined( __DJGPP__ )
+#if defined( HB_OS_UNIX_COMPATIBLE ) || defined( __DJGPP__ )
 
 static volatile BOOL s_fRestTTY = FALSE;
 static struct termios s_saved_TIO, s_curr_TIO;
@@ -233,7 +233,7 @@ static void hb_gt_pca_AnsiGetCurPos( int * iRow, int * iCol )
       hb_gt_pca_termOut( ( BYTE * ) "\x1B[6n", 4 );
       hb_gt_pca_termFlush();
 
-#if defined( OS_UNIX_COMPATIBLE ) || defined( __DJGPP__ )
+#if defined( HB_OS_UNIX_COMPATIBLE ) || defined( __DJGPP__ )
       {
          char rdbuf[ 64 ];
          int i, n, y, x;
@@ -436,7 +436,7 @@ static void hb_gt_pca_setKeyTrans( char * pSrcChars, char * pDstChars )
    }
 }
 
-static void hb_gt_pca_Init( PHB_GT pGT, FHANDLE hFilenoStdin, FHANDLE hFilenoStdout, FHANDLE hFilenoStderr )
+static void hb_gt_pca_Init( PHB_GT pGT, HB_FHANDLE hFilenoStdin, HB_FHANDLE hFilenoStdout, HB_FHANDLE hFilenoStderr )
 {
    int iRows = 25, iCols = 80;
 
@@ -462,7 +462,7 @@ static void hb_gt_pca_Init( PHB_GT pGT, FHANDLE hFilenoStdin, FHANDLE hFilenoStd
    HB_GTSUPER_INIT( pGT, hFilenoStdin, hFilenoStdout, hFilenoStderr );
 
 /* SA_NOCLDSTOP in #if is a hack to detect POSIX compatible environment */
-#if ( defined( OS_UNIX_COMPATIBLE ) || defined( __DJGPP__ ) ) && \
+#if ( defined( HB_OS_UNIX_COMPATIBLE ) || defined( __DJGPP__ ) ) && \
     defined( SA_NOCLDSTOP )
    s_fRestTTY = FALSE;
    if( s_bStdinConsole )
@@ -544,7 +544,7 @@ static void hb_gt_pca_Exit( PHB_GT pGT )
 
    HB_GTSUPER_EXIT( pGT );
 
-#if defined( OS_UNIX_COMPATIBLE ) || defined( __DJGPP__ )
+#if defined( HB_OS_UNIX_COMPATIBLE ) || defined( __DJGPP__ )
    if( s_fRestTTY )
       tcsetattr( s_hFilenoStdin, TCSANOW, &s_saved_TIO );
 #endif
@@ -570,7 +570,7 @@ static int hb_gt_pca_ReadKey( PHB_GT pGT, int iEventMask )
    HB_SYMBOL_UNUSED( pGT );
    HB_SYMBOL_UNUSED( iEventMask );
 
-#if defined( HARBOUR_GCC_OS2 )
+#if defined( HB_OS_OS2_GCC )
 
    /* Read from the keyboard with no echo, no wait, and no SIGSEV on Ctrl-C */
    ch = _read_kbd( 0, 0, 0 );
@@ -609,7 +609,7 @@ static int hb_gt_pca_ReadKey( PHB_GT pGT, int iEventMask )
       if( _read( s_hFilenoStdin, &bChar, 1 ) == 1 )
          ch = s_keyTransTbl[ bChar ];
    }
-#elif defined( OS_UNIX_COMPATIBLE ) || defined( __DJGPP__ )
+#elif defined( HB_OS_UNIX_COMPATIBLE ) || defined( __DJGPP__ )
    {
       BYTE bChar;
       if( hb_fsRead( s_hFilenoStdin, &bChar, 1 ) == 1 )
@@ -687,7 +687,7 @@ static BOOL hb_gt_pca_Suspend( PHB_GT pGT )
    HB_TRACE( HB_TR_DEBUG, ( "hb_gt_pca_Suspend(%p)", pGT ) );
 
    HB_SYMBOL_UNUSED( pGT );
-#if defined( OS_UNIX_COMPATIBLE ) || defined( __DJGPP__ )
+#if defined( HB_OS_UNIX_COMPATIBLE ) || defined( __DJGPP__ )
    if( s_fRestTTY )
    {
       tcsetattr( s_hFilenoStdin, TCSANOW, &s_saved_TIO );
@@ -703,7 +703,7 @@ static BOOL hb_gt_pca_Resume( PHB_GT pGT )
    HB_TRACE( HB_TR_DEBUG, ( "hb_gt_pca_Resume(%p)", pGT ) );
 
    HB_SYMBOL_UNUSED( pGT );
-#if defined( OS_UNIX_COMPATIBLE ) || defined( __DJGPP__ )
+#if defined( HB_OS_UNIX_COMPATIBLE ) || defined( __DJGPP__ )
    if( s_fRestTTY )
    {
       tcsetattr( s_hFilenoStdin, TCSANOW, &s_curr_TIO );
@@ -760,10 +760,10 @@ static BOOL hb_gt_pca_SetKeyCP( PHB_GT pGT, char *pszTermCDP, char *pszHostCDP )
          char *pszHostLetters = ( char * ) hb_xgrab( cdpHost->nChars * 2 + 1 );
          char *pszTermLetters = ( char * ) hb_xgrab( cdpTerm->nChars * 2 + 1 );
 
-         strncpy( pszHostLetters, cdpHost->CharsUpper, cdpHost->nChars + 1 );
-         strncat( pszHostLetters, cdpHost->CharsLower, cdpHost->nChars + 1 );
-         strncpy( pszTermLetters, cdpTerm->CharsUpper, cdpTerm->nChars + 1 );
-         strncat( pszTermLetters, cdpTerm->CharsLower, cdpTerm->nChars + 1 );
+         hb_strncpy( pszHostLetters, cdpHost->CharsUpper, cdpHost->nChars * 2 );
+         hb_strncat( pszHostLetters, cdpHost->CharsLower, cdpHost->nChars * 2 );
+         hb_strncpy( pszTermLetters, cdpTerm->CharsUpper, cdpTerm->nChars * 2 );
+         hb_strncat( pszTermLetters, cdpTerm->CharsLower, cdpTerm->nChars * 2 );
 
          hb_gt_pca_setKeyTrans( pszTermLetters, pszHostLetters );
 
@@ -909,7 +909,10 @@ HB_CALL_ON_STARTUP_END( _hb_startup_gt_Init_ )
 
 #if defined( HB_PRAGMA_STARTUP )
    #pragma startup _hb_startup_gt_Init_
-#elif defined(HB_MSC_STARTUP)
+#elif defined( HB_MSC_STARTUP )
+   #if defined( HB_OS_WIN_64 )
+      #pragma section( HB_MSC_START_SEGMENT, long, read )
+   #endif
    #pragma data_seg( HB_MSC_START_SEGMENT )
    static HB_$INITSYM hb_vm_auto__hb_startup_gt_Init_ = _hb_startup_gt_Init_;
    #pragma data_seg()

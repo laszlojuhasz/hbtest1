@@ -3,7 +3,7 @@
  */
 
 /*
- * File......: DAYOFYR.PRG
+ * File......: dayofyr.prg
  * Author....: Jo W. French dba Practical Computing
  * CIS_ID....: 74731,1751
  *
@@ -111,7 +111,9 @@ FUNCTION FT_DAYOFYR( dGivenDate, nDayNum, lIsAcct)
 
   IF lIsDay
      nTemp := aRetVal[3] - aRetVal[2] + 1
-     IF(nDayNum < 1 .OR. nDayNum > nTemp , nDayNum := nTemp, )
+     IF nDayNum < 1 .OR. nDayNum > nTemp
+        nDayNum := nTemp
+     ENDIF
      aRetVal[1] := aRetVal[2] + nDayNum - 1
   ELSE
      aRetVal[1] += PADL(LTRIM(STR( dGivenDate - aRetVal[2] + 1, 3)), 3, '0')

@@ -13,13 +13,14 @@
 ######################################################################
 # Conditional build:
 # --with static      - link all binaries with static libs
-# --with mysql       - build mysql lib
-# --with pgsql       - build pgsql lib 
-# --with gd          - build gd lib 
+# --with mysql       - build hbmysql lib
+# --with pgsql       - build hbpgsql lib 
+# --with gd          - build hbgd lib 
 # --with allegro     - build GTALLEG - Allegro based GT driver
-# --with ads         - build ADS RDD
-# --with odbc        - build odbc lib
-# --with curl        - build CURL lib
+# --with ads         - build rddads RDD
+# --with odbc        - build hbodbc lib
+# --with curl        - build hbcurl lib
+# --with hbhpdf      - build hbhpdf lib
 # --without nf       - do not build nanforum lib
 # --without gpllib   - do not build libs which needs GPL 3-rd party code
 # --without x11      - do not build GTXWC
@@ -61,8 +62,8 @@
 
 %define name     harbour
 %define dname    Harbour
-%define version  1.0.0
-%define releasen 0
+%define version  1.0.1
+%define releasen dev
 %define hb_pref  hb
 %define hb_arch  export HB_ARCHITECTURE=linux
 %define hb_cc    export HB_COMPILER=gcc
@@ -78,16 +79,14 @@
 %define hb_bdir  export HB_BIN_INSTALL=%{_bindir}
 %define hb_idir  export HB_INC_INSTALL=%{_includedir}/%{name}
 %define hb_ldir  export HB_LIB_INSTALL=%{_libdir}/%{name}
-%define hb_opt   export HB_GTALLEG=%{?_with_allegro:yes}
 %define hb_cmrc  export HB_COMMERCE=%{?_without_gpllib:yes}
-%define hb_ctrb  export HB_CONTRIBLIBS="hbct hbmzip hbtip xhb hbbtree hbmisc hbvpdf hbgt hbbmcdx hbclipsm %{!?_without_nf:hbnf} %{?_with_odbc:hbodbc} %{?_with_curl:hbcurl} %{?_with_ads:rddads} %{?_with_gd:hbgd} %{?_with_pgsql:hbpgsql} %{?_with_mysql:hbmysql}"
-%define hb_env   %{hb_arch} ; %{hb_cc} ; %{hb_cflag} ; %{hb_lflag} ; %{hb_mt} ; %{hb_gt} ; %{hb_defgt} ; %{hb_gpm} ; %{hb_crs} ; %{hb_sln} ; %{hb_x11} ; %{hb_bdir} ; %{hb_idir} ; %{hb_ldir} ; %{hb_opt} ; %{hb_ctrb} ; %{hb_cmrc}
+%define hb_ctrb  export HB_CONTRIBLIBS="hbbmcdx hbbtree hbclipsm hbct hbgt hbmisc hbmsql hbmzip hbsqlit3 hbtip hbtpathy hbvpdf hbziparc xhb %{!?_without_nf:hbnf} %{?_with_odbc:hbodbc} %{?_with_curl:hbcurl} %{?_with_hbhpdf:hbhpdf} %{?_with_ads:rddads} %{?_with_gd:hbgd} %{?_with_pgsql:hbpgsql} %{?_with_mysql:hbmysql} %{?_with_allegro:gtalleg}"
+%define hb_env   %{hb_arch} ; %{hb_cc} ; %{hb_cflag} ; %{hb_lflag} ; %{hb_mt} ; %{hb_gt} ; %{hb_defgt} ; %{hb_gpm} ; %{hb_crs} ; %{hb_sln} ; %{hb_x11} ; %{hb_bdir} ; %{hb_idir} ; %{hb_ldir} ; %{hb_ctrb} ; %{hb_cmrc}
 %define hb_host  www.harbour-project.org
 %define readme   README.RPM
 ######################################################################
 ## Preamble.
 ######################################################################
-
 Summary:        Free software Clipper compatible compiler
 Summary(pl):    Darmowy kompilator kompatybilny z jЙzykiem Clipper.
 Summary(pt_BR): Um compilador Clipper compativel Gratis
@@ -110,7 +109,7 @@ BuildRoot:      /tmp/%{name}-%{version}-root
 %define         _noautoreq    'libharbour.*'
 
 %description
-%{dname} is a CA-Clipper compatible compiler for multiple platforms. This
+%{dname} is a CA-Cl*pper compatible compiler for multiple platforms. This
 package includes a compiler, pre-processor, header files, virtual machine
 and documentation.
 
@@ -118,7 +117,7 @@ See README.RPM in the documentation directory for information specific to
 this RPM distribution.
 
 %description -l pl
-%{dname} to kompatybilny z jЙzykiem CA-Clipper kompilator rozwijany na
+%{dname} to kompatybilny z jЙzykiem CA-Cl*pper kompilator rozwijany na
 wielu rС©nych platformach. Ten pakiet zawiera kompilator, preprocesor,
 zbiory nagЁСwkowe, wirtualn╠ maszynЙ oraz dokumentacjЙ.
 
@@ -128,12 +127,12 @@ Esse pacote contem um compilador, um prИ-processador, arquivos de cabeГalho
 uma maquina virtual e documentaГЦo.
 
 %description -l ru
-%{dname} - многоплатформенный компилятор, совместимый с языком CA-Clipper.
+%{dname} - многоплатформенный компилятор, совместимый с языком CA-Cl*pper.
 Этот пакет содержит компилятор, препроцессор, файлы заголовков, виртуальную
 машину и документацию.
 
 %description -l hu
-%{dname} egy tЖbb platformon is mШkЖdУ CA-Clipper kompatibilis 
+%{dname} egy tЖbb platformon is mШkЖdУ CA-Cl*pper kompatibilis 
 fordМtСprogram. A csomag rИsze a fordМtС maga, az elУfordМtС, fejlИc 
 АllomАnyok, a virtuАlis gИp Иs fЭggvИnykЖnyvtАrak, valamint a dokumentАciС.
 
@@ -155,7 +154,7 @@ This package provides %{dname} runtime shared libraries for programs
 linked dynamically.
 
 %description -l pl lib
-%{dname} to kompatybilny z jЙzykiem CA-Clipper kompilator.
+%{dname} to kompatybilny z jЙzykiem CA-Cl*pper kompilator.
 Ten pakiet udostЙpnia dzielone bilioteki kompilatora %{dname}
 dla programСw konsolidowanych dynamicznie.
 
@@ -165,7 +164,7 @@ Esse pacote %{dname} provem as bibliotecas compartilhadas para programas
 linkados dinamicamente.
 
 %description -l ru lib
-%{dname} - компилятор, совместимый с языком CA-Clipper.
+%{dname} - компилятор, совместимый с языком CA-Cl*pper.
 Этот пакет содержит совместно используемые библиотеки %{dname},
 необходимые для работы динамически скомпонованных программ.
 
@@ -192,7 +191,7 @@ This package provides %{dname} static runtime libraries for static
 program linking.
 
 %description -l pl static
-%{dname} to kompatybilny z jЙzykiem CA-Clipper kompilator.
+%{dname} to kompatybilny z jЙzykiem CA-Cl*pper kompilator.
 Ten pakiet udostЙpnia statyczne bilioteki dla kompilatora %{dname}
 niezbЙdne do statycznej konsolidacji programСw.
 
@@ -202,7 +201,7 @@ Esse pacote %{dname} provem as bibliotecas  de run time staticas para linkagem
 dos os programas
 
 %description -l ru static
-%{dname} - компилятор, совместимый с языком CA-Clipper.
+%{dname} - компилятор, совместимый с языком CA-Cl*pper.
 Этот пакет содержит статические библиотеки компилятора %{dname},
 необходимые для статической компоновки программ.
 
@@ -226,7 +225,7 @@ Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 This package provides %{dname} contrib libraries for program linking.
 
 %description -l pl contrib
-%{dname} to kompatybilny z jЙzykiem CA-Clipper kompilator.
+%{dname} to kompatybilny z jЙzykiem CA-Cl*pper kompilator.
 Ten pakiet udostЙpnia statyczne bilioteki z drzewa contrib dla
 kompilatora %{dname}.
 
@@ -236,7 +235,7 @@ Esse pacote %{dname} provem as bibliotecas contrib para linkagem
 dos programas.
 
 %description -l ru contrib
-%{dname} - компилятор, совместимый с языком CA-Clipper.
+%{dname} - компилятор, совместимый с языком CA-Cl*pper.
 Этот пакет содержит статические библиотеки %{dname} из дерева contrib.
 
 %description -l hu lib
@@ -256,7 +255,7 @@ statikus szerkesztИshez.
 %{?_with_odbc:This package provides %{dname} ODBC library for program linking.}
 
 %{?_with_odbc:%description -l pl odbc}
-%{?_with_odbc:%{dname} to kompatybilny z jЙzykiem CA-Clipper kompilator.}
+%{?_with_odbc:%{dname} to kompatybilny z jЙzykiem CA-Cl*pper kompilator.}
 %{?_with_odbc:Ten pakiet udostЙpnia statyczn╠ biliotekЙ ODBC dla kompilatora %{dname}.}
 
 ## CURL library
@@ -271,8 +270,23 @@ statikus szerkesztИshez.
 %{?_with_curl:This package provides %{dname} CURL library for program linking.}
 
 %{?_with_curl:%description -l pl curl}
-%{?_with_curl:%{dname} to kompatybilny z jЙzykiem CA-Clipper kompilator.}
+%{?_with_curl:%{dname} to kompatybilny z jЙzykiem CA-Cl*pper kompilator.}
 %{?_with_curl:Ten pakiet udostЙpnia statyczn╠ biliotekЙ CURL dla kompilatora %{dname}.}
+
+## hbhpdf library
+%{?_with_hbhpdf:%package hbhpdf}
+%{?_with_hbhpdf:Summary:        hbhpdf libarary for %{dname} compiler}
+%{?_with_hbhpdf:Summary(pl):    Bilioteka hbhpdf dla kompilatora %{dname}}
+%{?_with_hbhpdf:Group:          Development/Languages}
+%{?_with_hbhpdf:Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}}
+
+%{?_with_hbhpdf:%description hbhpdf}
+%{?_with_hbhpdf:%{dname} is a Clipper compatible compiler.}
+%{?_with_hbhpdf:This package provides %{dname} hbhpdf library for program linking.}
+
+%{?_with_hbhpdf:%description -l pl hbhpdf}
+%{?_with_hbhpdf:%{dname} to kompatybilny z jЙzykiem CA-Cl*pper kompilator.}
+%{?_with_hbhpdf:Ten pakiet udostЙpnia statyczn+ biliotekЙ hbhpdf dla kompilatora %{dname}.}
 
 ## ADS RDD
 %{?_with_ads:%package ads}
@@ -286,7 +300,7 @@ statikus szerkesztИshez.
 %{?_with_ads:This package provides %{dname} ADS RDDs for program linking.}
 
 %{?_with_ads:%description -l pl ads}
-%{?_with_ads:%{dname} to kompatybilny z jЙzykiem CA-Clipper kompilator.}
+%{?_with_ads:%{dname} to kompatybilny z jЙzykiem CA-Cl*pper kompilator.}
 %{?_with_ads:Ten pakiet udostЙpnia sterowniki (RDD) ADS dla kompilatora %{dname}.}
 
 ## mysql library
@@ -301,7 +315,7 @@ statikus szerkesztИshez.
 %{?_with_mysql:This package provides %{dname} MYSQL library for program linking.}
 
 %{?_with_mysql:%description -l pl mysql}
-%{?_with_mysql:%{dname} to kompatybilny z jЙzykiem CA-Clipper kompilator.}
+%{?_with_mysql:%{dname} to kompatybilny z jЙzykiem CA-Cl*pper kompilator.}
 %{?_with_mysql:Ten pakiet udostЙpnia statyczn╠ biliotekЙ MYSQL dla kompilatora %{dname}.}
 
 ## pgsql library
@@ -316,7 +330,7 @@ statikus szerkesztИshez.
 %{?_with_pgsql:This package provides %{dname} PGSQL library for program linking.}
 
 %{?_with_pgsql:%description -l pl pgsql}
-%{?_with_pgsql:%{dname} to kompatybilny z jЙzykiem CA-Clipper kompilator.}
+%{?_with_pgsql:%{dname} to kompatybilny z jЙzykiem CA-Cl*pper kompilator.}
 %{?_with_pgsql:Ten pakiet udostЙpnia statyczn╠ biliotekЙ PGSQL dla kompilatora %{dname}.}
 
 ## gd library
@@ -331,7 +345,7 @@ statikus szerkesztИshez.
 %{?_with_gd:This package provides %{dname} GD library for program linking.}
 
 %{?_with_gd:%description -l pl gd}
-%{?_with_gd:%{dname} to kompatybilny z jЙzykiem CA-Clipper kompilator.}
+%{?_with_gd:%{dname} to kompatybilny z jЙzykiem CA-Cl*pper kompilator.}
 %{?_with_gd:Ten pakiet udostЙpnia statyczn╠ biliotekЙ GD dla kompilatora %{dname}.}
 
 ######################################################################
@@ -408,7 +422,6 @@ EOF
 # check if we should rebuild tools with shared libs
 if [ "%{!?_with_static:1}" ]
 then
-    unset HB_GTALLEG
     export L_USR="${CC_L_USR} -L${HB_LIB_INSTALL} -l%{name} %{!?_without_gtcrs:-lncurses} %{!?_without_gtsln:-lslang} %{!?_without_gpm:-lgpm} %{!?_without_x11:-L/usr/X11R6/%{_lib} -lX11}"
     export PRG_USR="\"-D_DEFAULT_INC_DIR='${_DEFAULT_INC_DIR}'\" ${PRG_USR}"
 
@@ -446,7 +459,7 @@ executable. The executable will be given the basename of the first object
 file if not directly set by the "-o" command line switch.
 
 "%{hb_pref}mk" tries to produce an executable from your .prg file. It's a simple
-equivalent of cl.bat from the CA-Clipper distribution.
+equivalent of cl.bat from the CA-Cl*pper distribution.
 
 All these scripts accept command line switches:
 -o<outputfilename>      # output file name
@@ -630,6 +643,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{name}/libhbgt.a
 %{_libdir}/%{name}/libhbbmcdx.a
 %{_libdir}/%{name}/libhbclipsm.a
+%{_libdir}/%{name}/libhbmsql.a
+%{_libdir}/%{name}/libhbsqlit3.a
+%{_libdir}/%{name}/libhbtpathy.a
+%{_libdir}/%{name}/libhbziparc.a
 
 %files lib
 %defattr(755,root,root,755)
@@ -646,6 +663,11 @@ rm -rf $RPM_BUILD_ROOT
 %{?_with_curl:%defattr(644,root,root,755)}
 %{?_with_curl:%dir %{_libdir}/%{name}}
 %{?_with_curl:%{_libdir}/%{name}/libhbcurl.a}
+
+%{?_with_hbhpdf:%files hbhpdf}
+%{?_with_hbhpdf:%defattr(644,root,root,755)}
+%{?_with_hbhpdf:%dir %{_libdir}/%{name}}
+%{?_with_hbhpdf:%{_libdir}/%{name}/libhbhpdf.a}
 
 %{?_with_ads:%files ads}
 %{?_with_ads:%defattr(644,root,root,755)}

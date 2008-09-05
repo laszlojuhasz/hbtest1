@@ -68,17 +68,17 @@ static char ** s_argv = NULL;
 
 HB_EXTERN_BEGIN
 
-HANDLE hb_hInstance     = 0;
-HANDLE hb_hPrevInstance = 0;
-int    s_iCmdShow       = 0;
-BOOL   s_WinMainParam   = FALSE;
+static HANDLE s_hInstance     = 0;
+static HANDLE s_hPrevInstance = 0;
+static int    s_iCmdShow      = 0;
+static BOOL   s_WinMainParam  = FALSE;
 
 HB_EXTERN_END
 
 HB_EXPORT void hb_winmainArgInit( HANDLE hInstance, HANDLE hPrevInstance, int iCmdShow )
 {
-   hb_hInstance = hInstance;
-   hb_hPrevInstance = hPrevInstance;
+   s_hInstance = hInstance;
+   s_hPrevInstance = hPrevInstance;
    s_iCmdShow = iCmdShow;
    s_WinMainParam = TRUE;
 }
@@ -86,9 +86,9 @@ HB_EXPORT void hb_winmainArgInit( HANDLE hInstance, HANDLE hPrevInstance, int iC
 HB_EXPORT BOOL hb_winmainArgGet( HANDLE * phInstance, HANDLE * phPrevInstance, int * piCmdShow )
 {
    if( phInstance )
-      *phInstance = hb_hInstance;
+      *phInstance = s_hInstance;
    if( phPrevInstance )
-      *phPrevInstance = hb_hPrevInstance;
+      *phPrevInstance = s_hPrevInstance;
    if( piCmdShow )
       *piCmdShow = s_iCmdShow;
 
@@ -226,8 +226,7 @@ static char * hb_cmdargGet( const char * pszName, BOOL bRetValue )
 
                ulLen = pszEnd > pszNext ? pszEnd - pszNext : 0;
                pszRetVal = ( char * ) hb_xgrab( ulLen + 1 );
-               strncpy( pszRetVal, pszNext, ulLen );
-               pszRetVal[ ulLen ] = '\0';
+               hb_strncpy( pszRetVal, pszNext, ulLen );
             }
             else
                pszRetVal = "";

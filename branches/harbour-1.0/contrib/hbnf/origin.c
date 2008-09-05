@@ -3,7 +3,7 @@
  */
 
 /*
- * File......: ORIGIN.C
+ * File......: origin.c
  * Author....: Steve Larsen
  * CIS ID....: 76370,1532
  *
@@ -49,12 +49,10 @@
  * $EXAMPLES$
  *    cMyFile := FT_ORIGIN()
  *
- *    IF cMyFile <> "C:\APPDIR\MYFILE.EXE"
+ *    IF cMyFile != "C:\appdir\myfile.exe"
  *       ?"Incorrect startup file.  Please remove/rename and start again"
  *       QUIT
  *    ENDIF
- * $INCLUDE$
- *    extend.h
  * $SEEALSO$
  *    FT_WHEREIS() FT_TREE()
  * $END$

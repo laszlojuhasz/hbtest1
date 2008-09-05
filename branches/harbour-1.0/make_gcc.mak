@@ -189,7 +189,7 @@ CFLAGS         += -DHB_GT_LIB=$(HB_GT_LIB:gt%=%)
 endif
 #-----------
 CLIBFLAGS      := -c $(CFLAGS) $(CLIBFLAGS)
-CLIBFLAGSDLL   := -D__EXPORT__ $(CLIBFLAGS) $(CLIBFLAGSDLL)
+CLIBFLAGSDLL   := -DHB_DYNLIB $(CLIBFLAGS) $(CLIBFLAGSDLL)
 CEXEFLAGSDLL   :=  $(CFLAGS) $(CEXEFLAGSDLL)
 
 # Under architectures other than "DOS based" add -fPIC
@@ -204,9 +204,9 @@ endif
 # Harbour Compiler Flags
 #**********************************************************
 
-HBFLAGSCMN     := -i$(INCLUDE_DIR) -q0 -w3 -es2 -gc0 -km $(PRG_USR)
+HBFLAGSCMN     := -i$(INCLUDE_DIR) -q0 -w3 -es2 -km $(PRG_USR)
 HARBOURFLAGS   := -n $(HBFLAGSCMN) $(HARBOURFLAGS)
-HARBOURFLAGSDLL:= -D__EXPORT__ -n1 -l $(HBFLAGSCMN) $(HARBOURFLAGSDLL)
+HARBOURFLAGSDLL:= -n1 -l $(HBFLAGSCMN) $(HARBOURFLAGSDLL)
 
 #**********************************************************
 # Linker Flags
@@ -291,6 +291,7 @@ all : $(HB_DEST_DIRS) $(HB_BUILD_TARGETS)
 BasicLibs : $(COMMON_LIB) $(HBPP_EXE) $(PP_LIB) $(COMPILER_LIB)
 BasicExes : BasicLibs $(HB)
 StdLibs   : BasicExes $(STANDARD_STATIC_HBLIBS)
+MinLibs   : $(MINIMAL_STATIC_HBLIBS)
 #**********************************************************
 
 
@@ -424,11 +425,11 @@ $(HBTEST_EXE)   :: $(StdLibs)
 $(HBTEST_EXE)   :: $(HBTEST_EXE_OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 #**********************************************************
-$(HBDOC_EXE)    :: $(StdLibs)
+$(HBDOC_EXE)    :: $(MinLibs)
 $(HBDOC_EXE)    :: $(HBDOC_EXE_OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 #**********************************************************
-$(HBMAKE_EXE)   :: $(StdLibs)
+$(HBMAKE_EXE)   :: $(MinLibs)
 $(HBMAKE_EXE)   :: $(HBMAKE_EXE_OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 #**********************************************************

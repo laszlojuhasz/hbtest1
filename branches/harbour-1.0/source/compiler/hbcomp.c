@@ -236,7 +236,7 @@ HB_COMP_PTR hb_comp_new( void )
       pComp->fError           = FALSE;
 
       pComp->iWarnings  = 0;                    /* enable parse warnings */
-      pComp->iGenCOutput= HB_COMPGENC_VERBOSE;  /* C code generation should be verbose (use comments) or not */
+      pComp->iGenCOutput= HB_COMPGENC_COMPACT;  /* C code generation default mode */
       pComp->iExitLevel = HB_EXITLEVEL_DEFAULT; /* holds if there was any warning during the compilation process */
       pComp->iLanguage  = HB_LANG_C;            /* default Harbour generated output language */
    }
@@ -294,7 +294,7 @@ void hb_compOutStd( HB_COMP_DECL, const char * szMessage )
       if( HB_COMP_PARAM->outStdFunc )
          HB_COMP_PARAM->outStdFunc( HB_COMP_PARAM->cargo, szMessage );
       else
-#if defined( OS_UNIX_COMPATIBLE )
+#if defined( HB_OS_UNIX_COMPATIBLE )
          fprintf( stdout, "%s", szMessage ); fflush( stdout );
 #else
          fprintf( stderr, "%s", szMessage ); fflush( stderr );
@@ -309,7 +309,7 @@ void hb_compOutErr( HB_COMP_DECL, const char * szMessage )
       if( HB_COMP_PARAM->outErrFunc )
          HB_COMP_PARAM->outErrFunc( HB_COMP_PARAM->cargo, szMessage );
       else
-#if defined( OS_UNIX_COMPATIBLE )
+#if defined( HB_OS_UNIX_COMPATIBLE )
          fprintf( stderr, "%s", szMessage ); fflush( stderr );
 #else
          fprintf( stdout, "%s", szMessage ); fflush( stdout );

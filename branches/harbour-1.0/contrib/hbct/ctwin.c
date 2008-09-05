@@ -847,7 +847,7 @@ static int hb_ctw_AddWindowBox( PHB_GT pGT, int iWindow, BYTE * szBox, int iColo
 
 /* ********************************************************************** */
 
-static void hb_ctw_gt_Init( PHB_GT pGT, FHANDLE hFilenoStdin, FHANDLE hFilenoStdout, FHANDLE hFilenoStderr )
+static void hb_ctw_gt_Init( PHB_GT pGT, HB_FHANDLE hFilenoStdin, HB_FHANDLE hFilenoStdout, HB_FHANDLE hFilenoStderr )
 {
    HB_TRACE(HB_TR_DEBUG, ("hb_ctw_gt_Init(%p,%p,%p,%p)", pGT, hFilenoStdin, hFilenoStdout, hFilenoStderr));
 
@@ -1150,7 +1150,7 @@ static void hb_ctw_gt_GetColorStr( PHB_GT pGT, char * pszColorString )
    if( s_iCurrWindow > 0 )
    {
       PHB_CT_WND pWnd = s_windows[ s_iCurrWindow ];
-      HB_GTSUPER_COLORSTOSTRING( pGT, pWnd->piColors, pWnd->iColorCount, pszColorString, CLR_STRLEN );
+      HB_GTSUPER_COLORSTOSTRING( pGT, pWnd->piColors, pWnd->iColorCount, pszColorString, HB_CLRSTR_LEN );
    }
    else
       HB_GTSUPER_GETCOLORSTR( pGT, pszColorString );
@@ -1427,11 +1427,11 @@ static BOOL hb_ctw_gt_Info( PHB_GT pGT, int iType, PHB_GT_INFO pInfo )
 
    switch ( iType )
    {
-      case GTI_ISCTWIN:
+      case HB_GTI_ISCTWIN:
          pInfo->pResult = hb_itemPutL( pInfo->pResult, TRUE );
          break;
 
-      case GTI_NEWWIN:
+      case HB_GTI_NEWWIN:
       {
          BOOL fResult;
 
@@ -1443,7 +1443,7 @@ static BOOL hb_ctw_gt_Info( PHB_GT pGT, int iType, PHB_GT_INFO pInfo )
                           s_iCurrWindow );
          return fResult;
       }
-      case GTI_GETWIN:
+      case HB_GTI_GETWIN:
       {
          BOOL fResult;
          int iWindow = s_iCurrWindow;
@@ -1454,7 +1454,7 @@ static BOOL hb_ctw_gt_Info( PHB_GT pGT, int iType, PHB_GT_INFO pInfo )
             hb_itemPutNI( hb_arrayGetItemPtr( pInfo->pResult, 8 ), iWindow );
          return fResult;
       }
-      case GTI_SETWIN:
+      case HB_GTI_SETWIN:
       {
          BOOL fResult;
 
@@ -1492,9 +1492,9 @@ static int hb_ctw_gt_Alert( PHB_GT pGT, PHB_ITEM pMessage, PHB_ITEM pOptions,
       {
          HB_GT_INFO gtInfo;
          gtInfo.pNewVal = gtInfo.pResult = NULL;
-         HB_GTSELF_INFO( pGT, GTI_FULLSCREEN, &gtInfo );
+         HB_GTSELF_INFO( pGT, HB_GTI_FULLSCREEN, &gtInfo );
          fScreen = gtInfo.pResult && hb_itemGetL( gtInfo.pResult );
-         HB_GTSELF_INFO( pGT, GTI_KBDSUPPORT, &gtInfo );
+         HB_GTSELF_INFO( pGT, HB_GTI_KBDSUPPORT, &gtInfo );
          if( gtInfo.pResult )
          {
             if( !hb_itemGetL( gtInfo.pResult ) )
@@ -1929,7 +1929,10 @@ HB_CALL_ON_STARTUP_END( _hb_startup_gt_Init_ )
 
 #if defined( HB_PRAGMA_STARTUP )
    #pragma startup _hb_startup_gt_Init_
-#elif defined(HB_MSC_STARTUP)
+#elif defined( HB_MSC_STARTUP )
+   #if defined( HB_OS_WIN_64 )
+      #pragma section( HB_MSC_START_SEGMENT, long, read )
+   #endif
    #pragma data_seg( HB_MSC_START_SEGMENT )
    static HB_$INITSYM hb_vm_auto__hb_startup_gt_Init_ = _hb_startup_gt_Init_;
    #pragma data_seg()

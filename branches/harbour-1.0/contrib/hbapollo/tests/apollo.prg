@@ -50,35 +50,36 @@
  *
  */
 
-#include "Apollo.ch"
+#include "apollo.ch"
 
 
-Function Main()
-LOCAL nAlias,f
+FUNCTION Main()
+LOCAL nAlias
+LOCAL f
 
    SET DATE FRENCH
    SET CENTURY ON
 
    sx_SetMemoBlockSize( 32 )
    sx_SetDateFormat( SX_FRENCH )
-   sx_SetCentury( .t. )
+   sx_SetCentury( .T. )
 
    ? "Apollo version " + sx_Version()
 
    ? ""
    ? "Cleaning up files.."
-   FErase( "TEST.DBF" )
-   FErase( "TEST.SMT" )
-   FErase( "TEST.NSX" )
+   FErase( "test.dbf" )
+   FErase( "test.smt" )
+   FErase( "test.nsx" )
    ? "OK!"
 
    ? ""
    ? "Creating a new database file.."
-   nAlias:=sx_CreateNew("TEST.DBF",;  // full path filename
-                        "test1",;     // Alias
-                        SX_SDENSX,;   // rdeType
-                        6)            // Maximum fields added by sx_CreateField
-   IF nAlias=0
+   nAlias := sx_CreateNew("test.dbf",;  // full path filename
+                          "test1",;     // Alias
+                          SX_SDENSX,;   // rdeType
+                          6)            // Maximum fields added by sx_CreateField
+   IF nAlias == 0
       ? "Error creating database"
       RETU NIL
    ENDIF
@@ -94,28 +95,28 @@ LOCAL nAlias,f
    sx_Close()
    ?? "OK!"
 
-   nAlias:=sx_Use("TEST.DBF","test2",SX_EXCLUSIVE,SX_SDENSX)
+   nAlias := sx_Use("test.dbf","test2",SX_EXCLUSIVE,SX_SDENSX)
    sx_Zap()
-   IF Valtype(nAlias)="N" .AND. nAlias # 0
-      ? "OK opening 'TEST.DBF'"
+   IF Valtype(nAlias) == "N" .AND. nAlias != 0
+      ? "OK opening 'test.dbf'"
 
 
       ? "Adding 1000 records..."
-      FOR f=1 to 1000
+      FOR f := 1 to 1000
          sx_AppendBlank()
          sx_Replace("FIRST"    , SX_R_CHAR   , "Patrick " + Str( f ) )
          sx_Replace("LAST"     , SX_R_CHAR   , LTrim( Str( f ) ) + " Mast" )
          sx_Replace("NOTES"    , SX_R_MEMO   , "This is record " + LTrim( Str( f ) ) )
          sx_Replace("AGE"      , SX_R_DOUBLE , f )
          sx_Replace("BIRTDATE" , SX_R_DATESTR, DtoC( Date() ) )
-        *sx_Replace("MARRIED"  , SX_R_LOGICAL, If(f%5=2,1,0) ) /* Logical does not work yet.. */
+      // sx_Replace("MARRIED"  , SX_R_LOGICAL, iif(f%5==2,1,0) ) /* Logical does not work yet.. */
          sx_Commit()
       NEXT
 
 
       ? "Creating Index..."
       sx_IndexTag(,"LAST","LAST+FIRST",0)
-      ? "Created a HiPer-Six index. See 'TEST.NSX'"
+      ? "Created a HiPer-Six index. See 'test.nsx'"
 
 
       sx_GoTop()
@@ -124,14 +125,14 @@ LOCAL nAlias,f
          ? "RecNo...... : " + LTrim( Str( sx_RecNo() ) )
          ? "Last name.. : " + sx_GetVariant( "LAST" )
          ? "Birth date. : " + sx_GetVariant( "BIRTDATE" )
-         ? "Married.... : " + If( sx_GetLogical( "MARRIED" ) , "Yes", "No, SINGLE!!")
+         ? "Married.... : " + iif( sx_GetLogical( "MARRIED" ) , "Yes", "No, SINGLE!!")
          sx_Skip(1)
       ENDDO
 
 
       ? ""
       sx_GoTop()
-      sx_SetSoftSeek( .f. ) // SetSoftSeek OFF
+      sx_SetSoftSeek( .F. ) // SetSoftSeek OFF
       IF sx_Seek( "928 Mast" )
          ? "String '928 Mast' found in record number "+ LTrim( Str( sx_RecNo() ) )
       ELSE
@@ -151,7 +152,7 @@ LOCAL nAlias,f
       sx_Close()
 
    ELSE
-      ? "ERROR Opening 'TEST.DBF'"
+      ? "ERROR Opening 'test.dbf'"
    ENDIF
 
 return

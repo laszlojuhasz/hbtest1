@@ -83,13 +83,13 @@
  */
 
 /* length of buffer for CR/LF characters */
-#if !defined(OS_EOL_LEN) || OS_EOL_LEN < 4
+#if !defined(HB_OS_EOL_LEN) || HB_OS_EOL_LEN < 4
 #  define CRLF_BUFFER_LEN   4
 #else
-#  define CRLF_BUFFER_LEN   OS_EOL_LEN + 1
+#  define CRLF_BUFFER_LEN   HB_OS_EOL_LEN + 1
 #endif
 
-#if defined(OS_UNIX_COMPATIBLE) && !defined(HB_EOL_CRLF)
+#if defined(HB_OS_UNIX_COMPATIBLE) && !defined(HB_EOL_CRLF)
    static const char s_szCrLf[ CRLF_BUFFER_LEN ] = { HB_CHAR_LF, 0 };
    static const int  s_iCrLfLen = 1;
 #else
@@ -97,9 +97,9 @@
    static const int  s_iCrLfLen = 2;
 #endif
 
-static FHANDLE s_hFilenoStdin  = ( FHANDLE ) 0;
-static FHANDLE s_hFilenoStdout = ( FHANDLE ) 1;
-static FHANDLE s_hFilenoStderr = ( FHANDLE ) 2;
+static HB_FHANDLE s_hFilenoStdin  = ( HB_FHANDLE ) 0;
+static HB_FHANDLE s_hFilenoStdout = ( HB_FHANDLE ) 1;
+static HB_FHANDLE s_hFilenoStderr = ( HB_FHANDLE ) 2;
 
 static USHORT  s_uiPRow;
 static USHORT  s_uiPCol;
@@ -133,7 +133,7 @@ void hb_conInit( void )
        */
 #ifdef HB_C52_STRICT
       else if( iStderr > 0 ) /* //STDERR:x */
-         s_hFilenoStderr = ( FHANDLE ) iStderr;
+         s_hFilenoStderr = ( HB_FHANDLE ) iStderr;
 #endif
    }
 #endif
@@ -475,7 +475,7 @@ HB_FUNC( DEVOUT ) /* writes a single value to the current device (screen or prin
 {
    if( ISCHAR( 2 ) )
    {
-      char szOldColor[ CLR_STRLEN ];
+      char szOldColor[ HB_CLRSTR_LEN ];
 
       hb_gtGetColorStr( szOldColor );
       hb_gtSetColorStr( hb_parc( 2 ) );
@@ -496,7 +496,7 @@ HB_FUNC( DISPOUT ) /* writes a single value to the screen, but is not affected b
 
    if( ISCHAR( 2 ) )
    {
-      char szOldColor[ CLR_STRLEN ];
+      char szOldColor[ HB_CLRSTR_LEN ];
 
       hb_gtGetColorStr( szOldColor );
       hb_gtSetColorStr( hb_parc( 2 ) );
@@ -533,7 +533,7 @@ HB_FUNC( DISPOUTAT ) /* writes a single value to the screen at speficic position
 
    if( ISCHAR( 4 ) )
    {
-      char szOldColor[ CLR_STRLEN ];
+      char szOldColor[ HB_CLRSTR_LEN ];
 
       hb_gtGetColorStr( szOldColor );
       hb_gtSetColorStr( hb_parc( 4 ) );

@@ -480,8 +480,8 @@ void hb_pp_Init( void )
 #endif
    }
 
-#ifdef HARBOUR_START_PROCEDURE
-   hb_pp_AddDefine_( "__HB_MAIN__", HARBOUR_START_PROCEDURE );
+#ifdef HB_START_PROCEDURE
+   hb_pp_AddDefine_( "__HB_MAIN__", HB_START_PROCEDURE );
 #endif
 }
 
@@ -2178,7 +2178,7 @@ static int WorkMarkers( char **ptrmp, char **ptri, char *ptro, int *lenres, BOOL
    
    maxlenreal = HB_PP_STR_SIZE;
    if( s_expreal == NULL )
-      s_expreal = ( char * ) hb_xgrab( maxlenreal );
+      s_expreal = ( char * ) hb_xgrab( maxlenreal + 1 );
       
    /* Copying a match pattern to 'exppatt' */
    lenpatt = stroncpy( exppatt, *ptrmp, 4 );
@@ -2376,13 +2376,13 @@ static int WorkMarkers( char **ptrmp, char **ptri, char *ptro, int *lenres, BOOL
                      if( ! com_or_tra )
                      {
                         /* translate */
-                           strncpy( s_expreal + 1, *ptri, lenreal );
-                           s_expreal[0] = '&';
-                           s_expreal[lenreal + 1] = '\0';
-                           *ptri += lenreal;
-                           SearnRep( exppatt, s_expreal, lenreal + 1, ptro, lenres );
-                           rezrestr = 1;
-                           break;
+                        hb_strncpy( s_expreal + 1, *ptri, HB_PP_STR_SIZE - 1 );
+                        s_expreal[0] = '&';
+                        s_expreal[lenreal + 1] = '\0';
+                        *ptri += lenreal;
+                        SearnRep( exppatt, s_expreal, lenreal + 1, ptro, lenres );
+                        rezrestr = 1;
+                        break;
                      }
                      else
                      {
@@ -2406,7 +2406,7 @@ static int WorkMarkers( char **ptrmp, char **ptri, char *ptro, int *lenres, BOOL
                          * is preprocessed into:
                          * &a ++( b )
                         */
-                           strncpy( s_expreal + 1, *ptri, lenreal );
+                           hb_strncpy( s_expreal + 1, *ptri, HB_PP_STR_SIZE - 1 );
                            s_expreal[0] = '&';
                            s_expreal[lenreal + 1] = '\0';
                            *ptri += lenreal;

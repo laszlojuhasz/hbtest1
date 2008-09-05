@@ -1228,7 +1228,7 @@ HB_EXPORT BOOL hb_dbfLockIdxGetData( BYTE bScheme, HB_FOFFSET *ulPos, HB_FOFFSET
  * This function is common for different MEMO implementation
  * so I left it in DBF.
  */
-HB_EXPORT BOOL hb_dbfLockIdxFile( FHANDLE hFile, BYTE bScheme, USHORT usMode, HB_FOFFSET *pPoolPos )
+HB_EXPORT BOOL hb_dbfLockIdxFile( HB_FHANDLE hFile, BYTE bScheme, USHORT usMode, HB_FOFFSET *pPoolPos )
 {
    HB_FOFFSET ulPos, ulPool, ulSize = 1;
    BOOL fRet = FALSE, fWait;
@@ -2749,7 +2749,7 @@ static ERRCODE hb_dbfCreate( DBFAREAP pArea, LPDBOPENINFO pCreateInfo )
    }
    else
    {
-      hb_strncpy( ( char * ) szFileName, ( char * ) pCreateInfo->abName, _POSIX_PATH_MAX );
+      hb_strncpy( ( char * ) szFileName, ( char * ) pCreateInfo->abName, sizeof( szFileName ) - 1 );
    }
    hb_xfree( pFileName );
 
@@ -2883,8 +2883,8 @@ static ERRCODE hb_dbfCreate( DBFAREAP pArea, LPDBOPENINFO pCreateInfo )
    for( uiCount = 0; uiCount < pArea->uiFieldCount; uiCount++ )
    {
       LPFIELD pField = pArea->lpFields + uiCount;
-      strncpy( ( char * ) pThisField->bName,
-               hb_dynsymName( ( PHB_DYNS ) pField->sym ), 10 );
+      hb_strncpy( ( char * ) pThisField->bName,
+                  hb_dynsymName( ( PHB_DYNS ) pField->sym ), sizeof( pThisField->bName ) - 1 );
       pArea->pFieldOffset[ uiCount ] = pArea->uiRecordLen;
       /* field offset */
       if( pArea->bTableType == DB_DBF_VFP )
@@ -3575,7 +3575,7 @@ static ERRCODE hb_dbfOpen( DBFAREAP pArea, LPDBOPENINFO pOpenInfo )
    LPDBFFIELD pField;
    DBFIELDINFO dbFieldInfo;
    BYTE szFileName[ _POSIX_PATH_MAX + 1 ];
-   char szAlias[ HARBOUR_MAX_RDD_ALIAS_LENGTH + 1 ];
+   char szAlias[ HB_RDD_MAX_ALIAS_LEN + 1 ];
 
    HB_TRACE(HB_TR_DEBUG, ("hb_dbfOpen(%p, %p)", pArea, pOpenInfo));
 
@@ -3609,10 +3609,10 @@ static ERRCODE hb_dbfOpen( DBFAREAP pArea, LPDBOPENINFO pOpenInfo )
          pArea->lpdbOpenInfo = NULL;
          return FAILURE;
       }
-      hb_strncpy( ( char * ) szFileName, hb_itemGetCPtr( pItem ), _POSIX_PATH_MAX );
+      hb_strncpy( ( char * ) szFileName, hb_itemGetCPtr( pItem ), sizeof( szFileName ) - 1 );
    }
    else
-      hb_strncpy( ( char * ) szFileName, ( char * ) pOpenInfo->abName, _POSIX_PATH_MAX );
+      hb_strncpy( ( char * ) szFileName, ( char * ) pOpenInfo->abName, sizeof( szFileName ) - 1 );
 
    if( !pArea->bLockType )
    {
@@ -3669,7 +3669,7 @@ static ERRCODE hb_dbfOpen( DBFAREAP pArea, LPDBOPENINFO pOpenInfo )
    /* Create default alias if necessary */
    if( !pOpenInfo->atomAlias && pFileName->szName )
    {
-      hb_strncpyUpperTrim( szAlias, pFileName->szName, HARBOUR_MAX_RDD_ALIAS_LENGTH );
+      hb_strncpyUpperTrim( szAlias, pFileName->szName, sizeof( szAlias ) - 1 );
       pOpenInfo->atomAlias = ( BYTE * ) szAlias;
    }
    hb_xfree( pFileName );
@@ -4786,7 +4786,7 @@ static ERRCODE hb_dbfGetValueFile( DBFAREAP pArea, USHORT uiIndex, BYTE * szFile
    pField = pArea->lpFields + uiIndex;
    if( pField->uiType == HB_FT_STRING )
    {
-      FHANDLE hFile;
+      HB_FHANDLE hFile;
 
       hFile = hb_fsExtOpen( szFile, NULL, FO_WRITE | FO_EXCLUSIVE |
                             FXO_DEFAULTS | FXO_SHARELOCK |
@@ -4886,7 +4886,7 @@ static ERRCODE hb_dbfPutValueFile( DBFAREAP pArea, USHORT uiIndex, BYTE * szFile
    pField = pArea->lpFields + uiIndex;
    if( pField->uiType == HB_FT_STRING )
    {
-      FHANDLE hFile;
+      HB_FHANDLE hFile;
 
       hFile = hb_fsExtOpen( szFile, NULL, FO_READ | FO_DENYNONE |
                             FXO_DEFAULTS | FXO_SHARELOCK, NULL, NULL );
@@ -5348,7 +5348,7 @@ static ERRCODE hb_dbfRddInfo( LPRDDNODE pRDD, USHORT uiIndex, ULONG ulConnect, P
          hb_itemPutC( pItem, pData->szTableExt[ 0 ] ? pData->szTableExt : DBF_TABLEEXT );
          if( szNew )
          {
-            hb_strncpy( pData->szTableExt, szNew, HB_MAX_FILE_EXT );
+            hb_strncpy( pData->szTableExt, szNew, sizeof( pData->szTableExt ) - 1 );
             hb_xfree( szNew );
          }
          break;
@@ -5549,10 +5549,13 @@ HB_CALL_ON_STARTUP_BEGIN( _hb_dbf_rdd_init_ )
    hb_vmAtInit( hb_dbfRddInit, NULL );
 HB_CALL_ON_STARTUP_END( _hb_dbf_rdd_init_ )
 
-#if defined(HB_PRAGMA_STARTUP)
+#if defined( HB_PRAGMA_STARTUP )
    #pragma startup dbf1__InitSymbols
    #pragma startup _hb_dbf_rdd_init_
-#elif defined(HB_MSC_STARTUP)
+#elif defined( HB_MSC_STARTUP )
+   #if defined( HB_OS_WIN_64 )
+      #pragma section( HB_MSC_START_SEGMENT, long, read )
+   #endif
    #pragma data_seg( HB_MSC_START_SEGMENT )
    static HB_$INITSYM hb_vm_auto_dbf1__InitSymbols = dbf1__InitSymbols;
    static HB_$INITSYM hb_vm_auto_dbf_rdd_init = _hb_dbf_rdd_init_;

@@ -19,6 +19,12 @@ rem    set HB_REBUILD_PARSER=yes
 rem    set HB_MAKE_PROGRAM=
 rem    set HB_SHOW_ERRORS=
 rem    set HB_MAKE_FLAGS=
+rem
+rem To create a WinCE build, use the following settings:
+rem    set HB_BUILD_WINCE=yes
+rem    set HB_CC_NAME=vcce
+rem    set HB=C:\your_harbour_windows_binaries\harbour.exe
+rem    set HBPP=C:\your_harbour_windows_binaries\hbpp.exe
 rem ---------------------------------------------------------------
 
 set _HB_CC_NAME=%HB_CC_NAME%
@@ -27,7 +33,7 @@ set _HB_MAKE_PROGRAM=%HB_MAKE_PROGRAM%
 if "%_HB_CC_NAME%"      == "" set _HB_CC_NAME=vc
 if "%_HB_MAKE_PROGRAM%" == "" set _HB_MAKE_PROGRAM=nmake.exe
 
-set _HB_MAKEFILE=make_%_HB_CC_NAME%.mak
+set _HB_MAKEFILE=make_vc.mak
 set HB_EXIT_LEVEL=
 
 rem ---------------------------------------------------------------
@@ -45,6 +51,36 @@ if "%1" == "CLEAN" goto CLEAN
 if "%1" == "install" goto INSTALL
 if "%1" == "Install" goto INSTALL
 if "%1" == "INSTALL" goto INSTALL
+
+rem ---------------------------------------------------------------
+
+if not "%HB_BUILD_WINCE%" == "yes" goto BUILD
+
+rem Checking if HB and HBPP are set
+
+if not "%HB%" == "" if exist %HB% goto CHECK_HBPP
+   echo.
+   echo. *******************************************
+   echo. You must set HB environment variable to a
+   echo. working copy of Harbour compiler executable
+   echo. harbour.exe.
+   echo. Example: set HB=C:\harbour\harbour.exe
+   echo. *******************************************
+   echo.
+   goto EXIT
+
+:CHECK_HBPP
+if not "%HBPP%" == "" if exist %HBPP% goto BUILD
+   echo.
+   echo. **********************************************
+   echo. You must set HBPP environment variable to a
+   echo. working copy of hbpp.exe helper executable
+   echo. Example: set HBPP=C:\harbour\hbpp.exe
+   echo. **********************************************
+   echo.
+   goto EXIT
+
+rem ---------------------------------------------------------------
 
 :BUILD
 
@@ -79,4 +115,4 @@ set _HB_CC_NAME=
 set _HB_MAKE_PROGRAM=
 set _HB_MAKEFILE=
 
-if exist exit_err.bat call exit_err.bat
+if exist hbpostmk.bat call hbpostmk.bat

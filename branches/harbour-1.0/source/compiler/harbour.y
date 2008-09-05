@@ -469,7 +469,7 @@ CompTimeStr : LITERAL {
             | LITERAL '+' LITERAL {
                {
                   char szFileName[ _POSIX_PATH_MAX + 1 ];
-                  hb_strncat( hb_strncpy( szFileName, $1.string, _POSIX_PATH_MAX ), $3.string, _POSIX_PATH_MAX );
+                  hb_strncat( hb_strncpy( szFileName, $1.string, sizeof( szFileName ) - 1 ), $3.string, sizeof( szFileName ) - 1 );
                   hb_compAutoOpenAdd( HB_COMP_PARAM, hb_compIdentifierNew( HB_COMP_PARAM, szFileName, HB_IDENT_COPY ) );
                   if( $1.dealloc )
                   {
@@ -1325,7 +1325,6 @@ DecData    : IdentName { HB_COMP_PARAM->pLastMethod = hb_compMethodAdd( HB_COMP_
                   HB_COMP_PARAM->pLastMethod->cType = HB_COMP_PARAM->cVarType;
                   HB_COMP_PARAM->pLastMethod->iParamCount = 1;
 
-                  /* TOFIX: these allocations causes memory leaks */
                   HB_COMP_PARAM->pLastMethod->cParamTypes = ( BYTE * ) hb_xgrab( 1 );
                   HB_COMP_PARAM->pLastMethod->pParamClasses = ( PCOMCLASS * ) hb_xgrab( sizeof( COMCLASS ) );
 

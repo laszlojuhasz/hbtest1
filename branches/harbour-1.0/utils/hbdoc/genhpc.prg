@@ -50,10 +50,6 @@
  *
  */
 
-#ifdef __HARBOUR__
-#define NANFOR
-#endif
-
 #include "directry.ch"
 #include "fileio.ch"
 #include "inkey.ch"
@@ -70,19 +66,18 @@
 //  The delimiter
 #define DELIM   "$"                 // keyword delimiter
 
-#xtranslate UPPERLOWER(<exp>) => (UPPER(SUBSTR(<exp>,1,1))+LOWER(SUBSTR(<exp>,2)))
 MEMVAR aDirList
 MEMVAR aDocInfo
 MEMVAR aWww
 STATIC NWRITEHANDLE
 
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 *+    Function ProcessFiles()
 *+
 *+    Called from ( hbdoc.prg    )   2 - function main()
 *+
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 FUNCTION ProcessFiles()
 
@@ -157,12 +152,12 @@ FUNCTION ProcessFiles()
    LOCAL cInc        := DELIM + "INCLUDE" + DELIM              // INCLUDE keyword
    LOCAL cComm       := DELIM + "COMMANDNAME" + DELIM          // COMMAND keyword
    LOCAL cCompl      := DELIM + "COMPLIANCE" + DELIM
-   LOCAL cTest       := DELIM + 'TESTS' + DELIM
-   LOCAL cStatus     := DELIM + 'STATUS' + DELIM
-   LOCAL cPlat       := DELIM + 'PLATFORMS' + DELIM
-   LOCAL cFiles      := DELIM + 'FILES' + DELIM
-   LOCAL cSubCode    := DELIM + 'SUBCODE' + DELIM
-   LOCAL cFunction   := DELIM + 'FUNCTION' + DELIM
+   LOCAL cTest       := DELIM + "TESTS" + DELIM
+   LOCAL cStatus     := DELIM + "STATUS" + DELIM
+   LOCAL cPlat       := DELIM + "PLATFORMS" + DELIM
+   LOCAL cFiles      := DELIM + "FILES" + DELIM
+   LOCAL cSubCode    := DELIM + "SUBCODE" + DELIM
+   LOCAL cFunction   := DELIM + "FUNCTION" + DELIM
 
    //
    //  Entry Point
@@ -177,7 +172,7 @@ FUNCTION ProcessFiles()
 
       //  Open file for input
 
-      nCommentLen := IIF( AT( ".ASM", UPPER( aDirList[ i, F_NAME ] ) ) > 0, 2, 3 )
+      nCommentLen := IIF( AT( ".asm", Lower( aDirList[ i, F_NAME ] ) ) > 0, 2, 3 )
       nReadHandle := FT_FUSE( aDirList[ i, F_NAME ] )
       @ INFILELINE, 33 CLEAR TO INFILELINE, MAXCOL()
       @ INFILELINE, 33 SAY PAD( aDirList[ i, F_NAME ], 47 )         
@@ -334,9 +329,9 @@ FUNCTION ProcessFiles()
 
                nMode := D_ONELINE
                //  Now start writing out what we know
-               FWRITE( nWriteHandle, '.topic ' + CheckTop( PAD( cFuncName, 20 ) ) + CRLF )
+               FWRITE( nWriteHandle, ".topic " + CheckTop( PAD( cFuncName, 20 ) ) + CRLF )
                //                    FWRITE(nWriteHandle,"!short: "+PAD(cFuncName,17)+cOneLine+CRLF)
-               FWRITE( nWriteHandle, '.title ' + cFuncName + CRLF )
+               FWRITE( nWriteHandle, ".title " + cFuncName + CRLF )
                //                  FWRITE(nWriteHandle," "+cFuncName+CRLF)
                FWRITE( nWriteHandle, ".par font 6 size 12 align center " + CRLF + cOneLine + CRLF + ".endpar" + CRLF )
                FWRITE( nWriteHandle, HB_OEMTOANSI( cBar ) )
@@ -541,18 +536,18 @@ FUNCTION ProcessFiles()
 
 RETURN NIL
 
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 *+    Function Proccalso()
 *+
 *+    Called from ( genhpc.prg   )   1 - function processfiles()
 *+
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 FUNCTION Proccalso( nWriteHandle, cSeeAlso )
 
    LOCAL nPos
-   LOCAL cTemp := ''
+   LOCAL cTemp := ""
    LOCAL xTemp
    LOCAL nLen
    LOCAL xPos
@@ -573,7 +568,7 @@ FUNCTION Proccalso( nWriteHandle, cSeeAlso )
             xPos := AT( " ", xTemp )
             IF xPos > 0
                nLen  -= LEN( xTemp ) + 3
-               xTemp += "~" + SUBSTR( xTemp, 1, xPos - 1 ) + '_' + SUBSTR( xTemp, xPos + 1 ) + "~ "
+               xTemp += "~" + SUBSTR( xTemp, 1, xPos - 1 ) + "_" + SUBSTR( xTemp, xPos + 1 ) + "~ "
                cTemp := "~" + xTemp
             ELSE
                nLen  -= LEN( xTemp ) + 2
@@ -596,7 +591,7 @@ FUNCTION Proccalso( nWriteHandle, cSeeAlso )
             xPos := AT( " ", xTemp )
             IF xPos > 0
                nLen  -= LEN( xTemp ) + 3
-               xTemp += "~" + SUBSTR( xTemp, 1, xPos - 1 ) + '_' + SUBSTR( xTemp, xPos + 1 ) + "~"
+               xTemp += "~" + SUBSTR( xTemp, 1, xPos - 1 ) + "_" + SUBSTR( xTemp, xPos + 1 ) + "~"
                cTemp := "~" + xTemp
             ELSE
                nLen  -= LEN( xTemp ) + 2
@@ -615,14 +610,14 @@ FUNCTION Proccalso( nWriteHandle, cSeeAlso )
    ENDDO
 RETURN nil
 
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 *+    Function ProcStatus()
 *+
 *+    Called from ( genasc.prg   )   1 - function asciifiles()
 *+                ( genhpc.prg   )   1 - function processfiles()
 *+
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 FUNCTION ProcStatus( nWriteHandle, cBuffer )
 
@@ -637,13 +632,13 @@ FUNCTION ProcStatus( nWriteHandle, cBuffer )
    ENDIF
 RETURN nil
 
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 *+    Function CheckTop()
 *+
 *+    Called from ( genhpc.prg   )   1 - function processfiles()
 *+
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 FUNCTION CheckTop( cTop )
 
@@ -652,10 +647,8 @@ FUNCTION CheckTop( cTop )
    cTop := RTRIM( cTop )
    nPos := AT( " ", cTop )
    IF nPos > 0
-      cTemp := SUBSTR( cTop, 1, nPos - 1 ) + '_' + SUBSTR( cTop, nPos + 1 )
+      cTemp := SUBSTR( cTop, 1, nPos - 1 ) + "_" + SUBSTR( cTop, nPos + 1 )
    ELSE
       cTemp := cTop
    ENDIF
 RETURN cTemp
-
-*+ EOF: GENHPC.PRG

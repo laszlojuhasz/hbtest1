@@ -26,7 +26,7 @@ set _HB_MAKE_PROGRAM=%HB_MAKE_PROGRAM%
 if "%_HB_CC_NAME%"      == "" set _HB_CC_NAME=b32
 if "%_HB_MAKE_PROGRAM%" == "" set _HB_MAKE_PROGRAM=make.exe
 
-set _HB_MAKEFILE=make_%_HB_CC_NAME%.mak
+set _HB_MAKEFILE=make_b32.mak
 set HB_EXIT_LEVEL=
 
 rem ---------------------------------------------------------------
@@ -78,4 +78,4 @@ set _HB_CC_NAME=
 set _HB_MAKE_PROGRAM=
 set _HB_MAKEFILE=
 
-if exist exit_err.bat call exit_err.bat
+if exist hbpostmk.bat call hbpostmk.bat

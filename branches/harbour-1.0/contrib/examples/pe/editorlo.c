@@ -1,6 +1,7 @@
 /*
  * $Id$
 */
+
 #include <stdio.h>
 #include <io.h>
 #include <fcntl.h>
@@ -15,11 +16,11 @@
 #define  mc51
 
 #ifdef mc51
-  #include <extend.api>
-  #include <fm.api>
-  #include <gt.api>
-  #include <filesys.api>
-  #include <vm.api>
+  #include "extend.api"
+  #include "fm.api"
+  #include "gt.api"
+  #include "filesys.api"
+  #include "vm.api"
 #else
   #include "rvideo.h"
   #include <dos.h>
@@ -898,7 +899,7 @@ char *HB_ED_GETTEXT(int nEdit, int Case, int mietka )
    #else
       bufor = calloc((unsigned int) dl,1);
 
-      strcpy(name,"c:\\out.txt");
+      strcpy(name,"C:\\out.txt");
       p     = open(name,O_CREAT+O_WRONLY+O_BINARY);
    #endif
 

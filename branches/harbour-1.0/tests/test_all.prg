@@ -8,7 +8,7 @@
 // Compiler independent, but not platform independent (creates a DOS style batch file).
 // Specify the hbxxx batch file name to use to build with on the command line.
 // Defaults to "run_prg".
-// The TEST_ALL.BAT batch file has restart capability. For example, if there is an error
+// The test_all.bat batch file has restart capability. For example, if there is an error
 // in testgt.prg, find and fix the problem, then restart by running "TEST_ALL TESTGT".
 
 #include "directry.ch"
@@ -33,7 +33,7 @@ Function Main( cOption, cCmd )
 
    fWrite(o,"if not .%1==. goto %1" + Chr(13) + Chr(10))
 
-   FOR f=1 TO Len(aDir)
+   FOR f := 1 TO Len(aDir)
       IF TestIt(aDir[f][1])
          p := At(".prg",Lower(aDir[f][1]))
          IF p > 1
@@ -53,15 +53,15 @@ RETURN NIL
 Function TestIt(cFile)
 LOCAL nH1,lRetu,nH2
 
-   nH1=fOpen(cFile)
-   lRetu:=Upper(fReadStr(nH1,8))<>"//NOTEST"
+   nH1 := fOpen(cFile)
+   lRetu := Upper(fReadStr(nH1,8))<>"//NOTEST"
    fClose(nH1)
 
    IF !lRetu
       IF !File("NotTestd.txt")
-         nH2=fCreate("nottestd.txt")
+         nH2 := fCreate("nottestd.txt")
       ELSE
-         nH2=fOpen("nottestd.txt", FO_WRITE)
+         nH2 := fOpen("nottestd.txt", FO_WRITE)
       ENDIF
       fSeek(nH2, 0, FS_END)
       fWrite(nH2,DtoC(Date())+"  "+Time()+"  "+cFile+Chr(13)+Chr(10))

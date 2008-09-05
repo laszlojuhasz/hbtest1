@@ -47,13 +47,8 @@
  * If you write modifications of your own for Harbour, it is your choice
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
-
  *
  */
-
-#ifdef __HARBOUR__
-#define NANFOR
-#endif
 
 #include "directry.ch"
 #include "fileio.ch"
@@ -71,7 +66,6 @@
 //  The delimiter
 #define DELIM   "$"                 // keyword delimiter
 
-#xtranslate UPPERLOWER(<exp>) => (UPPER(SUBSTR(<exp>,1,1))+LOWER(SUBSTR(<exp>,2)))
 MEMVAR aDirList
 MEMVAR aDocInfo
 MEMVAR aWww
@@ -79,13 +73,13 @@ MEMVAR LCONTINUOUS
 MEMVAR lAuthor
 STATIC NWRITEHANDLE
 
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 *+    Function ASCIIFiles()
 *+
 *+    Called from ( hbdoc.prg    )   2 - function main()
 *+
-*+北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北北
+*+--------------------------------------------------------------------
 *+
 FUNCTION ASCIIFiles()
 
@@ -151,12 +145,12 @@ FUNCTION ASCIIFiles()
    LOCAL cInc        := DELIM + "INCLUDE" + DELIM              // INCLUDE keyword
    LOCAL cComm       := DELIM + "COMMANDNAME" + DELIM          // COMMAND keyword
    LOCAL cCompl      := DELIM + "COMPLIANCE" + DELIM
-   LOCAL cTest       := DELIM + 'TESTS' + DELIM
-   LOCAL cStatus     := DELIM + 'STATUS' + DELIM
-   LOCAL cPlat       := DELIM + 'PLATFORMS' + DELIM
-   LOCAL cFiles      := DELIM + 'FILES' + DELIM
-   LOCAL cSubCode    := DELIM + 'SUBCODE' + DELIM
-   LOCAL cFunction   := DELIM + 'FUNCTION' + DELIM
+   LOCAL cTest       := DELIM + "TESTS" + DELIM
+   LOCAL cStatus     := DELIM + "STATUS" + DELIM
+   LOCAL cPlat       := DELIM + "PLATFORMS" + DELIM
+   LOCAL cFiles      := DELIM + "FILES" + DELIM
+   LOCAL cSubCode    := DELIM + "SUBCODE" + DELIM
+   LOCAL cFunction   := DELIM + "FUNCTION" + DELIM
    LOCAL cFileNameOri
 
 #define D_NORMAL     1
@@ -182,7 +176,7 @@ FUNCTION ASCIIFiles()
 
       //  Open file for input
 
-      nCommentLen := IIF( AT( ".ASM", UPPER( aDirList[ i, F_NAME ] ) ) > 0, 2, 3 )
+      nCommentLen := IIF( AT( ".asm", Lower( aDirList[ i, F_NAME ] ) ) > 0, 2, 3 )
       nReadHandle := FT_FUSE( aDirList[ i, F_NAME ] )
       @ INFILELINE, 33 CLEAR TO INFILELINE, MAXCOL()
       @ INFILELINE, 33 SAY PAD( aDirList[ i, F_NAME ], 47 )         
@@ -605,5 +599,3 @@ FUNCTION ASCIIFiles()
    NEXT
 
 RETURN NIL
-
-*+ EOF: GENASC.PRG

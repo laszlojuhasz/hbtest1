@@ -148,7 +148,7 @@ IF ISCHARACTER(xNum) .and. nBase >= 2 .and. nBase <= 36
 
    xNum := UPPER( ALLTRIM( xNum) )
 
-   FOR i=1 TO LEN( xNum )
+   FOR i := 1 TO LEN( xNum )
       nPos := AT( SUBSTR( xNum, i, 1 ), WORLD )
       IF nPos == 0 .or. nPos > nBase
          EXIT
@@ -173,7 +173,7 @@ LOCAL nInt
 IF nNum > 0
    
    nInt := INT( nNum / nBase)
-   RETURN IIF(nInt==0, "", B10TOBN( nInt, @nBase )) +;
+   RETURN Iiif(nInt==0, "", B10TOBN( nInt, @nBase )) +;
           SUBSTR( WORLD, ( nNum % nBase ) + 1, 1 )
 
 ELSEIF nNum == 0
@@ -269,9 +269,8 @@ FUNCTION CTOBIT( cCharString, cBitPattern )
 
   FOR nI := 1 TO LEN( cBitPattern )
 
-     cString := IF( AT(SUBSTR( cBitPattern, -nI, 1), cCharString) > 0, '1', '0') + cString
+     cString := iif( AT(SUBSTR( cBitPattern, -nI, 1), cCharString) > 0, '1', '0') + cString
 
   NEXT
 
 RETURN CTON( cString, 2 )
-

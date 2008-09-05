@@ -71,7 +71,7 @@ void hb_compPrintUsage( HB_COMP_DECL, char * szSelf )
            "\n          %cfs[-]           turn filename space trimming on or off (default)",
            "\n          %cg<type>         output type generated is <type> (see below)",
            "\n          %cgc[<type>]      output type: C source (.c) (default)",
-           "\n                           <type>: 0=compact 1=normal 2=verbose (default)",
+           "\n                           <type>: 0=compact (default) 1=normal 2=verbose",
            "\n                                   3=generate real C code",
            "\n          %cgo              output type: Platform dependant object module",
 #ifdef HB_GEN_W32_OBJ
@@ -117,7 +117,7 @@ void hb_compPrintUsage( HB_COMP_DECL, char * szSelf )
    for( iLine = 0; iLine < ( int ) ( sizeof( szOptions ) / sizeof( char * ) ); iLine++ )
    {
       snprintf( buffer, sizeof( buffer ),
-                szOptions[ iLine ], OS_OPT_DELIMITER_LIST[ 0 ] );
+                szOptions[ iLine ], HB_OS_OPT_DELIM_LIST[ 0 ] );
       hb_compOutStd( HB_COMP_PARAM, buffer );
    }
 }
@@ -184,6 +184,7 @@ void hb_compPrintCredits( HB_COMP_DECL )
          "Antonio Linares <alinares fivetechsoft.com>\n"
          "April White <awhite mail.rosecom.ca>\n"
          "Bil Simser <bsimser home.com>\n"
+         "Bill Robertson <arcadia2 sbcglobal.net>\n"
          "Brian Hays <bhays abacuslaw.com>\n"
          "Bruno Cantero <bruno issnet.net>\n"
          "Chen Kedem <niki actcom.co.il>\n"

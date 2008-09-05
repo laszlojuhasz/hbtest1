@@ -3,7 +3,7 @@
  */
 
 /*
- * File......: MOUSE1.PRG
+ * File......: mouse1.prg
  * Author....: Leo Letendre
  * CIS ID....: 73607,233
  *
@@ -44,7 +44,7 @@
  * Leo fixed a potential bug in ft_mcursor().
  *
  *    Rev 1.2   27 May 1991 13:40:30   GLENN
- * Leo Letendre sent me a revision of MOUSE1.PRG where he built in support
+ * Leo Letendre sent me a revision of mouse1.prg where he built in support
  * for a three-button mouse, and revised the "double click" detection
  * algorithm.
  *
@@ -87,16 +87,16 @@ static lMinit:=.F.
      local nHoriz, nVert, nDouble
      local nTime
 
-     IF nRow=NIL
-         nRow=MAXROW()+1
+     IF nRow==NIL
+         nRow:=MAXROW()+1
      ELSE
-         nRow=VAL(nRow)
+         nRow:=VAL(nRow)
      ENDIF
 
-     IF nCol=NIL
-         nCol=MAXCOL()+1
+     IF nCol==NIL
+         nCol:=MAXCOL()+1
      ELSE
-         nCol=VAL(nCol)
+         nCol:=VAL(nCol)
      ENDIF
 
      IF .NOT.SETMODE(nRow,nCol)
@@ -170,14 +170,14 @@ static lMinit:=.F.
 * to a "normal" CLIPPER program so some of these examples are a bit out of
 * the ordinary.
 
-        DO WHILE nX=0.AND.nY=0
+        DO WHILE nX==0.AND.nY==0
              FT_MMICKEYS( @nX, @nY )
         ENDDO
 * tell the mouse driver where updates will be taking place so it can hide
 * the cursor when necessary.
 
         FT_MCONOFF( 9, 23, 16, 53 )
-        nTime=-1
+        nTime:=-1
 
         devpos( 9, 23 )
         devout( nX )
@@ -543,8 +543,8 @@ RETURN NIL              // no output from function
 
 FUNCTION FT_MGETPOS( nX, nY )
 
-   nX := if( nX == NIL, 0, nX )
-   nY := if( nY == NIL, 0, nY )
+   nX := iif( nX == NIL, 0, nX )
+   nY := iif( nY == NIL, 0, nY )
 
    aReg[AX] := 3                // set mouse function call 3
    FT_INT86( 51, aReg )        // execute mouse interrupt
@@ -598,8 +598,8 @@ FUNCTION FT_MGETCOORD( nX, nY )
 
 * Duplicated code from FT_MGETPOS() for speed reasons
 
-   nX := if( nX == NIL, 0, nX )
-   nY := if( nY == NIL, 0, nY )
+   nX := iif( nX == NIL, 0, nX )
+   nY := iif( nY == NIL, 0, nY )
 
    aReg[AX] := 3                // set mouse function call 3
    FT_INT86( 51, aReg )         // execute mouse interrupt
@@ -913,7 +913,7 @@ RETURN aReg[AX]               // return button status
  *     This function returns the release status of the mouse buttons and the
  *     coordinates of the last release.
  *  $EXAMPLES$
- *     IF( FT_MBUTREL( 0 ) == 1 )
+ *     IF FT_MBUTREL( 0 ) == 1
  *        ? "Left button released"
  *     ENDIF
  *  $SEEALSO$

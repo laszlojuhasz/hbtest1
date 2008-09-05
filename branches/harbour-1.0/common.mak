@@ -251,7 +251,8 @@ HBTEST_EXE   = $(BIN_DIR)\hbtest$(EXEEXT)
 HBDOC_EXE    = $(BIN_DIR)\hbdoc$(EXEEXT)
 HBMAKE_EXE   = $(BIN_DIR)\hbmake$(EXEEXT)
 
-HARBOUR_DLL  = $(BIN_DIR)\$(LIBPREF)harbour-$(HB_CC_NAME)$(DLLEXT)
+HB_DLLVER    = 10
+HARBOUR_DLL  = $(BIN_DIR)\$(LIBPREF)harbour-$(HB_DLLVER)-$(HB_CC_NAME)$(DLLEXT)
 HBTESTDLL_EXE= $(BIN_DIR)\hbtest-dll$(EXEEXT)
 
 #**********************************************************
@@ -286,6 +287,16 @@ HB_GT_LIB = gtstd
 #**********************************************************
 #**********************************************************
 #**********************************************************
+
+# Minimal Libs for HB-based executables
+MINIMAL_STATIC_HBLIBS = \
+    $(COMMON_LIB)        \
+    $(VM_LIB)            \
+    $(RTL_LIB)           \
+    $(HB_GT_LIBS)        \
+    $(NULSYS_LIB)        \
+    $(MACRO_LIB)         \
+    $(DEBUG_LIB)         \
 
 # Standard Libs for HB-based executables
 STANDARD_STATIC_HBLIBS = \
@@ -383,6 +394,7 @@ VM_COMMON_LIB_OBJS = \
     $(OBJ_DIR)\cmdarg$(OBJEXT)   \
     $(OBJ_DIR)\codebloc$(OBJEXT) \
     $(OBJ_DIR)\debug$(OBJEXT)    \
+    $(OBJ_DIR)\debugold$(OBJEXT) \
     $(OBJ_DIR)\dynlibhb$(OBJEXT) \
     $(OBJ_DIR)\dynsym$(OBJEXT)   \
     $(OBJ_DIR)\estack$(OBJEXT)   \
@@ -748,7 +760,6 @@ PCRE_LIB_OBJS = \
     $(OBJ_DIR)\pcreconf$(OBJEXT) \
     $(OBJ_DIR)\pcredfa$(OBJEXT)  \
     $(OBJ_DIR)\pcreexec$(OBJEXT) \
-    $(OBJ_DIR)\pcrefind$(OBJEXT) \
     $(OBJ_DIR)\pcrefinf$(OBJEXT) \
     $(OBJ_DIR)\pcreget$(OBJEXT)  \
     $(OBJ_DIR)\pcreinfo$(OBJEXT) \
@@ -759,6 +770,7 @@ PCRE_LIB_OBJS = \
     $(OBJ_DIR)\pcrestud$(OBJEXT) \
     $(OBJ_DIR)\pcretabs$(OBJEXT) \
     $(OBJ_DIR)\pcretryf$(OBJEXT) \
+    $(OBJ_DIR)\pcreucd$(OBJEXT)  \
     $(OBJ_DIR)\pcrever$(OBJEXT)  \
     $(OBJ_DIR)\pcrevutf$(OBJEXT) \
     $(OBJ_DIR)\pcrexcls$(OBJEXT) \
@@ -1073,32 +1085,16 @@ HBDOC_EXE_OBJS = \
     $(OBJ_DIR)\genrtf$(OBJEXT)   \
     $(OBJ_DIR)\gentrf$(OBJEXT)   \
     $(OBJ_DIR)\genpdf1$(OBJEXT)  \
-    $(OBJ_DIR)\teeasc$(OBJEXT)   \
-    $(OBJ_DIR)\html$(OBJEXT)     \
-    $(OBJ_DIR)\ng$(OBJEXT)       \
-    $(OBJ_DIR)\os2$(OBJEXT)      \
-    $(OBJ_DIR)\rtf$(OBJEXT)      \
-    $(OBJ_DIR)\troff$(OBJEXT)    \
-    $(OBJ_DIR)\fclass1$(OBJEXT)  \
-    $(OBJ_DIR)\ffile1$(OBJEXT)   \
     $(OBJ_DIR)\ft_funcs$(OBJEXT) \
+    $(OBJ_DIR)\hbdfrdln$(OBJEXT) \
 
 #**********************************************************
 
 HBMAKE_EXE_OBJS = \
     $(OBJ_DIR)\hbmake$(OBJEXT)   \
-    $(OBJ_DIR)\hbmutils$(OBJEXT) \
-    $(OBJ_DIR)\checks$(OBJEXT)   \
-    $(OBJ_DIR)\pickarry$(OBJEXT) \
-    $(OBJ_DIR)\pickfile$(OBJEXT) \
-    $(OBJ_DIR)\prb_stak$(OBJEXT) \
-    $(OBJ_DIR)\radios$(OBJEXT)   \
-    $(OBJ_DIR)\fclass1$(OBJEXT)  \
-    $(OBJ_DIR)\ffile1$(OBJEXT)   \
-    $(OBJ_DIR)\ft_funcs$(OBJEXT) \
+    $(OBJ_DIR)\hbmgauge$(OBJEXT) \
+    $(OBJ_DIR)\hbmfrdln$(OBJEXT) \
     $(OBJ_DIR)\hbmlang$(OBJEXT)  \
-    $(OBJ_DIR)\readline$(OBJEXT) \
-    $(OBJ_DIR)\tmake$(OBJEXT)    \
 
 #**********************************************************
 #**********************************************************

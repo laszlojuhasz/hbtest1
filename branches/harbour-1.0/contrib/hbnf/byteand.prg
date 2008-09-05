@@ -3,7 +3,7 @@
  */
 
 /*
- * File......: BYTEAND.PRG
+ * File......: byteand.prg
  * Author....: Forest Belt, Computer Diagnostic Services, Inc.
  * CIS ID....: ?
  *
@@ -47,8 +47,8 @@
  *     bit-by-bit AND operation.  Equivalent to AND assembler instruction.
  *
  *     This function is presented to illustrate that bit-wise operations
- *     are possible with Clipper code.  For greater speed, write .C or
- *     .ASM versions and use the Clipper Extend system.
+ *     are possible with Clipper code.  For greater speed, write .c or
+ *     .asm versions and use the Clipper Extend system.
  *  $EXAMPLES$
  *     This code would mask out the high nibble (four most significant bits)
  *     of the byte represented by chr(123) and leave the low nibble bits as in
@@ -59,7 +59,7 @@
  *          ? cNewByte       // result: non-printable character
  *
  *     For a demonstration of Clipper bit manipulations, compile and
- *     link the program BITTEST.PRG in the Nanforum Toolkit source code.
+ *     link the program bittest.prg in the Nanforum Toolkit source code.
  *  $SEEALSO$
  *     FT_BYTEOR() FT_BYTEXOR() FT_BYTENOT() FT_BYTENEG()
  *  $END$

@@ -3,7 +3,7 @@
  */
 
 /*
- * File......: MADD.PRG
+ * File......: madd.prg
  * Author....: Jo W. French dba Practical Computing
  * CIS ID....: 74731,1751
  *
@@ -77,9 +77,9 @@
 FUNCTION FT_MADD( dGivenDate, nAddMonths, lMakeEOM)
   LOCAL nAdjDay, dTemp, i
 
-  IF(VALTYPE(dGivenDate) != 'D', dGivenDate := DATE(), )
-  IF(VALTYPE(nAddMonths) != 'N', nAddMonths := 0, )
-  IF(VALTYPE(lMakeEOM)   != 'L', lMakeEom := .F., )
+  IF VALTYPE(dGivenDate) != 'D' ; dGivenDate := DATE() ; ENDIF
+  IF VALTYPE(nAddMonths) != 'N' ; nAddMonths := 0 ; ENDIF
+  IF VALTYPE(lMakeEOM)   != 'L' ; lMakeEom := .F. ; ENDIF
 
   nAdjDay := DAY( dGivenDate ) - 1
 
@@ -92,7 +92,7 @@ FUNCTION FT_MADD( dGivenDate, nAddMonths, lMakeEOM)
 
   /* Work with 1st of months.*/
   FOR i := 1 TO ABS(nAddMonths)
-      dTemp += IF( nAddMonths > 0, 31, -1 )
+      dTemp += iif( nAddMonths > 0, 31, -1 )
       dTemp += 1 - DAY( dTemp )
   NEXT
 

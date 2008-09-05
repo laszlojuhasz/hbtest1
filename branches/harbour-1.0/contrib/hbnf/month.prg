@@ -3,7 +3,7 @@
  */
 
 /*
- * File......: MONTH.PRG
+ * File......: month.prg
  * Author....: Jo W. French dba Practical Computing
  * CIS ID....: 74731,1751
  *
@@ -99,7 +99,9 @@ LOCAL lIsMonth, nTemp, aRetVal
 
   lIsMonth  := ( VALTYPE(nMonthNum) == 'N' )
   IF lISMonth
-     IF( nMonthNum < 1 .OR. nMonthNum > 12, nMonthNum := 12, )
+     IF nMonthNum < 1 .OR. nMonthNum > 12
+        nMonthNum := 12
+     ENDIF
      dGivenDate := FT_MADD(aRetVal[2], nMonthNum - 1)
   ENDIF
 

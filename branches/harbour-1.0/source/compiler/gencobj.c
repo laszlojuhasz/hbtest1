@@ -34,10 +34,10 @@
 /* QUESTION: Allocate buffer dynamically ? */
 #define HB_CFG_LINE_LEN    ( _POSIX_PATH_MAX << 1 )
 
-#if defined( OS_UNIX_COMPATIBLE )
+#if defined( HB_OS_UNIX_COMPATIBLE )
    #define HB_NULL_STR " > /dev/null"
-#elif defined( OS_DOS_COMPATIBLE )
-   #define HB_NULL_STR " >nul"      
+#else
+   #define HB_NULL_STR " >nul"
 #endif
 
 /*--------------------------------------------------------------------------*/
@@ -61,7 +61,7 @@ static char * hb_searchpath( const char * pszFile, char * pszEnv, char * pszCfg 
          pszPath = pszEnv;
          while( *pszEnv )
          {
-            if( *pszEnv == OS_PATH_LIST_SEPARATOR )
+            if( *pszEnv == HB_OS_PATH_LIST_SEP_CHR )
             {
                *pszEnv++ = '\0';
                break;
@@ -70,7 +70,7 @@ static char * hb_searchpath( const char * pszFile, char * pszEnv, char * pszCfg 
          }
          if( *pszPath )
          {
-            snprintf( pszCfg, _POSIX_PATH_MAX + 1, "%s%c%s", pszPath, OS_PATH_DELIMITER, pszFile );
+            snprintf( pszCfg, _POSIX_PATH_MAX + 1, "%s%c%s", pszPath, HB_OS_PATH_DELIM_CHR, pszFile );
             if( hb_fsFileExists( ( const char * ) pszCfg ) )
             {
                bFound = TRUE;
@@ -105,15 +105,15 @@ static void hb_substenvvar( char * szLine )
          {
             ptr[ 0 ] = 0;
             ptr[ i ] = 0;
-            hb_strncpy( szBuf, szLine, HB_CFG_LINE_LEN );
+            hb_strncpy( szBuf, szLine, sizeof( szBuf ) - 1 );
             szVar = hb_getenv( ptr + 2 );
             if( szVar )
             {
-               hb_strncat( szBuf, szVar, HB_CFG_LINE_LEN );
+               hb_strncat( szBuf, szVar, sizeof( szBuf ) - 1 );
                hb_xfree( szVar );
             }
             j = strlen( szBuf );
-            hb_strncat( szBuf, &ptr[ i + 1 ], HB_CFG_LINE_LEN );
+            hb_strncat( szBuf, &ptr[ i + 1 ], sizeof( szBuf ) - 1 );
             hb_strncpy( szLine, szBuf, HB_CFG_LINE_LEN );
             ptr = szLine + j;
          }
@@ -133,12 +133,10 @@ void hb_compGenCObj( HB_COMP_DECL, PHB_FNAME pFileName )
    char szOutPath[ _POSIX_PATH_MAX + 1 ] = "\0";
    char pszTemp[ _POSIX_PATH_MAX + 1 ] = "";
    char buffer[ HB_CFG_LINE_LEN * 2 + 1024 ];
-#if defined( OS_UNIX_COMPATIBLE )
+#if defined( HB_OS_UNIX_COMPATIBLE )
    char * pszEnv = hb_strdup( "/etc:/usr/local/etc" );
-#elif defined( OS_DOS_COMPATIBLE )
-   char * pszEnv = hb_getenv( "PATH" );
 #else
-   char * pszEnv = NULL;
+   char * pszEnv = hb_getenv( "PATH" );
 #endif
    char * pszCfgFileName = hb_getenv( "HB_CFG_FILE" );
    FILE * filecfg;

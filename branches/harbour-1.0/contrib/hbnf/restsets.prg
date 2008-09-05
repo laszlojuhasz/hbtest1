@@ -3,7 +3,7 @@
  */
 
 /*
- * File......: RestSets.Prg
+ * File......: restsets.prg
  * Author....: David Husnian
  * CIS ID....: ?
  *
@@ -46,7 +46,7 @@
  *  $EXAMPLES$
  *     FT_RESTSETS(aOldSets)
  *  $INCLUDE$
- *     SET.CH
+ *     set.ch
  *  $SEEALSO$
  *     FT_SAVESETS() FT_SETCENTURY()
  *  $END$

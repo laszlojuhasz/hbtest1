@@ -70,12 +70,12 @@
 /* these variables are used for stdout/stderr output when GT subsystem
  * is not initialized
  */
-static FHANDLE s_hStdIn  = ( FHANDLE ) 0,
-               s_hStdOut = ( FHANDLE ) 1,
-               s_hStdErr = ( FHANDLE ) 2;
+static HB_FHANDLE s_hStdIn  = ( HB_FHANDLE ) 0;
+static HB_FHANDLE s_hStdOut = ( HB_FHANDLE ) 1;
+static HB_FHANDLE s_hStdErr = ( HB_FHANDLE ) 2;
 
 /* base GT strucure */
-static PHB_GT_BASE   s_curGT = NULL;
+static PHB_GT_BASE s_curGT = NULL;
 
 PHB_GT hb_gt_Base( void )
 {
@@ -163,7 +163,7 @@ static void hb_gt_def_Free( PHB_GT pGT )
    hb_xfree( pGT );
 }
 
-static void hb_gt_def_Init( PHB_GT pGT, FHANDLE hStdIn, FHANDLE hStdOut, FHANDLE hStdErr )
+static void hb_gt_def_Init( PHB_GT pGT, HB_FHANDLE hStdIn, HB_FHANDLE hStdOut, HB_FHANDLE hStdErr )
 {
    HB_GTSELF_NEW( pGT );
 
@@ -231,7 +231,7 @@ static BOOL hb_gt_def_IsColor( PHB_GT pGT )
    return pGT->fIsColor;
 }
 
-/* NOTE: szColorString must be at least CLR_STRLEN wide by the NG. It seems
+/* NOTE: szColorString must be at least HB_CLRSTR_LEN wide by the NG. It seems
          that CA-Cl*pper SETCOLOR() will return string lengths up to 131+EOF.
          That seems like a 127+1 buffer size, plus lazy overflow checking.
          [vszakats] */
@@ -240,7 +240,7 @@ static void hb_gt_def_GetColorStr( PHB_GT pGT, char * pszColorString )
    HB_TRACE(HB_TR_DEBUG, ("hb_gt_def_GetColorStr(%p,%s)", pGT, pszColorString));
 
    HB_GTSELF_COLORSTOSTRING( pGT, pGT->pColor, pGT->iColorCount,
-                             pszColorString, CLR_STRLEN );
+                             pszColorString, HB_CLRSTR_LEN );
 }
 
 static void hb_gt_def_SetColorStr( PHB_GT pGT, const char * szColorString )
@@ -3017,6 +3017,9 @@ static HB_GT_FUNCS s_gtCoreFunc =
 
 static char s_gtNameBuf[ HB_GT_NAME_MAX_ + 1 ];
 
+/* TOFIX: s_defaultGT is violating namespace, so it should be 
+          renamed to hb_gt_szNameDefault ASAP. [vszakats] */
+
 #if defined(HB_GT_DEFAULT)
    HB_EXPORT const char * s_defaultGT = HB_GT_DRVNAME( HB_GT_DEFAULT );
 #elif defined(HB_GT_LIB)
@@ -3076,7 +3079,7 @@ static int hb_gt_FindEntry( const char * pszID )
 
 HB_EXPORT void hb_gtSetDefault( const char * szGtName )
 {
-   hb_strncpy( s_gtNameBuf, szGtName, HB_GT_NAME_MAX_ );
+   hb_strncpy( s_gtNameBuf, szGtName, sizeof( s_gtNameBuf ) - 1 );
    s_defaultGT = s_gtNameBuf;
 }
 

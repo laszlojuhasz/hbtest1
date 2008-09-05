@@ -102,7 +102,7 @@ HB_FUNC( DIRNAME )
 {
    BYTE *pbyBuffer = ( BYTE * ) hb_xgrab( _POSIX_PATH_MAX + 1 );
 
-   pbyBuffer[0] = OS_PATH_DELIMITER;
+   pbyBuffer[0] = HB_OS_PATH_DELIM_CHR;
    hb_fsCurDirBuff( hb_fsCurDrv(), pbyBuffer + 1, _POSIX_PATH_MAX );
 
    hb_retc_buffer( ( char * ) pbyBuffer );
@@ -184,14 +184,14 @@ HB_FUNC( NUMDISKL )
  * Volume() depends of the CSETSAFETY() setting and, if is true, does not
  * overwrite an existing label. 
  *
- * Syntax is: Volume("x:test") or Volume("x:\test"), where "x" is the
+ * Syntax is: Volume("X:test") or Volume("X:\test"), where "x" is the
  * any drive letter and "test" will be the new volume name. 
  *
  * Notes:
  * 1) if the drive letter is not suplied, then the current drive will 
  *    be used to change voloume name.
- * 2) if Volume("x:") or Volume("x:\") then the volume name of the drive
- *    "x:" will be erased.
+ * 2) if Volume("X:") or Volume("X:\") then the volume name of the drive
+ *    "X:" will be erased.
  * 3) if Volume("") or Volume() then the volume name of the current drive 
  *   will be erased.
  */
@@ -206,7 +206,7 @@ HB_FUNC( VOLUME )
       BYTE *sDiskName;
       char *sRoot = NULL;
       char *sVolName = NULL;
-      char sRootBuf[3], sVolNameBuf[12];
+      char sRootBuf[4], sVolNameBuf[12];
       BOOL fFree;
 
       if( ISCHAR( 1 ) && hb_parclen( 1 ) > 0 )
@@ -217,12 +217,12 @@ HB_FUNC( VOLUME )
          {
             if( fname->szPath )
             {
-               strncpy( sRootBuf, fname->szPath, 3 );
+               hb_strncpy( sRootBuf, fname->szPath, sizeof( sRootBuf ) - 1 );
                sRoot = sRootBuf;
             }
             if( fname->szName )
             {
-               strncpy( sVolNameBuf, fname->szName, 11 );
+               hb_strncpy( sVolNameBuf, fname->szName, sizeof( sVolNameBuf ) - 1 );
                sVolName = sVolNameBuf;
             }
 
@@ -230,7 +230,7 @@ HB_FUNC( VOLUME )
          }
          else
          {
-            strncpy( sVolNameBuf, ( char * ) sDiskName, 11 );
+            hb_strncpy( sVolNameBuf, ( char * ) sDiskName, sizeof( sVolNameBuf ) - 1 );
             sVolName = sVolNameBuf;
          }
          if( fFree )
@@ -255,7 +255,7 @@ HB_FUNC( VOLUME )
 /*
  * GetVolInfo() is a new function. It returns the volume name of a Floppy, CD,
  * Hard-disk or mapped network drive.
- * Sintax is: GetVolInfo("x:\")
+ * Syntax is: GetVolInfo("X:\")
  * Note that the trailing backslash is required.
  */
 HB_FUNC( GETVOLINFO )
@@ -287,11 +287,11 @@ HB_FUNC( GETVOLINFO )
  * floppy, Hard-disk, CD or mapped network drive. The return value is a dword
  * type. If the drive is not available, volserial() returns -1.
  *
- * Sintax is: VolSerial("x:\")
+ * Sintax is: VolSerial("X:\")
  * Note that the trailing backslash is required.
  *
  * To convert in the hex format, call numtohex() function. 
- * Example: numtohex( volserial("c:\")). 
+ * Example: numtohex( volserial("C:\")). 
  * See volser.prg in xharbour\tests\cttest folder.
  */
 

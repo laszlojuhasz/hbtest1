@@ -113,7 +113,7 @@
 #include "hb_io.h"
 #include "hbset.h"
 
-#if defined(OS_UNIX_COMPATIBLE)
+#if defined(HB_OS_UNIX_COMPATIBLE)
    #include <unistd.h>
    #include <signal.h>
    #include <time.h>
@@ -206,7 +206,7 @@
    #include <sys/file.h>
 #endif
 
-#if !defined( HB_USE_LARGEFILE64 ) && defined( OS_UNIX_COMPATIBLE )
+#if !defined( HB_USE_LARGEFILE64 ) && defined( HB_OS_UNIX_COMPATIBLE )
    #if defined( __USE_LARGEFILE64 )
       /*
        * The macro: __USE_LARGEFILE64 is set when _LARGEFILE64_SOURCE is
@@ -219,7 +219,7 @@
    #endif
 #endif
 
-#if defined(OS_HAS_DRIVE_LETTER)
+#if defined(HB_OS_HAS_DRIVE_LETTER)
 /* 27/08/2004 - <maurilio.longo@libero.it>
                 HB_FS_GETDRIVE() should return a number in the range 0..25 ('A'..'Z')
                 HB_FS_SETDRIVE() should accept a number inside same range.
@@ -257,7 +257,7 @@
    #define HB_FS_SETDRIVE(n)  _chdrive( ( n ) + 1 )
 
 #endif
-#endif /* OS_HAS_DRIVE_LETTER */
+#endif /* HB_OS_HAS_DRIVE_LETTER */
 
 #ifndef O_BINARY
    #define O_BINARY     0       /* O_BINARY not defined on Linux */
@@ -290,15 +290,15 @@ static BOOL s_fUseWaitLocks = TRUE;
 
 #if defined(HB_WIN32_IO)
 
-static HANDLE DosToWinHandle( FHANDLE fHandle )
+static HANDLE DosToWinHandle( HB_FHANDLE fHandle )
 {
-   if( fHandle == ( FHANDLE ) 0 )
+   if( fHandle == ( HB_FHANDLE ) 0 )
       return GetStdHandle( STD_INPUT_HANDLE );
 
-   else if( fHandle == ( FHANDLE ) 1 )
+   else if( fHandle == ( HB_FHANDLE ) 1 )
       return GetStdHandle( STD_OUTPUT_HANDLE );
 
-   else if( fHandle == ( FHANDLE ) 2 )
+   else if( fHandle == ( HB_FHANDLE ) 2 )
       return GetStdHandle( STD_ERROR_HANDLE) ;
 
    else
@@ -519,29 +519,29 @@ static int convert_seek_flags( USHORT uiFlags )
 
 
 /*
- * FILESYS.API FUNCTIONS --
+ * filesys.api functions:
  */
 
-HB_EXPORT FHANDLE hb_fsGetOsHandle( FHANDLE hFileHandle )
+HB_EXPORT HB_FHANDLE hb_fsGetOsHandle( HB_FHANDLE hFileHandle )
 {
    HB_TRACE(HB_TR_DEBUG, ("hb_fsGetOsHandle(%p)", hFileHandle));
 
 #if defined(HB_WIN32_IO)
-   return ( FHANDLE ) DosToWinHandle( hFileHandle );
+   return ( HB_FHANDLE ) DosToWinHandle( hFileHandle );
 #else
    return hFileHandle;
 #endif
 }
 
-HB_EXPORT FHANDLE hb_fsPOpen( BYTE * pFilename, BYTE * pMode )
+HB_EXPORT HB_FHANDLE hb_fsPOpen( BYTE * pFilename, BYTE * pMode )
 {
-   FHANDLE hFileHandle = FS_ERROR;
+   HB_FHANDLE hFileHandle = FS_ERROR;
 
    HB_TRACE(HB_TR_DEBUG, ("hb_fsPOpen(%p, %s)", pFilename, pMode));
 
-#if defined(OS_UNIX_COMPATIBLE)
+#if defined(HB_OS_UNIX_COMPATIBLE) && !defined(__CYGWIN__)
    {
-      FHANDLE hPipeHandle[2], hNullHandle;
+      HB_FHANDLE hPipeHandle[2], hNullHandle;
       pid_t pid;
       BYTE * pbyTmp;
       BOOL bRead;
@@ -637,9 +637,9 @@ HB_EXPORT FHANDLE hb_fsPOpen( BYTE * pFilename, BYTE * pMode )
    return hFileHandle;
 }
 
-HB_EXPORT FHANDLE hb_fsOpen( BYTE * pFilename, USHORT uiFlags )
+HB_EXPORT HB_FHANDLE hb_fsOpen( BYTE * pFilename, USHORT uiFlags )
 {
-   FHANDLE hFileHandle;
+   HB_FHANDLE hFileHandle;
    BOOL fFree;
 
    HB_TRACE(HB_TR_DEBUG, ("hb_fsOpen(%p, %hu)", pFilename, uiFlags));
@@ -658,7 +658,7 @@ HB_EXPORT FHANDLE hb_fsOpen( BYTE * pFilename, USHORT uiFlags )
 
       hb_fsSetIOError( hFile != ( HANDLE ) INVALID_HANDLE_VALUE, 0 );
 
-      hFileHandle = ( FHANDLE ) hFile;
+      hFileHandle = ( HB_FHANDLE ) hFile;
    }
 #elif defined(HB_FS_FILE_IO)
    {
@@ -694,9 +694,9 @@ HB_EXPORT FHANDLE hb_fsOpen( BYTE * pFilename, USHORT uiFlags )
    return hFileHandle;
 }
 
-HB_EXPORT FHANDLE hb_fsCreate( BYTE * pFilename, ULONG ulAttr )
+HB_EXPORT HB_FHANDLE hb_fsCreate( BYTE * pFilename, ULONG ulAttr )
 {
-   FHANDLE hFileHandle;
+   HB_FHANDLE hFileHandle;
    BOOL fFree;
 
    HB_TRACE(HB_TR_DEBUG, ("hb_fsCreate(%p, %lu)", pFilename, ulAttr));
@@ -715,7 +715,7 @@ HB_EXPORT FHANDLE hb_fsCreate( BYTE * pFilename, ULONG ulAttr )
 
       hb_fsSetIOError( hFile != ( HANDLE ) INVALID_HANDLE_VALUE, 0 );
 
-      hFileHandle = ( FHANDLE ) hFile;
+      hFileHandle = ( HB_FHANDLE ) hFile;
    }
 #elif defined(HB_FS_FILE_IO)
    {
@@ -751,9 +751,9 @@ HB_EXPORT FHANDLE hb_fsCreate( BYTE * pFilename, ULONG ulAttr )
          [vszakats]
  */
 
-HB_EXPORT FHANDLE hb_fsCreateEx( BYTE * pFilename, ULONG ulAttr, USHORT uiFlags )
+HB_EXPORT HB_FHANDLE hb_fsCreateEx( BYTE * pFilename, ULONG ulAttr, USHORT uiFlags )
 {
-   FHANDLE hFileHandle;
+   HB_FHANDLE hFileHandle;
    BOOL fFree;
 
    HB_TRACE(HB_TR_DEBUG, ("hb_fsCreateEx(%p, %lu, %hu)", pFilename, ulAttr, uiFlags));
@@ -772,7 +772,7 @@ HB_EXPORT FHANDLE hb_fsCreateEx( BYTE * pFilename, ULONG ulAttr, USHORT uiFlags 
 
       hb_fsSetIOError( hFile != ( HANDLE ) INVALID_HANDLE_VALUE, 0 );
 
-      hFileHandle = ( FHANDLE ) hFile;
+      hFileHandle = ( HB_FHANDLE ) hFile;
    }
 #elif defined(HB_FS_FILE_IO)
    {
@@ -800,7 +800,7 @@ HB_EXPORT FHANDLE hb_fsCreateEx( BYTE * pFilename, ULONG ulAttr, USHORT uiFlags 
    return hFileHandle;
 }
 
-HB_EXPORT void hb_fsClose( FHANDLE hFileHandle )
+HB_EXPORT void hb_fsClose( HB_FHANDLE hFileHandle )
 {
    HB_TRACE(HB_TR_DEBUG, ("hb_fsClose(%p)", hFileHandle));
 
@@ -819,7 +819,7 @@ HB_EXPORT void hb_fsClose( FHANDLE hFileHandle )
 #endif
 }
 
-HB_EXPORT BOOL hb_fsSetDevMode( FHANDLE hFileHandle, USHORT uiDevMode )
+HB_EXPORT BOOL hb_fsSetDevMode( HB_FHANDLE hFileHandle, USHORT uiDevMode )
 {
    HB_TRACE(HB_TR_DEBUG, ("hb_fsSetDevMode(%p, %hu)", hFileHandle, uiDevMode));
 
@@ -906,7 +906,7 @@ HB_EXPORT BOOL hb_fsGetFileTime( BYTE * pszFileName, LONG * plJulian, LONG * plM
 
 #if defined( HB_WIN32_IO )
    {
-      FHANDLE hFile = hb_fsOpen( pszFileName, FO_READ | FO_SHARED );
+      HB_FHANDLE hFile = hb_fsOpen( pszFileName, FO_READ | FO_SHARED );
 
       if( hFile != FS_ERROR )
       {
@@ -1052,7 +1052,7 @@ HB_EXPORT BOOL hb_fsSetFileTime( BYTE * pszFileName, LONG lJulian, LONG lMillise
 
 #if defined( HB_OS_WIN_32 ) && !defined( __CYGWIN__ )
    {
-      FHANDLE hFile = hb_fsOpen( pszFileName, FO_READWRITE | FO_SHARED );
+      HB_FHANDLE hFile = hb_fsOpen( pszFileName, FO_READWRITE | FO_SHARED );
 
       fResult = hFile != FS_ERROR;
       if( fResult )
@@ -1135,7 +1135,7 @@ HB_EXPORT BOOL hb_fsSetFileTime( BYTE * pszFileName, LONG lJulian, LONG lMillise
       if( fFree )
          hb_xfree( pszFileName );
    }
-#elif defined( OS_UNIX_COMPATIBLE ) || defined( HB_OS_DOS )
+#elif defined( HB_OS_UNIX_COMPATIBLE ) || defined( HB_OS_DOS )
    {
       BOOL fFree;
 
@@ -1261,7 +1261,7 @@ HB_EXPORT BOOL hb_fsSetAttr( BYTE * pszFileName, ULONG ulAttr )
 #  endif
    hb_fsSetIOError( fResult, 0 );
 
-#elif defined( OS_UNIX_COMPATIBLE )
+#elif defined( HB_OS_UNIX_COMPATIBLE )
    {
       int iAttr = HB_FA_POSIX_ATTR( ulAttr );
       if( iAttr == 0 )
@@ -1298,7 +1298,7 @@ HB_EXPORT BOOL hb_fsSetAttr( BYTE * pszFileName, ULONG ulAttr )
    return fResult;
 }
 
-HB_EXPORT USHORT hb_fsRead( FHANDLE hFileHandle, BYTE * pBuff, USHORT uiCount )
+HB_EXPORT USHORT hb_fsRead( HB_FHANDLE hFileHandle, BYTE * pBuff, USHORT uiCount )
 {
    USHORT uiRead;
 
@@ -1334,7 +1334,7 @@ HB_EXPORT USHORT hb_fsRead( FHANDLE hFileHandle, BYTE * pBuff, USHORT uiCount )
    return uiRead;
 }
 
-HB_EXPORT USHORT hb_fsWrite( FHANDLE hFileHandle, const BYTE * pBuff, USHORT uiCount )
+HB_EXPORT USHORT hb_fsWrite( HB_FHANDLE hFileHandle, const BYTE * pBuff, USHORT uiCount )
 {
    USHORT uiWritten;
 
@@ -1388,7 +1388,7 @@ HB_EXPORT USHORT hb_fsWrite( FHANDLE hFileHandle, const BYTE * pBuff, USHORT uiC
    return uiWritten;
 }
 
-HB_EXPORT ULONG hb_fsReadLarge( FHANDLE hFileHandle, BYTE * pBuff, ULONG ulCount )
+HB_EXPORT ULONG hb_fsReadLarge( HB_FHANDLE hFileHandle, BYTE * pBuff, ULONG ulCount )
 {
    ULONG ulRead;
 
@@ -1460,7 +1460,7 @@ HB_EXPORT ULONG hb_fsReadLarge( FHANDLE hFileHandle, BYTE * pBuff, ULONG ulCount
    return ulRead;
 }
 
-HB_EXPORT ULONG hb_fsWriteLarge( FHANDLE hFileHandle, const BYTE * pBuff, ULONG ulCount )
+HB_EXPORT ULONG hb_fsWriteLarge( HB_FHANDLE hFileHandle, const BYTE * pBuff, ULONG ulCount )
 {
    ULONG ulWritten;
 
@@ -1554,7 +1554,7 @@ HB_EXPORT ULONG hb_fsWriteLarge( FHANDLE hFileHandle, const BYTE * pBuff, ULONG 
    return ulWritten;
 }
 
-HB_EXPORT void hb_fsCommit( FHANDLE hFileHandle )
+HB_EXPORT void hb_fsCommit( HB_FHANDLE hFileHandle )
 {
    HB_TRACE(HB_TR_DEBUG, ("hb_fsCommit(%p)", hFileHandle));
 
@@ -1625,7 +1625,7 @@ HB_EXPORT void hb_fsCommit( FHANDLE hFileHandle )
 #endif
 }
 
-HB_EXPORT BOOL hb_fsLock( FHANDLE hFileHandle, ULONG ulStart,
+HB_EXPORT BOOL hb_fsLock( HB_FHANDLE hFileHandle, ULONG ulStart,
                           ULONG ulLength, USHORT uiMode )
 {
    BOOL bResult;
@@ -1815,7 +1815,7 @@ HB_EXPORT BOOL hb_fsLock( FHANDLE hFileHandle, ULONG ulStart,
    return bResult;
 }
 
-HB_EXPORT BOOL hb_fsLockLarge( FHANDLE hFileHandle, HB_FOFFSET ulStart,
+HB_EXPORT BOOL hb_fsLockLarge( HB_FHANDLE hFileHandle, HB_FOFFSET ulStart,
                                HB_FOFFSET ulLength, USHORT uiMode )
 {
    BOOL bResult;
@@ -1925,7 +1925,7 @@ HB_EXPORT BOOL hb_fsLockLarge( FHANDLE hFileHandle, HB_FOFFSET ulStart,
    return bResult;
 }
 
-HB_EXPORT ULONG hb_fsSeek( FHANDLE hFileHandle, LONG lOffset, USHORT uiFlags )
+HB_EXPORT ULONG hb_fsSeek( HB_FHANDLE hFileHandle, LONG lOffset, USHORT uiFlags )
 {
    ULONG ulPos;
 
@@ -2009,7 +2009,7 @@ HB_EXPORT ULONG hb_fsSeek( FHANDLE hFileHandle, LONG lOffset, USHORT uiFlags )
    return ulPos;
 }
 
-HB_EXPORT HB_FOFFSET hb_fsSeekLarge( FHANDLE hFileHandle, HB_FOFFSET llOffset, USHORT uiFlags )
+HB_EXPORT HB_FOFFSET hb_fsSeekLarge( HB_FHANDLE hFileHandle, HB_FOFFSET llOffset, USHORT uiFlags )
 {
    HB_FOFFSET llPos;
 
@@ -2071,7 +2071,7 @@ HB_EXPORT HB_FOFFSET hb_fsSeekLarge( FHANDLE hFileHandle, HB_FOFFSET llOffset, U
    return llPos;
 }
 
-HB_EXPORT ULONG hb_fsTell( FHANDLE hFileHandle )
+HB_EXPORT ULONG hb_fsTell( HB_FHANDLE hFileHandle )
 {
    HB_TRACE(HB_TR_DEBUG, ("hb_fsTell(%p)", hFileHandle));
 
@@ -2281,7 +2281,7 @@ HB_EXPORT USHORT hb_fsCurDirBuff( USHORT uiDrive, BYTE * pbyBuffer, ULONG ulLen 
    pbyBuffer[ 0 ] = '\0';
 
    /*
-    * do not cover this code by OS_HAS_DRIVE_LETTER macro
+    * do not cover this code by HB_OS_HAS_DRIVE_LETTER macro
     * It will allow us to add drive emulation in hb_fsCurDrv()/hb_fsChDrv()
     * and hb_fsNameConv()
     */
@@ -2339,21 +2339,21 @@ HB_EXPORT USHORT hb_fsCurDirBuff( USHORT uiDrive, BYTE * pbyBuffer, ULONG ulLen 
 
       ulLen = strlen( ( char * ) pbyBuffer );
 
-#if defined(OS_HAS_DRIVE_LETTER)
-      if( pbyStart[ 1 ] == OS_DRIVE_DELIMITER )
+#if defined(HB_OS_HAS_DRIVE_LETTER)
+      if( pbyStart[ 1 ] == HB_OS_DRIVE_DELIM_CHR )
       {
          pbyStart += 2;
          ulLen -= 2;
       }
 #endif
-      if( strchr( OS_PATH_DELIMITER_LIST, pbyStart[ 0 ] ) )
+      if( strchr( HB_OS_PATH_DELIM_CHR_LIST, pbyStart[ 0 ] ) )
       {
          pbyStart++;
          ulLen--;
       }
 
       /* Strip the trailing (back)slash if there's one */
-      if( ulLen && strchr( OS_PATH_DELIMITER_LIST, pbyStart[ ulLen - 1 ] ) )
+      if( ulLen && strchr( HB_OS_PATH_DELIM_CHR_LIST, pbyStart[ ulLen - 1 ] ) )
          ulLen--;
 
       if( ulLen && pbyBuffer != pbyStart )
@@ -2373,7 +2373,7 @@ HB_EXPORT USHORT hb_fsChDrv( BYTE nDrive )
 
    HB_TRACE(HB_TR_DEBUG, ("hb_fsChDrv(%d)", (int) nDrive));
 
-#if defined(OS_HAS_DRIVE_LETTER)
+#if defined(HB_OS_HAS_DRIVE_LETTER)
    {
       /* 'unsigned int' _have to_ be used in Watcom */
       UINT uiSave, uiNewDrive;
@@ -2432,7 +2432,7 @@ HB_EXPORT USHORT hb_fsIsDrv( BYTE nDrive )
       uiResult = ( type == DRIVE_UNKNOWN || type == DRIVE_NO_ROOT_DIR ) ? F_ERROR : 0;
       hb_fsSetError( 0 );
    }
-#elif defined(OS_HAS_DRIVE_LETTER)
+#elif defined(HB_OS_HAS_DRIVE_LETTER)
    {
       /* 'unsigned int' _have to_ be used in Watcom
        */
@@ -2464,7 +2464,7 @@ HB_EXPORT USHORT hb_fsIsDrv( BYTE nDrive )
    return uiResult;
 }
 
-HB_EXPORT BOOL hb_fsIsDevice( FHANDLE hFileHandle )
+HB_EXPORT BOOL hb_fsIsDevice( HB_FHANDLE hFileHandle )
 {
    BOOL bResult;
 
@@ -2503,7 +2503,7 @@ HB_EXPORT BYTE hb_fsCurDrv( void )
 
    HB_TRACE(HB_TR_DEBUG, ("hb_fsCurDrv()"));
 
-#if defined(OS_HAS_DRIVE_LETTER)
+#if defined(HB_OS_HAS_DRIVE_LETTER)
 
    HB_FS_GETDRIVE( uiResult );
 
@@ -2518,34 +2518,34 @@ HB_EXPORT BYTE hb_fsCurDrv( void )
 }
 
 /* copied from xHarbour */
-HB_EXPORT FHANDLE hb_fsExtOpen( BYTE * pFilename, BYTE * pDefExt,
-                                USHORT uiExFlags, BYTE * pPaths,
-                                PHB_ITEM pError )
+HB_EXPORT HB_FHANDLE hb_fsExtOpen( BYTE * pFilename, BYTE * pDefExt,
+                                   USHORT uiExFlags, BYTE * pPaths,
+                                   PHB_ITEM pError )
 {
-   HB_PATHNAMES *pSearchPath = NULL, *pNextPath;
+   HB_PATHNAMES * pSearchPath = NULL, * pNextPath;
    PHB_FNAME pFilepath;
-   FHANDLE hFile;
+   HB_FHANDLE hFile;
    BOOL fIsFile = FALSE;
    BYTE * szPath;
    USHORT uiFlags;
 
    HB_TRACE(HB_TR_DEBUG, ("hb_fsExtOpen(%s, %s, %hu, %p, %p)", pFilename, pDefExt, uiExFlags, pPaths, pError));
 
-/*
-   #define FXO_TRUNCATE  0x0100   // Create (truncate if exists)
-   #define FXO_APPEND    0x0200   // Create (append if exists)
-   #define FXO_UNIQUE    0x0400   // Create unique file FO_EXCL ???
-   #define FXO_FORCEEXT  0x0800   // Force default extension
-   #define FXO_DEFAULTS  0x1000   // Use SET command defaults
-   #define FXO_DEVICERAW 0x2000   // Open devices in raw mode
-   // xHarbour extension
-   #define FXO_SHARELOCK 0x4000   // emulate DOS SH_DENY* mode in POSIX OS
-   #define FXO_COPYNAME  0x8000   // copy final szPath into pFilename
+#if 0
+   #define FXO_TRUNCATE  0x0100   /* Create (truncate if exists) */
+   #define FXO_APPEND    0x0200   /* Create (append if exists) */
+   #define FXO_UNIQUE    0x0400   /* Create unique file FO_EXCL ??? */
+   #define FXO_FORCEEXT  0x0800   /* Force default extension */
+   #define FXO_DEFAULTS  0x1000   /* Use SET command defaults */
+   #define FXO_DEVICERAW 0x2000   /* Open devices in raw mode */
+   /* xHarbour extension */
+   #define FXO_SHARELOCK 0x4000   /* emulate DOS SH_DENY* mode in POSIX OS */
+   #define FXO_COPYNAME  0x8000   /* copy final szPath into pFilename */
 
    hb_errGetFileName( pError );
-*/
+#endif
 
-   szPath = (BYTE *) hb_xgrab( _POSIX_PATH_MAX + 1 );
+   szPath = ( BYTE * ) hb_xgrab( _POSIX_PATH_MAX + 1 );
 
    uiFlags = uiExFlags & 0xff;
    if( uiExFlags & ( FXO_TRUNCATE | FXO_APPEND | FXO_UNIQUE ) )
@@ -2693,11 +2693,11 @@ HB_EXPORT FHANDLE hb_fsExtOpen( BYTE * pFilename, BYTE * pDefExt,
    return hFile;
 }
 
-HB_EXPORT BOOL hb_fsEof( FHANDLE hFileHandle )
+HB_EXPORT BOOL hb_fsEof( HB_FHANDLE hFileHandle )
 {
 #if defined(__DJGPP__) || defined(__CYGWIN__) || \
     defined(HB_WIN32_IO) || defined(HB_WINCE) || \
-    defined(OS_UNIX_COMPATIBLE)
+    defined(HB_OS_UNIX_COMPATIBLE)
    HB_FOFFSET curPos;
    HB_FOFFSET endPos;
    HB_FOFFSET newPos;
@@ -2738,7 +2738,7 @@ HB_EXPORT BYTE * hb_fsNameConv( BYTE * szFileName, BOOL * pfFree )
 */
 
    if( hb_set.HB_SET_TRIMFILENAME ||
-       hb_set.HB_SET_DIRSEPARATOR != OS_PATH_DELIMITER ||
+       hb_set.HB_SET_DIRSEPARATOR != HB_OS_PATH_DELIM_CHR ||
        hb_set.HB_SET_FILECASE != HB_SET_CASE_MIXED ||
        hb_set.HB_SET_DIRCASE != HB_SET_CASE_MIXED )
    {
@@ -2753,13 +2753,13 @@ HB_EXPORT BYTE * hb_fsNameConv( BYTE * szFileName, BOOL * pfFree )
          *pfFree = TRUE;
       }
 
-      if( hb_set.HB_SET_DIRSEPARATOR != OS_PATH_DELIMITER )
+      if( hb_set.HB_SET_DIRSEPARATOR != HB_OS_PATH_DELIM_CHR )
       {
          BYTE *p = szFileName;
          while( *p )
          {
             if( *p == hb_set.HB_SET_DIRSEPARATOR )
-               *p = OS_PATH_DELIMITER;
+               *p = HB_OS_PATH_DELIM_CHR;
             p++;
          }
       }
@@ -2819,6 +2819,8 @@ HB_EXPORT BYTE * hb_fsNameConv( BYTE * szFileName, BOOL * pfFree )
    return szFileName;
 }
 
+#ifdef HB_LEGACY_LEVEL
+
 HB_EXPORT BYTE * hb_fileNameConv( char * szFileName )
 {
    BOOL fFree;
@@ -2833,6 +2835,8 @@ HB_EXPORT BYTE * hb_fileNameConv( char * szFileName )
 
    return ( BYTE * ) szFileName;
 }
+
+#endif
 
 HB_EXPORT BOOL hb_fsDisableWaitLocks( int iSet )
 {

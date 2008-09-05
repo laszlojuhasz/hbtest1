@@ -287,7 +287,7 @@ static MIME_ENTRY s_mimeTable[ MIME_TABLE_SIZE ] =
    /* 43*/ { 0, "#! /usr/local/bin/python", "application/x-python", 0, 0, 0 },
    /* 44*/ { 0, "eval \"exec /usr/local/bin/python", "application/x-python", 0, 0, 0 },
 
-   /* Unix compress (.Z) */
+   /* Unix compress (.z) */
    /* 45*/ { 0, "\x1F\x9D", "application/x-compress", 0, 0, 0 },
 
    /* Unix gzip */
@@ -593,7 +593,7 @@ static char *s_findStringMimeType( char *cData, int iLen )
 }
 
 
-static char *s_findFileMimeType( FHANDLE fileIn )
+static char *s_findFileMimeType( HB_FHANDLE fileIn )
 {
    char buf[512];
    int iLen;
@@ -619,7 +619,7 @@ HB_FUNC( TIP_FILEMIMETYPE )
    PHB_ITEM pFile = hb_param( 1, HB_IT_STRING | HB_IT_NUMERIC );
    char *ext_type = NULL;
    char *magic_type = NULL;
-   FHANDLE fileIn;
+   HB_FHANDLE fileIn;
 
 
    if ( pFile == NULL )
@@ -653,7 +653,7 @@ HB_FUNC( TIP_FILEMIMETYPE )
    }
    else
    {
-      fileIn = (FHANDLE) hb_itemGetNL( pFile );
+      fileIn = ( HB_FHANDLE ) hb_itemGetNL( pFile );
       magic_type = s_findFileMimeType( fileIn );
    }
 

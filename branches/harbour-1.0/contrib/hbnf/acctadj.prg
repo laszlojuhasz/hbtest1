@@ -3,7 +3,7 @@
  */
 
 /*
- * File......: ACCTADJ.PRG
+ * File......: acctadj.prg
  * Author....: Jo W. French dba Practical Computing
  * CIS ID....: 74731,1751
  *
@@ -93,8 +93,11 @@ FUNCTION FT_ACCTADJ(dGivenDate, lIsEnd)
  
   LOCAL nTemp
  
-  IF( VALTYPE(dGivenDate) != 'D', dGivenDate := DATE(), )
-  lIsEnd     := ( VALTYPE(lIsEnd) == 'L' )
+  IF !( VALTYPE(dGivenDate) == "D" )
+    dGivenDate := DATE()
+  ENDIF
+
+  lIsEnd     := VALTYPE(lIsEnd) == "L"
   nTemp      := FT_DAYTOBOW(dGivenDate)
  
   IF nTemp > ( 2 + IF(!lIsEnd, 1, 0) )
@@ -103,8 +106,8 @@ FUNCTION FT_ACCTADJ(dGivenDate, lIsEnd)
      dGivenDate -= nTemp              // This Week Start (Prior Week End + 1)
   ENDIF
  
-  IF( lIsEnd,  dGivenDate -= 1, )
+  IF lIsEnd
+    dGivenDate--
+  ENDIF
  
 RETURN dGivenDate
-
-

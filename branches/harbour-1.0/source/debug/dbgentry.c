@@ -65,7 +65,7 @@
 /* dummy function declaration */
 static BOOL hb_clsSetScope( BOOL fScope ) { return fScope; }
 
-#if defined( HB_OS_UNIX_COMPATIBLE )
+#if defined( HB_HB_OS_UNIX_COMPATIBLE )
 #define FILENAME_EQUAL(s1, s2) ( !strcmp( (s1), (s2) ) )
 #else
 #define FILENAME_EQUAL(s1, s2) ( !hb_stricmp( (s1), (s2) ) )
@@ -380,11 +380,11 @@ hb_dbgEntry( int nMode, int nLine, char *szName, int nIndex, int nFrame )
 
          hb_procinfo( 0, szProcName, NULL, NULL );
          if ( !strncmp( szProcName, "(_INITSTATICS", 13 ) )
-             info->bInitStatics = TRUE;
+            info->bInitStatics = TRUE;
          else if ( !strncmp( szProcName, "(_INITGLOBALS", 13 ) )
-             info->bInitGlobals = TRUE;
+            info->bInitGlobals = TRUE;
          else if ( !strncmp( szProcName, "(_INITLINES", 11 ) )
-             info->bInitLines = TRUE;
+            info->bInitLines = TRUE;
 
          if ( info->bInitStatics || info->bInitGlobals )
             hb_dbgAddModule( info, szName );
@@ -601,16 +601,28 @@ hb_dbgAddLocal( HB_DEBUGINFO *info, char *szName, int nIndex, int nFrame )
 static void
 hb_dbgAddModule( HB_DEBUGINFO *info, char *szName )
 {
+   char * szModuleName;
+   char * szFuncName;
+   int iLen;
+
    szName = hb_dbgStripModuleName( szName );
-   if( !info->nModules || strcmp( info->aModules[ info->nModules - 1 ].szModule, szName ) )
+   szFuncName = strrchr( szName, ':' );
+   iLen = szFuncName ? ( int ) ( szFuncName - szName ) : ( int ) strlen( szName );
+   STRNDUP( szModuleName, szName, iLen );
+
+   if( !info->nModules || strcmp( info->aModules[ info->nModules - 1 ].szModule, szModuleName ) )
    {
       HB_MODULEINFO *pModule;
 
       pModule = ARRAY_ADD( HB_MODULEINFO, info->aModules, info->nModules );
-      pModule->szModule = szName;
+      pModule->szModule = szModuleName;
       pModule->nStatics = 0;
       pModule->nGlobals = 0;
       pModule->nExternGlobals = 0;
+   }
+   else
+   {
+      FREE( szModuleName );
    }
 }
 
@@ -1022,7 +1034,7 @@ hb_dbgEvalSubstituteVar( HB_WATCHPOINT *watch, char *szWord, int nStart, int nLe
    {
       FREE( szWord );
    }
-   
+
    t = (char *) ALLOC( strlen( watch->szExpr ) - nLen + 9 + 1 );
    memmove( t, watch->szExpr, nStart );
    memmove( t + nStart, "__dbg[", 6 );
@@ -1454,6 +1466,10 @@ hb_dbgQuit( HB_DEBUGINFO *info )
       {
          FREE( module->aStatics );
       }
+      if ( module->szModule )
+      {
+         FREE( module->szModule );
+      }
       ARRAY_DEL( HB_MODULEINFO, info->aModules, info->nModules, nModules );
    }
    if ( info->bToCursor )
@@ -1636,54 +1652,54 @@ hb_dbgVarSet( HB_VARINFO *scope, PHB_ITEM xNewValue )
 /*
  * .prg functions
  */
-HB_FUNC( HB_DBG_SETENTRY )
+HB_FUNC( __DBGSETENTRY )
 {
    hb_dbg_SetEntry( hb_dbgEntry );
 }
 
-HB_FUNC( HB_DBG_SETGO )
+HB_FUNC( __DBGSETGO )
 {
    void * ptr = hb_parptr( 1 );
    if( ptr )
       hb_dbgSetGo( ptr );
 }
 
-HB_FUNC( HB_DBG_SETTRACE )
+HB_FUNC( __DBGSETTRACE )
 {
    void * ptr = hb_parptr( 1 );
    if( ptr )
       hb_dbgSetTrace( ptr );
 }
 
-HB_FUNC( HB_DBG_SETCBTRACE )
+HB_FUNC( __DBGSETCBTRACE )
 {
    void * ptr = hb_parptr( 1 );
    if( ptr )
       hb_dbgSetCBTrace( ptr, hb_parl( 2 ) );
 }
 
-HB_FUNC( HB_DBG_SETNEXTROUTINE )
+HB_FUNC( __DBGSETNEXTROUTINE )
 {
    void * ptr = hb_parptr( 1 );
    if( ptr )
       hb_dbgSetNextRoutine( ptr );
 }
 
-HB_FUNC( HB_DBG_SETQUIT )
+HB_FUNC( __DBGSETQUIT )
 {
    void * ptr = hb_parptr( 1 );
    if( ptr )
       hb_dbgSetQuit( ptr );
 }
 
-HB_FUNC( HB_DBG_SETTOCURSOR )
+HB_FUNC( __DBGSETTOCURSOR )
 {
    void * ptr = hb_parptr( 1 );
    if( ptr )
       hb_dbgSetToCursor( ptr, hb_parc( 2 ), hb_parni( 3 ) );
 }
 
-HB_FUNC( HB_DBG_GETEXPRVALUE )
+HB_FUNC( __DBGGETEXPRVALUE )
 {
    void * ptr = hb_parptr( 1 );
    if( ptr )
@@ -1705,56 +1721,56 @@ HB_FUNC( HB_DBG_GETEXPRVALUE )
    }
 }
 
-HB_FUNC( HB_DBG_GETSOURCEFILES )
+HB_FUNC( __DBGGETSOURCEFILES )
 {
    void * ptr = hb_parptr( 1 );
    if( ptr )
       hb_itemRelease( hb_itemReturn( hb_dbgGetSourceFiles( ptr ) ) );
 }
 
-HB_FUNC( HB_DBG_ISVALIDSTOPLINE )
+HB_FUNC( __DBGISVALIDSTOPLINE )
 {
    void * ptr = hb_parptr( 1 );
    if( ptr )
       hb_retl( hb_dbgIsValidStopLine( ptr, hb_parc( 2 ), hb_parni( 3 ) ) );
 }
 
-HB_FUNC( HB_DBG_ADDBREAK )
+HB_FUNC( __DBGADDBREAK )
 {
    void * ptr = hb_parptr( 1 );
    if( ptr )
       hb_dbgAddBreak( ptr, hb_parc( 2 ), hb_parni( 3 ), NULL );
 }
 
-HB_FUNC( HB_DBG_DELBREAK )
+HB_FUNC( __DBGDELBREAK )
 {
    void * ptr = hb_parptr( 1 );
    if( ptr )
       hb_dbgDelBreak( ptr, hb_parni( 2 ) );
 }
 
-HB_FUNC( HB_DBG_ADDWATCH )
+HB_FUNC( __DBGADDWATCH )
 {
    void * ptr = hb_parptr( 1 );
    if( ptr )
       hb_dbgAddWatch( ptr, hb_parc( 2 ), hb_parl( 3 ) );
 }
 
-HB_FUNC( HB_DBG_DELWATCH )
+HB_FUNC( __DBGDELWATCH )
 {
    void * ptr = hb_parptr( 1 );
    if( ptr )
       hb_dbgDelWatch( ptr, hb_parni( 2 ) );
 }
 
-HB_FUNC( HB_DBG_SETWATCH )
+HB_FUNC( __DBGSETWATCH )
 {
    void * ptr = hb_parptr( 1 );
    if( ptr )
       hb_dbgSetWatch( ptr, hb_parni( 2 ), hb_parc( 3 ), hb_parl( 4 ) );
 }
 
-HB_FUNC( HB_DBG_SENDMSG )
+HB_FUNC( __DBGSENDMSG )
 {
    hb_dbgObjSendMessage( hb_parnl( 1 ), hb_param( 2, HB_IT_ANY ),
                          hb_param( 3, HB_IT_ANY ), 4 );

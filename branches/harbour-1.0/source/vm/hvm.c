@@ -59,8 +59,8 @@
  *    hb_vmPushDoubleConst()
  *
  * Copyright 1999 Eddie Runia <eddie@runia.com>
- *    __VMVARSGET()
- *    __VMVARSLIST()
+ *    __DBGVMVARSGET()
+ *    __DBGVMVARSLIST()
  *
  * See doc/license.txt for licensing terms.
  *
@@ -228,7 +228,10 @@ static BOOL hb_bTracePrgCalls = FALSE; /* prg tracing is off */
 #  define HB_TRACE_PRG( _TRMSG_ ) if( hb_bTracePrgCalls ) HB_TRACE( HB_TR_ALWAYS, _TRMSG_ )
 #endif
 
-HB_EXPORT const char * s_pszLinkedMain = NULL; /* name of starup function set by linker */
+/* TOFIX: s_pszLinkedMain is violating namespace, so it should be 
+          renamed to hb_vm_pszLinkedMain ASAP. [vszakats] */
+
+HB_EXPORT const char * s_pszLinkedMain = NULL; /* name of startup function set by linker */
 
 /* virtual machine state */
 
@@ -431,19 +434,19 @@ HB_EXPORT void hb_vmInit( BOOL bStartMainProc )
 
       if( pDynSym && pDynSym->pSymbol->value.pFunPtr )
          s_pSymStart = pDynSym->pSymbol;
-#ifdef HARBOUR_START_PROCEDURE
+#ifdef HB_START_PROCEDURE
       else
       {
          /* if first char is '@' then start procedure were set by
             programmer explicitly and should have the highest priority
             in other case it's the name of first public function in
             first linked moudule which is used if there is no
-            HARBOUR_START_PROCEDURE in code */
+            HB_START_PROCEDURE in code */
          if( s_pszLinkedMain && *s_pszLinkedMain == '@' )
             pDynSym = hb_dynsymFind( s_pszLinkedMain + 1 );
          else
          {
-            pDynSym = hb_dynsymFind( HARBOUR_START_PROCEDURE );
+            pDynSym = hb_dynsymFind( HB_START_PROCEDURE );
 
             if( ! ( pDynSym && pDynSym->pSymbol->value.pFunPtr ) && s_pszLinkedMain )
                pDynSym = hb_dynsymFind( s_pszLinkedMain );
@@ -452,7 +455,7 @@ HB_EXPORT void hb_vmInit( BOOL bStartMainProc )
          if( pDynSym && pDynSym->pSymbol->value.pFunPtr )
             s_pSymStart = pDynSym->pSymbol;
          else
-            hb_errInternal( HB_EI_VMBADSTARTUP, NULL, HARBOUR_START_PROCEDURE, NULL );
+            hb_errInternal( HB_EI_VMBADSTARTUP, NULL, HB_START_PROCEDURE, NULL );
       }
 #else
       else if( s_pszLinkedMain )
@@ -4808,7 +4811,7 @@ HB_EXPORT void hb_vmDo( USHORT uiParams )
       {
          HB_TRACE_PRG(("Calling: %s:%s", hb_objGetClsName( pSelf ), pSym->szName));
          if( pExecSym->scope.value & HB_FS_PCODEFUNC )
-            /* Running pCode dynamic function from .HRB */
+            /* Running pCode dynamic function from .hrb */
             hb_vmExecute( pExecSym->value.pCodeFunc->pCode,
                           pExecSym->value.pCodeFunc->pSymbols );
          else
@@ -4835,7 +4838,7 @@ HB_EXPORT void hb_vmDo( USHORT uiParams )
          if( bProfiler && pSym->pDynSym )
             pSym->pDynSym->ulRecurse++;
 #endif
-         /* Running pCode dynamic function from .HRB? */
+         /* Running pCode dynamic function from .hrb? */
          if( pSym->scope.value & HB_FS_PCODEFUNC )
             hb_vmExecute( pSym->value.pCodeFunc->pCode,
                           pSym->value.pCodeFunc->pSymbols );
@@ -4907,7 +4910,7 @@ HB_EXPORT void hb_vmSend( USHORT uiParams )
       HB_TRACE_PRG(("Calling: %s:%s", hb_objGetClsName( pSelf ), pSym->szName));
 
       if( pExecSym->scope.value & HB_FS_PCODEFUNC )
-         /* Running pCode dynamic function from .HRB */
+         /* Running pCode dynamic function from .hrb */
          hb_vmExecute( pExecSym->value.pCodeFunc->pCode,
                     pExecSym->value.pCodeFunc->pSymbols );
       else
@@ -5772,8 +5775,10 @@ static void hb_vmPushAliasedVar( PHB_SYMB pSym )
          }
       }
       else if( pAlias->item.asString.length >= 4 &&
-               hb_strnicmp( szAlias, "FIELD", /* FIELD-> or FIEL-> */
-                                     pAlias->item.asString.length ) == 0 )
+               ( hb_strnicmp( szAlias, "FIELD", /* FIELD-> or FIEL-> */
+                                       pAlias->item.asString.length ) == 0 ||
+                 hb_strnicmp( szAlias, "_FIELD", /* _FIELD-> or _FIE-> */
+                                       pAlias->item.asString.length ) == 0 ) )
       {
          hb_rddGetFieldValue( pAlias, pSym );
          return;
@@ -6073,8 +6078,10 @@ static void hb_vmPopAliasedVar( PHB_SYMB pSym )
          }
       }
       else if( pAlias->item.asString.length >= 4 &&
-               hb_strnicmp( szAlias, "FIELD", /* FIELD-> or FIEL-> */
-                                     pAlias->item.asString.length ) == 0 )
+               ( hb_strnicmp( szAlias, "FIELD", /* FIELD-> or FIEL-> */
+                                     pAlias->item.asString.length ) == 0 ||
+                 hb_strnicmp( szAlias, "_FIELD", /* _FIELD-> or _FIE-> */
+                                       pAlias->item.asString.length ) == 0 ) )
       {
          hb_rddPutFieldValue( hb_stackItemFromTop( -2 ), pSym );
          hb_stackPop();    /* alias */
@@ -9542,7 +9549,7 @@ HB_EXPORT ULONG hb_dbg_ProcLevel( void )
  * check if the debugger activation was requested or request the debugger
  * activation if .T. is passed
  */
-HB_FUNC( HB_DBG_INVOKEDEBUG )
+HB_FUNC( __DBGINVOKEDEBUG )
 {
    BOOL bRequest = s_bDebugRequest;
    if( hb_pcount() > 0 )
@@ -9553,10 +9560,10 @@ HB_FUNC( HB_DBG_INVOKEDEBUG )
 }
 
 /* $Doc$
- * $FuncName$     <aStat> __vmVarSList()
+ * $FuncName$     <aStat> __dbgvmVarSList()
  * $Description$  Return the statics array. Please aClone before assignments
  * $End$ */
-HB_FUNC( HB_DBG_VMVARSLIST )
+HB_FUNC( __DBGVMVARSLIST )
 {
    PHB_ITEM pStatics = hb_itemClone( &s_aStatics );
 
@@ -9564,35 +9571,35 @@ HB_FUNC( HB_DBG_VMVARSLIST )
 }
 
 /* $Doc$
- * $FuncName$     <nStatics> __vmVarSLen()
+ * $FuncName$     <nStatics> __dbgvmVarSLen()
  * $Description$  Return the statics array length.
  * $End$ */
-HB_FUNC( HB_DBG_VMVARSLEN )
+HB_FUNC( __DBGVMVARSLEN )
 {
    hb_retnl( hb_arrayLen( &s_aStatics ) );
 }
 
 /* $Doc$
- * $FuncName$     <xStat> __vmVarSGet(<nStatic>)
+ * $FuncName$     <xStat> __dbgvmVarSGet(<nStatic>)
  * $Description$  Return a specified statics
  * $End$ */
-HB_FUNC( HB_DBG_VMVARSGET )
+HB_FUNC( __DBGVMVARSGET )
 {
    hb_itemReturn( hb_dbg_vmVarSGet( hb_parni( 1 ), hb_parni( 2 ) ) );
 }
 
 /* $Doc$
- * $FuncName$     __vmVarSSet(<nStatic>,<uValue>)
+ * $FuncName$     __dbgvmVarSSet(<nStatic>,<uValue>)
  * $Description$  Sets the value of a specified statics
  * $End$ */
-HB_FUNC( HB_DBG_VMVARSSET )
+HB_FUNC( __DBGVMVARSSET )
 {
    PHB_ITEM pItem = hb_param( 3, HB_IT_ANY );
    if( pItem )
       hb_arraySet( &s_aStatics, hb_parni( 1 ) + hb_parni( 2 ), pItem );
 }
 
-HB_FUNC( HB_DBG_PROCLEVEL )
+HB_FUNC( __DBGPROCLEVEL )
 {
    hb_retnl( hb_dbg_ProcLevel() - 1 );   /* Don't count self */
 }
@@ -9623,10 +9630,10 @@ HB_EXPORT PHB_ITEM hb_dbg_vmVarGGet( int nGlobal, int nOffset )
 }
 
 /* $Doc$
- * $FuncName$     <aStat> __vmVarGList()
+ * $FuncName$     <aStat> __dbgvmVarGList()
  * $Description$  Return a clone of the globals array.
  * $End$ */
-HB_FUNC( HB_DBG_VMVARGLIST )
+HB_FUNC( __DBGVMVARGLIST )
 {
 #if 0
    PHB_ITEM pGlobals = hb_itemClone( &s_aGlobals );
@@ -9637,12 +9644,12 @@ HB_FUNC( HB_DBG_VMVARGLIST )
    hb_itemReturnRelease( pGlobals );
 }
 
-HB_FUNC( HB_DBG_VMVARGGET )
+HB_FUNC( __DBGVMVARGGET )
 {
    hb_itemReturn( hb_dbg_vmVarGGet( hb_parni( 1 ), hb_parni( 2 ) ) );
 }
 
-HB_FUNC( HB_DBG_VMVARGSET )
+HB_FUNC( __DBGVMVARGSET )
 {
 #if 0
    PHB_ITEM pItem = hb_param( 3, HB_IT_ANY );
@@ -9725,33 +9732,6 @@ HB_FUNC( __OPGETPRF ) /* profiler: It returns an array with an opcode called and
    }
 }
 
-
-HB_FUNC( __VMVARGLIST )
-{
-   HB_FUNC_EXEC( HB_DBG_VMVARGLIST );
-}
-
-HB_FUNC( __VMVARSLIST )
-{
-   HB_FUNC_EXEC( HB_DBG_VMVARSLIST );
-}
-
-HB_FUNC( __VMVARSLEN )
-{
-   HB_FUNC_EXEC( HB_DBG_VMVARSLEN );
-}
-
-HB_FUNC( __VMVARSGET )
-{
-   HB_FUNC_EXEC( HB_DBG_VMVARSGET );
-}
-
-HB_FUNC( __VMVARSSET )
-{
-   HB_FUNC_EXEC( HB_DBG_VMVARSSET );
-}
-
-
 HB_FUNC( ERRORLEVEL )
 {
    hb_retni( s_nErrorLevel );
@@ -9779,7 +9759,7 @@ void hb_vmForceLink( void )
 
 #undef HB_FORCE_LINK_MAIN
 
-#if defined(HB_OS_WIN_32) && !defined(__EXPORT__) && \
+#if !defined(HB_DYNLIB) && defined(HB_OS_WIN_32) && \
     ( defined(__DMC__) || defined(__WATCOMC__) || defined(__MINGW32__) )
 
 #  define HB_FORCE_LINK_MAIN  hb_forceLinkMainWin

@@ -2,7 +2,7 @@
  * $Id$
  */
 
-// What32.Lib
+// what32.lib
 // Printing
 
 #define _WIN32_WINNT   0x0400
@@ -11,7 +11,7 @@
 #include <shlobj.h>
 //#include <commctrl.h>
 
-#include "item.api"
+#include "hbapiitm.h"
 #include "hbapiitm.h"
 #include "hbapi.h"
 #include "hbvm.h"

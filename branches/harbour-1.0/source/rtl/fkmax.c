@@ -66,9 +66,9 @@ HB_FUNC( FKLABEL )
 {
    PHB_ITEM pPar1 = hb_param( 1, HB_IT_NUMERIC );
 
-   if( pPar1 != NULL )
+   if( pPar1 )
    {
-      USHORT uiFKey = hb_itemGetNI( pPar1 );
+      USHORT uiFKey = ( USHORT ) hb_itemGetNI( pPar1 );
 
       if( uiFKey > 0 && uiFKey <= 40 )
       {
@@ -79,5 +79,6 @@ HB_FUNC( FKLABEL )
          return;
       }
    }
-   hb_retc( NULL );
+
+   hb_retc_null();
 }

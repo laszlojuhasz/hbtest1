@@ -3,7 +3,7 @@
  */
 
 /*
- * File......: BYTEXOR.PRG
+ * File......: bytexor.prg
  * Author....: Forest Belt, Computer Diagnostic Services, Inc.
  * CIS ID....: ?
  *
@@ -49,8 +49,8 @@
  *     bit-by-bit XOR operation.  Equivalent to XOR assembler instruction.
  *
  *     This function is presented to illustrate that bit-wise operations
- *     are possible with Clipper code.  For greater speed, write .C or
- *     .ASM versions and use the Clipper Extend system.
+ *     are possible with Clipper code.  For greater speed, write .c or
+ *     .asm versions and use the Clipper Extend system.
  *  $EXAMPLES$
  *     This code performs a bit-wise XOR on two bytes represented
  *     by CHR(32) and CHR(55):
@@ -60,7 +60,7 @@
  *          ? cNewByte            // result: non-printable character
  *
  *     For a demonstration of Clipper bit manipulations, compile and
- *     link the program BITTEST.PRG in the Nanforum Toolkit source code.
+ *     link the program bittest.prg in the Nanforum Toolkit source code.
  *  $SEEALSO$
  *     FT_BYTEOR() FT_BYTENOT() FT_BYTENEG() FT_BYTEAND()
  *  $END$

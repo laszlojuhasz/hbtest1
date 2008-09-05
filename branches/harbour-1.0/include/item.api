@@ -4,7 +4,7 @@
 
 /*
  * Harbour Project source code:
- * Compatibility header file for CA-Clipper Item API
+ * Compatibility header file for CA-Cl*pper Item API
  *
  * Copyright 1999-2001 Viktor Szakats <viktor.szakats@syenar.hu>
  * www - http://www.harbour-project.org
@@ -56,6 +56,11 @@
 #define _ITEM_API
 
 #include "hbapiitm.h"
+
+#ifndef HB_LEGACY_LEVEL
+#define EVALINFO        HB_EVALINFO
+#define PEVALINFO       PHB_EVALINFO
+#endif
 
 typedef PEVALINFO EVALINFOP;
 

@@ -264,7 +264,6 @@ static void hb_compChkEnvironVar( HB_COMP_DECL, char *szSwitch )
                            HB_COMP_PARAM->iGenCOutput = HB_COMPGENC_REALCODE;
                            break;
 
-                        case '\0':
                         case '2':
                            HB_COMP_PARAM->iGenCOutput = HB_COMPGENC_VERBOSE;
                            break;
@@ -273,6 +272,7 @@ static void hb_compChkEnvironVar( HB_COMP_DECL, char *szSwitch )
                            HB_COMP_PARAM->iGenCOutput = HB_COMPGENC_NORMAL;
                            break;
 
+                        case '\0':
                         case '0':
                            HB_COMP_PARAM->iGenCOutput = HB_COMPGENC_COMPACT;
                            break;
@@ -865,7 +865,7 @@ void hb_compChkCompilerSwitch( HB_COMP_DECL, int iArg, char *Args[] )
                         Args[i] += ( j - 1 );
                         hb_compChkEnvironVar( HB_COMP_PARAM, Args[i] );
 
-                        /* Accept rest as part of .CH Path or "undef:<id>" and continue with next Args[]. */
+                        /* Accept rest as part of .ch Path or "undef:<id>" and continue with next Args[]. */
                         j = strlen( Args[i] );
                         continue;
 
