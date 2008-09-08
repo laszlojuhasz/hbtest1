@@ -1400,13 +1400,15 @@ static BOOL hb_cdxIndexUnLockRead( LPCDXINDEX pIndex )
  if ( bTurbo )
  {
 #ifdef HB_CDX_DBGCODE
-   if ( pIndex->pArea->fShared && pIndex->fShared )
+   if ( pIndex->pArea->fShared && pIndex->fShared &&
+        !HB_DIRTYREAD( pIndex->pArea ) )
       pIndex->RdLck = FALSE;
 #endif
  }
  else
  {
-   if ( pIndex->pArea->fShared && pIndex->fShared )
+   if ( pIndex->pArea->fShared && pIndex->fShared &&
+        !HB_DIRTYREAD( pIndex->pArea ) )
    {
 #ifdef HB_CDX_DBGCODE
       if ( pIndex->WrLck || ! pIndex->RdLck )
@@ -4040,7 +4042,8 @@ static BOOL hb_cdxPageReadPrevKey( LPCDXPAGE pPage )
             break;
       }
    }
-   while( !hb_cdxCheckRecordScope( pPage->TagParent->pIndex->pArea,
+   while( ( pPage->TagParent->OptFlags & CDX_TYPE_STRUCTURE ) == 0 &&
+          !hb_cdxCheckRecordScope( pPage->TagParent->pIndex->pArea,
                                    hb_cdxPageGetKeyRec( pPage, pPage->iCurKey ) ) );
    if( pPage->iCurKey != 0 )
       hb_cdxSetCurKey( pPage );
@@ -4083,7 +4086,8 @@ static BOOL hb_cdxPageReadNextKey( LPCDXPAGE pPage )
             break;
       }
    }
-   while( !hb_cdxCheckRecordScope( pPage->TagParent->pIndex->pArea,
+   while( ( pPage->TagParent->OptFlags & CDX_TYPE_STRUCTURE ) == 0 &&
+          !hb_cdxCheckRecordScope( pPage->TagParent->pIndex->pArea,
                                    hb_cdxPageGetKeyRec( pPage, pPage->iCurKey ) ) );
    if( pPage->iCurKey != 0 )
       hb_cdxSetCurKey( pPage );
