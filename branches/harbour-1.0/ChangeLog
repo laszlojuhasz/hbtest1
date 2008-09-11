@@ -8,6 +8,15 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-09-12 00:53 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * contrib/rddado/adordd.prg
+  * contrib/rddado/adordd.ch
+    * Merged changes from xhb.
+      Some hbusrrdd.ch values seem to be missing from Harbour, 
+      related features will be automatically enabled if we 
+      implement them in our usrrdd.
+      Please test.
+
 2008-09-11 22:55 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   * doc/whatsnew.txt
   * source/vm/cmdarg.c
