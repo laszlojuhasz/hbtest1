@@ -8,6 +8,10 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-09-11 21:29 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * contrib/gtwvg/tests/bld_vc.bat
+    ! Added required list of system libs.
+
 2008-09-11 14:08 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   * source/rtl/gtpca/gtpca.c
   * source/rtl/gtwin/gtwin.c
