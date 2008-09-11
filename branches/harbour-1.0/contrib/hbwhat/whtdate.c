@@ -57,8 +57,9 @@ HB_FUNC( DATETIME_CREATE )
 
 HB_FUNC( DATETIME_GETMONTHCAL )
 {
-
-   HB_RETWH( DateTime_GetMonthCal(
+   /* NOTE: '(HWND)' is needed as a workaround for MinGW (4.32), 
+            where this is missing from the supplied headers. */
+   HB_RETWH( (HWND) DateTime_GetMonthCal(
                                             (HWND) HB_PARWH( 1 )  // Handle to a DTP control
                                           ) );
 }

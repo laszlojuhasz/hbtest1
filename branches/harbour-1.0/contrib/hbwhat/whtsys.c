@@ -1088,15 +1088,15 @@ DWORD VirtualQuery( LPCVOID lpAddress, PMEMORY_BASIC_INFORMATION lpBuffer,  SIZE
 */
 HB_FUNC( VIRTUALQUERY )
 {
-   if( hb_parni(1) >= sizeof(MEMORY_BASIC_INFORMATION) )
-   {
+// if( hb_parni(1) >= sizeof(MEMORY_BASIC_INFORMATION) )
+// {
       hb_retl(VirtualQuery((void *) HB_PARWH(1), (struct _MEMORY_BASIC_INFORMATION *) HB_PARWH(2), sizeof(MEMORY_BASIC_INFORMATION)));
-   }
-   else
-   {
-      SetLastError(ERROR_INSUFFICIENT_BUFFER);
-      hb_retl(FALSE);
-   }
+// }
+// else
+// {
+//    SetLastError(ERROR_INSUFFICIENT_BUFFER);
+//    hb_retl(FALSE);
+// }
 }
 
 //-------------------------------------------------------------------//
