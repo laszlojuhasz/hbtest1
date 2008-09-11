@@ -8,6 +8,17 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-09-11 22:55 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * doc/whatsnew.txt
+  * source/vm/cmdarg.c
+    * Legacy undocumented symbols hb_hInstance and 
+      hb_hPrevInstance reenabled for 1.0.1, when HB_LEGACY_LEVEL 
+      is #defined. This is the default in 1.0.x. It will be 
+      turned off in 1.1.0.
+      I did this to not break binary compatibility of 1.0.1 
+      with 1.0.0 for those apps that rely on these symbols
+      (like gtwvg).
+
 2008-09-11 21:29 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   * contrib/gtwvg/tests/bld_vc.bat
     ! Added required list of system libs.

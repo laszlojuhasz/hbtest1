@@ -131,6 +131,8 @@ Core
 - Removed hb_hInstance, hb_hPrevInstance, s_iCmdShow, s_WinMainParam 
   old undocumented public variables. 3rd parties should use 
   official hb_winmainArgGet() API to get these values.
+  This feature is also HB_LEGACY_LEVEL dependent, therefore it will 
+  be finalized in 1.1, until then, old symbols will still work.
 - Fixed _FIELD indirectly used as alias to generate the right RTE:
   ? ("_FIELD")->NAME, or:
   M->var := "_FIELD"; ? ("&var")->NAME
