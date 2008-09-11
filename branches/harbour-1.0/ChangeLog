@@ -8,6 +8,117 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-09-11 12:00 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * contrib/hbnf/fttext.c
+  * contrib/hbwhat/whtdate.c
+  * contrib/hbwhat/wincorec.c
+  * contrib/hbwhat/whtsock.c
+  * contrib/hbwhat/whtseria.c
+  * contrib/hbwhat/whtdlg.c
+  * contrib/hbwhat/whtsys.c
+  * contrib/hbwhat/whtmisc.c
+  * contrib/hbwhat/whtcdlg.c
+    ! Fixed all MinGW 4.3x warnings.
+    ! Added workaround for slightly wrong MinGW definition for 
+      Windows DateTime_GetMonthCal() macro.
+
+  * contrib/gtwvg/gtwvg.c
+  * contrib/gtwvg/wvgutils.c
+  * contrib/gtwvg/wvgcore.c
+    ! Fixed all MSVC -W4 warnings.
+
+  * contrib/gtwvg/gtwvg.h
+    ! Fixed old bug, which surfaced after recently 
+      fixing __MINGW__ to __MINGW32__.
+      Apparently, comctl32.h is never needed here.
+
+  * config/rules.cf
+  * contrib/hbbtree/tests/bld_djgp.bat
+    % Removed -gc0. Now default.
+
+  * contrib/make_b32_all.bat
+  * contrib/make_vc_all.bat
+    * Minor formatting.
+
+  * contrib/hbgt/asciisgt.c
+  * utils/hbdoc/hbdoc.prg
+    - Removed unnecessary version strings. This was good 
+      in CVS times, but for SVN there is not much point.
+
+  * utils/hbmake/hbmake.prg
+    + Another patch session from Bill Robertson.
+      Besides some further cleanups, this should fix 
+      some problems with the previous version.
+
+  * source/lang/msghuiso.c
+  * source/lang/msgskiso.c
+  * source/lang/msgrukoi.c
+  * source/lang/msghuwin.c
+  * source/lang/msgzhgb.c
+  * source/lang/msgskwin.c
+  * source/lang/msg_tpl.c
+  * source/lang/msgruwin.c
+  * source/lang/msgelwin.c
+  * source/lang/msgro.c
+  * source/lang/msgpt.c
+  * source/lang/msghriso.c
+  * source/lang/msghrwin.c
+  * source/lang/msgsliso.c
+  * source/lang/msgbe866.c
+  * source/lang/msgslwin.c
+  * source/lang/msghe862.c
+  * source/lang/msgcskam.c
+  * source/lang/msggl.c
+  * source/lang/msgtrwin.c
+  * source/lang/msgeo.c
+  * source/lang/msgbgiso.c
+  * source/lang/msgbgwin.c
+  * source/lang/msgskkam.c
+  * source/lang/msges.c
+  * source/lang/msguakoi.c
+  * source/lang/msgzhb5.c
+  * source/lang/msgeu.c
+  * source/lang/msgpl852.c
+  * source/lang/msgsr852.c
+  * source/lang/msguawin.c
+  * source/lang/msgde.c
+  * source/lang/msgtr857.c
+  * source/lang/msgru866.c
+  * source/lang/msgcs852.c
+  * source/lang/msgfr.c
+  * source/lang/msgis850.c
+  * source/lang/msgnl.c
+  * source/lang/msghu852.c
+  * source/lang/msgsk852.c
+  * source/lang/msgca.c
+  * source/lang/msgplmaz.c
+  * source/lang/msgpliso.c
+  * source/lang/msgplwin.c
+  * source/lang/msgbgmik.c
+  * source/lang/msgid.c
+  * source/lang/msgbg866.c
+  * source/lang/msgltwin.c
+  * source/lang/msgsriso.c
+  * source/lang/msgel.c
+  * source/lang/msgsrwin.c
+  * source/lang/msgbewin.c
+  * source/lang/msgdewin.c
+  * source/lang/msghr437.c
+  * source/lang/msghr852.c
+  * source/lang/msgko.c
+  * source/lang/msgua866.c
+  * source/lang/msghewin.c
+  * source/lang/msgit.c
+  * source/lang/msgsl437.c
+  * source/lang/msgsl852.c
+  * source/lang/msghucwi.c
+  * source/lang/msgcsiso.c
+  * source/lang/msgcswin.c
+  * source/lang/msgeswin.c
+  * source/rtl/langapi.c
+    - Cleared unnecessary version strings. This was good 
+      in CVS times, but for SVN there is not much point.
+
 2008-09-10 13:22 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   * doc/whatsnew.txt
     + Updated.
