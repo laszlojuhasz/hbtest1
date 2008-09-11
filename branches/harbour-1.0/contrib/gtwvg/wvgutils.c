@@ -747,7 +747,7 @@ HB_FUNC( WVT_APPENDMENU )
       lpszCaption = HB_TCHAR_CONVTO( hb_parc( 4 ) );
       for ( i = 0; i < iLen; i++ )
       {
-        ucBuf[ i ] = ( *lpszCaption == '~' ) ? '&' : *lpszCaption ;
+        ucBuf[ i ] = ( *lpszCaption == '~' ) ? '&' : ( char ) *lpszCaption;
         lpszCaption++;
       }
       ucBuf[ iLen ]= '\0';

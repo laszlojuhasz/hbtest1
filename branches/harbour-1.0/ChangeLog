@@ -8,6 +8,13 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-09-11 13:13 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * contrib/gtwvg/wvgutils.c
+    ! Fixed last MSVC -W4 warnings.
+    ; NOTE: Only these contribs have remaining -W4 warnings:
+            hbbmcdx, hbbtree, hbct (in screen*.c).
+            Plus core.
+
 2008-09-11 12:00 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   * contrib/hbnf/fttext.c
   * contrib/hbwhat/whtdate.c
