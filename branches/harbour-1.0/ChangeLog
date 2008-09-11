@@ -8,6 +8,17 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-09-12 01:14 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * source/rdd/usrrdd/rdds/Makefile
+  + source/rdd/usrrdd/rdds/arrayrdd.prg
+  + source/rdd/usrrdd/rdds/vfpcdx.prg
+    + Added two usrrdd based RDDs. Borrowed from xhb.
+      Works of: Francesco Saverio Giudice and 
+                Miguel Angel Marchuet Frutos
+    ; These were adapted to compile and link in Harbour, but 
+      I did no tests, so some more - hopefully minor - changes 
+      may happen to be needed.
+
 2008-09-12 00:53 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   * contrib/rddado/adordd.prg
   * contrib/rddado/adordd.ch
