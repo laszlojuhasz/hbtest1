@@ -8,6 +8,21 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-09-12 04:03 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * contrib/gtwvg/wvgutils.c
+    ! Fix to previous fix, so it works again in 64-bit builds.
+         hb_retclen( ( LPSTR ) pdlgtemplate, ( ( ULONG ) p - ( ULONG ) pdlgtemplate ) ) ; =>
+         hb_retclen( ( LPSTR ) pdlgtemplate, ( ( HB_PTRDIFF ) p - ( HB_PTRDIFF ) pdlgtemplate ) ) ;
+    ; This way it's now in sync with similar function in hbwhat.
+
+2008-09-11 18:00 UTC-0800 Pritpal Bedi (pritpal@vouchcac.com)
+  * contrib/gtwvg/wvgutils.c
+    ! HB_FUNC( WVT__MAKEDLGTEMPLATE )
+         hb_retclen( ( LPSTR ) pdlgtemplate, ( ULONG ) ( p - pdlgtemplate ) );    =>         
+         hb_retclen( ( LPSTR ) pdlgtemplate, ( ( ULONG ) p - ( ULONG ) pdlgtemplate ) ) ;
+      Fix to open modeless/modal dialogs.
+      ; NOTE: Need to be fixed in v1.0.0 also.
+
 2008-09-12 01:14 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   * source/rdd/usrrdd/rdds/Makefile
   + source/rdd/usrrdd/rdds/arrayrdd.prg
