@@ -8,6 +8,11 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-09-12 11:01 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * contrib/hbole/tests/bld_vc.bat
+  * contrib/hbw32/tests/bld_vc.bat
+    ! Added missing system libs.
+
 2008-09-12 04:03 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   * contrib/gtwvg/wvgutils.c
     ! Fix to previous fix, so it works again in 64-bit builds.
