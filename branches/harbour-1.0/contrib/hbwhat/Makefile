@@ -13,7 +13,6 @@ C_SOURCES = \
 	wincorec.c \
 	whtbmp.c \
 	whtbrsh.c \
-	whtcall.c \
 	whtcdlg.c \
 	whtclpb.c \
 	whtcomm.c \
@@ -22,7 +21,6 @@ C_SOURCES = \
 	whtdc.c \
 	whtdir.c \
 	whtdlg.c \
-	whtdll.c \
 	whtdraw.c \
 	whtfont.c \
 	whtgdi.c \

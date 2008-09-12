@@ -9,6 +9,7 @@ LIBNAME=gtalleg
 ifneq ($(HB_COMPILER),pocc)
 ifneq ($(HB_COMPILER),xcc)
 ifneq ($(HB_COMPILER),dm)
+ifneq ($(HB_COMPILER),gcc)
 
 ifeq ($(HB_INC_ALLEGRO),)
 ifeq ($(HB_XBUILD),)
@@ -28,6 +29,9 @@ C_SOURCES=\
 
 include $(TOP)$(ROOT)config/lib.cf
 
+else
+include $(TOP)$(ROOT)config/none.cf
+endif
 else
 include $(TOP)$(ROOT)config/none.cf
 endif

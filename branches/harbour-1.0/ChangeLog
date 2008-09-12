@@ -8,6 +8,20 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-09-12 19:30 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * contrib/gtalleg/Makefile
+    * Excluded Cygwin.
+
+  * contrib/hbwhat/Makefile
+  * contrib/hbwhat/common.mak
+  - contrib/hbwhat/whtdll.c
+  - contrib/hbwhat/whtcall.c
+    - Removed DLL related stuff from hbwhat, since we're 
+      maintaining (a better working) one already in hbw32, 
+      and hbwhat by itself doesn't seem to need this 
+      functionality internally. Users should migrate to 
+      the hbw32 functions, which work mostly similarly.
+
 2008-09-12 19:08 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   * doc/whatsnew.txt
     * Added some build notes.
