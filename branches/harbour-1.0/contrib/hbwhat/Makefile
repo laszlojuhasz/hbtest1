@@ -7,6 +7,7 @@ ROOT = ../../
 LIBNAME=hbwhat
 
 ifeq ($(HB_ARCHITECTURE),w32)
+ifneq ($(HB_COMPILER),dm)
 
 C_SOURCES = \
 	wincorec.c \
@@ -93,6 +94,9 @@ include $(TOP)$(ROOT)config/lib.cf
 install::
 	$(INSTALL_RULE_HEADERS)
 
+else
+include $(TOP)$(ROOT)config/none.cf
+endif
 else
 include $(TOP)$(ROOT)config/none.cf
 endif

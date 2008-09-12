@@ -170,9 +170,16 @@ HB_FUNC( _CREATEMDIWINDOW )
    HANDLE hInstance  = (ISNIL(9)  ? GetModuleHandle( NULL ) : (HANDLE) HB_PARWH(9));
    LPARAM lParam     = (ISNIL(10) ? 0 : (LPARAM) hb_parnl(10));
 
+#if defined(__DMC__)
+   HWND hWnd = CreateMDIWindow( ( LPSTR ) cClass, ( LPSTR ) cTitle, nStyle,
+                                x, y, nWidth, nHeight,
+                                hWndParent, (HINSTANCE) hInstance, lParam );
+#else
    HWND hWnd = CreateMDIWindow( cClass, cTitle,nStyle,
                                 x, y, nWidth, nHeight,
                                 hWndParent, (HINSTANCE) hInstance, lParam );
+#endif
+
    HB_RETWH( hWnd );
 }
 
@@ -739,3 +746,4 @@ HB_FUNC( _MAKEDLGTEMPLATE )
 
     LocalFree (LocalHandle (pdlgtemplate) );
 }
+
