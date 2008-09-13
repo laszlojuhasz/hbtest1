@@ -62,7 +62,7 @@
 #define HB_VER_MAJOR    1        /* Major version number */
 #define HB_VER_MINOR    0        /* Minor version number */
 #define HB_VER_REVISION 1        /* Revision number */
-#define HB_VER_STATUS   "dev"    /* Build status */
+#define HB_VER_STATUS   ""       /* Build status */
 #define __HARBOUR__     0x010001 /* Three bytes: Major + Minor + Revision. This is recommented for 3rd party .c and .prg level code. */
 
 #endif /* HB_VER_H_ */

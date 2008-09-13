@@ -8,6 +8,14 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-09-13 09:43 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * include/hbver.h
+  * harbour-ce-spec
+  * harbour-w32-spec
+  * harbour.spec
+    * Removed 'dev' from the version number.
+    ; NOTE: NOT to merge this with trunk.
+
 2008-09-13 09:37 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   * contrib/hbvpdf/hbvpdf.prg
     ! Generic support functions made STATIC to avoid collision 
