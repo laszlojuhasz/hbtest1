@@ -4,8 +4,8 @@
 
 /*
  * Harbour Project source code:
- * Harbour GUI framework for Win32
- * Class HGFMenuItem
+ * Harbour GUI framework for Windows
+ * Class HBWinControl
  *
  * Copyright 2001 Antonio Linares <alinares@fivetech.com>
  * www - http://www.harbour-project.org
@@ -54,64 +54,35 @@
 #include "common.ch"
 #include "hbclass.ch"
 
-CLASS HGFMenuItem FROM HBPersistent
+#define SW_SHOWNA      8
 
-   DATA   Caption  PROPERTY // Specifies the text of the menu item
-   DATA   Name     PROPERTY // The name of this component
-   DATA   OnClick  PROPERTY // A character description of the method to invoke
-   DATA   Enabled  PROPERTY // Specifies whether the menu item is enabled
-   DATA   Items    PROPERTY // Contains the menu items in the submenu of the menu item
 
-   DATA   nId               // Command value to send to the container form
-   DATA   oParent           // Identifies the parent menu item of this menu item
-   DATA   nHandle           // The handle of the submenu of this menu item
+CLASS HBWinControl FROM HBPersistent
 
-   CLASSDATA nIdStart   // start value for commands value to assign to menu items
+   DATA      hWnd
+   DATA      nId
 
-   METHOD New( oOwner ) // Creates a new menu item
-   METHOD Add( oMenuItem ) // Adds a new drop down menu item
-   METHOD FindItem( nId ) // Searches for a sub menuitem given its id
+   CLASSDATA nInitId
+
+   ACCESS    Caption() INLINE WinGetText( ::hWnd ) PROPERTY
+   ASSIGN    Caption( cNewCaption ) INLINE ;
+                WinSetWindowText( ::hWnd, cNewCaption )
+
+   ACCESS    Top()    INLINE WinGetTop( ::hWnd )    PROPERTY
+   ASSIGN    Top( nNewTop ) INLINE WinSetTop( ::hWnd, nNewTop )
+
+   ACCESS    Left()   INLINE WinGetLeft( ::hWnd )   PROPERTY
+   ASSIGN    Left( nNewLeft ) INLINE WinSetLeft( ::hWnd, nNewLeft )
+
+   ACCESS    Height() INLINE WinGetHeight( ::hWnd ) PROPERTY
+   ASSIGN    Height( nNewHeight ) INLINE WinSetHeight( ::hWnd, nNewHeight )
+
+   ACCESS    Width()  INLINE WinGetWidth( ::hWnd )  PROPERTY
+   ASSIGN    Width( nNewWidth ) INLINE WinSetWidth( ::hWnd, nNewWidth )
+
+   METHOD    GetNewId() INLINE ::nId := iif( ::nInitId == nil, ::nInitId := 1,;
+                                             ++::nInitId )
+
+   METHOD    Show() INLINE ShowWindow( ::hWnd, SW_SHOWNA )
 
 ENDCLASS
-
-METHOD New( oOwner ) CLASS HGFMenuItem
-
-   DEFAULT ::nIdStart TO 110
-
-   ::Caption  := ""
-   ::Enabled  := .t.
-   ::nId      := ::nIdStart++
-   ::oParent  := oOwner
-
-return Self
-
-METHOD Add( oMenuItem ) CLASS HGFMenuItem
-
-   DEFAULT ::Items  TO {}
-   DEFAULT ::nHandle TO WinCreateSubMenu( ::oParent:nHandle, ::nId )
-
-   WinAddMenuItem( ::nHandle, oMenuItem:Caption, Len( ::Items ),;
-                   nil, oMenuItem:nId, oMenuItem:Enabled )
-
-   oMenuItem:oParent := Self
-   AAdd( ::Items, oMenuItem )
-
-return nil
-
-METHOD FindItem( nId ) CLASS HGFMenuItem
-
-   local oMenuItem, n
-
-   for n := 1 to Len( ::Items )
-      if ( oMenuItem := ::Items[ n ] ):nId == nId
-         return oMenuItem
-      else
-         if oMenuItem:Items != nil
-            if ( oMenuItem := oMenuItem:FindItem( nId ) ) != nil
-               return oMenuItem
-            endif
-         endif
-      endif
-   next
-
-return oMenuItem

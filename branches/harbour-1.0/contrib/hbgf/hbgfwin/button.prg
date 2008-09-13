@@ -4,8 +4,8 @@
 
 /*
  * Harbour Project source code:
- * Harbour GUI framework for Win32
- * Class HBEdit
+ * Harbour GUI framework for Windows
+ * Class HBButton
  *
  * Copyright 2001 Antonio Linares <alinares@fivetech.com>
  * www - http://www.harbour-project.org
@@ -53,19 +53,21 @@
 
 #include "common.ch"
 #include "hbclass.ch"
-#include "hbgfw32.ch"
+#include "hbgfwin.ch"
 
-CLASS HBEdit FROM HBWinControl
+CLASS HBButton FROM HBWinControl
+
+   DATA      OnClick   PROPERTY
 
    METHOD    New( oContainer )
 
 ENDCLASS
 
-METHOD New( oContainer ) CLASS HBEdit
+METHOD New( oContainer ) CLASS HBButton
 
-   ::hWnd  := WinCreateStdWindow( , nOr( WS_BORDER, WS_CHILD, WS_TABSTOP ),,;
-                                 "EDIT", "",, oContainer:hWnd, ::GetNewId() )
-   ::Width  := 121
-   ::Height := 21
+   ::hWnd  := WinCreateStdWindow( , nOr( WS_CHILD, WS_TABSTOP ),, "BUTTON", "",,;
+                                 oContainer:hWnd, ::GetNewId() )
+   ::Width  := 80
+   ::Height := 25
 
 return Self

@@ -8,6 +8,29 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-09-13 13:34 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * doc/dirstruc.txt
+     * Updated.
+
+   - contrib/hbgf/hbgfw32
+   + contrib/hbgf/hbgfwin
+   * contrib/hbgf/tests/bld_b32.bat
+   * contrib/hbgf/tests/bld_vc.bat
+   * contrib/hbgf/Makefile
+   * contrib/hbgf/hbgfwin/common.mak
+   * contrib/hbgf/hbgfwin/button.prg
+   * contrib/hbgf/hbgfwin/winctrl.prg
+   * contrib/hbgf/hbgfwin/form.prg
+   * contrib/hbgf/hbgfwin/menuitem.prg
+   * contrib/hbgf/hbgfwin/menu.prg
+   * contrib/hbgf/hbgfwin/edit.prg
+   * contrib/hbgf/hbgfwin/Makefile
+   - contrib/hbgf/hbgfwin/win32.c
+   + contrib/hbgf/hbgfwin/winapi.c
+   - contrib/hbgf/hbgfwin/hbgfw32.ch
+   + contrib/hbgf/hbgfwin/hbgfwin.ch
+     * Removed some '32's.
+
 2008-09-13 12:28 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   * doc/whatsnew.txt
     * Updated.

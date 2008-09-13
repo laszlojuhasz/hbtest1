@@ -4,10 +4,11 @@
 
 /*
  * Harbour Project source code:
- * Harbour GUI framework for Win32
- * Class HBWinControl
+ * Harbour GUI framework for Windows
+ * Class HBMenu
  *
  * Copyright 2001 Antonio Linares <alinares@fivetech.com>
+ * Copyright 2001 Maurilio Longo <maurilio.longo@libero.it>
  * www - http://www.harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -51,38 +52,53 @@
  *
  */
 
-#include "common.ch"
 #include "hbclass.ch"
 
-#define SW_SHOWNA      8
+CLASS HBMenu FROM HBPersistent
 
+   DATA   nHandle
+   DATA   Items    PROPERTY
 
-CLASS HBWinControl FROM HBPersistent
-
-   DATA      hWnd
-   DATA      nId
-
-   CLASSDATA nInitId
-
-   ACCESS    Caption() INLINE WinGetText( ::hWnd ) PROPERTY
-   ASSIGN    Caption( cNewCaption ) INLINE ;
-                WinSetWindowText( ::hWnd, cNewCaption )
-
-   ACCESS    Top()    INLINE WinGetTop( ::hWnd )    PROPERTY
-   ASSIGN    Top( nNewTop ) INLINE WinSetTop( ::hWnd, nNewTop )
-
-   ACCESS    Left()   INLINE WinGetLeft( ::hWnd )   PROPERTY
-   ASSIGN    Left( nNewLeft ) INLINE WinSetLeft( ::hWnd, nNewLeft )
-
-   ACCESS    Height() INLINE WinGetHeight( ::hWnd ) PROPERTY
-   ASSIGN    Height( nNewHeight ) INLINE WinSetHeight( ::hWnd, nNewHeight )
-
-   ACCESS    Width()  INLINE WinGetWidth( ::hWnd )  PROPERTY
-   ASSIGN    Width( nNewWidth ) INLINE WinSetWidth( ::hWnd, nNewWidth )
-
-   METHOD    GetNewId() INLINE ::nId := iif( ::nInitId == nil, ::nInitId := 1,;
-                                             ++::nInitId )
-
-   METHOD    Show() INLINE ShowWindow( ::hWnd, SW_SHOWNA )
+   METHOD New( oForm )      // Creates a new menu
+   METHOD Add( oMenuItem )  // Adds a menuitem
+   METHOD FindItem( nId )   // Searches for a sub menuitem given its id
 
 ENDCLASS
+
+METHOD New( oForm ) CLASS HBMenu
+
+   ::Items   := {}
+
+   if oForm != nil
+      ::nHandle := WinCreateMenu( oForm:hWnd )
+   endif
+
+return Self
+
+METHOD Add( oMenuItem ) CLASS HBMenu
+
+   WinAddMenuItem( ::nHandle, oMenuItem:Caption, Len( ::Items ),;
+                   nil, oMenuItem:nId, oMenuItem:Enabled )
+
+   oMenuItem:oParent := Self
+   AAdd( ::Items, oMenuItem )
+
+return nil
+
+METHOD FindItem( nId ) CLASS HBMenu
+
+   local oMenuItem, n
+
+   for n := 1 to Len( ::Items )
+      if ( oMenuItem := ::Items[ n ] ):nId == nId
+         return oMenuItem
+      else
+         if oMenuItem:Items != nil
+            if ( oMenuItem := oMenuItem:FindItem( nId ) ) != nil
+               return oMenuItem
+            endif
+         endif
+      endif
+   next
+
+return oMenuItem
