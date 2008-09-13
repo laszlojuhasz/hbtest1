@@ -2294,7 +2294,7 @@ HB_FUNC( WVT_DRAWLABELOBJ )
 
    SetTextColor( _s->hdc, fgClr );
    SetBkColor( _s->hdc, bgClr );
-   SelectObject( _s->hdc, ( HFONT ) hb_parnl( 10 ) );
+   SelectObject( _s->hdc, ( HFONT ) hb_parnint( 10 ) );
 
    //GetTextExtentPoint32( _s->hdc, hb_parcx( 5 ), strlen( hb_parcx( 5 ) ), &sz );
    GetTextExtentPoint32( _s->hdc, text, lstrlen( text ), &sz );
@@ -2352,7 +2352,7 @@ HB_FUNC( WVT_DRAWLABELOBJ )
    {
       SetTextColor( _s->hGuiDC, fgClr );
       SetBkColor( _s->hGuiDC, bgClr );
-      SelectObject( _s->hGuiDC, ( HFONT ) hb_parnl( 10 ) );
+      SelectObject( _s->hGuiDC, ( HFONT ) hb_parnint( 10 ) );
       SetTextAlign( _s->hGuiDC, iAlignH | iAlignV );
 
       //ExtTextOut( _s->hGuiDC, x, y, uiOptions, &rect, hb_parcx( 5 ), strlen( hb_parcx( 5 ) ), NULL );
@@ -2719,7 +2719,7 @@ HB_FUNC( WVT_DRAWTEXTBOX )
    SetTextColor( _s->hdc, fgClr );
    SetBkColor( _s->hdc, bgClr );
    SetBkMode( _s->hdc, ISNIL( 11 ) ? OPAQUE : hb_parni( 11 ) );
-   SelectObject( _s->hdc, ( HFONT ) hb_parnl( 12 ) );
+   SelectObject( _s->hdc, ( HFONT ) hb_parnint( 12 ) );
 
    //DrawText( _s->hdc, hb_parcx( 6 ), strlen( hb_parcx( 6 ) ), &rc, iAlignH | DT_WORDBREAK | DT_TOP );
    DrawText( _s->hdc, text, lstrlen( text ), &rc, iAlignH | DT_WORDBREAK | DT_TOP );
@@ -2729,7 +2729,7 @@ HB_FUNC( WVT_DRAWTEXTBOX )
       SetTextColor( _s->hGuiDC, fgClr );
       SetBkColor( _s->hGuiDC, bgClr );
       SetBkMode( _s->hGuiDC, ISNIL( 11 ) ? OPAQUE : hb_parni( 11 ) );
-      SelectObject( _s->hGuiDC, ( HFONT ) hb_parnl( 12 ) );
+      SelectObject( _s->hGuiDC, ( HFONT ) hb_parnint( 12 ) );
 
       //DrawText( _s->hGuiDC, hb_parcx( 6 ), strlen( hb_parcx( 6 ) ), &rc, iAlignH | DT_WORDBREAK | DT_TOP );
       DrawText( _s->hGuiDC, text, lstrlen( text ), &rc, iAlignH | DT_WORDBREAK | DT_TOP );
@@ -3048,7 +3048,7 @@ HB_FUNC( WVT_RESTSCREEN )
    iWidth  = iRight - iLeft + 1 ;
    iHeight = iBottom - iTop + 1 ;
 
-   hBmp    = (HBITMAP) SelectObject( _s->hCompDC, ( HBITMAP ) hb_parnl( 5,3 ) );
+   hBmp    = (HBITMAP) SelectObject( _s->hCompDC, ( HBITMAP ) hb_parnint( 5,3 ) );
    if ( hBmp )
    {
       if ( ( iWidth == hb_parni( 5,1 ) )  && ( iHeight == hb_parni( 5,2 ) ) )
@@ -3089,7 +3089,7 @@ HB_FUNC( WVT_RESTSCREEN )
 
    if ( ! bDoNotDestroyBMP )
    {
-      DeleteObject( ( HBITMAP ) hb_parnl( 5,3 ) );
+      DeleteObject( ( HBITMAP ) hb_parnint( 5,3 ) );
    }
 
    hb_retl( bResult );
