@@ -8,6 +8,15 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-09-13 09:37 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * contrib/hbvpdf/hbvpdf.prg
+    ! Generic support functions made STATIC to avoid collision 
+      with similarly named functions in other libs (like hbct).
+
+  * contrib/hbvpdf/hbvpdf.prg
+  * contrib/hbvpdf/hbvpdft.prg
+    * Using hb_run() instead of RUN and __run().
+
 2008-09-12 19:30 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   * contrib/gtalleg/Makefile
     * Excluded Cygwin.
