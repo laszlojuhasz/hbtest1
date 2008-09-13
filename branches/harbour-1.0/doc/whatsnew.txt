@@ -26,9 +26,6 @@ General
 - Eliminated remaining non-safe string manipulation calls:
   strncpy(), strcpy() -> hb_strncpy()
   strncat(), strcat() -> hb_strncat()
-- Added major+minor version number to non-GNU make generated 
-  harbour.dlls. (harbour-*.dll becomes harbour-10-*.dll)
-  Please adjust your system.
 - Some contrib name collisions fixed in non-GNU builds.
 - gtalleg GT moved to the contrib area to enable it for 
   non-GNU builds and non-*nix builds in general.
@@ -211,6 +208,10 @@ Contrib
   INTERNETWRITEFILE() functions were fixed. what32.ch renamed 
   to hbwhat.ch.
 - hbhpdf fixed HPDF_ADDPAGELABEL().
+- hbw32 got a new COM port handling class and API.
+- gtwvg got some enhancements and 64-bit compatibility fixes.
+  A critical 1.0.0 bug was also fixed, which could cause 
+  dialogs to not appear.
 
 Known build issues
 =============================

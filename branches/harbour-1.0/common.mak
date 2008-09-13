@@ -252,7 +252,7 @@ HBDOC_EXE    = $(BIN_DIR)\hbdoc$(EXEEXT)
 HBMAKE_EXE   = $(BIN_DIR)\hbmake$(EXEEXT)
 
 HB_DLLVER    = 10
-HARBOUR_DLL  = $(BIN_DIR)\$(LIBPREF)harbour-$(HB_DLLVER)-$(HB_CC_NAME)$(DLLEXT)
+HARBOUR_DLL  = $(BIN_DIR)\$(LIBPREF)harbour-$(HB_CC_NAME)$(DLLEXT)
 HBTESTDLL_EXE= $(BIN_DIR)\hbtest-dll$(EXEEXT)
 
 #**********************************************************

@@ -9,6 +9,14 @@
 */
 
 2008-09-13 12:28 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * doc/whatsnew.txt
+    * Updated.
+
+  * common.mak
+    * Restored 1.0.0 compatible .dll name format.
+    ; NOTE: NOT to merge this with trunk.
+
+2008-09-13 12:28 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
    * contrib/hbw32/Makefile
    * contrib/hbw32/common.mak
    * contrib/hbw32/hbw32.ch
