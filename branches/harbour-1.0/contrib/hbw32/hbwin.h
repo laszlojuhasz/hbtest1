@@ -3,11 +3,11 @@
  */
 
 /*
- * Harbour Project source code:
- * hbw32 header
+ * xHarbour Project source code:
+ * Windows communications library
  *
- * Copyright 2008 Viktor Szakats <harbour.01 syenar.hu>
- * www - http://www.harbour-project.org
+ * Copyright 2005 Alex Strickland <sscc@mweb.co.za>
+ * www - http://www.xharbour.org
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,58 +50,26 @@
  *
  */
 
-#ifndef HBW32_CH_
-#define HBW32_CH_
+#define FCNCREATEFILE				1
+#define FCNGETCOMMSTATE				2
+#define FCNSETCOMMSTATE				3
+#define FCNSETUPCOMM				4
+#define FCNGETCOMMTIMEOUTS  		5
+#define FCNSETCOMMTIMEOUTS  		6
+#define FCNCLOSEHANDLE      		7
+#define FCNWRITEFILE				8
+#define FCNREADFILE					9
+#define FCNGETCOMMMODEMSTATUS		10      /* WinPort:Status() */
+#define FCNPURGECOMM				11
+#define FCNCLEARCOMMERROR			12		/* WinPort:QueueStatus() */
+#define ESCAPECOMMFUNCTION          13
+#define FCNGETCOMMPROPERTIES        14
+#define FCNMAX              		14
 
-#define HKEY_CLASSES_ROOT                  0x80000000
-#define HKEY_CURRENT_USER                  0x80000001
-#define HKEY_LOCAL_MACHINE                 0x80000002
-#define HKEY_USERS                         0x80000003
-#define HKEY_PERFORMANCE_DATA              0x80000004
-#define HKEY_CURRENT_CONFIG                0x80000005
-#define HKEY_DYN_DATA                      0x80000006
-
-/* The following are from winbase.h */
-
-#define CBR_110                110
-#define CBR_300                300
-#define CBR_600                600
-#define CBR_1200               1200
-#define CBR_2400               2400
-#define CBR_4800               4800
-#define CBR_9600               9600
-#define CBR_14400              14400
-#define CBR_19200              19200
-#define CBR_38400              38400
-#define CBR_56000              56000
-#define CBR_57600              57600
-#define CBR_115200             115200
-#define CBR_128000             128000
-#define CBR_256000             256000
-
-#define NOPARITY               0
-#define ODDPARITY              1
-#define EVENPARITY             2
-#define MARKPARITY             3
-#define SPACEPARITY            4
-
-#define ONESTOPBIT             0
-#define ONE5STOPBITS           1
-#define TWOSTOPBITS            2
-
-/* DTR Control Flow Values. */
-#define DTR_CONTROL_DISABLE    0x00
-#define DTR_CONTROL_ENABLE     0x01
-#define DTR_CONTROL_HANDSHAKE  0x02
-
-/* RTS Control Flow Values */
-#define RTS_CONTROL_DISABLE    0x00
-#define RTS_CONTROL_ENABLE     0x01
-#define RTS_CONTROL_HANDSHAKE  0x02
-#define RTS_CONTROL_TOGGLE     0x03
-
-#ifndef INVALID_HANDLE_VALUE
-#define INVALID_HANDLE_VALUE    -1
-#endif
-
-#endif /* HBW32_CH_ */
+#define	WPDBGBASIC					0x01
+#define WPDBGFLOW					0x02
+#define WPDBGXTRAFLOW				0x04
+#define WPDBGOTHER					0x08
+#define WPDBGTIMEOUTS 				0x10
+#define WPDBGQUEUE    				0x20
+#define WPDBGALL      				0x3F

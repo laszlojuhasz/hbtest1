@@ -3,11 +3,11 @@
  */
 
 /*
- * Harbour Project source code:
- * hbw32 header
+ * xHarbour Project source code:
+ * Windows communications library
  *
- * Copyright 2008 Viktor Szakats <harbour.01 syenar.hu>
- * www - http://www.harbour-project.org
+ * Copyright 2005 Alex Strickland <sscc@mweb.co.za>
+ * www - http://www.xharbour.org
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@
  * Harbour Project or Free Software Foundation releases into a copy of
  * Harbour, as the General Public License permits, the exception does
  * not apply to the code that you add in this way.  To avoid misleading
- * anyone as to the status of such modified files, you must delete
+ * anyone as to the status o such modified files, you must delete
  * this exception notice from them.
  *
  * If you write modifications of your own for Harbour, it is your choice
@@ -50,58 +50,34 @@
  *
  */
 
-#ifndef HBW32_CH_
-#define HBW32_CH_
+#include "hbw32.ch"
 
-#define HKEY_CLASSES_ROOT                  0x80000000
-#define HKEY_CURRENT_USER                  0x80000001
-#define HKEY_LOCAL_MACHINE                 0x80000002
-#define HKEY_USERS                         0x80000003
-#define HKEY_PERFORMANCE_DATA              0x80000004
-#define HKEY_CURRENT_CONFIG                0x80000005
-#define HKEY_DYN_DATA                      0x80000006
+procedure main(cPortName)
 
-/* The following are from winbase.h */
+    local oWinPort := WinPort():Init(cPortName, CBR_9600, NOPARITY, 8, ONESTOPBIT)
+    local cString := "ATE0" + chr(13) + "ATI3" + chr(13)
+    local nResult
 
-#define CBR_110                110
-#define CBR_300                300
-#define CBR_600                600
-#define CBR_1200               1200
-#define CBR_2400               2400
-#define CBR_4800               4800
-#define CBR_9600               9600
-#define CBR_14400              14400
-#define CBR_19200              19200
-#define CBR_38400              38400
-#define CBR_56000              56000
-#define CBR_57600              57600
-#define CBR_115200             115200
-#define CBR_128000             128000
-#define CBR_256000             256000
+    if !oWinPort:Open
+        ? "Open() failed :", oWinPort:Error()
+    else
+        ? "Open() succeeded"
+        ?
+        if oWinPort:SetDTR(.t.)
+            ? "SetDTR(.t.) succeeded"
+        else
+            ? "SetDTR(.t.) failed :", oWinPort:Error()
+        endif
+        if (nResult := oWinPort:Write(cString)) == len(cString)
+            ? "Write() succeeded"
+        else
+            ? "Write() failed, returned ", nResult, " expected ", len(cString)
+        endif
+        ? "Scan something... we'll not read it but purge it, press enter"
+        inkey(0)
+        ? "Read() ", oWinPort:Read(@cString, 32), len(cString), cString
+        ? oWinPort:Error()
+        ? "Close", oWinPort:Close()
+    endif
 
-#define NOPARITY               0
-#define ODDPARITY              1
-#define EVENPARITY             2
-#define MARKPARITY             3
-#define SPACEPARITY            4
-
-#define ONESTOPBIT             0
-#define ONE5STOPBITS           1
-#define TWOSTOPBITS            2
-
-/* DTR Control Flow Values. */
-#define DTR_CONTROL_DISABLE    0x00
-#define DTR_CONTROL_ENABLE     0x01
-#define DTR_CONTROL_HANDSHAKE  0x02
-
-/* RTS Control Flow Values */
-#define RTS_CONTROL_DISABLE    0x00
-#define RTS_CONTROL_ENABLE     0x01
-#define RTS_CONTROL_HANDSHAKE  0x02
-#define RTS_CONTROL_TOGGLE     0x03
-
-#ifndef INVALID_HANDLE_VALUE
-#define INVALID_HANDLE_VALUE    -1
-#endif
-
-#endif /* HBW32_CH_ */
+return

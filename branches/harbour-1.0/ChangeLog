@@ -8,6 +8,28 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-09-13 12:28 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+   * contrib/hbw32/Makefile
+   * contrib/hbw32/common.mak
+   * contrib/hbw32/hbw32.ch
+   + contrib/hbw32/hbwin.h
+   + contrib/hbw32/win_prt.c
+   + contrib/hbw32/win_tprt.prg
+   + contrib/hbw32/tests/testprt1.prg
+   + contrib/hbw32/tests/testprt2.prg
+     + Added Windows COM port handling functions.
+       Contributed by Alex Strickland.
+     ; I did some changes to clean warnings, few 64-bit issues, 
+       changed to use safe string functions, integrated 
+       the header into hbw32.ch, added a new general C level 
+       header, split BEGINDUMP into separate .c function, 
+       changed to ANSI C comments, marked statics with s_, 
+       fixed a few trashed string buffers and leaks in some 
+       error cases. Separated tests into distinct .prgs.
+       Fixed for UNICODE mode. Minor optimizations, formatting.
+     ; TODO: Test WinCE build.
+     ; Please test, I don't have any COM ports on my system.
+
 2008-09-13 10:28 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   * contrib/gtwvg/wvgcore.c
   * contrib/gtwvg/wvgutils.c
