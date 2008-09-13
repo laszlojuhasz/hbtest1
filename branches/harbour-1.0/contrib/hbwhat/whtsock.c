@@ -14,16 +14,16 @@
 
 #include "hbwhat.h"
 
+#include <winsock2.h>
 #include <windows.h>
 #include <shlobj.h>
 //#include <commctrl.h>
+#include <time.h>
 
 #include "hbapi.h"
 #include "hbvm.h"
 #include "hbstack.h"
 #include "hbapiitm.h"
-#include <time.h>
-#include <winsock2.h>
 
 //-----------------------------------------------------------------------------
 //  SOCKET  accept( IN SOCKET s, OUT struct sockaddr * addr, IN OUT int * addrlen );

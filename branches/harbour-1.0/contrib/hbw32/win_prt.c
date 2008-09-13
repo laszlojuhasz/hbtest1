@@ -63,19 +63,17 @@ static struct
 {
     HANDLE Port;
     LPCTSTR Name;
-    DCB OldDCB;
-    COMMTIMEOUTS OldTimeouts;
 } s_PortData[] =
 {
-    { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM1" ) },
-    { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM2" ) },
-    { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM3" ) },
-    { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM4" ) },
-    { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM5" ) },
-    { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM6" ) },
-    { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM7" ) },
-    { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM8" ) },
-    { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM9" ) },
+    { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM1"  ) },
+    { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM2"  ) },
+    { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM3"  ) },
+    { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM4"  ) },
+    { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM5"  ) },
+    { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM6"  ) },
+    { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM7"  ) },
+    { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM8"  ) },
+    { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM9"  ) },
     { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM10" ) },
     { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM11" ) },
     { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM12" ) },
@@ -84,6 +82,12 @@ static struct
     { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM15" ) },
     { INVALID_HANDLE_VALUE, TEXT( "\\\\.\\COM16" ) }
 };
+
+static struct
+{
+    DCB OldDCB;
+    COMMTIMEOUTS OldTimeouts;
+} s_PortData2[ 16 ];
 
 
 static int s_WinFcn = 0;
@@ -131,8 +135,8 @@ HB_FUNC( WINPORTOPEN )
    s_WinError = 0;
 
    /* We'll put everything back */
-   s_PortData[ Port ].OldDCB.DCBlength = sizeof( DCB );
-   if( ! GetCommState( hCommPort, &( s_PortData[ Port ].OldDCB ) ) )
+   s_PortData2[ Port ].OldDCB.DCBlength = sizeof( DCB );
+   if( ! GetCommState( hCommPort, &( s_PortData2[ Port ].OldDCB ) ) )
    {
       s_WinError = GetLastError();
       CloseHandle( hCommPort );
@@ -203,7 +207,7 @@ HB_FUNC( WINPORTOPEN )
    /* We'll put everything back */
    s_WinFcn = FCNGETCOMMTIMEOUTS;
    s_WinError = 0;
-   if( ! GetCommTimeouts( hCommPort, &( s_PortData[ Port ].OldTimeouts ) ) )
+   if( ! GetCommTimeouts( hCommPort, &( s_PortData2[ Port ].OldTimeouts ) ) )
    {
       s_WinError = GetLastError();
       CloseHandle( hCommPort );
@@ -221,7 +225,7 @@ HB_FUNC( WINPORTOPEN )
       s_ReadTotalTimeoutMultiplier members, specifies that the read operation is to return
       immediately with the characters that have already been received, even if no characters
       have been received. */
-   NewTimeouts.ReadIntervalTimeout = ( s_ReadIntervalTimeout == -1 ? MAXDWORD : s_ReadIntervalTimeout );
+   NewTimeouts.ReadIntervalTimeout = ( s_ReadIntervalTimeout == -1 ? MAXDWORD : ( DWORD ) s_ReadIntervalTimeout );
 
    /* Multiplier, in milliseconds, used to calculate the total time-out period for read operations.
       For each read operation, this value is multiplied by the requested number of bytes to be read. */
@@ -281,7 +285,7 @@ HB_FUNC( WINPORTCLOSE )
 
    s_WinFcn = FCNSETCOMMSTATE;
    s_WinError = 0;
-   if( ! SetCommState( hCommPort, &( s_PortData[ Port ].OldDCB ) ) )
+   if( ! SetCommState( hCommPort, &( s_PortData2[ Port ].OldDCB ) ) )
    {
       s_WinError = GetLastError();
       CloseHandle( hCommPort );
@@ -291,7 +295,7 @@ HB_FUNC( WINPORTCLOSE )
 
    s_WinFcn = FCNSETCOMMTIMEOUTS;
    s_WinError = 0;
-   if( ! SetCommTimeouts( hCommPort, &( s_PortData[ Port ].OldTimeouts ) ) )
+   if( ! SetCommTimeouts( hCommPort, &( s_PortData2[ Port ].OldTimeouts ) ) )
    {
       s_WinError = GetLastError();
       CloseHandle( hCommPort );
@@ -689,7 +693,7 @@ HB_FUNC( WINPORTFCN )
 HB_FUNC( FORMATMESSAGE )
 {
    char Buffer[ 256 ] = "";
-   DWORD Messageid = ISNUM( 1 ) ? hb_parnl( 1 ) : GetLastError();
+   DWORD Messageid = ISNUM( 1 ) ? ( DWORD ) hb_parnl( 1 ) : GetLastError();
 
    if( FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM, NULL, Messageid, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ), /* Default language */
            ( LPTSTR ) Buffer, sizeof( Buffer ), NULL) == 0 )
@@ -803,8 +807,8 @@ HB_FUNC( WINPORTDEBUGDCB )
       s_WinError = 0;
       if( GetCommProperties( hCommPort, &CurCOMMPROP ) )
       {
-         snprintf( Buffer, sizeof( Buffer ), "dwCurrentTxQueue : %i\n", CurCOMMPROP.dwCurrentTxQueue ) ; hb_strncat( DebugString, Buffer, sizeof( DebugString ) - 1 );
-         snprintf( Buffer, sizeof( Buffer ), "dwCurrentRxQueue : %i\n", CurCOMMPROP.dwCurrentRxQueue ) ; hb_strncat( DebugString, Buffer, sizeof( DebugString ) - 1 );
+         snprintf( Buffer, sizeof( Buffer ), "dwCurrentTxQueue : %lu\n", CurCOMMPROP.dwCurrentTxQueue ) ; hb_strncat( DebugString, Buffer, sizeof( DebugString ) - 1 );
+         snprintf( Buffer, sizeof( Buffer ), "dwCurrentRxQueue : %lu\n", CurCOMMPROP.dwCurrentRxQueue ) ; hb_strncat( DebugString, Buffer, sizeof( DebugString ) - 1 );
       }
       else
       {

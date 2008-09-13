@@ -8,28 +8,91 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
-2008-09-13 13:34 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
-   * doc/dirstruc.txt
-     * Updated.
+2008-09-13 19:30 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * contrib/gtalleg/ssf.h
+    ! Turned off ASM for MSVC AMD64 mode.
 
-   - contrib/hbgf/hbgfw32
-   + contrib/hbgf/hbgfwin
-   * contrib/hbgf/tests/bld_b32.bat
-   * contrib/hbgf/tests/bld_vc.bat
-   * contrib/hbgf/Makefile
-   * contrib/hbgf/hbgfwin/common.mak
-   * contrib/hbgf/hbgfwin/button.prg
-   * contrib/hbgf/hbgfwin/winctrl.prg
-   * contrib/hbgf/hbgfwin/form.prg
-   * contrib/hbgf/hbgfwin/menuitem.prg
-   * contrib/hbgf/hbgfwin/menu.prg
-   * contrib/hbgf/hbgfwin/edit.prg
-   * contrib/hbgf/hbgfwin/Makefile
-   - contrib/hbgf/hbgfwin/win32.c
-   + contrib/hbgf/hbgfwin/winapi.c
-   - contrib/hbgf/hbgfwin/hbgfw32.ch
-   + contrib/hbgf/hbgfwin/hbgfwin.ch
-     * Removed some '32's.
+  * contrib/gtalleg/Makefile
+    ! Disabled for OpenWatcom. (maybe compilation could be 
+      fixed somehow, if someone is interested pls look into it.)
+
+  * doc/whatsnew.txt
+  * contrib/hbfimage/fi_winfu.c
+  * contrib/hbfimage/fi_wrp.c
+    ! Fixed for OpenWatcom.
+
+  * contrib/gtwvg/wvgutils.c
+  * contrib/gtwvg/wvgcore.c
+    ! Silenced some MinGW/PelleC cast warnings.
+
+  * contrib/hbw32/win_prt.c
+    ! Fixed GCC (MinGW/Cygwin) warnings. The solution I choose is 
+      pretty ugly, if someone knows the right one, please help.
+      Warning was:
+      ../../win_prt.c:70: warning: missing initializer
+      ../../win_prt.c:70: warning: (near initialization for `s_PortData[0].OldDCB')
+    ! Fixed few remaining warnings / minor bugs.
+
+  * contrib/hbwhat/whtlv.c
+  * contrib/hbwhat/whtcomm.c
+  * contrib/hbwhat/whttab.c
+  * contrib/hbwhat/whttree.c
+    ! Silenced MinGW 4.12 warnings.
+
+  * contrib/hbwhat/whtdate.c
+    ! Removed #include "tchar.h", which seems unnecessary and 
+      fixed Cygwin compilation.
+
+  * contrib/hbwhat/whtsock.c
+    ! Changed #include order of Windows headers to satisfy PellesC 5.
+
+  ; TOFIX1: hbct / SETFDATI() has a possible bug here (shown in PelleC 64 bit):
+    ../../files.c(264): warning #2006: [ISO] Conversion from 'void *' to 'int' is compiler dependent.
+    ../../files.c(264): warning #2052: Conversion from 'void *' to 'int' is undefined.
+    Problem is with HFILE / HANDLE conversion.
+
+  ; TOFIX2: Here are some remaining 64-bit problems:
+    ../../hb_btree.c(643): warning #2006: [ISO] Conversion from 'void *' to 'unsigned long int' is compiler dependent.
+    ../../hb_btree.c(643): warning #2052: Conversion from 'void *' to 'unsigned long int' is undefined.
+    ../../hb_btree.c(739): warning #2006: [ISO] Conversion from 'ioBuffer_T *' to 'unsigned long int' is compiler dependent.
+    ../../hb_btree.c(739): warning #2052: Conversion from 'ioBuffer_T *' to 'unsigned long int' is undefined.
+    ../../win_dll.c(511): warning #2006: [ISO] Conversion from 'void *' to 'unsigned long int' is compiler dependent.
+    ../../win_dll.c(511): warning #2052: Conversion from 'void *' to 'unsigned long int' is undefined.
+    ../../win_ole.c(761): warning #2006: [ISO] Conversion from 'LPDISPATCH' to 'long int' is compiler dependent.
+    ../../win_ole.c(761): warning #2052: Conversion from 'LPDISPATCH' to 'long int' is undefined.
+    ../../win_ole.c(1091): warning #2006: [ISO] Conversion from 'LPDISPATCH' to 'long int' is compiler dependent.
+    ../../win_ole.c(1091): warning #2052: Conversion from 'LPDISPATCH' to 'long int' is undefined.
+    ../../win_ole.c(1425): warning #2006: [ISO] Conversion from 'void *' to 'long int' is compiler dependent.
+    ../../win_ole.c(1425): warning #2052: Conversion from 'void *' to 'long int' is undefined.
+    ../../win_ole.c(1478): warning #2006: [ISO] Conversion from 'void *' to 'long int' is compiler dependent.
+    ../../win_ole.c(1478): warning #2052: Conversion from 'void *' to 'long int' is undefined.
+    ../../win_regc.c(94): warning #2006: [ISO] Conversion from 'HKEY' to 'unsigned long int' is compiler dependent.
+    ../../win_regc.c(94): warning #2052: Conversion from 'HKEY' to 'unsigned long int' is undefined.
+    ../../win_regc.c(116): warning #2006: [ISO] Conversion from 'HKEY' to 'unsigned long int' is compiler dependent.
+    ../../win_regc.c(116): warning #2052: Conversion from 'HKEY' to 'unsigned long int' is undefined.
+
+2008-09-13 13:34 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * doc/dirstruc.txt
+    * Updated.
+
+  - contrib/hbgf/hbgfw32
+  + contrib/hbgf/hbgfwin
+  * contrib/hbgf/tests/bld_b32.bat
+  * contrib/hbgf/tests/bld_vc.bat
+  * contrib/hbgf/Makefile
+  * contrib/hbgf/hbgfwin/common.mak
+  * contrib/hbgf/hbgfwin/button.prg
+  * contrib/hbgf/hbgfwin/winctrl.prg
+  * contrib/hbgf/hbgfwin/form.prg
+  * contrib/hbgf/hbgfwin/menuitem.prg
+  * contrib/hbgf/hbgfwin/menu.prg
+  * contrib/hbgf/hbgfwin/edit.prg
+  * contrib/hbgf/hbgfwin/Makefile
+  - contrib/hbgf/hbgfwin/win32.c
+  + contrib/hbgf/hbgfwin/winapi.c
+  - contrib/hbgf/hbgfwin/hbgfw32.ch
+  + contrib/hbgf/hbgfwin/hbgfwin.ch
+    * Removed some '32's.
 
 2008-09-13 12:28 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   * doc/whatsnew.txt
@@ -40,26 +103,26 @@
     ; NOTE: NOT to merge this with trunk.
 
 2008-09-13 12:28 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
-   * contrib/hbw32/Makefile
-   * contrib/hbw32/common.mak
-   * contrib/hbw32/hbw32.ch
-   + contrib/hbw32/hbwin.h
-   + contrib/hbw32/win_prt.c
-   + contrib/hbw32/win_tprt.prg
-   + contrib/hbw32/tests/testprt1.prg
-   + contrib/hbw32/tests/testprt2.prg
-     + Added Windows COM port handling functions.
-       Contributed by Alex Strickland.
-     ; I did some changes to clean warnings, few 64-bit issues, 
-       changed to use safe string functions, integrated 
-       the header into hbw32.ch, added a new general C level 
-       header, split BEGINDUMP into separate .c function, 
-       changed to ANSI C comments, marked statics with s_, 
-       fixed a few trashed string buffers and leaks in some 
-       error cases. Separated tests into distinct .prgs.
-       Fixed for UNICODE mode. Minor optimizations, formatting.
-     ; TODO: Test WinCE build.
-     ; Please test, I don't have any COM ports on my system.
+  * contrib/hbw32/Makefile
+  * contrib/hbw32/common.mak
+  * contrib/hbw32/hbw32.ch
+  + contrib/hbw32/hbwin.h
+  + contrib/hbw32/win_prt.c
+  + contrib/hbw32/win_tprt.prg
+  + contrib/hbw32/tests/testprt1.prg
+  + contrib/hbw32/tests/testprt2.prg
+    + Added Windows COM port handling functions.
+      Contributed by Alex Strickland.
+    ; I did some changes to clean warnings, few 64-bit issues, 
+      changed to use safe string functions, integrated 
+      the header into hbw32.ch, added a new general C level 
+      header, split BEGINDUMP into separate .c function, 
+      changed to ANSI C comments, marked statics with s_, 
+      fixed a few trashed string buffers and leaks in some 
+      error cases. Separated tests into distinct .prgs.
+      Fixed for UNICODE mode. Minor optimizations, formatting.
+    ; TODO: Test WinCE build.
+    ; Please test, I don't have any COM ports on my system.
 
 2008-09-13 10:28 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   * contrib/gtwvg/wvgcore.c

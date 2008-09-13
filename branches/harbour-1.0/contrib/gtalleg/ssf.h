@@ -66,6 +66,9 @@
    #define ALLEGRO_NO_ASM
    #define ALLEGRO_BCC32
 #elif defined(_MSC_VER)
+   #if defined(_WIN64)
+      #define ALLEGRO_NO_ASM
+   #endif
    #define ALLEGRO_MSVC
 #elif defined(__MINGW32__)
    #define ALLEGRO_MINGW32

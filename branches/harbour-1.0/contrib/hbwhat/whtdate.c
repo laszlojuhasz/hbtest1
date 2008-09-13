@@ -20,7 +20,6 @@
 #include "hbstack.h"
 #include "hbapiitm.h"
 #include "winreg.h"
-#include "tchar.h"
 
 //-----------------------------------------------------------------------------
 
