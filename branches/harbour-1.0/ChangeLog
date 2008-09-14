@@ -8,6 +8,13 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-09-14 17:59 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  + contrib/hbnf/tests/nftest.prg
+    + Adapted hbnf test program from xhb.
+
+  * contrib/hbnf/common.mak
+    ! File list synced with the GNU-make one.
+
 2008-09-14 17:33 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
   * harbour/include/hbpp.h
   * harbour/source/pp/ppcore.c
