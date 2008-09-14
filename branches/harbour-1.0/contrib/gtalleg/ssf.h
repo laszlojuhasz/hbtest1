@@ -70,8 +70,11 @@
       #define ALLEGRO_NO_ASM
    #endif
    #define ALLEGRO_MSVC
-#elif defined(__MINGW32__)
+#elif defined(__MINGW32__) || defined(__CYGWIN__)
    #define ALLEGRO_MINGW32
+   #if defined(__CYGWIN__)
+      #define SCAN_DEPEND
+   #endif
 #elif defined(__DMC__)
    #define ALLEGRO_DMC
 #elif defined(__DJGPP__)

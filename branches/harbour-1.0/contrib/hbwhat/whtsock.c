@@ -14,11 +14,17 @@
 
 #include "hbwhat.h"
 
-#include <winsock2.h>
+#if !(defined(__POCC__) && __POCC__ < 500)
+   #include <winsock2.h>
+#endif
 #include <windows.h>
 #include <shlobj.h>
 //#include <commctrl.h>
 #include <time.h>
+
+#if defined(__POCC__) && __POCC__ < 500
+   #include <winsock2.h>
+#endif
 
 #include "hbapi.h"
 #include "hbvm.h"

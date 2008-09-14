@@ -8,6 +8,31 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-09-14 11:14 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * contrib/gtalleg/ssf.h
+    ! Fixed to compile with Cygwin.
+
+  * contrib/hbwhat/whtsock.c
+    ! Fixed for PellesC 4.5 where the inclusion order of 
+      Windows headers needs to be the opposite of what 5.0 needs.
+
+  * contrib/hbwhat/whtilst.c
+    ! Fixed to compile with Cygwin.
+
+  * contrib/hbwhat/whtinet.c
+    ! Added missing Windows macro for Cygwin.
+    ! Fixed three warnings with Cygwin.
+
+  * contrib/hbwhat/whtseria.c
+  * contrib/hbwhat/whtreg.c
+  * contrib/hbwhat/whtini.c
+    ! Removed #include "tchar.h", because it's unnecessary, 
+      and breaks Cygwin.
+
+  * contrib/hbwhat/whtsys.c
+    ! Removed #include "htmlhelp.h", because it's unnecessary, 
+      and breaks Cygwin.
+
 2008-09-13 19:30 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   * contrib/gtalleg/ssf.h
     ! Turned off ASM for MSVC AMD64 mode.

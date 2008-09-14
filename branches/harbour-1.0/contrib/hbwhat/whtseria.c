@@ -24,7 +24,6 @@
 #include "hbvm.h"
 #include "hbstack.h"
 #include "hbapiitm.h"
-#include "tchar.h"
 
 //-------------------------------------------------------------------//
 /*

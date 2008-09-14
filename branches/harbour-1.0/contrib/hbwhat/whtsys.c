@@ -41,9 +41,6 @@
 
 #include <shlobj.h>
 #include <windows.h>
-#if !defined(__MINGW32__) && !defined(__WATCOMC__)
-#include <htmlhelp.h>
-#endif
 
 #include "hbapi.h"
 #include "hbvm.h"
