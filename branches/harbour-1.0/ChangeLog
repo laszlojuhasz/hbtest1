@@ -8,6 +8,21 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-09-14 15:50 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * include/hbsetup.h
+  * doc/whatsnew.txt
+    % FM statistics module turned off by default.
+
+2008-09-13 18:49 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbpp.h
+  * harbour/source/pp/ppcore.c
+  * harbour/source/pp/hbpp.c
+    * changed some declarations from 'char *' to 'const char *' and
+      fixed casting for some more pedantic compilers
+
+  * harbour/source/pp/ppcore.c
+    ! fixed one typo which could cause memory leak and even GPF
+
 2008-09-14 11:14 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   * contrib/gtalleg/ssf.h
     ! Fixed to compile with Cygwin.

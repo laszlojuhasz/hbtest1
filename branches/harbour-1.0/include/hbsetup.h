@@ -86,12 +86,8 @@
  *
  * Note that if you turn this on, Harbour will be slighlty slower, larger
  * and will consume more memory.
- *
- * By default this is turned on. Define HB_FM_STATISTICS_OFF to turn it off.
  */
-#ifndef HB_FM_STATISTICS_OFF
-   #define HB_FM_STATISTICS
-#endif
+/* #define HB_FM_STATISTICS */
 
 /* ***********************************************************************
  * Enable profiler support in HVM
