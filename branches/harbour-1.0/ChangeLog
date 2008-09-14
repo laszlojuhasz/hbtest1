@@ -8,6 +8,23 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-09-14 17:33 UTC+0200 Przemyslaw Czerpak (druzus/at/priv.onet.pl)
+  * harbour/include/hbpp.h
+  * harbour/source/pp/ppcore.c
+  * harbour/source/pp/hbpp.c
+    * changed some declarations from 'char *' to 'const char *' and
+      fixed casting for some more pedantic compilers
+      [REVERTED]
+
+  * harbour/source/pp/ppcore.c
+    ! fixed one typo which could cause memory leak and even GPF [REVERTED]
+  
+  ; NOTE: Both of these reverted as I cannot find the fix itself 
+          in the code, and copying in the whole files created 
+          an update avalanche to compile cleanly.
+          Przemek, if you could implement the GPF/leak fix in 1.0, it 
+          would be great.
+
 2008-09-14 16:30 UTC+0200 Lorenzo Fiorini (lorenzo.fiorini/at/gmail.com)
   * contrib/hbvpdf/hbvpdf.prg
   * contrib/hbvpdf/hbvpdf.ch
