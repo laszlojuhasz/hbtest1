@@ -138,7 +138,7 @@ static const char * hb_pp_szErrors[] =
    "Error in #pragma",                                                  /* C20?? */
    "Error in #if expression",                                           /* C20?? */
 
-   "Cannot open input file: %s'",                                       /* C30?? */
+   "Cannot open input file: '%s'",                                      /* C30?? */
 
    "File %s is too long",                                               /* C30?? */
 
