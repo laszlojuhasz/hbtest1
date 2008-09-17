@@ -49,6 +49,13 @@ case "$HB_ARCHITECTURE" in
         _HB_DIRS_ADD=;;
 esac
 
+# Revert Cygwin architecture to w32.
+# After all it's under Windows OS.
+if [ "$HB_ARCHITECTURE" == "cyg" ]
+then
+   export HB_ARCHITECTURE=w32
+fi
+
 if [ "${HB_INC_ALLEGRO}"   != "" ]; then _HB_DIRS="${_HB_DIRS} gtalleg"; fi;
 if [ "${HB_INC_APOLLO}"    != "" ]; then _HB_DIRS="${_HB_DIRS} hbapollo"; fi;
 if [ "${HB_INC_CURL}"      != "" ]; then _HB_DIRS="${_HB_DIRS} hbcurl  "; fi;

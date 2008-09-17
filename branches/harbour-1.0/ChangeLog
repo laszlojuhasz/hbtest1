@@ -8,6 +8,19 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-09-17 18:04 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * make_gcc.sh
+  * contrib/make_gcc_all.sh
+    ! cyg to w32 architecture conversion got uncommented.
+
+2008-09-17 17:32 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * contrib/mtpl_gcc.sh
+    - Detecting 'cyg' platform looks unnecessary here and may 
+      only create problems, so it got removed.
+
+  * contrib/make_gcc_all.sh
+    ! Fixed 'cyg' platform in contrib make files.
+
 2008-09-17 13:24 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   + tests/memtst.prg
   * tests/speedtst.prg
