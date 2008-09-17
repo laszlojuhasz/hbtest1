@@ -8,6 +8,15 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-09-17 01:15 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * source/pp/ppcore.c
+    ! Minor typo in one PP error message.
+
+  * utils/hbmake/hbmake.prg
+    * Updated by large patch from Bill Robertson.
+      Adds several enhancements, fixes and optimizations 
+      to the previous version.
+
 2008-09-16 15:00 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   * debian/changelog
     + Added 1.0.1.
