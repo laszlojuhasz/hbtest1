@@ -8,6 +8,13 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-10-18 16:30 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * harbour-ce-spec
+  * harbour-w32-spec
+  * harbour.spec
+  * include/hbver.h
+    * Changed version number to 1.0.2dev
+
 2008-10-18 16:23 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   * bin/bld.bat
   + config/w32/mingw.cf
