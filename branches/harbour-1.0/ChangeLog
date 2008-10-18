@@ -8,6 +8,20 @@
    2008-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
 */
 
+2008-10-18 16:23 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
+  * bin/bld.bat
+  + config/w32/mingw.cf
+    + Accepting 'mingw' as HB_COMPILER for better 1.1 
+      compatibility.
+
+  + bin/hbmk.bat
+  + bin/hbmk_b32.bat
+  + bin/hbmk_vc.bat
+    + Added 1.1 compatible files.
+
+  * include/hbgtcore.h
+    + Added dummy hb_gt_BaseFree() for better 1.1 compatibility.
+
 2008-09-17 18:04 UTC+0200 Viktor Szakats (harbour.01 syenar hu)
   * make_gcc.sh
   * contrib/make_gcc_all.sh
