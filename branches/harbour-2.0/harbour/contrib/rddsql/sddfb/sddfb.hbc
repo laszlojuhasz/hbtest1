@@ -1,8 +1,0 @@
-#
-# $Id$
-#
-
-libs=sddfb
-libs=fbclient
-
-libs=../rddsql.hbc
