@@ -1,0 +1,10 @@
+#
+# $Id$
+#
+
+{!(linux|win)}skip=yes
+
+incpaths=.
+
+libs=rddads
+libs=ace32

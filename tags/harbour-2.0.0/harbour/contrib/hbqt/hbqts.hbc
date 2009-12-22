@@ -1,0 +1,18 @@
+#
+# $Id$
+#
+
+incpaths=.
+
+{allwin}libpaths=${HB_WITH_QT}\..\lib
+
+libs=hbqts
+libs=hbqtcores hbqtguis hbqtnetworks hbqtwebkits
+
+{win}libs=version shlwapi
+{allwin}libs=QtCore QtGui QtNetwork QtWebKit QtUiTools
+{allwin}libs=psapi
+{allgcc}libs=supc++
+
+gui=yes
+gt=gtnul

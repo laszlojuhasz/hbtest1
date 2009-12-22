@@ -1,0 +1,13 @@
+#
+# $Id$
+#
+
+{dos}skip=yes
+
+incpaths=.
+
+libs=hbssl
+
+{unix}libs=ssl crypto
+{os2}libs=openssl ssl crypto libosslfips
+{win}libs=ssleay32 libeay32

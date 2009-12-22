@@ -1,0 +1,23 @@
+#
+# $Id$
+#
+
+incpaths=.
+
+{allwin}libpaths=${HB_WITH_QT}\..\lib
+
+libs=hbqt
+libs=hbqtcore hbqtgui hbqtnetwork
+
+{win}libs=version shlwapi
+{allwin}libs=QtCore4 QtGui4 QtNetwork4 QtUiTools
+{allwin}libs=psapi
+{linux}libs=QtCore QtGui QtNetwork QtUiTools
+{darwin}libs=/Library/Frameworks/QtCore.framework/QtCore
+{darwin}libs=/Library/Frameworks/QtGui.framework/QtGui
+{darwin}libs=/Library/Frameworks/QtNetwork.framework/QtNetwork
+{darwin}libs=QtUiTools
+{allgcc}libs=supc++
+
+gui=yes
+gt=gtnul

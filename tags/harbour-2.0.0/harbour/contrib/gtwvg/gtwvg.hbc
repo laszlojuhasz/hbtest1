@@ -1,0 +1,12 @@
+#
+# $Id$
+#
+
+{!win}skip=yes
+
+incpaths=.
+
+gt=gtwvg
+libs=../hbwin/hbwin.hbc
+gui=yes
+mt=yes
