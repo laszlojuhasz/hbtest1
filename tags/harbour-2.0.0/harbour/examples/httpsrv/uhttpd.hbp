@@ -1,7 +1,0 @@
-#
-# $Id$
-#
-
--mt -gui uhttpd.prg cgifunc.prg cookie.prg session.prg socket.c
-
--l{win}hbwin
