@@ -1,0 +1,10 @@
+#
+# $Id$
+#
+
+{!win}skip=yes
+
+incpaths=.
+
+libs=hbblat
+libs=blat

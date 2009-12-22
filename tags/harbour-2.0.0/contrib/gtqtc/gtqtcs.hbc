@@ -1,0 +1,10 @@
+#
+# $Id$
+#
+
+{allwin}libpaths=${HB_WITH_QT}\..\lib
+
+libs=QtCore QtGui QtNetwork QtWebKit
+{allgcc}libs=supc++
+gui=yes
+gt=gtqtcs

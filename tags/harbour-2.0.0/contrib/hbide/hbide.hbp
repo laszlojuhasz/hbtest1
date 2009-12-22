@@ -1,0 +1,23 @@
+#
+# $Id$
+#
+
+../hbxbp/hbxbp.hbc
+
+-inc
+
+-w3 -es2
+
+-ohbide
+
+# Trick to make it link using default Harbour builds
+-ldflag={msvc}-nodefaultlib:msvcrt.lib
+-ldflag={msvc}-defaultlib:libcmt.lib
+
+hbide.prg
+idestylesheets.prg
+idetags.prg
+idemisc.prg
+ideactions.prg
+
+ideparseexpr.c

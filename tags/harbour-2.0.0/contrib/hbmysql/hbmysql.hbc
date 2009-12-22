@@ -1,0 +1,8 @@
+#
+# $Id$
+#
+
+incpaths=.
+
+libs=hbmysql
+libs=libmysql
