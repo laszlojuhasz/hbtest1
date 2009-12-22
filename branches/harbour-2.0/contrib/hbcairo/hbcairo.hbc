@@ -1,0 +1,10 @@
+#
+# $Id$
+#
+
+incpaths=.
+
+libs=hbcairo
+
+{!unix}libs=cairo
+{unix}ldflags="`pkg-config --libs cairo`"

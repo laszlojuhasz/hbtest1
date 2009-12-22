@@ -1,0 +1,10 @@
+#
+# $Id$
+#
+
+{dos}skip=yes
+
+incpaths=.
+
+libs=hbfimage
+libs=freeimage

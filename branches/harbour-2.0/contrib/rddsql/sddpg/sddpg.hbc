@@ -1,0 +1,8 @@
+#
+# $Id$
+#
+
+libs=sddpg
+libs=libpq
+
+libs=../rddsql.hbc

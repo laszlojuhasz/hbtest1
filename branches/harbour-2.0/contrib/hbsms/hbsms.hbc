@@ -1,0 +1,9 @@
+#
+# $Id$
+#
+
+incpaths=.
+
+libs=hbsms
+
+libs=../hbtpathy/hbtpathy.hbc

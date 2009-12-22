@@ -1,0 +1,8 @@
+#
+# $Id$
+#
+
+incpaths=.
+
+libs=hbtipssl
+libs=../hbssl/hbssl.hbc

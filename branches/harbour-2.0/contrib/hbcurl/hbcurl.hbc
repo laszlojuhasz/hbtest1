@@ -1,0 +1,9 @@
+#
+# $Id$
+#
+
+incpaths=.
+
+libs=hbcurl
+{!mingw}libs=libcurl
+{mingw}libs=curldll

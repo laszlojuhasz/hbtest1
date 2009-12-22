@@ -1,0 +1,11 @@
+#
+# $Id$
+#
+
+-q0
+-w3
+-es2
+
+-nulrdd
+
+hbextern.prg

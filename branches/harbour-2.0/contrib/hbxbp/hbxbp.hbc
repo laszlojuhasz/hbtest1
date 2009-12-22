@@ -1,0 +1,8 @@
+#
+# $Id$
+#
+
+incpaths=.
+
+libs=hbxbp
+libs=../hbqt/hbqt.hbc
