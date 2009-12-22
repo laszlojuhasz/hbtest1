@@ -1,0 +1,6 @@
+#
+# $Id$
+#
+
+libs=hbziparc
+libs=../hbmzip/hbmzip.hbc
