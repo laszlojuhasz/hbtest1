@@ -1,0 +1,20 @@
+#
+# $Id$
+#
+
+-w3 -es2 -l
+
+-o${hb_name}
+
+-nulrdd
+
+-gtcgi
+
+hbdoc2.prg
+
+gentpl.prg
+gentxt.prg
+genhtml.prg
+genxml.prg
+
+tmplates.prg

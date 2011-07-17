@@ -1,0 +1,12 @@
+#
+# $Id$
+#
+
+hbcurl.hbm
+
+-depimplibs=curl:../libcurl.dll
+-depimplibs=curl:../bin/libcurl.dll
+
+-iflag={bcc}-a
+
+hbcurls.hbp

@@ -1,0 +1,12 @@
+#
+# $Id$
+#
+
+skip={dos}
+
+incpaths=.
+
+libs=${_HB_DYNPREF}${hb_name}${_HB_DYNSUFF}
+
+libs=freeimage
+{darwin}libpaths=/opt/local/lib
