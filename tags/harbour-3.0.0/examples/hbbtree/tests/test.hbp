@@ -1,0 +1,11 @@
+#
+# $Id$
+#
+
+-q0
+
+-nulrdd
+
+-gtstd
+
+test.prg ttest.prg ctest.c

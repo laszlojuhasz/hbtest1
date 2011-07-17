@@ -1,0 +1,14 @@
+#
+# $Id$
+#
+
+@hbmk.hbm
+
+-mt
+
+-gtwvt
+
+-d__WITH_WVT__
+
+wvtqt.prg
+browqt.prg

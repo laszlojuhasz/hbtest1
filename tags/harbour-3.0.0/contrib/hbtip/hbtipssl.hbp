@@ -1,0 +1,9 @@
+#
+# $Id$
+#
+
+hbtip.hbm
+
+../hbssl/hbssl.hbc
+
+-DHB_HAS_OPENSSL

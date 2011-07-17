@@ -1,0 +1,6 @@
+#
+# $Id$
+#
+
+@modules.hbp
+hbgd.hbc -DGD_SUPPORT

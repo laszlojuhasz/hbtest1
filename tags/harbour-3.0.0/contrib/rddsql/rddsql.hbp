@@ -1,0 +1,15 @@
+#
+# $Id$
+#
+
+-hblib
+-inc
+
+-o${hb_name}
+
+-w3 -es2
+
+-instfile=inc:hbrddsql.ch
+
+sqlbase.c
+sqlmix.c

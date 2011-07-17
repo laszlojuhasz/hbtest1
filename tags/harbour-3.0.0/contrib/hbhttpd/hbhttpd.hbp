@@ -1,0 +1,18 @@
+#
+# $Id$
+#
+
+-hblib
+-inc
+
+-o${hb_name}
+
+-w3 -es2
+
+-instfile=inc:hbhttpd.hbx
+
+hbhttpd.hbx
+
+core.prg
+widgets.prg
+log.prg
