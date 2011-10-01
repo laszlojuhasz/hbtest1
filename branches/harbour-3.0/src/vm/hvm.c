@@ -4621,7 +4621,6 @@ static void hb_vmEnumStart( int nVars, int nDescend )
       pValue = hb_stackItemFromTop( -i );
       /* create extended reference for enumerator destructor */
       hb_vmEnumReference( pValue );
-      pBase = &( ( PHB_ENUMREF ) pValue->item.asExtRef.value )->basevalue;
       /* store the reference to control variable */
       pEnumRef = hb_stackItemFromTop( -i + 1 );
       hb_itemCopy( &( ( PHB_ENUMREF ) pValue->item.asExtRef.value )->enumref,
@@ -4631,13 +4630,18 @@ static void hb_vmEnumStart( int nVars, int nDescend )
       /* store the old value of control variable and clear it */
       hb_itemMove( &( ( PHB_ENUMREF ) pValue->item.asExtRef.value )->oldvalue,
                    pEnum );
-      /* set the iterator value */
-      pEnum->type = HB_IT_BYREF | HB_IT_ENUM;
-      pEnum->item.asEnum.basePtr = pBase;
-      pEnum->item.asEnum.valuePtr = NULL;
 
+      pBase = &( ( PHB_ENUMREF ) pValue->item.asExtRef.value )->basevalue;
       if( HB_IS_BYREF( pBase ) )
          pBase = hb_itemUnRef( pBase );
+
+      if( HB_IS_COMPLEX( pEnum ) )
+         hb_itemClear( pEnum );
+
+      /* set the iterator value */
+      pEnum->type = HB_IT_BYREF | HB_IT_ENUM;
+      pEnum->item.asEnum.basePtr = &( ( PHB_ENUMREF ) pValue->item.asExtRef.value )->basevalue;
+      pEnum->item.asEnum.valuePtr = NULL;
 
       if( HB_IS_OBJECT( pBase ) && hb_objHasOperator( pBase, HB_OO_OP_ENUMSTART ) )
       {
@@ -4687,7 +4691,7 @@ static void hb_vmEnumStart( int nVars, int nDescend )
          else
             fStart = HB_FALSE;
       }
-      else
+      else if( hb_vmRequestQuery() == 0 )
       {
          hb_errRT_BASE( EG_ARG, 1068, NULL, hb_langDGetErrorDesc( EG_ARRACCESS ), 1, pBase );
          return;
@@ -7150,35 +7154,32 @@ static void hb_vmPushStaticByRef( HB_USHORT uiStatic )
 static void hb_vmPushVariable( PHB_SYMB pVarSymb )
 {
    HB_STACK_TLS_PRELOAD
-   HB_USHORT uiAction = E_DEFAULT;
    PHB_ITEM pItem;
 
    HB_TRACE(HB_TR_INFO, ("(hb_vmPushVariable)"));
 
    pItem = hb_stackAllocItem();
 
-   do
+   /* First try if passed symbol is a name of field
+      * in a current workarea - if it is not a field (HB_FAILURE)
+      * then try the memvar variable
+      */
+   if( hb_rddFieldGet( pItem, pVarSymb ) != HB_SUCCESS &&
+       hb_memvarGet( pItem, pVarSymb ) != HB_SUCCESS )
    {
-      /* First try if passed symbol is a name of field
-         * in a current workarea - if it is not a field (HB_FAILURE)
-         * then try the memvar variable
-         */
-      if( hb_rddFieldGet( pItem, pVarSymb ) != HB_SUCCESS )
+      HB_ITEM_PTR pError = hb_errRT_New( ES_ERROR, NULL, EG_NOVAR, 1003,
+                                         NULL, pVarSymb->szName,
+                                         0, EF_CANRETRY );
+
+      while( hb_errLaunch( pError ) == E_RETRY )
       {
-         if( hb_memvarGet( pItem, pVarSymb ) != HB_SUCCESS )
-         {
-            HB_ITEM_PTR pError;
-
-            pError = hb_errRT_New( ES_ERROR, NULL, EG_NOVAR, 1003,
-                                    NULL, pVarSymb->szName,
-                                    0, EF_CANRETRY );
-
-            uiAction = hb_errLaunch( pError );
-            hb_errRelease( pError );
-         }
+         if( hb_rddFieldGet( pItem, pVarSymb ) == HB_SUCCESS ||
+             hb_memvarGet( pItem, pVarSymb ) == HB_SUCCESS )
+            break;
       }
+
+      hb_errRelease( pError );
    }
-   while( uiAction == E_RETRY );
 }
 
 
@@ -8772,15 +8773,36 @@ HB_USHORT hb_vmRequestQuery( void )
 HB_BOOL hb_vmRequestReenter( void )
 {
    HB_STACK_TLS_PRELOAD
+   PHB_ITEM pItem;
+   int iLocks = 0;
 
    HB_TRACE(HB_TR_DEBUG, ("hb_vmRequestReenter()"));
 
+#if defined( HB_MT_VM )
+   if( !s_fHVMActive || hb_stackId() == NULL )
+      return HB_FALSE;
+   else
+   {
+      while( hb_stackLockCount() > 0 )
+      {
+         hb_vmLock();
+         ++iLocks;
+      }
+   }
+#else
    if( !s_fHVMActive )
       return HB_FALSE;
+#endif
 
    hb_stackPushReturn();
 
-   hb_vmPushInteger( hb_stackGetActionRequest() );
+   pItem = hb_stackAllocItem();
+   pItem->type = HB_IT_RECOVER;
+   pItem->item.asRecover.recover = NULL;
+   pItem->item.asRecover.base    = iLocks;
+   pItem->item.asRecover.flags   = 0;
+   pItem->item.asRecover.request = hb_stackGetActionRequest();
+
    hb_stackSetActionRequest( 0 );
 
    return HB_TRUE;
@@ -8790,18 +8812,26 @@ void hb_vmRequestRestore( void )
 {
    HB_STACK_TLS_PRELOAD
    HB_USHORT uiAction;
+   PHB_ITEM pItem;
 
    HB_TRACE(HB_TR_DEBUG, ("hb_vmRequestRestore()"));
 
-   uiAction = ( HB_USHORT ) hb_stackItemFromTop( -1 )->item.asInteger.value |
-              hb_stackGetActionRequest();
+   pItem = hb_stackItemFromTop( -1 );
+
+   if( pItem->type != HB_IT_RECOVER )
+      hb_errInternal( HB_EI_ERRUNRECOV, "hb_vmRequestRestore", NULL, NULL );
+
+   uiAction = pItem->item.asRecover.request | hb_stackGetActionRequest();
 
 #if defined( HB_MT_VM )
    if( uiAction & HB_VMSTACK_REQUESTED )
       hb_vmThreadQuit();
    else
-#endif
    {
+      int iCount = ( int ) pItem->item.asRecover.base;
+#else
+   {
+#endif
       if( uiAction & HB_QUIT_REQUESTED )
          hb_stackSetActionRequest( HB_QUIT_REQUESTED );
       else if( uiAction & HB_BREAK_REQUESTED )
@@ -8813,6 +8843,11 @@ void hb_vmRequestRestore( void )
 
       hb_stackDec();
       hb_stackPopReturn();
+
+#if defined( HB_MT_VM )
+      while( iCount-- > 0 )
+         hb_vmUnlock();
+#endif
    }
 }
 
@@ -8824,23 +8859,41 @@ HB_BOOL hb_vmRequestReenterExt( void )
       return HB_FALSE;
    else
    {
+      HB_USHORT uiAction = 0;
+      int iLocks = 0;
+      PHB_ITEM pItem;
+
 #if defined( HB_MT_VM )
       HB_STACK_TLS_PRELOAD
-      HB_USHORT uiAction = hb_stackId() == NULL ? HB_VMSTACK_REQUESTED : 0;
 
-      if( uiAction )
+      if( hb_stackId() == NULL )
       {
+         uiAction = HB_VMSTACK_REQUESTED;
+         /* TODO: add protection against executing hb_threadStateNew()
+          * during GC pass
+          */
          hb_vmThreadInit( NULL );
          HB_STACK_TLS_RELOAD
       }
       else
+      {
+         while( hb_stackLockCount() > 0 )
+         {
+            hb_vmLock();
+            ++iLocks;
+         }
          hb_stackPushReturn();
-
-      hb_vmPushInteger( uiAction | hb_stackGetActionRequest() );
+      }
 #else
       hb_stackPushReturn();
-      hb_vmPushInteger( hb_stackGetActionRequest() );
 #endif
+      pItem = hb_stackAllocItem();
+      pItem->type = HB_IT_RECOVER;
+      pItem->item.asRecover.recover = NULL;
+      pItem->item.asRecover.base    = iLocks;
+      pItem->item.asRecover.flags   = 0;
+      pItem->item.asRecover.request = uiAction | hb_stackGetActionRequest();
+
       hb_stackSetActionRequest( 0 );
    }
 

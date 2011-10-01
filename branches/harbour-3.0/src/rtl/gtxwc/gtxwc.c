@@ -507,31 +507,35 @@ static void hb_gt_xwc_Enable( void )
 
 static HB_BOOL hb_gt_xwc_DefineBoxChar( PXWND_DEF wnd, HB_USHORT usCh, XWC_CharTrans *bxCh )
 {
-   XSegment       segs[9];
-   XPoint         pts[XWC_MAX_CHAR_POINTS];
-   XRectangle     rect[4];
+   typedef union
+   {
+      XSegment    segs[ XWC_MAX_CHAR_SEGS ];
+      XRectangle  rect[ XWC_MAX_CHAR_RECTS ];
+      XPoint      pts[ XWC_MAX_CHAR_POINTS ];
+   } HB_XWC_CHDEF;
+   HB_XWC_CHDEF   chdef;
+   XSegment     * segs = chdef.segs;
+   XRectangle   * rect = chdef.rect;
+   XPoint       * pts  = chdef.pts;
    XWC_CharType   type = CH_CHAR;
    int            size = 0;
    HB_BOOL        inverse = HB_FALSE;
 
    int cellx = wnd->fontWidth;
    int celly = wnd->fontHeight;
-   int i;
+   int i, y, x, yy, xx, skip, start, mod;
 
    switch( usCh )
    {
-      case HB_GTXVG_FILLER1:
-      case HB_GTXVG_FILLER2:
-      case HB_GTXVG_FILLER3:
-      {
-         int x, y, xx, yy, skip, start, mod;
-
-         if( usCh == HB_GTXVG_FILLER1 )
+      case HB_GTXWC_FILLER1:
+      case HB_GTXWC_FILLER2:
+      case HB_GTXWC_FILLER3:
+         if( usCh == HB_GTXWC_FILLER1 )
          {
             skip = 4;
             start = mod = 1;
          }
-         else if( usCh == HB_GTXVG_FILLER2 )
+         else if( usCh == HB_GTXWC_FILLER2 )
          {
             skip = 2;
             start = 0;
@@ -553,9 +557,7 @@ static HB_BOOL hb_gt_xwc_DefineBoxChar( PXWND_DEF wnd, HB_USHORT usCh, XWC_CharT
                 * character definition will not be finished
                 */
                if( size >= XWC_MAX_CHAR_POINTS )
-               {
                   break;
-               }
                pts[size].x = x - xx;
                pts[size].y = y - yy;
                xx = x;
@@ -563,11 +565,10 @@ static HB_BOOL hb_gt_xwc_DefineBoxChar( PXWND_DEF wnd, HB_USHORT usCh, XWC_CharT
                size++;
             }
          }
-         type = CH_PTS;
+         type = size == 0 ? CH_NONE : CH_PTS;
          break;
-      }
 
-      case HB_GTXVG_ARROW_R:
+      case HB_GTXWC_ARROW_R:
          i = HB_MIN( ( celly >> 1 ), cellx ) - 3;
          pts[0].x = ( ( cellx - i ) >> 1 );
          pts[0].y = ( celly >> 1 ) - i;
@@ -579,7 +580,7 @@ static HB_BOOL hb_gt_xwc_DefineBoxChar( PXWND_DEF wnd, HB_USHORT usCh, XWC_CharT
          type = CH_POLY;
          break;
 
-      case HB_GTXVG_ARROW_L:
+      case HB_GTXWC_ARROW_L:
          i = HB_MIN( ( celly >> 1 ), cellx ) - 3;
          pts[0].x = ( ( cellx - i ) >> 1 ) + i;
          pts[0].y = ( celly >> 1 ) - i;
@@ -591,7 +592,7 @@ static HB_BOOL hb_gt_xwc_DefineBoxChar( PXWND_DEF wnd, HB_USHORT usCh, XWC_CharT
          type = CH_POLY;
          break;
 
-      case HB_GTXVG_ARROW_U:
+      case HB_GTXWC_ARROW_U:
          i = HB_MIN( celly, cellx >> 1 );
          pts[0].x = ( cellx >> 1 ) - i;
          pts[0].y = ( ( celly - i ) >> 1 ) + i;
@@ -603,7 +604,7 @@ static HB_BOOL hb_gt_xwc_DefineBoxChar( PXWND_DEF wnd, HB_USHORT usCh, XWC_CharT
          type = CH_POLY;
          break;
 
-      case HB_GTXVG_ARROW_D:
+      case HB_GTXWC_ARROW_D:
          i = HB_MIN( celly, cellx >> 1 );
          pts[0].x = ( cellx >> 1 ) - i;
          pts[0].y = ( ( celly - i ) >> 1 );
@@ -615,14 +616,14 @@ static HB_BOOL hb_gt_xwc_DefineBoxChar( PXWND_DEF wnd, HB_USHORT usCh, XWC_CharT
          type = CH_POLY;
          break;
 
-      case HB_GTXVG_FULL:
+      case HB_GTXWC_FULL:
          inverse = HB_TRUE;
          type = CH_NONE;
          break;
 
-      case HB_GTXVG_FULL_B:
+      case HB_GTXWC_FULL_B:
          inverse = HB_TRUE;
-      case HB_GTXVG_FULL_T:
+      case HB_GTXWC_FULL_T:
          rect[0].x = 0;
          rect[0].y = 0;
          rect[0].width = cellx;
@@ -631,9 +632,9 @@ static HB_BOOL hb_gt_xwc_DefineBoxChar( PXWND_DEF wnd, HB_USHORT usCh, XWC_CharT
          type = CH_RECT;
          break;
 
-      case HB_GTXVG_FULL_R:
+      case HB_GTXWC_FULL_R:
          inverse = HB_TRUE;
-      case HB_GTXVG_FULL_L:
+      case HB_GTXWC_FULL_L:
          rect[0].x = 0;
          rect[0].y = 0;
          rect[0].width = cellx/2;
@@ -1453,7 +1454,7 @@ static HB_BOOL hb_gt_xwc_DefineBoxChar( PXWND_DEF wnd, HB_USHORT usCh, XWC_CharT
          type = CH_SEG;
          break;
 
-      case HB_GTXVG_SQUARE:
+      case HB_GTXWC_SQUARE:
          rect[0].width = cellx - HB_MAX(cellx >> 2, 2);
          rect[0].height = rect[0].width;
          rect[0].x = ( ( cellx - rect[0].width ) >> 1 );
@@ -1473,7 +1474,7 @@ static HB_BOOL hb_gt_xwc_DefineBoxChar( PXWND_DEF wnd, HB_USHORT usCh, XWC_CharT
 */
    }
 
-   if( size > 0 )
+   if( type != CH_CHAR )
    {
       bxCh->type = type;
       bxCh->u.ch16 = usCh;
@@ -2699,7 +2700,7 @@ static void hb_gt_xwc_RestoreArea( PXWND_DEF wnd,
 /* *********************************************************************** */
 
 static void hb_gt_xwc_InvalidateChar( PXWND_DEF wnd,
-                                     int left, int top, int right, int bottom )
+                                      int left, int top, int right, int bottom )
 {
    if( wnd->fInvalidChr == HB_FALSE )
    {
@@ -3070,7 +3071,8 @@ static HB_BOOL hb_gt_xwc_SetFont( PXWND_DEF wnd, const char *fontFace,
 
    /* a shortcut for window height and width */
    wnd->fontHeight = xfs->max_bounds.ascent + xfs->max_bounds.descent;
-   wnd->fontWidth = xfs->max_bounds.rbearing - xfs->min_bounds.lbearing;
+   /* wnd->fontWidth = xfs->max_bounds.rbearing - xfs->min_bounds.lbearing; */
+   wnd->fontWidth = xfs->max_bounds.width;
    wnd->xfs = xfs;
 
    return HB_TRUE;
@@ -3614,11 +3616,14 @@ static HB_BOOL hb_gt_xwc_SetMode( PHB_GT pGT, int iRow, int iCol )
       if( iCol == wnd->cols && iRow == wnd->rows )
       {
          HB_GTSELF_RESIZE( pGT, wnd->rows, wnd->cols );
+         if( !wnd->fInit )
+            HB_GTSELF_SEMICOLD( pGT );
          fResult = HB_TRUE;
       }
       else if( !wnd->fInit )
       {
          hb_gt_xwc_SetScrBuff( wnd, iCol, iRow );
+         HB_GTSELF_SEMICOLD( pGT );
          fResult = HB_TRUE;
       }
       else
@@ -3719,9 +3724,13 @@ static void hb_gt_xwc_Tone( PHB_GT pGT, double dFrequency, double dDuration )
 
 static HB_BOOL hb_gt_xwc_mouse_IsPresent( PHB_GT pGT )
 {
+   PXWND_DEF wnd;
+
    HB_TRACE(HB_TR_DEBUG, ("hb_gt_xwc_mouse_IsPresent(%p)", pGT));
 
-   return HB_GTXWC_GET( pGT )->mouseNumButtons > 0;
+   wnd = HB_GTXWC_GET( pGT );
+   hb_gt_xwc_ConnectX( wnd, HB_TRUE );
+   return wnd->mouseNumButtons > 0;
 }
 
 /* *********************************************************************** */
@@ -3764,6 +3773,7 @@ static HB_BOOL hb_gt_xwc_mouse_ButtonState( PHB_GT pGT,int iButton )
    HB_TRACE(HB_TR_DEBUG, ("hb_gt_xwc_mouse_ButtonState(%p,%i)", pGT, iButton));
 
    wnd = HB_GTXWC_GET( pGT );
+   hb_gt_xwc_ConnectX( wnd, HB_TRUE );
    if( iButton >= 0 && iButton < wnd->mouseNumButtons )
       return ( wnd->mouseButtonsState & 1 << iButton ) != 0;
    else
@@ -3779,7 +3789,7 @@ static int hb_gt_xwc_mouse_CountButton( PHB_GT pGT )
    HB_TRACE(HB_TR_DEBUG, ("hb_gt_xwc_mouse_CountButton(%p)", pGT));
 
    wnd = HB_GTXWC_GET( pGT );
-   hb_gt_xwc_RealRefresh( wnd );
+   hb_gt_xwc_ConnectX( wnd, HB_TRUE );
 
    return wnd->mouseNumButtons;
 }
@@ -3879,7 +3889,6 @@ static HB_BOOL hb_gt_xwc_Info( PHB_GT pGT, int iType, PHB_GT_INFO pInfo )
          case HB_GTI_ISSCREENPOS:
          case HB_GTI_KBDSUPPORT:
          case HB_GTI_ISGRAPHIC:
-         case HB_GTI_FONTSEL:
             hb_gt_xwc_ConnectX( wnd, HB_FALSE );
             break;
 
@@ -3891,6 +3900,7 @@ static HB_BOOL hb_gt_xwc_Info( PHB_GT pGT, int iType, PHB_GT_INFO pInfo )
          case HB_GTI_DESKTOPCOLS:
          case HB_GTI_DESKTOPROWS:
          case HB_GTI_CLIPBOARDDATA:
+         case HB_GTI_FONTSEL:
             hb_gt_xwc_ConnectX( wnd, HB_TRUE );
             break;
       }
@@ -3902,6 +3912,10 @@ static HB_BOOL hb_gt_xwc_Info( PHB_GT pGT, int iType, PHB_GT_INFO pInfo )
       case HB_GTI_KBDSUPPORT:
       case HB_GTI_ISGRAPHIC:
          pInfo->pResult = hb_itemPutL( pInfo->pResult, wnd->dpy != NULL );
+         break;
+
+      case HB_GTI_ONLINE:
+         pInfo->pResult = hb_itemPutL( pInfo->pResult, wnd->fInit );
          break;
 
       case HB_GTI_ISUNICODE:
@@ -3955,9 +3969,24 @@ static HB_BOOL hb_gt_xwc_Info( PHB_GT pGT, int iType, PHB_GT_INFO pInfo )
          if( hb_itemType( pInfo->pNewVal ) & HB_IT_STRING )
          {
             HB_XWC_XLIB_LOCK
-            if( hb_gt_xwc_SetFont( wnd, hb_itemGetCPtr( pInfo->pNewVal ), NULL, 0, NULL ) )
+            if( hb_gt_xwc_SetFont( wnd, hb_itemGetCPtr( pInfo->pNewVal ), NULL, 0, NULL ) &&
+                wnd->fInit )
                hb_gt_xwc_CreateWindow( wnd );
             HB_XWC_XLIB_UNLOCK
+         }
+         break;
+
+      case HB_GTI_FONTATTRIBUTE:
+         pInfo->pResult = hb_itemPutNI( pInfo->pResult,
+                           ( wnd->fFixMetric ? HB_GTI_FONTA_FIXMETRIC : 0 ) |
+                           ( wnd->fClearBkg  ? HB_GTI_FONTA_CLRBKG    : 0 ) |
+                           ( wnd->fDrawBox   ? HB_GTI_FONTA_DRAWBOX   : 0 ) );
+         if( hb_itemType( pInfo->pNewVal ) & HB_IT_NUMERIC )
+         {
+            iVal = hb_itemGetNI( pInfo->pNewVal );
+            wnd->fFixMetric = ( iVal & HB_GTI_FONTA_FIXMETRIC ) != 0;
+            wnd->fClearBkg  = ( iVal & HB_GTI_FONTA_CLRBKG    ) != 0;
+            wnd->fDrawBox   = ( iVal & HB_GTI_FONTA_DRAWBOX   ) != 0;
          }
          break;
 
@@ -4078,7 +4107,7 @@ static HB_BOOL hb_gt_xwc_Info( PHB_GT pGT, int iType, PHB_GT_INFO pInfo )
             if( wnd->fResizable != ( iVal != 0 ) )
             {
                wnd->fResizable = ( iVal != 0 );
-               if( wnd->dpy )
+               if( wnd->fInit )
                {
                   HB_XWC_XLIB_LOCK
                   hb_gt_xwc_SetResizing( wnd );
@@ -4102,7 +4131,7 @@ static HB_BOOL hb_gt_xwc_Info( PHB_GT pGT, int iType, PHB_GT_INFO pInfo )
                   {
                      wnd->colors[ iVal ].value = iColor;
                      wnd->colors[ iVal ].set = HB_FALSE;
-                     if( wnd->dpy && hb_gt_xwc_setPalette( wnd ) )
+                     if( wnd->fInit && hb_gt_xwc_setPalette( wnd ) )
                      {
                         memset( wnd->pCurrScr, 0xFFFFFFFFL,  wnd->cols * wnd->rows * sizeof( HB_ULONG ) );
                         hb_gt_xwc_InvalidateChar( wnd, 0, 0, wnd->cols - 1, wnd->rows - 1 );
@@ -4130,7 +4159,7 @@ static HB_BOOL hb_gt_xwc_Info( PHB_GT pGT, int iType, PHB_GT_INFO pInfo )
                      wnd->colors[ iVal ].set = HB_FALSE;
                   }
                }
-               if( wnd->dpy && hb_gt_xwc_setPalette( wnd ) )
+               if( wnd->fInit && hb_gt_xwc_setPalette( wnd ) )
                {
                   memset( wnd->pCurrScr, 0xFFFFFFFFL,  wnd->cols * wnd->rows * sizeof( HB_ULONG ) );
                   hb_gt_xwc_InvalidateChar( wnd, 0, 0, wnd->cols - 1, wnd->rows - 1 );

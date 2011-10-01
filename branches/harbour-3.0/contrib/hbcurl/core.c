@@ -53,8 +53,12 @@
  */
 
 #include <curl/curl.h>
-#include <curl/types.h>
-#include <curl/easy.h>
+#if LIBCURL_VERSION_NUM < 0x070A03
+#  include <curl/easy.h>
+#endif
+#if LIBCURL_VERSION_NUM < 0x070C00
+#  include <curl/types.h>
+#endif
 
 #include "hbapi.h"
 #include "hbapiitm.h"
@@ -958,7 +962,7 @@ HB_FUNC( CURL_EASY_SETOPT )
             break;
 #if LIBCURL_VERSION_NUM >= 0x071506
          case HB_CURLOPT_TRANSFER_ENCODING:
-            res = curl_easy_setopt( hb_curl->curl, CURLOPT_TRANSFER_ENCODING, hb_curl_StrHash( hb_curl, hb_parc( 3 ) ) );
+            res = curl_easy_setopt( hb_curl->curl, CURLOPT_TRANSFER_ENCODING, hb_parnl( 3 ) );
             break;
 #endif
          case HB_CURLOPT_FOLLOWLOCATION:

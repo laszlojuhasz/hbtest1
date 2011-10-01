@@ -3,9 +3,10 @@
  */
 
 /*
- * xHarbour Project source code:
+ * Harbour Project source code:
  * Random number generator routine
  *
+ * Copyright 2011 Przemyslaw Czerpak <druzus / at / priv.onet.pl>
  * Copyright 2003 Giancarlo Niccolai <gian@niccolai.ws>
  * www - http://harbour-project.org
  *
@@ -52,12 +53,51 @@
 
 #include "hbapi.h"
 #include "hbdate.h"
+#include "hbstack.h"
 
-#include <stdlib.h>
-#include <float.h>
+/* NOTE: core random generator algorithm is the work of Steve Park
+         http://www.cs.wm.edu/~va/software/park/
+ */
 
-/* Globally available data, no need to MT it */
-static volatile HB_BOOL s_fInit = HB_FALSE;
+#define MODULUS    2147483647 /* DON'T CHANGE THIS VALUE                  */
+#define MULTIPLIER 48271      /* DON'T CHANGE THIS VALUE                  */
+
+static HB_TSD_NEW( s_seed, sizeof( HB_I32 ), NULL, NULL );
+#define SEED_PTR ( ( HB_I32 * ) hb_stackGetTSD( &s_seed ) )
+
+/* Returns a double value between 0 and 1 */
+double hb_random_num( void )
+{
+   HB_I32 * seed = SEED_PTR, t;
+
+   t = *seed;
+   if( t == 0 )
+      t = ( HB_I32 )
+         ( ( hb_dateMilliSeconds() ^ ( HB_PTRUINT ) hb_stackId() ) % MODULUS );
+
+#if !defined( HB_LONG_LONG_OFF )
+   t = ( HB_I32 ) ( ( HB_LONGLONG ) t * MULTIPLIER % MODULUS );
+#else
+   {
+      const HB_I32 Q = MODULUS / MULTIPLIER;
+      const HB_I32 R = MODULUS % MULTIPLIER;
+
+      t = MULTIPLIER * ( t % Q ) - R * ( t / Q );
+      if( t < 0 )
+         t += MODULUS;
+   }
+#endif
+
+   *seed = t;
+
+   return ( double ) ( t - 1 ) / ( MODULUS - 1 );
+}
+
+void hb_random_seed( HB_I32 seed )
+{
+   seed %= MODULUS;
+   * SEED_PTR = ( seed < 0 ) ? seed + MODULUS : seed;
+}
 
 /*
  * HB_RANDOM
@@ -120,32 +160,10 @@ HB_FUNC( HB_RANDOMINT )
 
 HB_FUNC( HB_RANDOMSEED )
 {
-   srand( HB_ISNUM( 1 ) ? ( unsigned ) hb_parni( 1 ) : ( unsigned ) hb_dateMilliSeconds() );
-   s_fInit = HB_TRUE;
+   hb_random_seed( hb_parni( 1 ) );
 }
 
 HB_FUNC( HB_RANDOMINTMAX )
 {
-#if RAND_MAX > HB_VMLONG_MAX
-   hb_retnd( RAND_MAX );
-#else
-   hb_retnint( RAND_MAX );
-#endif
-}
-
-/* Returns a double value between 0 and 1 */
-double hb_random_num( void )
-{
-   double d1, d2;
-
-   if( ! s_fInit )
-   {
-      srand( ( unsigned ) hb_dateMilliSeconds() );
-      s_fInit = HB_TRUE;
-   }
-
-   d1 = ( double ) rand();
-   d2 = ( double ) RAND_MAX + 1.0;
-
-   return d1 / d2;
+   hb_retnint( MODULUS - 2 );
 }

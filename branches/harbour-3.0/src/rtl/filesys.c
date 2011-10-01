@@ -716,7 +716,6 @@ HB_FHANDLE hb_fsPOpen( const char * pFilename, const char * pMode )
                   HB_FAILURE_RETRY( iResult, dup2( hPipeHandle[ 0 ], 0 ) );
                   HB_FAILURE_RETRY( iResult, dup2( hNullHandle, 1 ) );
                   HB_FAILURE_RETRY( iResult, dup2( hNullHandle, 2 ) );
-                  dup2( hNullHandle, 2 );
                }
                iMaxFD = sysconf( _SC_OPEN_MAX );
                if( iMaxFD < 3 )
@@ -951,7 +950,8 @@ HB_SIZE hb_fsPipeIsData( HB_FHANDLE hPipeHandle, HB_SIZE nBufferSize,
       hb_fsSetIOError( iResult >= 0, 0 );
       if( nTimeOut < 0 && iResult == 0 )
          continue;
-      if( iResult != -1 || nTimeOut == 0 || errno != EINTR ||
+      if( iResult != -1 || nTimeOut == 0 ||
+          hb_fsOsError() != ( HB_ERRCODE ) EINTR ||
           hb_vmRequestQuery() != 0 )
          break;
 #if !defined( HB_OS_LINUX )
